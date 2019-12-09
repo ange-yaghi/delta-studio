@@ -1,0 +1,79 @@
+#version 420
+
+layout(location=0) in vec3 in_Position;
+layout(location=1) in vec2 in_Tex;
+layout(location=2) in vec3 in_Normal;
+layout(location=3) in vec4 in_Tangent;
+
+out vec4 ex_Pos;
+out vec4 ex_VertexPosition;
+out vec2 ex_Tex;
+out vec3 ex_Normal;
+out vec3 ex_Tangent;
+out vec3 ex_Bitangent;
+
+layout(binding = 0) uniform ColorBlock
+{
+
+	mat4 World;
+	mat4 View;
+	mat4 Projection;
+
+	vec4 Eye;
+
+	vec4 Color;
+	vec4 Offset;
+	float Scale;
+	int AllWhiteLight;
+
+};
+
+
+layout(binding = 2) uniform ObjectData
+{
+
+	mat4 ObjectTransform;
+
+	// Material
+	vec3 DiffuseColor;
+
+	vec3 FalloffColor;
+	float FalloffPower;
+
+	int UseDiffuseMap;
+	int UseSpecularMap;
+	int UseNormalMap;
+	int UseFalloff;
+
+	float Specular;
+	float SpecularPower;
+
+	float Ambient;
+
+	int Lit;
+	int LightExclusion[16];
+
+};
+
+void main(void)
+{ 
+	
+	vec4 inPos = vec4(in_Position, 1.0);
+	vec4 outPos = inPos;
+
+	outPos = outPos * World;
+	outPos = outPos * View;
+	outPos = outPos * Projection;
+
+	ex_Tex = in_Tex;
+	ex_Normal = normalize((vec4(in_Normal, 1.0) * ObjectTransform).xyz);
+
+	ex_Tangent = (vec4(in_Tangent.xyz, 1.0) * ObjectTransform).xyz;
+	ex_Bitangent = (vec4((cross(ex_Tangent, in_Normal.xyz) * in_Tangent.w), 1.0) * ObjectTransform).xyz;
+
+	ex_Tangent = normalize(ex_Tangent);
+	ex_Bitangent = normalize(ex_Bitangent);
+
+	gl_Position = outPos;
+
+}

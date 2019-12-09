@@ -1,0 +1,203 @@
+#version 420
+
+layout(binding = 0) uniform sampler2D txDiffuse;
+layout(binding = 1) uniform sampler2D txSpecular;
+layout(binding = 2) uniform sampler2D txNormal;
+
+out vec4 out_Color;
+
+in vec4 ex_Pos;
+in vec4 ex_VertexPosition;
+in vec2 ex_Tex;
+in vec3 ex_Normal;
+in vec3 ex_Tangent;
+in vec3 ex_Bitangent;
+
+layout(binding = 0) uniform ColorBlock
+{
+
+	mat4 World;
+	mat4 View;
+	mat4 Projection;
+
+	vec4 Eye;
+
+	vec4 Color;
+	vec4 Offset;
+	float Scale;
+	int AllWhiteLight;
+
+};
+
+struct Light
+{
+
+	vec4 Location;
+	vec4 Color;
+	vec4 Direction;
+
+	float CutoffHigh;
+	float CutoffLow;
+	float CutoffPower;
+	float CutoffMix;
+	int CutoffAmbient;
+
+	int Enabled;
+	float Falloff;
+	float Intensity;
+
+	float Ambient;
+	float Diffuse;
+
+	float Specular;
+	float SpecularPower;
+
+};
+
+layout(binding = 1) uniform ColorBlock
+{
+
+	Light Lights[16];
+
+};
+
+
+layout(binding = 2) uniform ObjectData
+{
+
+	mat4 ObjectTransform;
+
+	// Material
+	vec4 DiffuseColor;
+
+	vec4 FalloffColor;
+	float FalloffPower;
+
+	int UseDiffuseMap;
+	int UseSpecularMap;
+	int UseNormalMap;
+	int UseFalloff;
+
+	float Specular;
+	float SpecularPower;
+
+	float Ambient;
+
+	int Lit;
+	int LightExclusion[16];
+
+};
+
+void main(void)
+{
+
+	if (Lit == 1)
+	{
+
+		vec3 totalDiffuse = vec3(0, 0, 0);
+		vec3 totalAmbient = vec3(0, 0, 0);
+		vec3 totalSpecular = vec3(0, 0, 0);
+
+		vec3 viewVec = normalize(ex_VertexPosition.xyz - Eye.xyz);
+
+		vec3 normal = ex_Normal;
+		
+		if (UseNormalMap == 1)
+		{
+
+			mat3 TBN = {ex_Tangent, ex_Bitangent, ex_Normal};
+			TBN = transpose(TBN);
+
+			normal = (texture(txNormal, ex_Tex).rgb);
+			normal.xy = 2 * normal.xy - vec2(1.0, 1.0);
+			normal = normal * TBN;
+			normal = normalize(normal);
+
+		}
+
+		for(int i=0; i < 16; i++)
+		{
+
+			if (Lights[i].Intensity > 0.001 && Lights[i].Enabled == 1)
+			{			
+			
+				vec3 lightVec = Lights[i].Location.xyz - ex_VertexPosition.xyz;
+
+				float distance = length(lightVec);
+				float falloff = 1.0 / pow(2.0, distance * (1.0/Lights[i].Falloff));
+
+				lightVec = normalize(lightVec);
+				vec3 reflectVec = -normalize(2.0 * dot(normal, lightVec) * normal - lightVec);
+				float diffuse = max(dot(lightVec, normal), 0.0);
+				float spec = max(dot(reflectVec, viewVec), 0.0);
+				spec = pow(pow(spec, Lights[i].SpecularPower), SpecularPower);
+
+				float cutoffDot = dot(lightVec, -Lights[i].Direction.xyz);
+				float cutoffL = 1.0;
+				float cutoffH = 0.0;
+				float cutoff = 1.0;
+				float midway = (-Lights[i].CutoffLow + Lights[i].CutoffHigh) / 2;
+
+				if (cutoffDot > -Lights[i].CutoffLow && cutoffDot < Lights[i].CutoffHigh)
+				{
+
+					float delta = abs(cutoffDot - midway);
+
+					cutoff = delta / abs(midway - Lights[i].CutoffHigh);
+
+				}
+
+				cutoff = pow(cutoff, Lights[i].CutoffPower);
+
+				vec3 color = Lights[i].Color.rgb;
+				if (AllWhiteLight == 1) color = vec3(1.0, 1.0, 1.0);
+
+				totalDiffuse += diffuse * color * Lights[i].Intensity * falloff * Lights[i].Diffuse * cutoff;	
+
+				if (Lights[i].CutoffAmbient == 1) totalAmbient += falloff * color * Lights[i].Ambient * Lights[i].Intensity * cutoff;
+				else totalAmbient += falloff * color * Lights[i].Ambient * Lights[i].Intensity;
+
+				totalSpecular += pow(falloff, 0.25) * color * Lights[i].Specular * Lights[i].Intensity * spec * cutoff;
+
+			}
+
+		}
+
+		vec4 diffuseColor = DiffuseColor;
+		vec4 specularMap = vec4(Specular, Specular, Specular, 1.0);
+
+		if (UseFalloff == 1)
+		{
+
+			float angleFalloff = pow(1.01 - max(dot(-viewVec, ex_Normal), 0.0), FalloffPower);
+			diffuseColor = (angleFalloff) * FalloffColor + (1 - angleFalloff) * diffuseColor;
+
+		}
+
+		if (UseDiffuseMap == 1)
+		{
+
+			diffuseColor *= texture(txDiffuse, ex_Tex).rgb;
+
+		}
+
+		if (UseSpecularMap == 1)
+		{
+
+			specularMap *= texture(txSpecular, ex_Tex).rgb;
+
+		}
+
+		vec4 finalColor = diffuseColor * vec4(totalDiffuse + totalAmbient * Ambient * 1.0, 0.0) + vec4(totalSpecular * specularMap.rgb, 1.0);
+		out_Color = finalColor;
+
+	}
+
+	else
+	{
+
+		out_Color = vec4(texture(txDiffuse, ex_Tex).rgb, 1.0);
+
+	}
+
+}
