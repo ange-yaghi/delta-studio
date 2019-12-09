@@ -14,6 +14,7 @@ ysErrorSystem::ysErrorSystem() {
 
 	g_instance = this;
 
+    memset((void *)m_callStack, 0, sizeof(m_callStack));
 	m_stackLevel = 0;
 }
 

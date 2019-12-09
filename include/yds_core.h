@@ -47,4 +47,37 @@
 // OS
 #include "yds_window_event_handler.h"
 
+// ========================================================
+// Dependencies
+// ========================================================
+
+// Main library
+#pragma comment(lib, "delta-core.lib")
+
+// External dependencies
+#pragma comment(lib, "comctl32.lib")
+
+#pragma comment(lib, "winmm.lib")
+#pragma comment(lib, "windowscodecs.lib")
+
+#pragma comment(lib, "SDL2.lib")
+#pragma comment(lib, "SDL2_Image.lib")
+
+#pragma comment(lib, "OpenGL32.lib")
+
+#pragma comment(lib, "d3dx9.lib")
+#pragma comment(lib, "d3dx9d.lib")
+#pragma comment(lib, "d3dx10.lib")
+#pragma comment(lib, "d3dx10d.lib")
+#pragma comment(lib, "d3dx11.lib")
+#pragma comment(lib, "d3dx11d.lib")
+#pragma comment(lib, "d3dxof.lib")
+#pragma comment(lib, "d3d10.lib")
+#pragma comment(lib, "d3d9.lib")
+#pragma comment(lib, "d3d11.lib")
+#pragma comment(lib, "dxgi.lib")
+#pragma comment(lib, "dsound.lib")
+#pragma comment(lib, "dxerr.lib")
+#pragma comment(lib, "dxguid.lib")
+
 #endif /* YDS_CORE_H */

@@ -85,6 +85,9 @@
     <Filter Include="Source Files\physics\collision-detection">
       <UniqueIdentifier>{ffb52655-421c-4c85-84b6-5c527547c862}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\interface">
+      <UniqueIdentifier>{f750dd23-d5fe-47b0-99bc-aa16d3e892c9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\engines\basic\include\animation.h">
@@ -197,6 +200,9 @@
     </ClInclude>
     <ClInclude Include="..\..\engines\basic\include\spring_link.h">
       <Filter>Header Files\physics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\engines\basic\include\delta_basic_engine.h">
+      <Filter>Header Files\interface</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

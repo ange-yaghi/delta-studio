@@ -1,0 +1,40 @@
+#version 420
+
+layout(binding = 0) uniform sampler2D diffuseTex;
+
+out vec4 out_Color;
+
+in vec2 ex_Tex;
+in vec3 ex_Normal;
+
+layout (binding = 1) uniform ObjectVariables
+{
+
+	mat4 Transform;
+	vec4 MulCol;
+	vec4 Offset;
+	vec2 Size;
+	int ColorReplace;
+
+};
+
+void main(void)
+{
+
+	if (ColorReplace == 0)
+	{
+
+		out_Color = texture(diffuseTex, ex_Tex).rgba * MulCol;
+
+	}
+
+	else
+	{
+
+		out_Color = MulCol;
+
+	}
+
+	out_Color = vec4((ex_Normal + vec3(1.0, 1.0, 1.0))/2.0, 1.0);
+
+}

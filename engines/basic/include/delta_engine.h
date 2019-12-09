@@ -37,7 +37,7 @@ namespace dbasic {
         // Physics Interface
         MassSpringSystem PhysicsSystem;
 
-        ysError CreateGameWindow(char *title, void *instance, ysContextObject::DEVICE_API API, const char *shaderDirectory = "../DeltaEngineTullahoma/Shaders/", bool depthBuffer = true);
+        ysError CreateGameWindow(const char *title, void *instance, ysContextObject::DEVICE_API API, const char *shaderDirectory = "../DeltaEngineTullahoma/Shaders/", bool depthBuffer = true);
         ysError StartFrame();
         ysError EndFrame();
         ysError Destroy();

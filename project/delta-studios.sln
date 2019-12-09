@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29411.108
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "delta-studios", "delta-studios\delta-studios.vcxproj", "{6DB2FA44-5C75-431B-85F5-BAA11D6EF583}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "delta-core", "delta-core\delta-core.vcxproj", "{6DB2FA44-5C75-431B-85F5-BAA11D6EF583}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "apartment-simulator-demo", "apartment-simulator-demo\apartment-simulator-demo.vcxproj", "{78E39859-9E94-443A-BBC4-58B225A6A02F}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -11,6 +11,15 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "apartment-simulator-demo", 
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "delta-basic-engine", "delta-basic-engine\delta-basic-engine.vcxproj", "{4192524D-8D19-4BEC-A9F0-C18C1333C456}"
+	ProjectSection(ProjectDependencies) = postProject
+		{6DB2FA44-5C75-431B-85F5-BAA11D6EF583} = {6DB2FA44-5C75-431B-85F5-BAA11D6EF583}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "delta-basic-demo", "delta-basic-demo\delta-basic-demo.vcxproj", "{E7CC5000-32FE-4BCD-AE37-CB0996A45CA0}"
+	ProjectSection(ProjectDependencies) = postProject
+		{6DB2FA44-5C75-431B-85F5-BAA11D6EF583} = {6DB2FA44-5C75-431B-85F5-BAA11D6EF583}
+		{4192524D-8D19-4BEC-A9F0-C18C1333C456} = {4192524D-8D19-4BEC-A9F0-C18C1333C456}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -44,6 +53,14 @@ Global
 		{4192524D-8D19-4BEC-A9F0-C18C1333C456}.Release|x64.Build.0 = Release|x64
 		{4192524D-8D19-4BEC-A9F0-C18C1333C456}.Release|x86.ActiveCfg = Release|Win32
 		{4192524D-8D19-4BEC-A9F0-C18C1333C456}.Release|x86.Build.0 = Release|Win32
+		{E7CC5000-32FE-4BCD-AE37-CB0996A45CA0}.Debug|x64.ActiveCfg = Debug|x64
+		{E7CC5000-32FE-4BCD-AE37-CB0996A45CA0}.Debug|x64.Build.0 = Debug|x64
+		{E7CC5000-32FE-4BCD-AE37-CB0996A45CA0}.Debug|x86.ActiveCfg = Debug|Win32
+		{E7CC5000-32FE-4BCD-AE37-CB0996A45CA0}.Debug|x86.Build.0 = Debug|Win32
+		{E7CC5000-32FE-4BCD-AE37-CB0996A45CA0}.Release|x64.ActiveCfg = Release|x64
+		{E7CC5000-32FE-4BCD-AE37-CB0996A45CA0}.Release|x64.Build.0 = Release|x64
+		{E7CC5000-32FE-4BCD-AE37-CB0996A45CA0}.Release|x86.ActiveCfg = Release|Win32
+		{E7CC5000-32FE-4BCD-AE37-CB0996A45CA0}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

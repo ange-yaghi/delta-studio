@@ -59,7 +59,7 @@ dbasic::DeltaEngine::~DeltaEngine() {
     /* void */
 }
 
-ysError dbasic::DeltaEngine::CreateGameWindow(char *title, void *instance, ysContextObject::DEVICE_API API, const char *shaderDirectory, bool depthBuffer) {
+ysError dbasic::DeltaEngine::CreateGameWindow(const char *title, void *instance, ysContextObject::DEVICE_API API, const char *shaderDirectory, bool depthBuffer) {
     YDS_ERROR_DECLARE("CreateGameWindow");
 
     // Create the window system

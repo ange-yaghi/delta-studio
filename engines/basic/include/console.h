@@ -5,6 +5,8 @@
 
 #include "shader_controls.h"
 
+#include <string>
+
 namespace dbasic {
 
     // Class name declarations
@@ -65,6 +67,9 @@ namespace dbasic {
 
         ysError Initialize();
 
+        void SetDefaultFontDirectory(const std::string &s) { m_defaultFontDirectory = s; }
+        std::string GetDefaultFontDirectory() const { return m_defaultFontDirectory; }
+
     protected:
         DeltaEngine *m_engine;
 
@@ -87,6 +92,8 @@ namespace dbasic {
     protected:
         // Settings
         float m_clearColor[4];
+
+        std::string m_defaultFontDirectory;
 
     protected:
         ysError InitializeGeometry();

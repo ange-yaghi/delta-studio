@@ -1,0 +1,69 @@
+#version 420
+
+layout(location=0) in vec3 in_Position;
+layout(location=1) in vec2 in_Tex;
+layout(location=2) in vec3 in_Normal;
+layout(location=3) in ivec3 in_BoneIndices;
+layout(location=4) in vec3 in_BoneWeights;
+
+out vec2 ex_Tex;
+out vec3 ex_Normal;
+
+layout (binding = 0) uniform ScreenVariables
+{
+
+	mat4 CameraView;
+	mat4 Projection;
+
+};
+
+layout (binding = 1) uniform ObjectVariables
+{
+
+	mat4 Transform;
+	vec4 MulCol;
+	vec4 Offset;
+	vec2 Size;
+	int ColorReplace;
+
+};
+
+layout (binding = 2) uniform SkinningVariables
+{
+
+	mat4 BoneTransform[256];
+
+};
+
+void main(void)
+{
+
+	vec4 inputPos = vec4(in_Position, 1.0);
+
+	vec4 final = vec4(0.0f, 0.0f, 0.0f, 0.0f);
+	final += (BoneTransform[in_BoneIndices.x] * inputPos) * in_BoneWeights.x;
+	final += (BoneTransform[in_BoneIndices.y] * inputPos) * in_BoneWeights.y;
+	final += (BoneTransform[in_BoneIndices.z] * inputPos) * in_BoneWeights.z;
+	inputPos = vec4(final.xyz, 1.0);
+
+	inputPos.z *= Size.x;
+	inputPos.xy *= Size;
+
+	inputPos = inputPos * Transform;
+	inputPos = inputPos * CameraView;
+	inputPos = inputPos * Projection;
+
+	vec4 finalNormal = vec4(0.0f, 0.0f, 0.0f, 0.0f);
+	
+
+	finalNormal += (BoneTransform[in_BoneIndices.x] * vec4(in_Normal, 0.0)) * in_BoneWeights.x;
+	finalNormal += (BoneTransform[in_BoneIndices.y] * vec4(in_Normal, 0.0)) * in_BoneWeights.y;
+	finalNormal += (BoneTransform[in_BoneIndices.z] * vec4(in_Normal, 0.0)) * in_BoneWeights.z;
+
+	ex_Normal = vec3(finalNormal * Transform);
+
+	gl_Position = vec4(inputPos.xyzw);
+
+	ex_Tex = in_Tex;
+
+}

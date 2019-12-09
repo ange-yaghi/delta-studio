@@ -4,16 +4,16 @@
 #include "../include/delta_engine.h"
 
 dbasic::Console::Console() {
-    m_engine = NULL;
+    m_engine = nullptr;
 
-    m_mainVertexBuffer = NULL;
-    m_mainIndexBuffer = NULL;
+    m_mainVertexBuffer = nullptr;
+    m_mainIndexBuffer = nullptr;
 
-    m_vertexShader = NULL;
-    m_pixelShader = NULL;
-    m_shaderProgram = NULL;
+    m_vertexShader = nullptr;
+    m_pixelShader = nullptr;
+    m_shaderProgram = nullptr;
 
-    m_standardInputLayout = NULL;
+    m_standardInputLayout = nullptr;
 
     // Initialize clear color to black
     m_clearColor[0] = 40.0f / 255.0f;
@@ -27,7 +27,8 @@ dbasic::Console::Console() {
     // Resetting settings
     m_fontBold = false;
 
-    m_engine = NULL;
+    m_engine = nullptr;
+    m_defaultFontDirectory = "";
 }
 
 dbasic::Console::~Console() {
@@ -45,7 +46,9 @@ ysError dbasic::Console::Destroy() {
 ysError dbasic::Console::Initialize() {
     YDS_ERROR_DECLARE("Initialize");
 
-    m_engine->GetDevice()->CreateTexture(&m_font, "DeltaEngineTullahoma/Fonts/dc_font_consolas.png");
+    std::string defaultFontFilename = m_defaultFontDirectory + "dc_font_consolas.png";
+
+    m_engine->GetDevice()->CreateTexture(&m_font, defaultFontFilename.c_str());
     YDS_NESTED_ERROR_CALL(InitializeGeometry());
 
     InitializeFontMap();

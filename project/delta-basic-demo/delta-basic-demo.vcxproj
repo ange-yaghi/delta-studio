@@ -20,8 +20,8 @@
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
-    <ProjectGuid>{78E39859-9E94-443A-BBC4-58B225A6A02F}</ProjectGuid>
-    <RootNamespace>apartmentsimulatordemo</RootNamespace>
+    <ProjectGuid>{E7CC5000-32FE-4BCD-AE37-CB0996A45CA0}</ProjectGuid>
+    <RootNamespace>deltabasicdemo</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -69,30 +69,26 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <LibraryPath>$(ProjectDir)/../$(PlatformTarget)/$(Configuration);$(ProjectDir)/../../dependencies/libraries/SDL/lib/$(PlatformTarget);$(ProjectDir)/../../dependencies\libraries\D3DX\lib\$(PlatformTarget);$(ProjectDir)/../../dependencies\libraries\DirectSound\lib\$(PlatformTarget);$(ProjectDir)/../../dependencies\libraries\DXGI\lib\$(PlatformTarget);$(LibraryPath)</LibraryPath>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <LibraryPath>$(ProjectDir)/../$(PlatformTarget)/$(Configuration);$(ProjectDir)/../../dependencies/libraries/SDL/lib/$(PlatformTarget);$(ProjectDir)/../../dependencies\libraries\D3DX\lib\$(PlatformTarget);$(ProjectDir)/../../dependencies\libraries\DirectSound\lib\$(PlatformTarget);$(ProjectDir)/../../dependencies\libraries\DXGI\lib\$(PlatformTarget);$(LibraryPath)</LibraryPath>
-  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LibraryPath>$(ProjectDir)/../$(PlatformTarget)/$(Configuration);$(ProjectDir)/../../dependencies/libraries/SDL/lib/$(PlatformTarget);$(ProjectDir)/../../dependencies\libraries\D3DX\lib\$(PlatformTarget);$(ProjectDir)/../../dependencies\libraries\DirectSound\lib\$(PlatformTarget);$(ProjectDir)/../../dependencies\libraries\DXGI\lib\$(PlatformTarget);$(LibraryPath)</LibraryPath>
+    <OutDir>$(SolutionDir)\$(PlatformTarget)\$(Configuration)\</OutDir>
+    <IntDir>$(PlatformTarget)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LibraryPath>$(ProjectDir)/../$(PlatformTarget)/$(Configuration);$(ProjectDir)/../../dependencies/libraries/SDL/lib/$(PlatformTarget);$(ProjectDir)/../../dependencies\libraries\D3DX\lib\$(PlatformTarget);$(ProjectDir)/../../dependencies\libraries\DirectSound\lib\$(PlatformTarget);$(ProjectDir)/../../dependencies\libraries\DXGI\lib\$(PlatformTarget);$(LibraryPath)</LibraryPath>
+    <OutDir>$(SolutionDir)\$(PlatformTarget)\$(Configuration)\</OutDir>
+    <IntDir>$(PlatformTarget)\$(Configuration)\</IntDir>
   </PropertyGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <ClCompile>
-      <WarningLevel>Level3</WarningLevel>
-      <Optimization>Disabled</Optimization>
-      <SDLCheck>true</SDLCheck>
-      <ConformanceMode>true</ConformanceMode>
-    </ClCompile>
-    <Link>
-      <SubSystem>Windows</SubSystem>
-      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
-    </Link>
-  </ItemDefinitionGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <LibraryPath>$(ProjectDir)/../$(PlatformTarget)/$(Configuration);$(ProjectDir)/../../dependencies/libraries/SDL/lib/$(PlatformTarget);$(ProjectDir)/../../dependencies\libraries\D3DX\lib\$(PlatformTarget);$(ProjectDir)/../../dependencies\libraries\DirectSound\lib\$(PlatformTarget);$(ProjectDir)/../../dependencies\libraries\DXGI\lib\$(PlatformTarget);$(LibraryPath)</LibraryPath>
+    <OutDir>$(SolutionDir)\$(PlatformTarget)\$(Configuration)\</OutDir>
+    <IntDir>$(PlatformTarget)\$(Configuration)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <LibraryPath>$(ProjectDir)/../$(PlatformTarget)/$(Configuration);$(ProjectDir)/../../dependencies/libraries/SDL/lib/$(PlatformTarget);$(ProjectDir)/../../dependencies\libraries\D3DX\lib\$(PlatformTarget);$(ProjectDir)/../../dependencies\libraries\DirectSound\lib\$(PlatformTarget);$(ProjectDir)/../../dependencies\libraries\DXGI\lib\$(PlatformTarget);$(LibraryPath)</LibraryPath>
+    <OutDir>$(SolutionDir)\$(PlatformTarget)\$(Configuration)\</OutDir>
+    <IntDir>$(PlatformTarget)\$(Configuration)\</IntDir>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
@@ -102,7 +98,17 @@
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
-      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <SDLCheck>true</SDLCheck>
+      <ConformanceMode>true</ConformanceMode>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -118,7 +124,6 @@
       <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -134,32 +139,15 @@
       <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\demos\apartment-simulator\include\ApartmentSimulator.h" />
-    <ClInclude Include="..\..\demos\apartment-simulator\include\ApartmentSimulatorWindowHandler.h" />
-    <ClInclude Include="..\..\demos\apartment-simulator\include\LCD_Clock.h" />
-    <ClInclude Include="..\..\demos\apartment-simulator\include\Lighting.h" />
-    <ClInclude Include="..\..\demos\apartment-simulator\include\LightScript.h" />
-    <ClInclude Include="..\..\demos\apartment-simulator\include\Material.h" />
-    <ClInclude Include="..\..\demos\apartment-simulator\include\SceneManager.h" />
-    <ClInclude Include="..\..\demos\apartment-simulator\include\SceneObject.h" />
-    <ClInclude Include="..\..\demos\apartment-simulator\include\SoundSource.h" />
+    <ClCompile Include="..\..\demos\delta-basic-demo\src\delta_basic_demo_application.cpp" />
+    <ClCompile Include="..\..\demos\delta-basic-demo\src\main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\demos\apartment-simulator\src\ApartmentSimulator.cpp" />
-    <ClCompile Include="..\..\demos\apartment-simulator\src\ApartmentSimulatorAssets.cpp" />
-    <ClCompile Include="..\..\demos\apartment-simulator\src\ApartmentSimulatorLightSetup.cpp" />
-    <ClCompile Include="..\..\demos\apartment-simulator\src\LCD_Clock.cpp" />
-    <ClCompile Include="..\..\demos\apartment-simulator\src\Lighting.cpp" />
-    <ClCompile Include="..\..\demos\apartment-simulator\src\LightScript.cpp" />
-    <ClCompile Include="..\..\demos\apartment-simulator\src\main.cpp" />
-    <ClCompile Include="..\..\demos\apartment-simulator\src\OcclusionGraph.cpp" />
-    <ClCompile Include="..\..\demos\apartment-simulator\src\SceneManager.cpp" />
-    <ClCompile Include="..\..\demos\apartment-simulator\src\SceneObject.cpp" />
-    <ClCompile Include="..\..\demos\apartment-simulator\src\SoundSource.cpp" />
+    <ClInclude Include="..\..\demos\delta-basic-demo\include\delta_basic.h" />
+    <ClInclude Include="..\..\demos\delta-basic-demo\include\delta_basic_demo_application.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

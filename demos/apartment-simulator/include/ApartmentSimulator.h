@@ -1,6 +1,7 @@
 #ifndef APTSIM_APARTMENT_SIMULATOR_H
 #define APTSIM_APARTMENT_SIMULATOR_H
 
+#include "../../../include/yds_core.h"
 #include "../../../include/yds_device.h"
 #include "../../../include/yds_window_system.h"
 #include "../../../include/yds_input_system.h"
