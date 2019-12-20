@@ -50,12 +50,12 @@ public:
         m_array = NULL;
     }
 
-    TYPE *CreateArray(int nObjects) {
-        return ysAllocator::TypeAllocate<TYPE, ALIGNMENT>(nObjects, false);
+    TYPE *CreateArray(int nObjects, bool construct = true) {
+        return ysAllocator::TypeAllocate<TYPE, ALIGNMENT>(nObjects, construct);
     }
 
     void DestroyArray(TYPE *arr) {
-        if (ALIGNMENT == 1) {
+        /*if (ALIGNMENT == 1) {
             delete[] arr;
         }
         else {
@@ -64,7 +64,8 @@ public:
             }
 
             _aligned_free(arr);
-        }
+        }*/
+        ysAllocator::TypeFree(arr, m_nObjects, true, ALIGNMENT);
     }
 
     void Allocate(int nObjects) {
@@ -80,7 +81,7 @@ public:
             }
         }
 
-        m_array = CreateArray(nObjects);
+        m_array = CreateArray(nObjects, true);
         m_maxSize = nObjects;
         m_nObjects = nObjects;
     }
@@ -98,7 +99,7 @@ public:
             }
         }
 
-        m_array = CreateArray(nObjects);
+        m_array = CreateArray(nObjects, false);
         m_maxSize = nObjects;
         m_nObjects = 0;
     }

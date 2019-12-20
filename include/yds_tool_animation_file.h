@@ -25,21 +25,22 @@ public:
 
     // Software codes
     enum class EditorId {
-        EDITOR_UNDEFINED = 0x0,
+        UNDEFINED = 0x0,
 
-        EDITOR_3DS_MAX = 0x1,
-        EDITOR_DELTA_STUDIOS_COMPILER = 0x2,
+        AUTODESK_3DS_MAX = 0x1,
+        DELTA_STUDIOS_COMPILER = 0x2,
+        BLENDER = 0x3,
 
-        EDITOR_COUNT
+        COUNT = 0x3
     };
 
     // Compilation status
     enum class CompilationStatus {
-        COMPILATION_STATUS_UNDEFINED = 0x0,
-        COMPILATION_STATUS_RAW = 0x1,
-        COMPILATION_STATUS_COMPILED = 0x2,
+        UNDEFINED = 0x0,
+        RAW = 0x1,
+        COMPILED = 0x2,
 
-        COMPILATION_STATUS_COUNT
+        COUNT
     };
 
 public:
@@ -59,7 +60,6 @@ public:
 
 protected:
     // Protected Methods
-
     ysError ReadHeader(int fileVersion);
     ysError ReadString(char *dest);
 

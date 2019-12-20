@@ -173,45 +173,43 @@ void ysGeometryPreprocessing::SeparateBySmoothingGroups(ysObjectData *object) {
         }
     }
 
-    ysExpandingArray<ysExpandingArray<int, 4>, 16> leaders;
-
+    ysExpandingArray<ysExpandingArray<int, 4>, 16> groups;
     for (int vert = 0; vert < object->m_objectStatistics.NumVertices; vert++) {
-        leaders.Destroy();
-        leaders.Preallocate(16);
+        groups.Destroy();
+        groups.Preallocate(16);
 
         for (int face = 0; face < sharingCache[vert].GetNumObjects(); face++) {
-            int follows = -1;
-            for (int l = 0; l < leaders.GetNumObjects(); l++) {
-                bool good = false;
-                for (int i = 0; i < leaders[l].GetNumObjects(); i++) {
-                    if (SameSmoothingGroup(object, sharingCache[vert][face], leaders[l][i])) {
-                        good = true;
+            // Find which group this face belongs to
+            int faceGroup = -1;
+            for (int l = 0; l < groups.GetNumObjects(); l++) {
+                for (int i = 0; i < groups[l].GetNumObjects(); i++) {
+                    if (SameSmoothingGroup(object, sharingCache[vert][face], groups[l][i])) {
+                        faceGroup = l;
                         break;
                     }
                 }
 
-                if (good) {
-                    follows = l;
+                if (faceGroup != -1) {
                     break;
                 }
             }
 
-            if (follows == -1) leaders.New().New() = sharingCache[vert][face];
-            else leaders[follows].New() = sharingCache[vert][face];
+            if (faceGroup == -1) groups.New().New() = sharingCache[vert][face];
+            else groups[faceGroup].New() = sharingCache[vert][face];
         }
 
-        for (int l = 1; l < leaders.GetNumObjects(); l++) {
+        for (int l = 1; l < groups.GetNumObjects(); l++) {
             // Create a copy of the vertex
             int newVertex = ysGeometryPreprocessing::CreateVertexCopy(object, vert);
 
             // Adjust indicies for faces
-            for (int face = 0; face < leaders[l].GetNumObjects(); face++) {
+            for (int face = 0; face < groups[l].GetNumObjects(); face++) {
                 for (int facevert = 0; facevert < 3; facevert++) {
-                    if (object->m_vertexIndexSet[leaders[l][face]].indices[facevert] == vert) {
-                        assert(leaders[l][face] < object->m_objectStatistics.NumFaces);
-                        assert(leaders[l][face] >= 0);
+                    if (object->m_vertexIndexSet[groups[l][face]].indices[facevert] == vert) {
+                        assert(groups[l][face] < object->m_objectStatistics.NumFaces);
+                        assert(groups[l][face] >= 0);
 
-                        object->m_vertexIndexSet[leaders[l][face]].indices[facevert] = newVertex;
+                        object->m_vertexIndexSet[groups[l][face]].indices[facevert] = newVertex;
                     }
                 }
             }
@@ -387,7 +385,6 @@ ysVector *ysGeometryPreprocessing::CalculateHardTangents(ysObjectData *object, i
         T = ysMath::Sub(T, ysMath::Mul(ysMath::Dot(hardNormals[face], T), hardNormals[face]));
 
         // Add Handedness
-
         T = ysMath::Mask(T, ysMath::Constants::MaskOffW);
         tempTangents[face] = ysMath::Normalize(T);
 

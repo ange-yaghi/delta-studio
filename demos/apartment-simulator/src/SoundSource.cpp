@@ -44,10 +44,8 @@ void SoundSource::Update(ysVector &cameraPosition, ysVector &cameraDirection, ys
     volume *= (f_weight * 1.0f + (1 - f_weight) * 0.5f);
 
     if (m_falloff) {
-
         float falloff = 1 / (powf(2, std::max(d_s - m_falloffStart, 0.0f) / m_falloffDistance));
         volume *= falloff;
-
     }
 
     m_buffer->SetVolume(volume);

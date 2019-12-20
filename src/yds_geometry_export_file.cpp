@@ -83,7 +83,7 @@ void ysGeometryExportFile::WriteFloatToBuffer(float value, char **location) {
 }
 
 int ysGeometryExportFile::PackVertexData(ysObjectData *object, int maxBonesPerVertex, void **output) {
-	int packedSize=0;
+	int packedSize = 0;
 
 	// First Calculate Size
 

@@ -24,7 +24,7 @@ namespace dbasic {
         AssetManager();
         ~AssetManager();
 
-        ysError CompileSceneFile(const char *fname, float scale = 1.0f);
+        ysError CompileSceneFile(const char *fname, float scale = 1.0f, bool force = false);
         ysError LoadSceneFile(const char *fname);
 
         ysError CompileAnimationFile(const char *fname);

@@ -70,7 +70,7 @@ dbasic::ModelAsset *dbasic::AssetManager::GetModelAsset(const char *name) {
     return NULL;
 }
 
-ysError dbasic::AssetManager::CompileSceneFile(const char *fname, float scale) {
+ysError dbasic::AssetManager::CompileSceneFile(const char *fname, float scale, bool force) {
     YDS_ERROR_DECLARE("CompileSceneFile");
 
     char total_path[512];
@@ -83,7 +83,7 @@ ysError dbasic::AssetManager::CompileSceneFile(const char *fname, float scale) {
     strcpy_s(total_path, 512, fname);
     strcat_s(total_path, 512, ".ysce");
 
-    if (toolFile.GetCompilationStatus() == ysToolGeometryFile::COMPILATION_STATUS_COMPILED) {
+    if (toolFile.GetCompilationStatus() == ysToolGeometryFile::CompilationStatus::Compiled && !force) {
         // Check if the file actually exists
         struct stat buffer;
         if (stat(total_path, &buffer) == 0) {
@@ -142,7 +142,7 @@ ysError dbasic::AssetManager::CompileSceneFile(const char *fname, float scale) {
     delete[] objects;
 
     // Update compilation status
-    YDS_NESTED_ERROR_CALL(toolFile.UpdateCompilationStatus(ysToolGeometryFile::COMPILATION_STATUS_COMPILED));
+    YDS_NESTED_ERROR_CALL(toolFile.UpdateCompilationStatus(ysToolGeometryFile::CompilationStatus::Compiled));
 
     // Close files
     exportFile.Close();
@@ -379,7 +379,6 @@ dbasic::Skeleton *dbasic::AssetManager::BuildSkeleton(ModelAsset *model) {
     int nSceneObjects = GetSceneObjectCount();
     for (int i = 0; i < nSceneObjects; i++) {
         SceneObjectAsset *asset = GetSceneObject(i);
-
         if (GetRoot(asset) == rootBoneReference && asset->GetType() == ysObjectData::TYPE_BONE) {
             newSkeleton->NewBone();
         }
@@ -387,7 +386,6 @@ dbasic::Skeleton *dbasic::AssetManager::BuildSkeleton(ModelAsset *model) {
 
     for (int i = 0; i < nSceneObjects; i++) {
         SceneObjectAsset *asset = GetSceneObject(i);
-
         if (GetRoot(asset) == rootBoneReference && asset->GetType() == ysObjectData::TYPE_BONE) {
             boneReference = GetSceneObject(i);
 
@@ -407,22 +405,19 @@ dbasic::Skeleton *dbasic::AssetManager::BuildSkeleton(ModelAsset *model) {
     nBones = newSkeleton->GetBoneCount();
 
     for (int i = 0; i < nBones; i++) {
-        int parentIndex = -1;
-
         bone = newSkeleton->GetBone(i);
-
         boneReference = GetSceneObject(bone->GetAssetID());
-        parentIndex = boneReference->m_parent;
 
-        boneParentReference = (parentIndex == -1) ? NULL : GetSceneObject(parentIndex);
+        int parentIndex = boneReference->m_parent;
+        boneParentReference = (parentIndex == -1) ? nullptr : GetSceneObject(parentIndex);
 
-        if (boneParentReference != NULL) {
+        if (boneParentReference != nullptr) {
             if (boneParentReference->m_skeletonIndex != -1) {
                 bone->SetParent(newSkeleton->GetBone(boneParentReference->m_skeletonIndex));
             }
         }
         else {
-            bone->SetParent(NULL);
+            bone->SetParent(nullptr);
         }
     }
 
@@ -430,26 +425,26 @@ dbasic::Skeleton *dbasic::AssetManager::BuildSkeleton(ModelAsset *model) {
 }
 
 dbasic::RenderSkeleton *dbasic::AssetManager::BuildRenderSkeleton(RigidBody *root, SceneObjectAsset *rootBone) {
-    SceneObjectAsset *nodeReference = NULL;
-    SceneObjectAsset *nodeParentReference = NULL;
-    RenderNode *node = NULL;
+    SceneObjectAsset *nodeReference = nullptr;
+    SceneObjectAsset *nodeParentReference = nullptr;
+    RenderNode *node = nullptr;
 
     RenderSkeleton *newRenderSkeleton = m_renderSkeletons.NewGeneric<RenderSkeleton, 16>();
 
-    RenderNode *newNode = NULL;
+    RenderNode *newNode = nullptr;
     newNode = newRenderSkeleton->NewNode();
-    newNode->SetParent(NULL);
+    newNode->SetParent(nullptr);
     newNode->SetAssetID(rootBone->GetIndex());
     root->AddChild(&newNode->RigidBody);
     newNode->RigidBody.SetOrientation(ysMath::LoadVector(1.0f, 0.0f, 0.0f, 0.0f));
     newNode->RigidBody.SetPosition(ysMath::Constants::Zero);
-    newNode->SetModelAsset(NULL);
+    newNode->SetModelAsset(nullptr);
     newNode->SetName(rootBone->m_name);
 
     // Get the root bone
     SceneObjectAsset *rootBoneReference = rootBone;
 
-    ProcessRenderNode(rootBoneReference, newRenderSkeleton, NULL, newNode);
+    ProcessRenderNode(rootBoneReference, newRenderSkeleton, nullptr, newNode);
 
     return newRenderSkeleton;
 }

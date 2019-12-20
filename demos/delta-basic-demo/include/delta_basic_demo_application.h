@@ -13,11 +13,14 @@ namespace dbasic_demo {
         void Initialize(void *instance, ysContextObject::DEVICE_API api);
         void Run();
 
+        float m_currentAngle;
+
     protected:
         void Process();
         void Render();
 
         dbasic::DeltaEngine m_engine;
+        dbasic::AssetManager m_assetManager;
     };
 
 } /* namesapce dbasic_demo */

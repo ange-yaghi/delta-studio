@@ -17,7 +17,7 @@ public:
         char MaterialDataCheck;
         char SmoothingDataCheck;
 
-        int ObjectCount;
+        unsigned int ObjectCount;
     };
 
     struct ObjectInformation_000_002 {
@@ -57,6 +57,12 @@ public:
         ysVector3 Scale;
     };
 
+    struct ObjectStatistics_000_005 {
+        int NumUVChannels;
+        int NumVertices;
+        int NumFaces;
+    };
+
     // Keep track of allocations
     class Allocation : public ysDynamicArrayElement {
     public:
@@ -68,22 +74,23 @@ public:
     static const unsigned int MAGIC_NUMBER = 0x50F1A;
 
     // Software codes
-    enum EDITOR_ID {
-        EDITOR_UNDEFINED = 0x0,
+    enum class EditorId {
+        Undefined = 0x0,
 
-        EDITOR_3DS_MAX = 0x1,
-        EDITOR_DELTA_STUDIOS_COMPILER = 0x2,
+        Autodesk3dsMax = 0x1,
+        DeltaStudiosCompiler = 0x2,
+        Blender = 0x3,
 
-        EDITOR_COUNT
+        Count
     };
 
     // Compilation status
-    enum COMPILATION_STATUS {
-        COMPILATION_STATUS_UNDEFINED = 0x0,
-        COMPILATION_STATUS_RAW = 0x1,
-        COMPILATION_STATUS_COMPILED = 0x2,
+    enum class CompilationStatus {
+        Undefined = 0x0,
+        Raw = 0x1,
+        Compiled = 0x2,
 
-        COMPILATION_STATUS_COUNT
+        Count
     };
 
 public:
@@ -95,14 +102,14 @@ public:
 
     int GetFileVersion() const { return m_fileVersion; }
     int GetObjectCount() const;
-    EDITOR_ID GetLastEditor() const { return m_lastEditor; }
-    COMPILATION_STATUS GetCompilationStatus() const { return m_compilationStatus; }
+    EditorId GetLastEditor() const { return m_lastEditor; }
+    CompilationStatus GetCompilationStatus() const { return m_compilationStatus; }
 
     bool MaterialData() const;
     bool SmoothingData() const;
 
     ysError ReadObject(ysObjectData **object);
-    ysError UpdateCompilationStatus(COMPILATION_STATUS status);
+    ysError UpdateCompilationStatus(CompilationStatus status);
 
 protected:
     ysError ReadHeader(int fileVersion);
@@ -119,7 +126,6 @@ protected:
 
     template<typename Type>
     Type *Allocate(int count) {
-        //Type *ret = (Type *)malloc(sizeof(Type) * count);
         Type *ret = new Type[count];
         Allocation *track = m_allocationTracker.New();
         track->m_allocation = (void *)ret;
@@ -133,8 +139,8 @@ protected:
 protected:
     void *m_header;
     int m_fileVersion;
-    EDITOR_ID m_lastEditor;
-    COMPILATION_STATUS m_compilationStatus;
+    EditorId m_lastEditor;
+    CompilationStatus m_compilationStatus;
 
     // File
     std::fstream m_file;

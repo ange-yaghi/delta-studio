@@ -6,8 +6,8 @@ ysToolAnimationFile::ysToolAnimationFile() : ysObject("ysToolAnimationFile") {
     m_header = NULL;
     m_fileVersion = -1;
 
-    m_lastEditor = EditorId::EDITOR_UNDEFINED;
-    m_compilationStatus = CompilationStatus::COMPILATION_STATUS_UNDEFINED;
+    m_lastEditor = EditorId::UNDEFINED;
+    m_compilationStatus = CompilationStatus::UNDEFINED;
 }
 
 ysToolAnimationFile::~ysToolAnimationFile() {
@@ -23,7 +23,6 @@ ysError ysToolAnimationFile::Open(const char *fname) {
 
     // Read magic number
     unsigned int magicNumber = 0;
-
     m_file.read((char *)&magicNumber, sizeof(unsigned int));
 
     if (magicNumber != MAGIC_NUMBER) {
@@ -32,51 +31,40 @@ ysError ysToolAnimationFile::Open(const char *fname) {
     }
 
     // Read File Version
-    int fileVersion = -1;
+    unsigned int fileVersion = 0;
+    m_file.read((char *)&fileVersion, sizeof(unsigned int));
 
-    m_file.read((char *)&fileVersion, sizeof(int));
-
-    if (fileVersion < 0 || fileVersion > CURRENT_FILE_VERSION) {
+    if (fileVersion > CURRENT_FILE_VERSION) {
         m_file.close();
         return YDS_ERROR_RETURN(ysError::YDS_UNSUPPORTED_FILE_VERSION);
     }
 
     // Read Last Editor
-    if (fileVersion >= 0 && fileVersion <= 0) {
-        unsigned int lastEditor = 0x0;
-        m_file.read((char *)&lastEditor, sizeof(unsigned int));
+    unsigned int lastEditor = 0x0;
+    m_file.read((char *)&lastEditor, sizeof(unsigned int));
 
-        if (lastEditor >= (int)EditorId::EDITOR_COUNT) {
-            m_lastEditor = EditorId::EDITOR_UNDEFINED;
+    if (lastEditor >= (int)EditorId::COUNT) {
+        m_lastEditor = EditorId::UNDEFINED;
 
-            m_file.close();
-            return YDS_ERROR_RETURN(ysError::YDS_CORRUPTED_FILE);
-        }
-        else {
-            m_lastEditor = (EditorId)(lastEditor);
-        }
+        m_file.close();
+        return YDS_ERROR_RETURN(ysError::YDS_CORRUPTED_FILE);
     }
     else {
-        m_lastEditor = EditorId::EDITOR_UNDEFINED;
+        m_lastEditor = (EditorId)(lastEditor);
     }
 
     // Read compilation status
-    if (fileVersion >= 0 && fileVersion <= 0) {
-        unsigned int compilationStatus = 0x0;
-        m_file.read((char *)&compilationStatus, sizeof(unsigned int));
+    unsigned int compilationStatus = 0x0;
+    m_file.read((char *)&compilationStatus, sizeof(unsigned int));
 
-        if (compilationStatus >= (int)CompilationStatus::COMPILATION_STATUS_COUNT) {
-            m_compilationStatus = CompilationStatus::COMPILATION_STATUS_UNDEFINED;
+    if (compilationStatus >= (int)CompilationStatus::COUNT) {
+        m_compilationStatus = CompilationStatus::UNDEFINED;
 
-            m_file.close();
-            return YDS_ERROR_RETURN(ysError::YDS_CORRUPTED_FILE);
-        }
-        else {
-            m_compilationStatus = (CompilationStatus)compilationStatus;
-        }
+        m_file.close();
+        return YDS_ERROR_RETURN(ysError::YDS_CORRUPTED_FILE);
     }
     else {
-        m_compilationStatus = CompilationStatus::COMPILATION_STATUS_UNDEFINED;
+        m_compilationStatus = (CompilationStatus)compilationStatus;
     }
 
     YDS_NESTED_ERROR_CALL(ReadHeader(fileVersion));

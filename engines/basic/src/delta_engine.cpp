@@ -164,7 +164,7 @@ ysError dbasic::DeltaEngine::InitializeGeometry() {
         { { -1.0f, 1.0f, -1.0f, 1.0f },		{0.0f, 1.0f},	{0.0f, 0.0f, 1.0f, 0.0f} },
         { { 1.0f, 1.0f, -1.0f, 1.0f },		{1.0f, 1.0f},	{0.0f, 0.0f, 1.0f, 0.0f} },
         { { 1.0f, -1.0f, -1.0f, 1.0f },		{1.0f, 0.0f},	{0.0f, 0.0f, 1.0f, 0.0f} },
-        { { -1.0f, -1.0f, -1.0f, 1.0f },		{0.0f, 0.0f},	{0.0f, 0.0f, 1.0f, 0.0f} } };
+        { { -1.0f, -1.0f, -1.0f, 1.0f },    {0.0f, 0.0f},	{0.0f, 0.0f, 1.0f, 0.0f} } };
 
     unsigned short indices[] = {
         2, 1, 0,
@@ -470,7 +470,7 @@ ysError dbasic::DeltaEngine::DrawAxis(const int color[3], const ysVector &positi
     return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
 }
 
-ysError dbasic::DeltaEngine::DrawModel(ModelAsset *model, ysMatrix &transform, float scale, ysTexture *texture, int layer) {
+ysError dbasic::DeltaEngine::DrawModel(ModelAsset *model, const ysMatrix &transform, float scale, ysTexture *texture, int layer) {
     YDS_ERROR_DECLARE("DrawAxis");
 
     if (!m_shaderObjectVariablesSync) {
@@ -485,7 +485,7 @@ ysError dbasic::DeltaEngine::DrawModel(ModelAsset *model, ysMatrix &transform, f
         m_shaderObjectVariables.TexScale[0] = 1.0f;
         m_shaderObjectVariables.TexScale[1] = 1.0f;
 
-        m_shaderObjectVariables.ColorReplace = 0;
+        m_shaderObjectVariables.ColorReplace = 1;
         m_shaderObjectVariables.Lit = 1;
 
         //m_shaderObjectVariables.ColorReplace = 1;
