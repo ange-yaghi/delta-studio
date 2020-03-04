@@ -151,22 +151,22 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <OutDir>$(SolutionDir)\$(PlatformTarget)\$(Configuration)\</OutDir>
+    <OutDir>$(ProjectDir)\..\$(PlatformTarget)\$(Configuration)\</OutDir>
     <IntDir>$(PlatformTarget)\$(Configuration)\</IntDir>
     <IncludePath>$(ProjectDir)/../../dependencies/libraries/boost-filesystem/include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <OutDir>$(SolutionDir)\$(PlatformTarget)\$(Configuration)\</OutDir>
+    <OutDir>$(ProjectDir)\..\$(PlatformTarget)\$(Configuration)\</OutDir>
     <IntDir>$(PlatformTarget)\$(Configuration)\</IntDir>
     <IncludePath>$(ProjectDir)/../../dependencies/libraries/boost-filesystem/include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <OutDir>$(SolutionDir)\$(PlatformTarget)\$(Configuration)\</OutDir>
+    <OutDir>$(ProjectDir)\..\$(PlatformTarget)\$(Configuration)\</OutDir>
     <IntDir>$(PlatformTarget)\$(Configuration)\</IntDir>
     <IncludePath>$(ProjectDir)/../../dependencies/libraries/boost-filesystem/include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <OutDir>$(SolutionDir)\$(PlatformTarget)\$(Configuration)\</OutDir>
+    <OutDir>$(ProjectDir)\..\$(PlatformTarget)\$(Configuration)\</OutDir>
     <IntDir>$(PlatformTarget)\$(Configuration)\</IntDir>
     <IncludePath>$(ProjectDir)/../../dependencies/libraries/boost-filesystem/include;$(IncludePath)</IncludePath>
   </PropertyGroup>

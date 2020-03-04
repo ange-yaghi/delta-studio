@@ -71,22 +71,22 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LibraryPath>$(ProjectDir)/../$(PlatformTarget)/$(Configuration);$(ProjectDir)/../../dependencies/libraries/SDL/lib/$(PlatformTarget);$(ProjectDir)/../../dependencies\libraries\D3DX\lib\$(PlatformTarget);$(ProjectDir)/../../dependencies\libraries\DirectSound\lib\$(PlatformTarget);$(ProjectDir)/../../dependencies\libraries\DXGI\lib\$(PlatformTarget);$(ProjectDir)/../../dependencies\libraries\boost-filesystem\lib\$(PlatformTarget);$(LibraryPath)</LibraryPath>
-    <OutDir>$(SolutionDir)\$(PlatformTarget)\$(Configuration)\</OutDir>
+    <OutDir>$(ProjectDir)\..\$(PlatformTarget)\$(Configuration)\</OutDir>
     <IntDir>$(PlatformTarget)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LibraryPath>$(ProjectDir)/../$(PlatformTarget)/$(Configuration);$(ProjectDir)/../../dependencies/libraries/SDL/lib/$(PlatformTarget);$(ProjectDir)/../../dependencies\libraries\D3DX\lib\$(PlatformTarget);$(ProjectDir)/../../dependencies\libraries\DirectSound\lib\$(PlatformTarget);$(ProjectDir)/../../dependencies\libraries\DXGI\lib\$(PlatformTarget);$(ProjectDir)/../../dependencies\libraries\boost-filesystem\lib\$(PlatformTarget);$(LibraryPath)</LibraryPath>
-    <OutDir>$(SolutionDir)\$(PlatformTarget)\$(Configuration)\</OutDir>
+    <OutDir>$(ProjectDir)\..\$(PlatformTarget)\$(Configuration)\</OutDir>
     <IntDir>$(PlatformTarget)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LibraryPath>$(ProjectDir)/../$(PlatformTarget)/$(Configuration);$(ProjectDir)/../../dependencies/libraries/SDL/lib/$(PlatformTarget);$(ProjectDir)/../../dependencies\libraries\D3DX\lib\$(PlatformTarget);$(ProjectDir)/../../dependencies\libraries\DirectSound\lib\$(PlatformTarget);$(ProjectDir)/../../dependencies\libraries\DXGI\lib\$(PlatformTarget);$(ProjectDir)/../../dependencies\libraries\boost-filesystem\lib\$(PlatformTarget);$(LibraryPath)</LibraryPath>
-    <OutDir>$(SolutionDir)\$(PlatformTarget)\$(Configuration)\</OutDir>
+    <OutDir>$(ProjectDir)\..\$(PlatformTarget)\$(Configuration)\</OutDir>
     <IntDir>$(PlatformTarget)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LibraryPath>$(ProjectDir)/../$(PlatformTarget)/$(Configuration);$(ProjectDir)/../../dependencies/libraries/SDL/lib/$(PlatformTarget);$(ProjectDir)/../../dependencies\libraries\D3DX\lib\$(PlatformTarget);$(ProjectDir)/../../dependencies\libraries\DirectSound\lib\$(PlatformTarget);$(ProjectDir)/../../dependencies\libraries\DXGI\lib\$(PlatformTarget);$(ProjectDir)/../../dependencies\libraries\boost-filesystem\lib\$(PlatformTarget);$(LibraryPath)</LibraryPath>
-    <OutDir>$(SolutionDir)\$(PlatformTarget)\$(Configuration)\</OutDir>
+    <OutDir>$(ProjectDir)\..\$(PlatformTarget)\$(Configuration)\</OutDir>
     <IntDir>$(PlatformTarget)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">

@@ -261,7 +261,7 @@
     <LinkIncremental>true</LinkIncremental>
     <IncludePath>$(ProjectDir)/../../dependencies/libraries/SDL/include;$(ProjectDir)/../../dependencies/libraries/OpenGL/include;$(IncludePath);$(ProjectDir)/../../dependencies/libraries/DirectX/include;$(ProjectDir)/../../dependencies/libraries/D3DX/include</IncludePath>
     <SourcePath>$(SourcePath)</SourcePath>
-    <OutDir>$(SolutionDir)\$(PlatformTarget)\$(Configuration)\</OutDir>
+    <OutDir>$(ProjectDir)\..\$(PlatformTarget)\$(Configuration)\</OutDir>
     <IntDir>$(PlatformTarget)\$(Configuration)\</IntDir>
     <LibraryPath>$(DXSDK_DIR)Lib\x86;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
@@ -269,7 +269,7 @@
     <LinkIncremental>true</LinkIncremental>
     <IncludePath>$(ProjectDir)/../../dependencies/libraries/SDL/include;$(ProjectDir)/../../dependencies/libraries/OpenGL/include;$(IncludePath);$(ProjectDir)/../../dependencies/libraries/DirectX/include;$(ProjectDir)/../../dependencies/libraries/D3DX/include;$(ProjectDir)/../../dependencies/libraries/DirectX/include;$(ProjectDir)/../../dependencies/libraries/D3DX/include</IncludePath>
     <SourcePath>$(SourcePath)</SourcePath>
-    <OutDir>$(SolutionDir)\$(PlatformTarget)\$(Configuration)\</OutDir>
+    <OutDir>$(ProjectDir)\..\$(PlatformTarget)\$(Configuration)\</OutDir>
     <IntDir>$(PlatformTarget)\$(Configuration)\</IntDir>
     <LibraryPath>$(DXSDK_DIR)Lib\x64;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
@@ -277,7 +277,7 @@
     <LinkIncremental>false</LinkIncremental>
     <IncludePath>$(ProjectDir)/../../dependencies/libraries/SDL/include;$(ProjectDir)/../../dependencies/libraries/OpenGL/include;$(IncludePath);$(ProjectDir)/../../dependencies/libraries/DirectX/include;$(ProjectDir)/../../dependencies/libraries/D3DX/include</IncludePath>
     <SourcePath>$(SourcePath)</SourcePath>
-    <OutDir>$(SolutionDir)\$(PlatformTarget)\$(Configuration)\</OutDir>
+    <OutDir>$(ProjectDir)\..\$(PlatformTarget)\$(Configuration)\</OutDir>
     <IntDir>$(PlatformTarget)\$(Configuration)\</IntDir>
     <LibraryPath>$(DXSDK_DIR)Lib\x86;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
@@ -285,7 +285,7 @@
     <LinkIncremental>false</LinkIncremental>
     <IncludePath>$(ProjectDir)/../../dependencies/libraries/SDL/include;$(ProjectDir)/../../dependencies/libraries/OpenGL/include;$(IncludePath);$(ProjectDir)/../../dependencies/libraries/DirectX/include;$(ProjectDir)/../../dependencies/libraries/D3DX/include;$(ProjectDir)/../../dependencies/libraries/DirectX/include;$(ProjectDir)/../../dependencies/libraries/D3DX/include</IncludePath>
     <SourcePath>$(SourcePath)</SourcePath>
-    <OutDir>$(SolutionDir)\$(PlatformTarget)\$(Configuration)\</OutDir>
+    <OutDir>$(ProjectDir)\..\$(PlatformTarget)\$(Configuration)\</OutDir>
     <IntDir>$(PlatformTarget)\$(Configuration)\</IntDir>
     <LibraryPath>$(DXSDK_DIR)Lib\x64;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
