@@ -1,0 +1,384 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\include\yds_core.h" />
+    <ClInclude Include="..\..\include\yds_audio_buffer.h" />
+    <ClInclude Include="..\..\include\yds_audio_device.h" />
+    <ClInclude Include="..\..\include\yds_audio_file.h" />
+    <ClInclude Include="..\..\include\yds_audio_parameters.h" />
+    <ClInclude Include="..\..\include\yds_audio_streaming.h" />
+    <ClInclude Include="..\..\include\yds_audio_system.h" />
+    <ClInclude Include="..\..\include\yds_audio_system_object.h" />
+    <ClInclude Include="..\..\include\yds_base.h" />
+    <ClInclude Include="..\..\include\yds_context_object.h" />
+    <ClInclude Include="..\..\include\yds_d3d10_context.h" />
+    <ClInclude Include="..\..\include\yds_d3d10_device.h" />
+    <ClInclude Include="..\..\include\yds_d3d10_gpu_buffer.h" />
+    <ClInclude Include="..\..\include\yds_d3d10_input_layout.h" />
+    <ClInclude Include="..\..\include\yds_d3d10_render_target.h" />
+    <ClInclude Include="..\..\include\yds_d3d10_shader.h" />
+    <ClInclude Include="..\..\include\yds_d3d10_shader_program.h" />
+    <ClInclude Include="..\..\include\yds_d3d10_texture.h" />
+    <ClInclude Include="..\..\include\yds_d3d11_context.h" />
+    <ClInclude Include="..\..\include\yds_d3d11_device.h" />
+    <ClInclude Include="..\..\include\yds_d3d11_gpu_buffer.h" />
+    <ClInclude Include="..\..\include\yds_d3d11_input_layout.h" />
+    <ClInclude Include="..\..\include\yds_d3d11_render_target.h" />
+    <ClInclude Include="..\..\include\yds_d3d11_shader.h" />
+    <ClInclude Include="..\..\include\yds_d3d11_shader_program.h" />
+    <ClInclude Include="..\..\include\yds_d3d11_texture.h" />
+    <ClInclude Include="..\..\include\yds_depth_buffer.h" />
+    <ClInclude Include="..\..\include\yds_device.h" />
+    <ClInclude Include="..\..\include\yds_ds8_audio_buffer.h" />
+    <ClInclude Include="..\..\include\yds_ds8_device.h" />
+    <ClInclude Include="..\..\include\yds_ds8_system.h" />
+    <ClInclude Include="..\..\include\yds_dynamic_allocator.h" />
+    <ClInclude Include="..\..\include\yds_dynamic_array.h" />
+    <ClInclude Include="..\..\include\yds_dynamic_array_deprecated.h" />
+    <ClInclude Include="..\..\include\yds_error_codes.h" />
+    <ClInclude Include="..\..\include\yds_error_handler.h" />
+    <ClInclude Include="..\..\include\yds_error_system.h" />
+    <ClInclude Include="..\..\include\yds_expanding_array.h" />
+    <ClInclude Include="..\..\include\yds_file.h" />
+    <ClInclude Include="..\..\include\yds_file_logger.h" />
+    <ClInclude Include="..\..\include\yds_file_utilities.h" />
+    <ClInclude Include="..\..\include\yds_geometry_export_file.h" />
+    <ClInclude Include="..\..\include\yds_geometry_preprocessing.h" />
+    <ClInclude Include="..\..\include\yds_gpu_buffer.h" />
+    <ClInclude Include="..\..\include\yds_handle_array.h" />
+    <ClInclude Include="..\..\include\yds_input_device.h" />
+    <ClInclude Include="..\..\include\yds_input_layout.h" />
+    <ClInclude Include="..\..\include\yds_input_system.h" />
+    <ClInclude Include="..\..\include\yds_interchange_file_0_0.h" />
+    <ClInclude Include="..\..\include\yds_interchange_object.h" />
+    <ClInclude Include="..\..\include\yds_keyboard.h" />
+    <ClInclude Include="..\..\include\yds_key_maps.h" />
+    <ClInclude Include="..\..\include\yds_linked_list.h" />
+    <ClInclude Include="..\..\include\yds_logger.h" />
+    <ClInclude Include="..\..\include\yds_logger_output.h" />
+    <ClInclude Include="..\..\include\yds_math.h" />
+    <ClInclude Include="..\..\include\yds_allocator.h" />
+    <ClInclude Include="..\..\include\yds_memory_base.h" />
+    <ClInclude Include="..\..\include\yds_monitor.h" />
+    <ClInclude Include="..\..\include\yds_mouse.h" />
+    <ClInclude Include="..\..\include\yds_object_animation_data.h" />
+    <ClInclude Include="..\..\include\yds_object_data.h" />
+    <ClInclude Include="..\..\include\yds_opengl_context.h" />
+    <ClInclude Include="..\..\include\yds_opengl_device.h" />
+    <ClInclude Include="..\..\include\yds_opengl_gpu_buffer.h" />
+    <ClInclude Include="..\..\include\yds_opengl_input_layout.h" />
+    <ClInclude Include="..\..\include\yds_opengl_render_target.h" />
+    <ClInclude Include="..\..\include\yds_opengl_shader.h" />
+    <ClInclude Include="..\..\include\yds_opengl_shader_program.h" />
+    <ClInclude Include="..\..\include\yds_opengl_texture.h" />
+    <ClInclude Include="..\..\include\yds_opengl_windows_context.h" />
+    <ClInclude Include="..\..\include\yds_queue.h" />
+    <ClInclude Include="..\..\include\yds_registry.h" />
+    <ClInclude Include="..\..\include\yds_rendering_context.h" />
+    <ClInclude Include="..\..\include\yds_render_geometry_channel.h" />
+    <ClInclude Include="..\..\include\yds_render_geometry_format.h" />
+    <ClInclude Include="..\..\include\yds_render_target.h" />
+    <ClInclude Include="..\..\include\yds_shader.h" />
+    <ClInclude Include="..\..\include\yds_shader_constant_block.h" />
+    <ClInclude Include="..\..\include\yds_shader_program.h" />
+    <ClInclude Include="..\..\include\yds_stat.h" />
+    <ClInclude Include="..\..\include\yds_syntax.h" />
+    <ClInclude Include="..\..\include\yds_texture.h" />
+    <ClInclude Include="..\..\include\yds_time_tag_data.h" />
+    <ClInclude Include="..\..\include\yds_timing.h" />
+    <ClInclude Include="..\..\include\yds_tool_animation_file.h" />
+    <ClInclude Include="..\..\include\yds_tool_geometry_file.h" />
+    <ClInclude Include="..\..\include\yds_window.h" />
+    <ClInclude Include="..\..\include\yds_windows_audio_wave_file.h" />
+    <ClInclude Include="..\..\include\yds_windows_input_device.h" />
+    <ClInclude Include="..\..\include\yds_windows_input_system.h" />
+    <ClInclude Include="..\..\include\yds_windows_monitor.h" />
+    <ClInclude Include="..\..\include\yds_windows_window.h" />
+    <ClInclude Include="..\..\include\yds_windows_window_system.h" />
+    <ClInclude Include="..\..\include\yds_window_event_handler.h" />
+    <ClInclude Include="..\..\include\yds_window_system.h" />
+    <ClInclude Include="..\..\include\yds_window_system_object.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\src\yds_audio_buffer.cpp" />
+    <ClCompile Include="..\..\src\yds_audio_device.cpp" />
+    <ClCompile Include="..\..\src\yds_audio_file.cpp" />
+    <ClCompile Include="..\..\src\yds_audio_parameters.cpp" />
+    <ClCompile Include="..\..\src\yds_audio_streaming.cpp" />
+    <ClCompile Include="..\..\src\yds_audio_system.cpp" />
+    <ClCompile Include="..\..\src\yds_audio_system_object.cpp" />
+    <ClCompile Include="..\..\src\yds_base.cpp" />
+    <ClCompile Include="..\..\src\yds_context_object.cpp" />
+    <ClCompile Include="..\..\src\yds_d3d10_context.cpp" />
+    <ClCompile Include="..\..\src\yds_d3d10_device.cpp" />
+    <ClCompile Include="..\..\src\yds_d3d10_gpu_buffer.cpp" />
+    <ClCompile Include="..\..\src\yds_d3d10_input_layout.cpp" />
+    <ClCompile Include="..\..\src\yds_d3d10_render_target.cpp" />
+    <ClCompile Include="..\..\src\yds_d3d10_shader.cpp" />
+    <ClCompile Include="..\..\src\yds_d3d10_shader_program.cpp" />
+    <ClCompile Include="..\..\src\yds_d3d10_texture.cpp" />
+    <ClCompile Include="..\..\src\yds_d3d11_context.cpp" />
+    <ClCompile Include="..\..\src\yds_d3d11_device.cpp" />
+    <ClCompile Include="..\..\src\yds_d3d11_gpu_buffer.cpp" />
+    <ClCompile Include="..\..\src\yds_d3d11_input_layout.cpp" />
+    <ClCompile Include="..\..\src\yds_d3d11_render_target.cpp" />
+    <ClCompile Include="..\..\src\yds_d3d11_shader.cpp" />
+    <ClCompile Include="..\..\src\yds_d3d11_shader_program.cpp" />
+    <ClCompile Include="..\..\src\yds_d3d11_texture.cpp" />
+    <ClCompile Include="..\..\src\yds_depth_buffer.cpp" />
+    <ClCompile Include="..\..\src\yds_device.cpp" />
+    <ClCompile Include="..\..\src\yds_ds8_audio_buffer.cpp" />
+    <ClCompile Include="..\..\src\yds_ds8_device.cpp" />
+    <ClCompile Include="..\..\src\yds_ds8_system.cpp" />
+    <ClCompile Include="..\..\src\yds_dynamic_allocator.cpp" />
+    <ClCompile Include="..\..\src\yds_error_handler.cpp" />
+    <ClCompile Include="..\..\src\yds_error_system.cpp" />
+    <ClCompile Include="..\..\src\yds_file.cpp" />
+    <ClCompile Include="..\..\src\yds_file_logger.cpp" />
+    <ClCompile Include="..\..\src\yds_geometry_export_file.cpp" />
+    <ClCompile Include="..\..\src\yds_geometry_preprocessing.cpp" />
+    <ClCompile Include="..\..\src\yds_gpu_buffer.cpp" />
+    <ClCompile Include="..\..\src\yds_input_device.cpp" />
+    <ClCompile Include="..\..\src\yds_input_layout.cpp" />
+    <ClCompile Include="..\..\src\yds_input_system.cpp" />
+    <ClCompile Include="..\..\src\yds_interchange_file_0_0.cpp" />
+    <ClCompile Include="..\..\src\yds_interchange_object.cpp" />
+    <ClCompile Include="..\..\src\yds_keyboard.cpp" />
+    <ClCompile Include="..\..\src\yds_linked_list.cpp" />
+    <ClCompile Include="..\..\src\yds_logger.cpp" />
+    <ClCompile Include="..\..\src\yds_logger_output.cpp" />
+    <ClCompile Include="..\..\src\yds_math.cpp" />
+    <ClCompile Include="..\..\src\yds_memory_base.cpp" />
+    <ClCompile Include="..\..\src\yds_monitor.cpp" />
+    <ClCompile Include="..\..\src\yds_mouse.cpp" />
+    <ClCompile Include="..\..\src\yds_object_animation_data.cpp" />
+    <ClCompile Include="..\..\src\yds_object_data.cpp" />
+    <ClCompile Include="..\..\src\yds_opengl_context.cpp" />
+    <ClCompile Include="..\..\src\yds_opengl_device.cpp" />
+    <ClCompile Include="..\..\src\yds_opengl_gpu_buffer.cpp" />
+    <ClCompile Include="..\..\src\yds_opengl_input_layout.cpp" />
+    <ClCompile Include="..\..\src\yds_opengl_render_target.cpp" />
+    <ClCompile Include="..\..\src\yds_opengl_shader.cpp" />
+    <ClCompile Include="..\..\src\yds_opengl_shader_program.cpp" />
+    <ClCompile Include="..\..\src\yds_opengl_texture.cpp" />
+    <ClCompile Include="..\..\src\yds_opengl_windows_context.cpp" />
+    <ClCompile Include="..\..\src\yds_rendering_context.cpp" />
+    <ClCompile Include="..\..\src\yds_render_geometry_channel.cpp" />
+    <ClCompile Include="..\..\src\yds_render_geometry_format.cpp" />
+    <ClCompile Include="..\..\src\yds_render_target.cpp" />
+    <ClCompile Include="..\..\src\yds_shader.cpp" />
+    <ClCompile Include="..\..\src\yds_shader_program.cpp" />
+    <ClCompile Include="..\..\src\yds_stat.cpp" />
+    <ClCompile Include="..\..\src\yds_texture.cpp" />
+    <ClCompile Include="..\..\src\yds_time_tag_data.cpp" />
+    <ClCompile Include="..\..\src\yds_timing.cpp" />
+    <ClCompile Include="..\..\src\yds_tool_animation_file.cpp" />
+    <ClCompile Include="..\..\src\yds_tool_geometry_file.cpp" />
+    <ClCompile Include="..\..\src\yds_window.cpp" />
+    <ClCompile Include="..\..\src\yds_windows_audio_wave_file.cpp" />
+    <ClCompile Include="..\..\src\yds_windows_input_device.cpp" />
+    <ClCompile Include="..\..\src\yds_windows_input_system.cpp" />
+    <ClCompile Include="..\..\src\yds_windows_key_maps.cpp" />
+    <ClCompile Include="..\..\src\yds_windows_monitor.cpp" />
+    <ClCompile Include="..\..\src\yds_windows_window.cpp" />
+    <ClCompile Include="..\..\src\yds_windows_window_system.cpp" />
+    <ClCompile Include="..\..\src\yds_window_event_handler.cpp" />
+    <ClCompile Include="..\..\src\yds_window_system.cpp" />
+    <ClCompile Include="..\..\src\yds_window_system_object.cpp" />
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>15.0</VCProjectVersion>
+    <ProjectGuid>{6DB2FA44-5C75-431B-85F5-BAA11D6EF583}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>emptyproject</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <ProjectName>delta-core</ProjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+    <IncludePath>$(ProjectDir)/../../dependencies/libraries/SDL/include;$(ProjectDir)/../../dependencies/libraries/OpenGL/include;$(IncludePath);$(ProjectDir)/../../dependencies/libraries/DirectX/include;$(ProjectDir)/../../dependencies/libraries/D3DX/include</IncludePath>
+    <SourcePath>$(SourcePath)</SourcePath>
+    <OutDir>$(ProjectDir)\..\$(PlatformTarget)\$(Configuration)\</OutDir>
+    <IntDir>$(PlatformTarget)\$(Configuration)\</IntDir>
+    <LibraryPath>$(DXSDK_DIR)Lib\x86;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <LinkIncremental>true</LinkIncremental>
+    <IncludePath>$(ProjectDir)/../../dependencies/libraries/SDL/include;$(ProjectDir)/../../dependencies/libraries/OpenGL/include;$(IncludePath);$(ProjectDir)/../../dependencies/libraries/DirectX/include;$(ProjectDir)/../../dependencies/libraries/D3DX/include;$(ProjectDir)/../../dependencies/libraries/DirectX/include;$(ProjectDir)/../../dependencies/libraries/D3DX/include</IncludePath>
+    <SourcePath>$(SourcePath)</SourcePath>
+    <OutDir>$(ProjectDir)\..\$(PlatformTarget)\$(Configuration)\</OutDir>
+    <IntDir>$(PlatformTarget)\$(Configuration)\</IntDir>
+    <LibraryPath>$(DXSDK_DIR)Lib\x64;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+    <IncludePath>$(ProjectDir)/../../dependencies/libraries/SDL/include;$(ProjectDir)/../../dependencies/libraries/OpenGL/include;$(IncludePath);$(ProjectDir)/../../dependencies/libraries/DirectX/include;$(ProjectDir)/../../dependencies/libraries/D3DX/include</IncludePath>
+    <SourcePath>$(SourcePath)</SourcePath>
+    <OutDir>$(ProjectDir)\..\$(PlatformTarget)\$(Configuration)\</OutDir>
+    <IntDir>$(PlatformTarget)\$(Configuration)\</IntDir>
+    <LibraryPath>$(DXSDK_DIR)Lib\x86;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <LinkIncremental>false</LinkIncremental>
+    <IncludePath>$(ProjectDir)/../../dependencies/libraries/SDL/include;$(ProjectDir)/../../dependencies/libraries/OpenGL/include;$(IncludePath);$(ProjectDir)/../../dependencies/libraries/DirectX/include;$(ProjectDir)/../../dependencies/libraries/D3DX/include;$(ProjectDir)/../../dependencies/libraries/DirectX/include;$(ProjectDir)/../../dependencies/libraries/D3DX/include</IncludePath>
+    <SourcePath>$(SourcePath)</SourcePath>
+    <OutDir>$(ProjectDir)\..\$(PlatformTarget)\$(Configuration)\</OutDir>
+    <IntDir>$(PlatformTarget)\$(Configuration)\</IntDir>
+    <LibraryPath>$(DXSDK_DIR)Lib\x64;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+    <PostBuildEvent>
+      <Command>py $(ProjectDir)\..\..\scripts\increment_build_version.py
+py $(ProjectDir)\..\..\scripts\copy_dlls.py $(PlatformTarget) $(Configuration)
+</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>OpenGL32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+    <PostBuildEvent>
+      <Command>py $(ProjectDir)\..\..\scripts\increment_build_version.py
+py $(ProjectDir)\..\..\scripts\copy_dlls.py $(PlatformTarget) $(Configuration)
+</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+    <PostBuildEvent>
+      <Command>py $(ProjectDir)\..\..\scripts\increment_build_version.py
+py $(ProjectDir)\..\..\scripts\copy_dlls.py $(PlatformTarget) $(Configuration)
+</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+    <PostBuildEvent>
+      <Command>py $(ProjectDir)\..\..\scripts\increment_build_version.py
+py $(ProjectDir)\..\..\scripts\copy_dlls.py $(PlatformTarget) $(Configuration)
+</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
