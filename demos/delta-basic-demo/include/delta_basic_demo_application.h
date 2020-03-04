@@ -21,6 +21,8 @@ namespace dbasic_demo {
 
         dbasic::DeltaEngine m_engine;
         dbasic::AssetManager m_assetManager;
+
+        ysTexture *m_demoTexture;
     };
 
 } /* namesapce dbasic_demo */

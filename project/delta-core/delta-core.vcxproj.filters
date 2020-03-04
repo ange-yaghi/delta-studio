@@ -34,6 +34,12 @@
     <Filter Include="Header Files\interface">
       <UniqueIdentifier>{7df68994-4c7c-4a1c-acfd-ee5313319a93}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\assets">
+      <UniqueIdentifier>{be522536-859a-4339-97c6-853ccb893c0d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\assets">
+      <UniqueIdentifier>{9b3bbec7-2f7a-4ddb-b1db-419c7d5be205}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\include\yds_d3d10_context.h">
@@ -318,6 +324,15 @@
     <ClInclude Include="..\..\include\yds_allocator.h">
       <Filter>Header Files\memory-management</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\include\yds_file_utilities.h">
+      <Filter>Header Files\assets</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\yds_interchange_file_0_0.h">
+      <Filter>Header Files\assets</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\yds_interchange_object.h">
+      <Filter>Header Files\assets</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\yds_audio_buffer.cpp">
@@ -568,6 +583,12 @@
     </ClCompile>
     <ClCompile Include="..\..\src\yds_windows_window_system.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\yds_interchange_file_0_0.cpp">
+      <Filter>Source Files\assets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\yds_interchange_object.cpp">
+      <Filter>Source Files\assets</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

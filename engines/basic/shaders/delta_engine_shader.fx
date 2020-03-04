@@ -136,7 +136,7 @@ float4 PS(VS_OUTPUT input) : SV_Target {
 		return float4(txDiffuse.Sample( samLinear, input.TexCoord ).rgba * MulCol);
 	}
 	else {
-		return float4((input.Normal + float3(1.0, 1.0, 1.0))/2.0, 1.0);
+		//return float4((input.Normal + float3(1.0, 1.0, 1.0))/2.0, 1.0);
 		return MulCol;
 	}
 }

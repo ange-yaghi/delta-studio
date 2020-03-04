@@ -88,6 +88,9 @@
     <Filter Include="Header Files\interface">
       <UniqueIdentifier>{f750dd23-d5fe-47b0-99bc-aa16d3e892c9}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\utilities">
+      <UniqueIdentifier>{d88bd946-640d-4f7e-bcae-2bdb7529eaa3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\engines\basic\include\animation.h">
@@ -171,9 +174,6 @@
     <ClInclude Include="..\..\engines\basic\include\grid_partition_system.h">
       <Filter>Header Files\physics</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\engines\basic\include\console.h">
-      <Filter>Header Files\utilities</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\engines\basic\include\character.h">
       <Filter>Header Files\animation</Filter>
     </ClInclude>
@@ -203,6 +203,15 @@
     </ClInclude>
     <ClInclude Include="..\..\engines\basic\include\delta_basic_engine.h">
       <Filter>Header Files\interface</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\engines\basic\include\path.h">
+      <Filter>Header Files\utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\engines\basic\include\console.h">
+      <Filter>Header Files\ui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\engines\basic\include\os_utilities.h">
+      <Filter>Header Files\utilities</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -310,6 +319,12 @@
     </ClCompile>
     <ClCompile Include="..\..\engines\basic\src\collision_primitives.cpp">
       <Filter>Source Files\physics\collision-detection</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\engines\basic\src\path.cpp">
+      <Filter>Source Files\utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\engines\basic\src\os_utilities.cpp">
+      <Filter>Source Files\utilities</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

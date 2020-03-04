@@ -3,6 +3,8 @@
 
 #include "delta_engine.h"
 #include "asset_manager.h"
+#include "path.h"
+#include "os_utilities.h"
 
 #pragma comment(lib, "delta-basic-engine.lib")
 

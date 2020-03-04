@@ -1,7 +1,8 @@
-#include "..\include\delta_basic_demo_application.h"
+#include "../include/delta_basic_demo_application.h"
 
 dbasic_demo::DeltaBasicDemoApplication::DeltaBasicDemoApplication() {
-    /* void */
+    m_currentAngle = 0.0f;
+    m_demoTexture = nullptr;
 }
 
 dbasic_demo::DeltaBasicDemoApplication::~DeltaBasicDemoApplication() {
@@ -16,11 +17,13 @@ void dbasic_demo::DeltaBasicDemoApplication::Initialize(void *instance, ysContex
         instance,
         api,
         "../../engines/basic/shaders/"); // TODO: path should be relative to exe
-    m_engine.SetClearColor(121, 149, 164);
+    m_engine.SetClearColor(0x34, 0x98, 0xdb);
 
     m_assetManager.SetEngine(&m_engine);
     m_assetManager.CompileSceneFile("../../workspace/addon_dev", 1.0f, true);
     m_assetManager.LoadSceneFile("../../workspace/addon_dev");
+    
+    m_engine.LoadTexture(&m_demoTexture, "../../demos/delta-basic-demo/assets/chicken.png");
 
     m_currentAngle = 0.0f;
 }
@@ -33,13 +36,22 @@ void dbasic_demo::DeltaBasicDemoApplication::Render() {
     m_engine.SetCameraPosition(0.0f, 0.0f);
     m_engine.SetCameraAltitude(10.0f);
 
-    m_currentAngle += 0.1f;
+    m_currentAngle += 0.5f;
     if (m_currentAngle > 360.0f) m_currentAngle -= 360.0f;
 
-    m_engine.DrawModel(m_assetManager.GetModelAsset(0), ysMath::RotationTransform(ysMath::Constants::XAxis, m_currentAngle * ysMath::Constants::PI / 180.0f), 1.0f, nullptr);
+    m_engine.SetMultiplyColor(ysVector4(0xe7 / 255.0f, 0x4c / 255.0f, 0x3c / 255.0f, 1.0f));
+    ysMatrix rotation = ysMath::RotationTransform(ysMath::Constants::XAxis, m_currentAngle * ysMath::Constants::PI / 180.0f);
+    ysMatrix translation = ysMath::TranslationTransform(ysMath::LoadVector(3.0f, 0.0f, 0.0f));
+    m_engine.DrawModel(m_assetManager.GetModelAsset(0), ysMath::MatMult(rotation, translation), 1.0f, nullptr);
 
-    int color[] = { 255, 255, 255 };
-    //m_engine.DrawBox(color, 15.0f, 2.5f);
+    int color[] = { 0xf1, 0xc4, 0x0f };
+    m_engine.SetObjectTransform(ysMath::LoadIdentity());
+    m_engine.DrawBox(color, 2.5f, 2.5f);
+
+    m_engine.SetMultiplyColor(ysVector4(1.0f, 1.0f, 1.0f, 1.0f));
+    translation = ysMath::TranslationTransform(ysMath::LoadVector(-3.0f, 0.0f, 0.0f));
+    m_engine.SetObjectTransform(translation);
+    m_engine.DrawImage(m_demoTexture, 0, (float)m_demoTexture->GetWidth() / m_demoTexture->GetHeight());
 }
 
 void dbasic_demo::DeltaBasicDemoApplication::Run() {

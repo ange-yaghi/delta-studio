@@ -100,7 +100,7 @@ ysError dbasic::DeltaEngine::CreateGameWindow(const char *title, void *instance,
     // Initialize Geometry
     YDS_NESTED_ERROR_CALL(InitializeGeometry());
 
-    // Initialzie the console
+    // Initialize the console
     m_console.SetEngine(this);
     YDS_NESTED_ERROR_CALL(m_console.Initialize());
 
@@ -296,9 +296,14 @@ void dbasic::DeltaEngine::SetWindowSize(int width, int height) {
 }
 
 void dbasic::DeltaEngine::SetClearColor(int r, int g, int b) {
-    m_clearColor[0] = r / 255.0f;
-    m_clearColor[1] = g / 255.0f;
-    m_clearColor[2] = b / 255.0f;
+    float fr = r / 255.0f;
+    float fg = g / 255.0f;
+    float fb = b / 255.0f;
+
+    m_clearColor[0] = fr; // 1.055f * std::pow(fr, 1 / 2.4f) - 0.055f;
+    m_clearColor[1] = fg; // 1.055f * std::pow(fg, 1 / 2.4f) - 0.055f;
+    m_clearColor[2] = fb; // 1.055f * std::pow(fb, 1 / 2.4f) - 0.055f;
+    m_clearColor[3] = 1.0f;
 }
 
 bool dbasic::DeltaEngine::IsKeyDown(ysKeyboard::KEY_CODE key) {
@@ -568,7 +573,7 @@ ysError dbasic::DeltaEngine::ExecuteDrawQueue(DRAW_TARGET target) {
     }
 
     for (int i = 0; i < MAX_LAYERS; i++) {
-        int objectsAtLayer;
+        int objectsAtLayer = 0;
 
         if (target == DRAW_TARGET_MAIN) objectsAtLayer = m_drawQueue[i].GetNumObjects();
         else if (target == DRAW_TARGET_GUI) objectsAtLayer = m_drawQueueGui[i].GetNumObjects();

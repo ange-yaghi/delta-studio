@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -59,6 +59,7 @@
     <ClInclude Include="..\..\include\yds_expanding_array.h" />
     <ClInclude Include="..\..\include\yds_file.h" />
     <ClInclude Include="..\..\include\yds_file_logger.h" />
+    <ClInclude Include="..\..\include\yds_file_utilities.h" />
     <ClInclude Include="..\..\include\yds_geometry_export_file.h" />
     <ClInclude Include="..\..\include\yds_geometry_preprocessing.h" />
     <ClInclude Include="..\..\include\yds_gpu_buffer.h" />
@@ -66,6 +67,8 @@
     <ClInclude Include="..\..\include\yds_input_device.h" />
     <ClInclude Include="..\..\include\yds_input_layout.h" />
     <ClInclude Include="..\..\include\yds_input_system.h" />
+    <ClInclude Include="..\..\include\yds_interchange_file_0_0.h" />
+    <ClInclude Include="..\..\include\yds_interchange_object.h" />
     <ClInclude Include="..\..\include\yds_keyboard.h" />
     <ClInclude Include="..\..\include\yds_key_maps.h" />
     <ClInclude Include="..\..\include\yds_linked_list.h" />
@@ -156,6 +159,8 @@
     <ClCompile Include="..\..\src\yds_input_device.cpp" />
     <ClCompile Include="..\..\src\yds_input_layout.cpp" />
     <ClCompile Include="..\..\src\yds_input_system.cpp" />
+    <ClCompile Include="..\..\src\yds_interchange_file_0_0.cpp" />
+    <ClCompile Include="..\..\src\yds_interchange_object.cpp" />
     <ClCompile Include="..\..\src\yds_keyboard.cpp" />
     <ClCompile Include="..\..\src\yds_linked_list.cpp" />
     <ClCompile Include="..\..\src\yds_logger.cpp" />

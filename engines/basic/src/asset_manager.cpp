@@ -112,7 +112,7 @@ ysError dbasic::AssetManager::CompileSceneFile(const char *fname, float scale, b
         if (objects[i]->m_objectInformation.ObjectType == ysObjectData::TYPE_GEOMETRY) {
             ysGeometryPreprocessing::ResolveSmoothingGroupAmbiguity(objects[i]);
             ysGeometryPreprocessing::CreateAutomaticSmoothingGroups(objects[i]);
-            ysGeometryPreprocessing::SeparateBySmoothingGroups(objects[i]);;
+            ysGeometryPreprocessing::SeparateBySmoothingGroups(objects[i]);
             ysGeometryPreprocessing::CalculateNormals(objects[i]);
 
             if ((material != NULL) && material->UsesNormalMap())

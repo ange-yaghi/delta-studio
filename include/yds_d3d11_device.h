@@ -96,6 +96,9 @@ protected:
 
     IDXGIFactory *m_DXGIFactory;
 
+    int m_multisampleCount;
+    int m_multisampleQuality;
+
 protected:
     // Platform specific functionality
     ysError CreateD3D11DepthBuffer(ID3D11DepthStencilView **newDepthStencil, int width, int height, int count, int quality);
