@@ -5,6 +5,10 @@
 
 #include "keyframe.h"
 
+namespace dphysics {
+    class RigidBody;
+} /* namspace dphysics */
+
 namespace dbasic {
 
     class AnimationObjectController : public ysObject {
@@ -12,8 +16,8 @@ namespace dbasic {
         AnimationObjectController();
         ~AnimationObjectController();
 
-        RigidBody *GetTarget() { return m_target; }
-        void SetTarget(RigidBody *target) { m_target = target; }
+        dphysics::RigidBody *GetTarget() { return m_target; }
+        void SetTarget(dphysics::RigidBody *target) { m_target = target; }
 
         Keyframe *AppendKeyframe() { return &m_timeline.New(); }
 
@@ -27,7 +31,7 @@ namespace dbasic {
         int m_frame;
         float m_framerate;
 
-        RigidBody *m_target;
+        dphysics::RigidBody *m_target;
         ysExpandingArray<Keyframe, 0, 16> m_timeline;
     };
 

@@ -46,10 +46,10 @@ namespace dbasic {
 
         Skeleton *BuildSkeleton(ModelAsset *model);
 
-        RenderSkeleton *BuildRenderSkeleton(RigidBody *root, SceneObjectAsset *rootBone);
+        RenderSkeleton *BuildRenderSkeleton(dphysics::RigidBody *root, SceneObjectAsset *rootBone);
         void ProcessRenderNode(SceneObjectAsset *asset, RenderSkeleton *skeleton, RenderNode *parent, RenderNode *top);
 
-        AnimationObjectController *BuildAnimationObjectController(const char *name, RigidBody *rigidBody);
+        AnimationObjectController *BuildAnimationObjectController(const char *name, dphysics::RigidBody *rigidBody);
 
         void SetEngine(DeltaEngine *engine) { m_engine = engine; }
 

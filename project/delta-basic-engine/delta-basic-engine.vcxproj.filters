@@ -16,9 +16,6 @@
     <Filter Include="Header Files\animation">
       <UniqueIdentifier>{493c4a7c-ee3c-450c-a74b-5a93a52e00de}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\physics">
-      <UniqueIdentifier>{b4103181-50cd-43f3-8c13-f25dcb8bca8d}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\core">
       <UniqueIdentifier>{ea2a2cbd-42ee-4c47-8ca4-781fba9c66f7}</UniqueIdentifier>
     </Filter>
@@ -33,12 +30,6 @@
     </Filter>
     <Filter Include="Header Files\materials">
       <UniqueIdentifier>{c6536ace-214b-44f6-9b0e-417974880d89}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\physics">
-      <UniqueIdentifier>{15de34c4-2e01-4000-82ed-39e48328af32}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\physics\collision-detection">
-      <UniqueIdentifier>{589dc4ab-947d-42ec-a96f-b29f6dd3eb7b}</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Files\rendering">
       <UniqueIdentifier>{7f0930d4-c8d6-44ee-8a05-b53712bed451}</UniqueIdentifier>
@@ -76,20 +67,14 @@
     <Filter Include="Source Files\materials">
       <UniqueIdentifier>{879be7f0-79e4-41a4-acfa-3aa764944f17}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\physics\particles">
-      <UniqueIdentifier>{fcd7e16d-499b-4e8b-8c85-466be453ce0b}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\physics\particles">
-      <UniqueIdentifier>{30dd3662-4094-4575-8ddc-a89bf88bf4a8}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\physics\collision-detection">
-      <UniqueIdentifier>{ffb52655-421c-4c85-84b6-5c527547c862}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\interface">
       <UniqueIdentifier>{f750dd23-d5fe-47b0-99bc-aa16d3e892c9}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source Files\utilities">
       <UniqueIdentifier>{d88bd946-640d-4f7e-bcae-2bdb7529eaa3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\physics">
+      <UniqueIdentifier>{c4811fa8-4966-4505-b6a7-1740fa6a3107}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -123,24 +108,6 @@
     <ClInclude Include="..\..\engines\basic\include\model_asset.h">
       <Filter>Header Files\assets</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\engines\basic\include\rigid_body.h">
-      <Filter>Header Files\physics</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\engines\basic\include\rigid_body_system.h">
-      <Filter>Header Files\physics</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\engines\basic\include\collision_geometry.h">
-      <Filter>Header Files\physics\collision-detection</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\engines\basic\include\collision_object.h">
-      <Filter>Header Files\physics\collision-detection</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\engines\basic\include\collision_primitives.h">
-      <Filter>Header Files\physics\collision-detection</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\engines\basic\include\collision_detector.h">
-      <Filter>Header Files\physics\collision-detection</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\engines\basic\include\render_node.h">
       <Filter>Header Files\rendering</Filter>
     </ClInclude>
@@ -165,15 +132,6 @@
     <ClInclude Include="..\..\engines\basic\include\shader_controls.h">
       <Filter>Header Files\shaders</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\engines\basic\include\mass_spring_system.h">
-      <Filter>Header Files\physics</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\engines\basic\include\rigid_body_link.h">
-      <Filter>Header Files\physics</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\engines\basic\include\grid_partition_system.h">
-      <Filter>Header Files\physics</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\engines\basic\include\character.h">
       <Filter>Header Files\animation</Filter>
     </ClInclude>
@@ -183,23 +141,8 @@
     <ClInclude Include="..\..\engines\basic\include\color_scale.h">
       <Filter>Header Files\ui</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\engines\basic\include\expanding_spring.h">
-      <Filter>Header Files\physics</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\engines\basic\include\particle.h">
-      <Filter>Header Files\physics</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\engines\basic\include\hinge_link.h">
-      <Filter>Header Files\physics</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\engines\basic\include\particle_system.h">
-      <Filter>Header Files\physics\particles</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\engines\basic\include\pose.h">
       <Filter>Header Files\animation\skinning</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\engines\basic\include\spring_link.h">
-      <Filter>Header Files\physics</Filter>
     </ClInclude>
     <ClInclude Include="..\..\engines\basic\include\delta_basic_engine.h">
       <Filter>Header Files\interface</Filter>
@@ -212,6 +155,9 @@
     </ClInclude>
     <ClInclude Include="..\..\engines\basic\include\os_utilities.h">
       <Filter>Header Files\utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\engines\basic\include\delta_physics.h">
+      <Filter>Header Files\physics</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -236,17 +182,8 @@
     <ClCompile Include="..\..\engines\basic\src\model_asset.cpp">
       <Filter>Source Files\assets</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\engines\basic\src\rigid_body.cpp">
-      <Filter>Source Files\physics</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\engines\basic\src\render_node.cpp">
       <Filter>Source Files\rendering</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\engines\basic\src\rigid_body_link.cpp">
-      <Filter>Source Files\physics</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\engines\basic\src\grid_partition_system.cpp">
-      <Filter>Source Files\physics</Filter>
     </ClCompile>
     <ClCompile Include="..\..\engines\basic\src\bone.cpp">
       <Filter>Source Files\animation\skinning</Filter>
@@ -269,26 +206,11 @@
     <ClCompile Include="..\..\engines\basic\src\window_handler.cpp">
       <Filter>Source Files\os</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\engines\basic\src\expanding_spring.cpp">
-      <Filter>Source Files\physics</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\engines\basic\src\hinge_link.cpp">
-      <Filter>Source Files\physics</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\engines\basic\src\keyframe.cpp">
       <Filter>Source Files\animation</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\engines\basic\src\mass_spring_system.cpp">
-      <Filter>Source Files\physics</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\engines\basic\src\material.cpp">
       <Filter>Source Files\materials</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\engines\basic\src\particle.cpp">
-      <Filter>Source Files\physics\particles</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\engines\basic\src\particle_system.cpp">
-      <Filter>Source Files\physics\particles</Filter>
     </ClCompile>
     <ClCompile Include="..\..\engines\basic\src\pose.cpp">
       <Filter>Source Files\animation\skinning</Filter>
@@ -296,29 +218,11 @@
     <ClCompile Include="..\..\engines\basic\src\render_skeleton.cpp">
       <Filter>Source Files\animation\skinning</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\engines\basic\src\rigid_body_system.cpp">
-      <Filter>Source Files\physics</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\engines\basic\src\scene_object_asset.cpp">
       <Filter>Source Files\assets</Filter>
     </ClCompile>
     <ClCompile Include="..\..\engines\basic\src\skeleton.cpp">
       <Filter>Source Files\animation\skinning</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\engines\basic\src\spring_link.cpp">
-      <Filter>Source Files\physics</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\engines\basic\src\collision_detector.cpp">
-      <Filter>Source Files\physics\collision-detection</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\engines\basic\src\collision_geometry.cpp">
-      <Filter>Source Files\physics\collision-detection</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\engines\basic\src\collision_object.cpp">
-      <Filter>Source Files\physics\collision-detection</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\engines\basic\src\collision_primitives.cpp">
-      <Filter>Source Files\physics\collision-detection</Filter>
     </ClCompile>
     <ClCompile Include="..\..\engines\basic\src\path.cpp">
       <Filter>Source Files\utilities</Filter>

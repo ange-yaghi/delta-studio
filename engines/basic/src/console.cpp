@@ -122,7 +122,6 @@ ysError dbasic::Console::UpdateDisplay() {
     m_engine->GetDevice()->Draw(2 * 12000, 0, 0);
 
     return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
-
 }
 
 void dbasic::Console::MoveToLocation(const GuiPoint &location) {

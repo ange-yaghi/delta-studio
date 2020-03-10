@@ -3,7 +3,7 @@
 
 #include "delta_core.h"
 
-#include "rigid_body.h"
+#include "../../../physics/include/rigid_body.h"
 
 namespace dbasic {
 
@@ -14,7 +14,7 @@ namespace dbasic {
         Bone();
         ~Bone();
 
-        RigidBody RigidBody;
+        dphysics::RigidBody RigidBody;
 
         void SetParent(Bone *parent);
         Bone *GetParent() { return m_parent; }

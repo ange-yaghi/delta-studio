@@ -19,63 +19,44 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\engines\basic\include\animation.h" />
-    <ClInclude Include="..\..\engines\basic\include\delta_basic_engine.h" />
-    <ClInclude Include="..\..\engines\basic\include\delta_core.h" />
-    <ClInclude Include="..\..\engines\basic\include\animation_export_data.h" />
-    <ClInclude Include="..\..\engines\basic\include\animation_export_file.h" />
-    <ClInclude Include="..\..\engines\basic\include\animation_group.h" />
-    <ClInclude Include="..\..\engines\basic\include\animation_object_controller.h" />
-    <ClInclude Include="..\..\engines\basic\include\asset_manager.h" />
-    <ClInclude Include="..\..\engines\basic\include\bone.h" />
-    <ClInclude Include="..\..\engines\basic\include\character.h" />
-    <ClInclude Include="..\..\engines\basic\include\color_scale.h" />
-    <ClInclude Include="..\..\engines\basic\include\console.h" />
-    <ClInclude Include="..\..\engines\basic\include\delta_engine.h" />
-    <ClInclude Include="..\..\engines\basic\include\delta_physics.h" />
-    <ClInclude Include="..\..\engines\basic\include\os_utilities.h" />
-    <ClInclude Include="..\..\engines\basic\include\path.h" />
-    <ClInclude Include="..\..\engines\basic\include\window_handler.h" />
-    <ClInclude Include="..\..\engines\basic\include\font_map.h" />
-    <ClInclude Include="..\..\engines\basic\include\keyframe.h" />
-    <ClInclude Include="..\..\engines\basic\include\material.h" />
-    <ClInclude Include="..\..\engines\basic\include\model_asset.h" />
-    <ClInclude Include="..\..\engines\basic\include\pose.h" />
-    <ClInclude Include="..\..\engines\basic\include\render_node.h" />
-    <ClInclude Include="..\..\engines\basic\include\render_skeleton.h" />
-    <ClInclude Include="..\..\engines\basic\include\scene_object_asset.h" />
-    <ClInclude Include="..\..\engines\basic\include\shader_controls.h" />
-    <ClInclude Include="..\..\engines\basic\include\skeleton.h" />
+    <ClInclude Include="..\..\physics\include\collision_detector.h" />
+    <ClInclude Include="..\..\physics\include\collision_geometry.h" />
+    <ClInclude Include="..\..\physics\include\collision_object.h" />
+    <ClInclude Include="..\..\physics\include\collision_primitives.h" />
+    <ClInclude Include="..\..\physics\include\delta_core.h" />
+    <ClInclude Include="..\..\physics\include\delta_physics.h" />
+    <ClInclude Include="..\..\physics\include\expanding_spring.h" />
+    <ClInclude Include="..\..\physics\include\grid_partition_system.h" />
+    <ClInclude Include="..\..\physics\include\hinge_link.h" />
+    <ClInclude Include="..\..\physics\include\mass_spring_system.h" />
+    <ClInclude Include="..\..\physics\include\particle.h" />
+    <ClInclude Include="..\..\physics\include\particle_system.h" />
+    <ClInclude Include="..\..\physics\include\rigid_body.h" />
+    <ClInclude Include="..\..\physics\include\rigid_body_link.h" />
+    <ClInclude Include="..\..\physics\include\rigid_body_system.h" />
+    <ClInclude Include="..\..\physics\include\spring_link.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\engines\basic\src\animation.cpp" />
-    <ClCompile Include="..\..\engines\basic\src\animation_export_data.cpp" />
-    <ClCompile Include="..\..\engines\basic\src\animation_export_file.cpp" />
-    <ClCompile Include="..\..\engines\basic\src\animation_group.cpp" />
-    <ClCompile Include="..\..\engines\basic\src\animation_object_controller.cpp" />
-    <ClCompile Include="..\..\engines\basic\src\asset_manager.cpp" />
-    <ClCompile Include="..\..\engines\basic\src\bone.cpp" />
-    <ClCompile Include="..\..\engines\basic\src\character.cpp" />
-    <ClCompile Include="..\..\engines\basic\src\color_scale.cpp" />
-    <ClCompile Include="..\..\engines\basic\src\console.cpp" />
-    <ClCompile Include="..\..\engines\basic\src\delta_engine.cpp" />
-    <ClCompile Include="..\..\engines\basic\src\os_utilities.cpp" />
-    <ClCompile Include="..\..\engines\basic\src\path.cpp" />
-    <ClCompile Include="..\..\engines\basic\src\window_handler.cpp" />
-    <ClCompile Include="..\..\engines\basic\src\font_map.cpp" />
-    <ClCompile Include="..\..\engines\basic\src\keyframe.cpp" />
-    <ClCompile Include="..\..\engines\basic\src\material.cpp" />
-    <ClCompile Include="..\..\engines\basic\src\model_asset.cpp" />
-    <ClCompile Include="..\..\engines\basic\src\pose.cpp" />
-    <ClCompile Include="..\..\engines\basic\src\render_node.cpp" />
-    <ClCompile Include="..\..\engines\basic\src\render_skeleton.cpp" />
-    <ClCompile Include="..\..\engines\basic\src\scene_object_asset.cpp" />
-    <ClCompile Include="..\..\engines\basic\src\skeleton.cpp" />
+    <ClCompile Include="..\..\physics\src\collision_detector.cpp" />
+    <ClCompile Include="..\..\physics\src\collision_geometry.cpp" />
+    <ClCompile Include="..\..\physics\src\collision_object.cpp" />
+    <ClCompile Include="..\..\physics\src\collision_primitives.cpp" />
+    <ClCompile Include="..\..\physics\src\expanding_spring.cpp" />
+    <ClCompile Include="..\..\physics\src\grid_partition_system.cpp" />
+    <ClCompile Include="..\..\physics\src\hinge_link.cpp" />
+    <ClCompile Include="..\..\physics\src\mass_spring_system.cpp" />
+    <ClCompile Include="..\..\physics\src\particle.cpp" />
+    <ClCompile Include="..\..\physics\src\particle_system.cpp" />
+    <ClCompile Include="..\..\physics\src\rigid_body.cpp" />
+    <ClCompile Include="..\..\physics\src\rigid_body_link.cpp" />
+    <ClCompile Include="..\..\physics\src\rigid_body_system.cpp" />
+    <ClCompile Include="..\..\physics\src\spring_link.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
-    <ProjectGuid>{4192524D-8D19-4BEC-A9F0-C18C1333C456}</ProjectGuid>
-    <RootNamespace>deltabasicengine</RootNamespace>
+    <ProjectGuid>{AED09032-5029-4526-A032-5BC47185516B}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>deltaphysics</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -83,27 +64,27 @@
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v142</PlatformToolset>
-    <CharacterSet>MultiByte</CharacterSet>
+    <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v142</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
-    <CharacterSet>MultiByte</CharacterSet>
+    <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v142</PlatformToolset>
-    <CharacterSet>MultiByte</CharacterSet>
+    <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v142</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
-    <CharacterSet>MultiByte</CharacterSet>
+    <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -123,76 +104,88 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <LinkIncremental>true</LinkIncremental>
     <OutDir>$(ProjectDir)\..\$(PlatformTarget)\$(Configuration)\</OutDir>
     <IntDir>$(PlatformTarget)\$(Configuration)\</IntDir>
-    <IncludePath>$(ProjectDir)/../../dependencies/libraries/boost-filesystem/include;$(IncludePath)</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+    <OutDir>$(ProjectDir)\..\$(PlatformTarget)\$(Configuration)\</OutDir>
+    <IntDir>$(PlatformTarget)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>false</LinkIncremental>
     <OutDir>$(ProjectDir)\..\$(PlatformTarget)\$(Configuration)\</OutDir>
     <IntDir>$(PlatformTarget)\$(Configuration)\</IntDir>
-    <IncludePath>$(ProjectDir)/../../dependencies/libraries/boost-filesystem/include;$(IncludePath)</IncludePath>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <OutDir>$(ProjectDir)\..\$(PlatformTarget)\$(Configuration)\</OutDir>
-    <IntDir>$(PlatformTarget)\$(Configuration)\</IntDir>
-    <IncludePath>$(ProjectDir)/../../dependencies/libraries/boost-filesystem/include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <LinkIncremental>false</LinkIncremental>
     <OutDir>$(ProjectDir)\..\$(PlatformTarget)\$(Configuration)\</OutDir>
     <IntDir>$(PlatformTarget)\$(Configuration)\</IntDir>
-    <IncludePath>$(ProjectDir)/../../dependencies/libraries/boost-filesystem/include;$(IncludePath)</IncludePath>
   </PropertyGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <ClCompile>
-      <WarningLevel>Level3</WarningLevel>
-      <Optimization>Disabled</Optimization>
-      <SDLCheck>true</SDLCheck>
-      <ConformanceMode>true</ConformanceMode>
-    </ClCompile>
-    <Link>
-      <SubSystem>Console</SubSystem>
-    </Link>
-  </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
-      <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
-      <SubSystem>Console</SubSystem>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
-      <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
-      <SubSystem>Console</SubSystem>
+      <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
-      <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
-      <SubSystem>Console</SubSystem>
+      <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

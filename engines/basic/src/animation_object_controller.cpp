@@ -1,5 +1,7 @@
 #include "../include/animation_object_controller.h"
 
+#include "../include/delta_physics.h"
+
 dbasic::AnimationObjectController::AnimationObjectController() : ysObject("AnimationObjectController") {
     m_target = NULL;
     m_framerate = 30.0f;

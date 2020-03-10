@@ -3,7 +3,6 @@
 
 #include "delta_core.h"
 
-#include "rigid_body.h"
 #include "animation_export_data.h"
 
 namespace dbasic {

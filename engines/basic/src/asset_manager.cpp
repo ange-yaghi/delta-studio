@@ -424,7 +424,7 @@ dbasic::Skeleton *dbasic::AssetManager::BuildSkeleton(ModelAsset *model) {
     return newSkeleton;
 }
 
-dbasic::RenderSkeleton *dbasic::AssetManager::BuildRenderSkeleton(RigidBody *root, SceneObjectAsset *rootBone) {
+dbasic::RenderSkeleton *dbasic::AssetManager::BuildRenderSkeleton(dphysics::RigidBody *root, SceneObjectAsset *rootBone) {
     SceneObjectAsset *nodeReference = nullptr;
     SceneObjectAsset *nodeParentReference = nullptr;
     RenderNode *node = nullptr;
@@ -474,7 +474,7 @@ void dbasic::AssetManager::ProcessRenderNode(SceneObjectAsset *object, RenderSke
 }
 
 dbasic::AnimationObjectController *dbasic::AssetManager::
-    BuildAnimationObjectController(const char *name, RigidBody *rigidBody) 
+    BuildAnimationObjectController(const char *name, dphysics::RigidBody *rigidBody)
 {
     int nAnimationData = m_animationExportData.GetNumObjects();
 
