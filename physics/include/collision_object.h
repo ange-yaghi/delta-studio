@@ -20,8 +20,8 @@ namespace dphysics {
         };
 
         enum class Type {
-            Box,
             Circle,
+            Box,
 
             Undefined
         };

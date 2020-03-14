@@ -59,8 +59,33 @@ bool dphysics::CollisionDetector::BoxBoxCollision(Collision &collision, RigidBod
     return (collision1Valid || collision2Valid);
 }
 
+bool dphysics::CollisionDetector::CircleBoxCollision(Collision &collision, RigidBody *body1, RigidBody *body2, CirclePrimitive *circle, BoxPrimitive *box) {
+    ysVector relativePosition = ysMath::Sub(circle->Position, box->Position);
+    relativePosition = ysMath::MatMult(ysMath::OrthogonalInverse(box->Orientation), relativePosition);
+
+    float closestX = std::min(std::max(ysMath::GetX(relativePosition), -box->HalfWidth), box->HalfWidth);
+    float closestY = std::min(std::max(ysMath::GetY(relativePosition), -box->HalfHeight), box->HalfHeight);
+
+    ysVector closestPoint = ysMath::LoadVector(closestX, closestY, ysMath::GetZ(relativePosition));
+    ysVector realPosition = ysMath::MatMult(box->Orientation, closestPoint);
+    realPosition = ysMath::Add(realPosition, box->Position);
+    
+    float d2 = ysMath::GetScalar(ysMath::MagnitudeSquared3(ysMath::Sub(circle->Position, realPosition)));
+    if (d2 > circle->RadiusSquared) return false;
+
+    ysVector normal = ysMath::Mask(ysMath::Sub(circle->Position, realPosition), ysMath::Constants::MaskOffW);
+
+    collision.m_normal = ysMath::Normalize(normal);
+    collision.m_body1 = body1;
+    collision.m_body2 = body2;
+    collision.m_penetration = std::sqrt(circle->RadiusSquared) - ysMath::GetScalar(ysMath::Magnitude(normal));
+    collision.m_position = realPosition;
+    
+    return true;
+}
+
 bool dphysics::CollisionDetector::CircleCircleCollision(Collision &collision, RigidBody *body1, RigidBody *body2, CirclePrimitive *circle1, CirclePrimitive *circle2) {
-    ysVector delta = ysMath::Mask(ysMath::Sub(body2->GetWorldPosition(), body1->GetWorldPosition()), ysMath::Constants::MaskOffW);
+    ysVector delta = ysMath::Sub(circle2->Position, circle1->Position);
     ysVector direction = ysMath::Normalize(delta);
     ysVector distance = ysMath::Magnitude(delta);
 
@@ -73,15 +98,14 @@ bool dphysics::CollisionDetector::CircleCircleCollision(Collision &collision, Ri
     }
 
     if ((s_distance * s_distance) > (circle1->RadiusSquared - circle2->RadiusSquared) ||
-        (s_distance * s_distance) < (circle1->RadiusSquared + circle2->RadiusSquared)) {
-
+        (s_distance * s_distance) < (circle1->RadiusSquared + circle2->RadiusSquared)) 
+    {
         collision.m_body1 = body1;
         collision.m_body2 = body2;
         collision.m_normal = ysMath::Negate3(direction);
         collision.m_penetration = sqrt(circle1->RadiusSquared) + sqrt(circle2->RadiusSquared) - s_distance;
-        collision.m_position = ysMath::Or(
-            ysMath::Mask(ysMath::Add(ysMath::Mul(direction, ysMath::LoadScalar(std::sqrt(circle1->RadiusSquared))), body1->GetWorldPosition()), ysMath::Constants::MaskOffW),
-            ysMath::Constants::IdentityRow4);
+        collision.m_position =
+            ysMath::Add(circle1->Position, ysMath::Mul(direction, ysMath::LoadScalar(std::sqrt(circle1->RadiusSquared))));
 
         return true;
     }
@@ -297,21 +321,17 @@ bool dphysics::CollisionDetector::_BoxBoxEdgeDetect(Collision *collisions, BoxPr
             if (actualPenetrationY < smallestPenetration) {
                 numCollisions = 0;
                 if (abs(penetrationX[edge[0]]) <= body2->HalfWidth) {
-
                     collisions[numCollisions].m_penetration = actualPenetrationY0;
                     collisions[numCollisions].m_position = points[edge[0]];
                     collisions[numCollisions].m_normal = ysMath::Negate(edgeNormals[i]);
                     numCollisions++;
-
                 }
 
                 if (abs(penetrationX[edge[1]]) <= body2->HalfWidth) {
-
                     collisions[numCollisions].m_penetration = actualPenetrationY1;
                     collisions[numCollisions].m_position = points[edge[1]];
                     collisions[numCollisions].m_normal = ysMath::Negate(edgeNormals[i]);
                     numCollisions++;
-
                 }
                 smallestPenetration = actualPenetrationY;
             }

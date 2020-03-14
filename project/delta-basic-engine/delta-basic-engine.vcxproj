@@ -72,6 +72,11 @@
     <ClCompile Include="..\..\engines\basic\src\scene_object_asset.cpp" />
     <ClCompile Include="..\..\engines\basic\src\skeleton.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\delta-physics\delta-physics.vcxproj">
+      <Project>{aed09032-5029-4526-a032-5bc47185516b}</Project>
+    </ProjectReference>
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <ProjectGuid>{4192524D-8D19-4BEC-A9F0-C18C1333C456}</ProjectGuid>

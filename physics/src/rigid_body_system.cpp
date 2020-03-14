@@ -151,9 +151,23 @@ void dphysics::RigidBodySystem::GenerateCollisions(RigidBody *body1, RigidBody *
                                 newCollisionEntry->m_collisionObject1 = prim1;
                                 newCollisionEntry->m_collisionObject2 = prim2;
                                 newCollisionEntry->m_sensor = sensorTest;
+                            }
+                        }
+                        else if (prim2->GetType() == CollisionObject::Type::Box) {
+                            bool collisionValid = CollisionDetector.CircleBoxCollision(newCollision, body1Ord->GetRoot(), body2Ord->GetRoot(), prim1->GetAsCircle(), prim2->GetAsBox());
 
-                                newCollisionEntry->m_body1 = body1;
-                                newCollisionEntry->m_body2 = body2;
+                            if (collisionValid) {
+                                Collision *newCollisionEntry = m_dynamicCollisions.NewGeneric<Collision, 16>();
+                                m_collisionAccumulator.New() = newCollisionEntry;
+
+                                body1->AddCollision(newCollisionEntry);
+                                body2->AddCollision(newCollisionEntry);
+
+                                *newCollisionEntry = newCollision;
+
+                                newCollisionEntry->m_collisionObject1 = prim1;
+                                newCollisionEntry->m_collisionObject2 = prim2;
+                                newCollisionEntry->m_sensor = sensorTest;
                             }
                         }
                     }
@@ -174,9 +188,6 @@ void dphysics::RigidBodySystem::GenerateCollisions(RigidBody *body1, RigidBody *
                             newCollisionEntry->m_collisionObject1 = prim1;
                             newCollisionEntry->m_collisionObject2 = prim2;
                             newCollisionEntry->m_sensor = sensorTest;
-
-                            newCollisionEntry->m_body1 = body1;
-                            newCollisionEntry->m_body2 = body2;
                         }
                     }
                 }
@@ -193,9 +204,6 @@ void dphysics::RigidBodySystem::GenerateCollisions(RigidBody *body1, RigidBody *
                                     body2->AddCollision(newCollisionEntry);
 
                                     *newCollisionEntry = newCollision;
-
-                                    newCollisionEntry->m_body1 = body1;
-                                    newCollisionEntry->m_body2 = body2;
 
                                     newCollisionEntry->m_collisionObject1 = prim1;
                                     newCollisionEntry->m_collisionObject2 = prim2;
@@ -272,16 +280,16 @@ void dphysics::RigidBodySystem::GenerateCollisions() {
 }
 
 void dphysics::RigidBodySystem::ResolveCollision(Collision *collision, ysVector *velocityChange, ysVector *rotationDirection, float rotationAmount[2], float penetration) {
-    float angularLimit = (float)0.1f;//0.1f;
+    float angularLimit = 0.1f;
     float angularMove[2], linearMove[2];
     int b;
 
     float totalInertia = 0.0f;
-    float linearInertia[2];
-    float angularInertia[2];
+    float linearInertia[2] = {0.0f, 0.0f};
+    float angularInertia[2] = {0.0f, 0.0f};
 
     for (unsigned i = 0; i < 2; i++) {
-        if (collision->m_bodies[i]) {
+        if (collision->m_bodies[i] != nullptr) {
             ysMatrix inverseInertiaTensor = collision->m_bodies[i]->GetInverseInertiaTensorWorld();
 
             // Use the same procedure as for calculating frictionless
@@ -300,8 +308,12 @@ void dphysics::RigidBodySystem::ResolveCollision(Collision *collision, ysVector 
     }
 
     float inverseMass[2];
-    totalInertia = angularInertia[0] + collision->m_bodies[0]->GetInverseMass();
-    if (collision->m_bodies[1] != NULL) {
+    totalInertia = angularInertia[0];
+    if (collision->m_bodies[0] != nullptr) {
+        totalInertia += collision->m_bodies[0]->GetInverseMass();
+    }
+
+    if (collision->m_bodies[1] != nullptr) {
         inverseMass[1] = angularInertia[1] + collision->m_bodies[1]->GetInverseMass();
         totalInertia += inverseMass[1];
 
@@ -414,7 +426,6 @@ void dphysics::RigidBodySystem::ResolveCollisions() {
                 cp = ysMath::Cross(rotationChange[0], m_collisionAccumulator[i]->m_relativePosition[0]);
                 cp = ysMath::Add(cp, velocityChange[0]);
 
-                float d = rotationAmount[0] * ysMath::GetScalar(ysMath::Dot(cp, m_collisionAccumulator[i]->m_normal));
                 m_collisionAccumulator[i]->m_penetration -= rotationAmount[0] * ysMath::GetScalar(ysMath::Dot(cp, m_collisionAccumulator[i]->m_normal));
             }
             else if (m_collisionAccumulator[i]->m_body1 == m_collisionAccumulator[index]->m_body2) {
@@ -424,7 +435,7 @@ void dphysics::RigidBodySystem::ResolveCollisions() {
                 m_collisionAccumulator[i]->m_penetration -= rotationAmount[1] * ysMath::GetScalar(ysMath::Dot(cp, m_collisionAccumulator[i]->m_normal));
             }
 
-            if (m_collisionAccumulator[i]->m_body2 != NULL) {
+            if (m_collisionAccumulator[i]->m_body2 != nullptr) {
                 if (m_collisionAccumulator[i]->m_body2 == m_collisionAccumulator[index]->m_body1) {
                     cp = ysMath::Cross(rotationChange[0], m_collisionAccumulator[i]->m_relativePosition[1]);
                     cp = ysMath::Add(cp, velocityChange[0]);
