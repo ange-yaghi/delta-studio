@@ -192,23 +192,22 @@ void dphysics::RigidBodySystem::GenerateCollisions(RigidBody *body1, RigidBody *
                     }
                 }
 
-                if (mode1 == CollisionObject::Mode::Sensor) {
+                if (mode1 == CollisionObject::Mode::Sensor && mode2 == CollisionObject::Mode::Sensor) {
                     if (prim1->GetType() == CollisionObject::Type::Circle) {
                         if (prim2->GetType() == CollisionObject::Type::Circle) {
                             bool sense = CollisionDetector.CircleCircleIntersect(body1Ord->GetRoot(), body2Ord->GetRoot(), prim1->GetAsCircle(), prim2->GetAsCircle());
                             if (sense) {
-                                if (sensorTest) {
-                                    Collision *newCollisionEntry = m_dynamicCollisions.NewGeneric<Collision, 16>();
-                                    m_collisionAccumulator.New() = newCollisionEntry;
-                                    body1->AddCollision(newCollisionEntry);
-                                    body2->AddCollision(newCollisionEntry);
+                                Collision *newCollisionEntry = m_dynamicCollisions.NewGeneric<Collision, 16>();
+                                newCollisionEntry->m_body1 = body1Ord;
+                                newCollisionEntry->m_body2 = body2Ord;
 
-                                    *newCollisionEntry = newCollision;
+                                m_collisionAccumulator.New() = newCollisionEntry;
+                                body1->AddCollision(newCollisionEntry);
+                                body2->AddCollision(newCollisionEntry);
 
-                                    newCollisionEntry->m_collisionObject1 = prim1;
-                                    newCollisionEntry->m_collisionObject2 = prim2;
-                                    newCollisionEntry->m_sensor = sensorTest;
-                                }
+                                newCollisionEntry->m_collisionObject1 = prim1;
+                                newCollisionEntry->m_collisionObject2 = prim2;
+                                newCollisionEntry->m_sensor = sensorTest;
                             }
 
                             if (mode1 == CollisionObject::Mode::Coarse) {
