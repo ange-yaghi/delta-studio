@@ -15,6 +15,7 @@ namespace dphysics {
 
         ysError NewBoxObject(CollisionObject **newObject);
         ysError NewCircleObject(CollisionObject **newObject);
+        ysError NewRayObject(CollisionObject **newObject);
 
         inline int GetNumObjects() const { return m_collisionObjects.GetNumObjects(); }
         CollisionObject *GetCollisionObject(int index) { return m_collisionObjects.Get(index); }

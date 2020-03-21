@@ -612,3 +612,13 @@ ysVector ysMath::GetTranslationPart(const ysMatrix &mat) {
 
     return r.rows[3];
 }
+
+ysVector ysMath::ComponentMax(const ysVector &a, const ysVector &b) {
+    ysVector result = _mm_max_ps(a, b);
+    return result;
+}
+
+ysVector ysMath::ComponentMin(const ysVector &a, const ysVector &b) {
+    ysVector result = _mm_min_ps(a, b);
+    return result;
+}

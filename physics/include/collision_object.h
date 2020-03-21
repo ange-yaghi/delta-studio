@@ -34,9 +34,9 @@ namespace dphysics {
 
         inline Type GetType() const { return m_type; }
 
-        BoxPrimitive *GetAsBox() { return static_cast<BoxPrimitive *>(m_primitiveHandle); }
-        CirclePrimitive *GetAsCircle() { return static_cast<CirclePrimitive *>(m_primitiveHandle); }
-        RayPrimitive *GetAsRay() { return static_cast<RayPrimitive *>(m_primitiveHandle); }
+        BoxPrimitive *GetAsBox() const { return static_cast<BoxPrimitive *>(m_primitiveHandle); }
+        CirclePrimitive *GetAsCircle() const { return static_cast<CirclePrimitive *>(m_primitiveHandle); }
+        RayPrimitive *GetAsRay() const { return static_cast<RayPrimitive *>(m_primitiveHandle); }
 
         Mode GetMode() const { return m_mode; }
         void SetMode(Mode mode) { m_mode = mode; }
@@ -62,6 +62,8 @@ namespace dphysics {
 
         void SetEventMessage(unsigned int msg) { m_msg = msg; }
         unsigned int GetEventMessage() const { return m_msg; }
+
+        void GetBounds(ysVector &minPoint, ysVector &maxPoint) const;
 
     protected:
         void ConfigureBox();

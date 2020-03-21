@@ -1,6 +1,7 @@
 #include "../include/collision_primitives.h"
 #include "../include/rigid_body.h"
 
+#include <algorithm>
 #include <stdlib.h>
 
 dphysics::Collision::Collision() : ysObject("Collision") {
@@ -61,4 +62,26 @@ dphysics::Collision &dphysics::Collision::operator=(dphysics::Collision &collisi
     m_relativePosition[1] = collision.m_relativePosition[1];
 
     return *this;
+}
+
+void dphysics::BoxPrimitive::GetBounds(ysVector &minPoint, ysVector &maxPoint) const {
+    ysVector point1 = ysMath::Add(ysMath::MatMult(Orientation, ysMath::LoadVector(HalfWidth, HalfHeight)), Position);
+    ysVector point2 = ysMath::Add(ysMath::MatMult(Orientation, ysMath::LoadVector(-HalfWidth, HalfHeight)), Position);
+    ysVector point3 = ysMath::Add(ysMath::MatMult(Orientation, ysMath::LoadVector(HalfWidth, -HalfHeight)), Position);
+    ysVector point4 = ysMath::Add(ysMath::MatMult(Orientation, ysMath::LoadVector(-HalfWidth, -HalfHeight)), Position);
+
+    maxPoint = ysMath::ComponentMax(point1, point2);
+    maxPoint = ysMath::ComponentMax(maxPoint, point3);
+    maxPoint = ysMath::ComponentMax(maxPoint, point4);
+
+    minPoint = ysMath::ComponentMax(point1, point2);
+    minPoint = ysMath::ComponentMax(minPoint, point3);
+    minPoint = ysMath::ComponentMax(minPoint, point4);
+}
+
+void dphysics::CirclePrimitive::GetBounds(ysVector &minPoint, ysVector &maxPoint) const {
+    float Radius = std::sqrt(RadiusSquared);
+
+    maxPoint = ysMath::Add(Position, ysMath::LoadVector(Radius, Radius));
+    minPoint = ysMath::Add(Position, ysMath::LoadVector(-Radius, -Radius));
 }

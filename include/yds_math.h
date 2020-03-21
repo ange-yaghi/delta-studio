@@ -245,6 +245,9 @@ namespace ysMath {
 
     ysVector GetTranslationPart(const ysMatrix &mat);
 
+    ysVector ComponentMax(const ysVector &a, const ysVector &b);
+    ysVector ComponentMin(const ysVector &a, const ysVector &b);
+
 };
 
 #endif /* YDS_MATH_H */

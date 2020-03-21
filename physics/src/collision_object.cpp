@@ -38,6 +38,20 @@ dphysics::CollisionObject::~CollisionObject() {
     /* void */
 }
 
+void dphysics::CollisionObject::GetBounds(ysVector &minPoint, ysVector &maxPoint) const {
+    switch (m_type) {
+    case Type::Box:
+        GetAsBox()->GetBounds(minPoint, maxPoint);
+        break;
+    case Type::Circle:
+        GetAsCircle()->GetBounds(minPoint, maxPoint);
+        break;
+    default:
+        minPoint = ysMath::Constants::Zero;
+        maxPoint = ysMath::Constants::Zero;
+    }
+}
+
 void dphysics::CollisionObject::ConfigureBox() {
     BoxPrimitive *prim = GetAsBox();
 

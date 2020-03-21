@@ -10,11 +10,15 @@ namespace dphysics {
         ysVector Position;
         float HalfWidth;
         float HalfHeight;
+
+        void GetBounds(ysVector &minPoint, ysVector &maxPoint) const;
     };
 
     struct CirclePrimitive {
         ysVector Position;
         float RadiusSquared;
+
+        void GetBounds(ysVector &minPoint, ysVector &maxPoint) const;
     };
 
     struct RayPrimitive {

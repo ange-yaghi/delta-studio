@@ -38,6 +38,21 @@ ysError dphysics::CollisionGeometry::NewCircleObject(CollisionObject **newObject
     return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
 }
 
+ysError dphysics::CollisionGeometry::NewRayObject(CollisionObject **newObject) {
+    YDS_ERROR_DECLARE("NewRayObject");
+
+    if (newObject == nullptr) return YDS_ERROR_RETURN(ysError::YDS_INVALID_PARAMETER);
+    *newObject = nullptr;
+
+    CollisionObjectSpecialized<RayPrimitive, CollisionObject::Type::Ray> *newRay =
+        m_collisionObjects.NewGeneric<CollisionObjectSpecialized<RayPrimitive, CollisionObject::Type::Ray>, 16>();
+
+    newRay->SetParent(m_parent);
+    *newObject = static_cast<CollisionObject *>(newRay);
+
+    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+}
+
 void dphysics::CollisionGeometry::UpdatePrimitives() {
     int nObjects = m_collisionObjects.GetNumObjects();
     for (int i = 0; i < nObjects; i++) {
