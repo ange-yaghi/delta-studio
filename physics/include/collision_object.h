@@ -22,6 +22,7 @@ namespace dphysics {
         enum class Type {
             Circle,
             Box,
+            Ray,
 
             Undefined
         };
@@ -35,6 +36,7 @@ namespace dphysics {
 
         BoxPrimitive *GetAsBox() { return static_cast<BoxPrimitive *>(m_primitiveHandle); }
         CirclePrimitive *GetAsCircle() { return static_cast<CirclePrimitive *>(m_primitiveHandle); }
+        RayPrimitive *GetAsRay() { return static_cast<RayPrimitive *>(m_primitiveHandle); }
 
         Mode GetMode() const { return m_mode; }
         void SetMode(Mode mode) { m_mode = mode; }
@@ -64,6 +66,7 @@ namespace dphysics {
     protected:
         void ConfigureBox();
         void ConfigureCircle();
+        void ConfigureRay();
 
         void *m_primitiveHandle;
 

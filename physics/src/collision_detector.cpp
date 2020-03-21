@@ -113,6 +113,46 @@ bool dphysics::CollisionDetector::CircleCircleCollision(Collision &collision, Ri
     return false;
 }
 
+bool dphysics::CollisionDetector::RayBoxCollision(Collision &collision, RigidBody *body1, RigidBody *body2, RayPrimitive *ray, BoxPrimitive *box) {
+    /* TODO */
+
+    return false;
+}
+
+bool dphysics::CollisionDetector::RayCircleCollision(Collision &collision, RigidBody *body1, RigidBody *body2, RayPrimitive *ray, CirclePrimitive *circle) {
+    ysVector D = ray->Direction;
+    ysVector P = ray->Position;
+    ysVector C = circle->Position;
+    ysVector DP = ysMath::Sub(P, C);
+
+    float D_dot_DP = ysMath::GetScalar(ysMath::Dot(D, DP));
+    float D_mag = ysMath::GetScalar(ysMath::MagnitudeSquared3(D));
+    float DP_mag = ysMath::GetScalar(ysMath::MagnitudeSquared3(DP));
+
+    float delta = D_dot_DP * D_dot_DP - D_mag * (DP_mag - circle->RadiusSquared);
+    if (delta < 0) return false;
+
+    float t1 = (-D_dot_DP + delta) / D_mag;
+    float t2 = (-D_dot_DP - delta) / D_mag;
+
+    if (ray->MaxDistance > 0) {
+        if (t1 > ray->MaxDistance && t2 > ray->MaxDistance) return false;
+    }
+
+    float closest = 0;
+    if (t1 < 0 && t2 < 0) return false;
+    else if (t1 < 0) closest = t2;
+    else if (t2 < 0) closest = t1;
+    else closest = std::min(t1, t2);
+
+    collision.m_body1 = body1;
+    collision.m_body2 = body2;
+    collision.m_penetration = closest;
+    collision.m_position = ray->Position;
+    
+    return true;
+}
+
 bool dphysics::CollisionDetector::_BoxBoxCollision(Collision *collision, BoxPrimitive *body1, BoxPrimitive *body2) {
     bool ret = false;
 

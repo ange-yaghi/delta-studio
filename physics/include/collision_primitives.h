@@ -17,6 +17,14 @@ namespace dphysics {
         float RadiusSquared;
     };
 
+    struct RayPrimitive {
+        ysVector Position;
+        ysVector Direction;
+        float MaxDistance;
+
+        ysVector RelativeDirection;
+    };
+
     class RigidBody;
     class CollisionObject;
     class RigidBodySystem;

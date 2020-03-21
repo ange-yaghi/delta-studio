@@ -1,4 +1,5 @@
 #include "../include/collision_object.h"
+
 #include "../include/rigid_body.h"
 
 dphysics::CollisionObject::CollisionObject() : ysObject("CollisionObject") {
@@ -50,24 +51,28 @@ void dphysics::CollisionObject::ConfigureCircle() {
     prim->Position = ysMath::MatMult(m_parent->GetTransform(), ysMath::ExtendVector(m_relativePosition));
 }
 
+void dphysics::CollisionObject::ConfigureRay() {
+    RayPrimitive *prim = GetAsRay();
+
+    ysMatrix orientation = ysMath::MatMult(m_relativeOrientation, m_parent->GetOrientationMatrix());
+    prim->Position = ysMath::MatMult(m_parent->GetTransform(), ysMath::ExtendVector(m_relativePosition));
+    prim->Direction = ysMath::MatMult(orientation, ysMath::ExtendVector(prim->RelativeDirection));
+}
+
 void dphysics::CollisionObject::ConfigurePrimitive() {
     switch (m_type) {
     case Type::Box:
         ConfigureBox();
         break;
-
     case Type::Circle:
         ConfigureCircle();
+        break;
+    case Type::Ray:
+        ConfigureRay();
         break;
     }
 }
 
 bool dphysics::CollisionObject::CheckCollisionMask(const CollisionObject *object) const {
-    if ((object->m_collisionLayerMask & m_layerMask) ||
-        (object->m_layerMask & m_collisionLayerMask)) {
-
-        return true;
-    }
-
-    return false;
+    return ((object->m_collisionLayerMask & m_layerMask) > 0) || ((object->m_layerMask & m_collisionLayerMask) > 0);
 }

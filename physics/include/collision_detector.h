@@ -14,6 +14,8 @@ namespace dphysics {
         bool BoxBoxCollision(Collision &collision, RigidBody *body1, RigidBody *body2, BoxPrimitive *box1, BoxPrimitive *box2);
         bool CircleBoxCollision(Collision &collision, RigidBody *body1, RigidBody *body2, CirclePrimitive *circle, BoxPrimitive *box);
         bool CircleCircleCollision(Collision &collision, RigidBody *body1, RigidBody *body2, CirclePrimitive *circle1, CirclePrimitive *circle2);
+        bool RayBoxCollision(Collision &collision, RigidBody *body1, RigidBody *body2, RayPrimitive *ray, BoxPrimitive *box);
+        bool RayCircleCollision(Collision &collision, RigidBody *body1, RigidBody *body2, RayPrimitive *ray, CirclePrimitive *circle);
 
         bool CircleCircleIntersect(RigidBody *body1, RigidBody *body2, CirclePrimitive *circle1, CirclePrimitive *circle2);
 

@@ -72,8 +72,6 @@ namespace dphysics {
         ysDynamicArray<Collision, 4> m_dynamicCollisions;
         ysExpandingArray<Collision *, 8192> m_collisionAccumulator;
 
-        bool done[8];
-        bool start[8];
         int m_lastLoadMeasurement;
         int m_loadMeasurement;
         float m_currentStep;
