@@ -74,9 +74,9 @@ void dphysics::BoxPrimitive::GetBounds(ysVector &minPoint, ysVector &maxPoint) c
     maxPoint = ysMath::ComponentMax(maxPoint, point3);
     maxPoint = ysMath::ComponentMax(maxPoint, point4);
 
-    minPoint = ysMath::ComponentMax(point1, point2);
-    minPoint = ysMath::ComponentMax(minPoint, point3);
-    minPoint = ysMath::ComponentMax(minPoint, point4);
+    minPoint = ysMath::ComponentMin(point1, point2);
+    minPoint = ysMath::ComponentMin(minPoint, point3);
+    minPoint = ysMath::ComponentMin(minPoint, point4);
 }
 
 void dphysics::CirclePrimitive::GetBounds(ysVector &minPoint, ysVector &maxPoint) const {
