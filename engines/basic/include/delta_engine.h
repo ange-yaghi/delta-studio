@@ -75,6 +75,7 @@ namespace dbasic {
         void GetMousePos(int *x, int *y);
 
         float GetFrameLength();
+        float GetAverageFramerate();
 
         void SetMultiplyColor(ysVector4 color);
         void ResetMultiplyColor();

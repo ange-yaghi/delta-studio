@@ -358,6 +358,10 @@ float dbasic::DeltaEngine::GetFrameLength() {
     return (float)(m_timingSystem->GetFrameDuration());
 }
 
+float dbasic::DeltaEngine::GetAverageFramerate() {
+    return m_timingSystem->GetFPS();
+}
+
 void dbasic::DeltaEngine::SetMultiplyColor(ysVector4 color) {
     m_shaderObjectVariables.MulCol = color;
 }
