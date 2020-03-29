@@ -22,6 +22,15 @@ void dbasic_demo::DeltaBasicDemoApplication::Initialize(void *instance, ysContex
     m_assetManager.SetEngine(&m_engine);
     m_assetManager.CompileSceneFile("../../workspace/addon_dev", 1.0f, true);
     m_assetManager.LoadSceneFile("../../workspace/addon_dev");
+
+    m_assetManager.CompileInterchangeFile("../../workspace/character", 1.0f, true);
+    m_assetManager.LoadSceneFile("../../workspace/character");
+
+    m_assetManager.ResolveNodeHierarchy();
+
+    dbasic::SceneObjectAsset *root = m_assetManager.GetSceneObject("Instance_1");
+    m_renderSkeleton = m_assetManager.BuildRenderSkeleton(&m_skeletonBase, root);
+    m_skeletonBase.SetPosition(ysMath::LoadVector(5.0f, 0.0f, 0.0f));
     
     m_engine.LoadTexture(&m_demoTexture, "../../demos/delta-basic-demo/assets/chicken.png");
 
@@ -52,6 +61,16 @@ void dbasic_demo::DeltaBasicDemoApplication::Render() {
     translation = ysMath::TranslationTransform(ysMath::LoadVector(-3.0f, 0.0f, 0.0f));
     m_engine.SetObjectTransform(translation);
     m_engine.DrawImage(m_demoTexture, 0, (float)m_demoTexture->GetWidth() / m_demoTexture->GetHeight());
+
+    ysQuaternion q = ysMath::Constants::QuatIdentity;
+    q = ysMath::LoadQuaternion(m_currentAngle * ysMath::Constants::PI / 180.0f, ysMath::LoadVector(1.0f, 0.0f, 0.0f));
+    m_skeletonBase.SetOrientation(q);
+
+    m_skeletonBase.UpdateDerivedData();
+    for (int i = 0; i < m_renderSkeleton->GetNodeCount(); ++i) {
+        dbasic::ModelAsset *asset = m_renderSkeleton->GetNode(i)->GetModelAsset();
+        if (asset != nullptr) m_engine.DrawModel(asset, m_renderSkeleton->GetNode(i)->RigidBody.GetTransform(), 1.0f, nullptr);
+    }
 }
 
 void dbasic_demo::DeltaBasicDemoApplication::Run() {

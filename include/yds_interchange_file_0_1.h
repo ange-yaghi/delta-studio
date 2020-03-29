@@ -1,5 +1,5 @@
-#ifndef YDS_INTERCHANGE_FILE_0_0_H
-#define YDS_INTERCHANGE_FILE_0_0_H
+#ifndef YDS_INTERCHANGE_FILE_0_1_H
+#define YDS_INTERCHANGE_FILE_0_1_H
 
 #include "yds_base.h"
 
@@ -8,10 +8,10 @@
 
 #include <fstream>
 
-class ysInterchangeFile0_0 : public ysObject {
+class ysInterchangeFile0_1 : public ysObject {
 public:
-    static constexpr int MAJOR_VERSION = 0;
-    static constexpr int MINOR_VERSION = 1;
+    static constexpr int MAJOR_VERSION = 0x00;
+    static constexpr int MINOR_VERSION = 0x01;
     static constexpr int MAGIC_NUMBER = 0xFEA4A;
 
 public:
@@ -28,6 +28,8 @@ public:
         char MaterialName[256];
         int ModelIndex;
         int ParentIndex;
+        int InstanceIndex;
+        int ObjectType;
     };
 
     struct ObjectTransformation {
@@ -59,8 +61,8 @@ public:
     };
 
 public:
-    ysInterchangeFile0_0();
-    ~ysInterchangeFile0_0();
+    ysInterchangeFile0_1();
+    ~ysInterchangeFile0_1();
 
     ysError Open(const char *fname);
     ysError Close();
@@ -75,6 +77,8 @@ public:
 
     ysError ReadObject(ysInterchangeObject *object);
 
+    static ysInterchangeObject::ObjectType InterpretType(int i);
+
 protected:
     std::fstream m_file;
 
@@ -88,4 +92,5 @@ protected:
     bool m_compilationStatus;
 };
 
-#endif /* YDS_INTERCHANGE_FILE_0_0_H */
+#endif /* YDS_INTERCHANGE_FILE_0_1_H */
+

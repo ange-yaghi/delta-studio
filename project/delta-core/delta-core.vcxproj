@@ -68,6 +68,7 @@
     <ClInclude Include="..\..\include\yds_input_layout.h" />
     <ClInclude Include="..\..\include\yds_input_system.h" />
     <ClInclude Include="..\..\include\yds_interchange_file_0_0.h" />
+    <ClInclude Include="..\..\include\yds_interchange_file_0_1.h" />
     <ClInclude Include="..\..\include\yds_interchange_object.h" />
     <ClInclude Include="..\..\include\yds_keyboard.h" />
     <ClInclude Include="..\..\include\yds_key_maps.h" />
@@ -160,6 +161,7 @@
     <ClCompile Include="..\..\src\yds_input_layout.cpp" />
     <ClCompile Include="..\..\src\yds_input_system.cpp" />
     <ClCompile Include="..\..\src\yds_interchange_file_0_0.cpp" />
+    <ClCompile Include="..\..\src\yds_interchange_file_0_1.cpp" />
     <ClCompile Include="..\..\src\yds_interchange_object.cpp" />
     <ClCompile Include="..\..\src\yds_keyboard.cpp" />
     <ClCompile Include="..\..\src\yds_linked_list.cpp" />

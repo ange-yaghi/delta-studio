@@ -225,9 +225,6 @@
     <ClInclude Include="..\..\include\yds_object_animation_data.h">
       <Filter>Header Files\Unsorted</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\yds_object_data.h">
-      <Filter>Header Files\Unsorted</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\include\yds_queue.h">
       <Filter>Header Files\Unsorted</Filter>
     </ClInclude>
@@ -331,6 +328,12 @@
       <Filter>Header Files\assets</Filter>
     </ClInclude>
     <ClInclude Include="..\..\include\yds_interchange_object.h">
+      <Filter>Header Files\assets</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\yds_object_data.h">
+      <Filter>Header Files\assets</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\yds_interchange_file_0_1.h">
       <Filter>Header Files\assets</Filter>
     </ClInclude>
   </ItemGroup>
@@ -588,6 +591,9 @@
       <Filter>Source Files\assets</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\yds_interchange_object.cpp">
+      <Filter>Source Files\assets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\yds_interchange_file_0_1.cpp">
       <Filter>Source Files\assets</Filter>
     </ClCompile>
   </ItemGroup>

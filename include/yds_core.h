@@ -37,6 +37,8 @@
 #include "yds_registry.h"
 
 // Geometry
+#include "yds_interchange_file_0_0.h"
+#include "yds_interchange_file_0_1.h"
 #include "yds_tool_geometry_file.h"
 #include "yds_geometry_preprocessing.h"
 #include "yds_geometry_export_file.h"

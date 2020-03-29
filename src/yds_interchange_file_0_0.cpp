@@ -51,6 +51,7 @@ ysError ysInterchangeFile0_0::ReadObject(ysInterchangeObject *object) {
     object->Name = info.Name;
     object->ModelIndex = info.ModelIndex;
     object->ParentIndex = info.ParentIndex;
+    object->InstanceIndex = -1;
     
     ObjectTransformation t;
     m_file.read((char *)&t, sizeof(ObjectTransformation));

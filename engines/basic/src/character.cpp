@@ -1,15 +1,17 @@
 #include "../include/character.h"
 
 dbasic::Character::Character(const char *typeName) : ysObject(typeName) {
-    m_skeleton = NULL;
-    m_animationData = NULL;
-    m_assetManager = NULL;
+    m_skeleton = nullptr;
+    m_animationData = nullptr;
+    m_assetManager = nullptr;
+    m_renderSkeleton = nullptr;
 }
 
 dbasic::Character::Character() : ysObject("Character") {
-    m_skeleton = NULL;
-    m_animationData = NULL;
-    m_assetManager = NULL;
+    m_skeleton = nullptr;
+    m_animationData = nullptr;
+    m_assetManager = nullptr;
+    m_renderSkeleton = nullptr;
 }
 
 dbasic::Character::~Character() {

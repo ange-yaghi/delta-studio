@@ -7,13 +7,14 @@
 
 class ysObjectData {
 public:
-    enum OBJECT_TYPE {
-        TYPE_GEOMETRY,
-        TYPE_BONE,
-        TYPE_GROUP,
-        TYPE_PLANE,
-        TYPE_INSTANCE,
-        TYPE_UNDEFINED = -1
+    enum class ObjectType {
+        Geometry,
+        Bone,
+        Group,
+        Plane,
+        Instance,
+        Empty,
+        Undefined = -1
     };
 
     enum ANIMATION_KEY {
@@ -79,7 +80,7 @@ public:
         int ModelIndex;
         int ParentIndex;
         int ParentInstance;
-        OBJECT_TYPE ObjectType;
+        ObjectType ObjectType;
         int UsesBones;
         int SkeletonIndex;
     } m_objectInformation;

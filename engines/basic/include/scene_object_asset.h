@@ -28,7 +28,7 @@ namespace dbasic {
 
         int GetParent() const { return m_parent; }
 
-        ysObjectData::OBJECT_TYPE GetType() const { return m_type; }
+        ysObjectData::ObjectType GetType() const { return m_type; }
 
         void AddChild(int index) { m_children.New() = index; }
         int GetChild(int index) { return m_children[index]; }
@@ -43,7 +43,7 @@ namespace dbasic {
         char m_name[64];
         int m_parent;
         int m_skeletonIndex;
-        ysObjectData::OBJECT_TYPE m_type;
+        ysObjectData::ObjectType m_type;
 
         Material *m_material;
         ModelAsset *m_geometry;

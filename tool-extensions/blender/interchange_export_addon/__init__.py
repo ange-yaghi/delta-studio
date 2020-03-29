@@ -13,6 +13,9 @@ if "bpy" in locals():
     if "delta_interchange_export" in locals():
         importlib.reload(delta_interchange_export)
 
+    if "object_list" in locals():
+        importlib.reload(object_list)
+
 
 import bpy
 from bpy.props import (
@@ -48,7 +51,7 @@ class ExportDeltaAsset(bpy.types.Operator, ExportHelper):
     use_selection: BoolProperty(
             name="Selection Only",
             description="Export selected objects only",
-            default=False,
+            default=True,
             )
 
     use_mesh_modifiers: BoolProperty(

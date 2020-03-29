@@ -58,7 +58,7 @@ void dphysics::RigidBody::UpdateDerivedData() {
     if (!m_derivedValid) {
         m_orientation = ysMath::Normalize(m_orientation);
 
-        if (m_parent == NULL) {
+        if (m_parent == nullptr) {
             m_worldPosition = m_position;
             m_finalOrientation = m_orientation;
         }

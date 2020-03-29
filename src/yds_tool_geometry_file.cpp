@@ -232,11 +232,11 @@ ysError ysToolGeometryFile::ReadString(char *dest) {
 ysError ysToolGeometryFile::ReadObjectDataVersion000_005(ysObjectData *object) {
     YDS_ERROR_DECLARE("ReadObjectDataVersion000_005");
 
-    if (object->m_objectInformation.ObjectType == ysObjectData::TYPE_PLANE) {
+    if (object->m_objectInformation.ObjectType == ysObjectData::ObjectType::Plane) {
         m_file.read((char *)&object->m_length, sizeof(float));
         m_file.read((char *)&object->m_width, sizeof(float));
     }
-    else if (object->m_objectInformation.ObjectType == ysObjectData::TYPE_GEOMETRY) {
+    else if (object->m_objectInformation.ObjectType == ysObjectData::ObjectType::Geometry) {
         // ====================================================
         // Read In Vertex Data
         // ====================================================

@@ -100,7 +100,7 @@ void ApartmentSimulator::CompileSceneFile(const char *fname) {
         testFile.ReadObject(&objects[i]);
         Material *material = m_sceneManager.FindMaterial(objects[i]->m_materialName);
 
-        if (objects[i]->m_objectInformation.ObjectType == ysObjectData::TYPE_GEOMETRY) {
+        if (objects[i]->m_objectInformation.ObjectType == ysObjectData::ObjectType::Geometry) {
             ysGeometryPreprocessing::ResolveSmoothingGroupAmbiguity(objects[i]);
             ysGeometryPreprocessing::CreateAutomaticSmoothingGroups(objects[i]);
             ysGeometryPreprocessing::SeparateBySmoothingGroups(objects[i]);;
@@ -164,7 +164,12 @@ ModelGroup ApartmentSimulator::LoadSceneFile(const char *fname) {
         SceneObject *newObject = m_sceneManager.NewSceneObject();
         ret.s1 = max(m_sceneManager.GetObjectCount() - 1, ret.s1);
 
-        if (header.ObjectType == ysObjectData::TYPE_BONE || header.ObjectType == ysObjectData::TYPE_GROUP || header.ObjectType == ysObjectData::TYPE_PLANE) {
+        ysObjectData::ObjectType type = static_cast<ysObjectData::ObjectType>(header.ObjectType);
+
+        if (type == ysObjectData::ObjectType::Bone
+            || type == ysObjectData::ObjectType::Group
+            || type == ysObjectData::ObjectType::Plane)
+        {
             newObject->m_parent = (header.ParentIndex < 0) ? -1 : header.ParentIndex + initialIndex;
             strcpy_s(newObject->m_name, 64, header.ObjectName);
 
@@ -193,12 +198,12 @@ ModelGroup ApartmentSimulator::LoadSceneFile(const char *fname) {
 
             newObject->ApplyTransformation(scaleMatrix);
 
-            if (header.ObjectType == ysObjectData::TYPE_PLANE) {
+            if (type == ysObjectData::ObjectType::Plane) {
                 file.read((char *)(&newObject->m_length), sizeof(float));
                 file.read((char *)(&newObject->m_width), sizeof(float));
             }
         }
-        else if (header.ObjectType == ysObjectData::TYPE_GEOMETRY) {
+        else if (type == ysObjectData::ObjectType::Geometry) {
             int vertexDataSize = header.VertexDataSize;
             int stride = header.VertexDataSize / header.NumVertices;
 

@@ -33,7 +33,7 @@ bool ysInterchangeObject::Validate() const {
     return true;
 }
 
-void ysInterchangeObject::RipByIndexSet(std::vector <IndexSet> &indices) {
+void ysInterchangeObject::RipByIndexSet(std::vector<IndexSet> &indices) {
     int N = (int)Vertices.size();
     int faces = (int)VertexIndices.size();
 
@@ -84,4 +84,16 @@ void ysInterchangeObject::RipByUVs() {
     for (int i = 0; i < channelCount; ++i) {
         RipByIndexSet(UVIndices[i]);
     }
+}
+
+void ysInterchangeObject::UniformScale(float scale) {
+    for (ysVector3 &vert : Vertices) {
+        vert.x *= scale;
+        vert.y *= scale;
+        vert.z *= scale;
+    }
+
+    Position.x *= scale;
+    Position.y *= scale;
+    Position.z *= scale;
 }

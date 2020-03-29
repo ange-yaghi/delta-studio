@@ -22,6 +22,9 @@ namespace dbasic_demo {
         dbasic::DeltaEngine m_engine;
         dbasic::AssetManager m_assetManager;
 
+        dbasic::RenderSkeleton *m_renderSkeleton;
+        dphysics::RigidBody m_skeletonBase;
+
         ysTexture *m_demoTexture;
     };
 

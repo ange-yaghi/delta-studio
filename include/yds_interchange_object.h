@@ -24,10 +24,25 @@ public:
         };
     };
 
+    enum class ObjectType {
+        Geometry,
+        Bone,
+        Group,
+        Plane,
+        Instance,
+        Empty,
+        Undefined = -1
+    };
+
     std::string Name;
     std::string MaterialName;
+    ObjectType Type;
     int ModelIndex;
     int ParentIndex;
+    int InstanceIndex;
+
+    float Length;
+    float Width;
 
     ysVector3 Position;
     ysVector3 OrientationEuler;
@@ -50,6 +65,8 @@ public:
     void RipByNormals();
     void RipByTangents();
     void RipByUVs();
+
+    void UniformScale(float scale);
 };
 
 #endif /* YDS_INTERCHANGE_OBJECT_H */
