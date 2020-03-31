@@ -28,6 +28,18 @@ TEST(GeometryCompilation, HierarchyTest) {
 
     int a = 0;
 }
+
+TEST(GeometryCompilation, ArmatureTest) {
+    dbasic::AssetManager assetManager;
+    ysError err = assetManager.CompileInterchangeFile("../../../test/geometry_files/armature_test", 1.0f, true);
+    EXPECT_EQ(err, ysError::YDS_NO_ERROR);
+
+    assetManager.LoadSceneFile("../../../test/geometry_files/armature_test", false);
+    assetManager.ResolveNodeHierarchy();
+
+    int a = 0;
+}
+
 TEST(GeometryCompilation, FullModelTest) {    
     dbasic::AssetManager assetManager;
     ysError err = assetManager.CompileInterchangeFile("../../../test/geometry_files/ant", 1.0f, true);

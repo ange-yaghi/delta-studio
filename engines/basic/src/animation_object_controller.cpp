@@ -3,8 +3,10 @@
 #include "../include/delta_physics.h"
 
 dbasic::AnimationObjectController::AnimationObjectController() : ysObject("AnimationObjectController") {
-    m_target = NULL;
+    m_target = nullptr;
     m_framerate = 30.0f;
+    m_frame = 0;
+    m_timeOffset = 0.0f;
 }
 
 dbasic::AnimationObjectController::~AnimationObjectController() {

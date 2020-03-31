@@ -1,152 +1,9 @@
 import mathutils
+import math
 import bpy
 from math import radians
 from . object_list import ObjectList, Object, ObjectType
-import struct
-
-class BitBool(object):
-    TRUE = 0x1
-    FALSE = 0x0
-    
-    @staticmethod
-    def convert(b):
-        if b:
-            return BitBool.TRUE
-        else:
-            return BitBool.FALSE
-
-def write_32_bit_unsigned(i, f):
-    b = struct.pack('I', i)
-    f.write(b)
-    
-    
-def write_32_bit_signed(i, f):
-    b = struct.pack('i', i)
-    f.write(b)
-    
-    
-def write_8_bit_unsigned(i ,f):
-    b = struct.pack('B', i)
-    f.write(b)
-    
-    
-def write_8_bit_bool(b, f):
-    write_8_bit_unsigned(BitBool.convert(b), f)
-        
-
-def write_32_bit_bool(b, f):
-    write_32_bit_unsigned(BitBool.convert(b), f)
-    
-
-def write_32_bit_float(fl, f):
-    b = struct.pack('f', fl)
-    f.write(b)
-    
-    
-def write_padding(bytes, f):
-    PADDING = 0xFE
-    
-    for i in range(bytes):
-        write_8_bit_unsigned(PADDING, f)
-        
-
-def write_string(s, f, length=256):
-    output = struct.pack("{}s".format(length), s.encode('UTF-8'))
-    f.write(output)
-    
-    print(output)
-        
-
-def triangulate_mesh(me):
-    import bmesh
-    bm = bmesh.new()
-    bm.from_mesh(me)
-    bmesh.ops.triangulate(bm, faces=bm.faces)
-    bm.to_mesh(me)
-    bm.free()
-        
-        
-class Vector2(object):
-    def __init__(self, x=0.0, y=0.0):
-        self.x = x
-        self.y = y
-    
-    @staticmethod
-    def from_bvec(bvec):
-        return Vector2(
-            bvec.x,
-            bvec.y
-        )
-        
-    def write(self, f):
-        write_32_bit_float(self.x, f)
-        write_32_bit_float(self.y, f)
-
-
-class Vector3(object):
-    def __init__(self, x=0.0, y=0.0, z=0.0):
-        self.x = x
-        self.y = y
-        self.z = z
-    
-    @staticmethod
-    def from_bvec(bvec):
-        return Vector3(
-            bvec.x,
-            bvec.y,
-            bvec.z
-        )
-        
-    def write(self, f):
-        write_32_bit_float(self.x, f)
-        write_32_bit_float(self.y, f)
-        write_32_bit_float(self.z, f)
-        
-        
-class Vector4(object):
-    def __init__(self, x=0.0, y=0.0, z=0.0, w=1.0):
-        self.x = x
-        self.y = y
-        self.z = z
-        self.w = w
-        
-    @staticmethod
-    def from_bvec(bvec):
-        return Vector4(
-            bvec.x,
-            bvec.y,
-            bvec.z,
-            1.0
-        )
-        
-    def write(self, f):
-        write_32_bit_float(self.x, f)
-        write_32_bit_float(self.y, f)
-        write_32_bit_float(self.z, f)
-        write_32_bit_float(self.w, f)
-        
-        
-class Quaternion(object):
-    def __init__(self, w=0.0, x=0.0, y=0.0, z=0.0):
-        self.w = w
-        self.x = x
-        self.y = y
-        self.z = z
-        
-    @staticmethod
-    def from_bquat(bquat):
-        return Quaternion(
-            bquat.w,
-            bquat.x,
-            bquat.y,
-            bquat.z
-        )
-        
-    def write(self, f):
-        write_32_bit_float(self.x, f)
-        write_32_bit_float(self.y, f)
-        write_32_bit_float(self.z, f)
-        write_32_bit_float(self.w, f)     
+from . utilities import write_32_bit_unsigned, write_32_bit_signed, write_string, Vector2, Vector3, Quaternion
         
         
 def write_id_header(f):
@@ -254,24 +111,47 @@ def veckey2d(vec):
 
 def veckey3d(v):
     return round(v.x, 4), round(v.y, 4), round(v.z, 4)
-    
-    
-def write_object_mesh(object_record, global_transform, apply_modifiers, depsgraph, f):
-    obj = object_record.obj
-    obj_copy = obj.evaluated_get(depsgraph) if apply_modifiers else obj.original
 
-    obj_transform = obj.matrix_world
+
+def triangulate_mesh(me):
+    import bmesh
+    bm = bmesh.new()
+    bm.from_mesh(me)
+    bmesh.ops.triangulate(bm, faces=bm.faces)
+    bm.to_mesh(me)
+    bm.free()
+    
+    
+def write_object_mesh(object_record, object_list, global_transform, apply_modifiers, depsgraph, f):
+    obj = object_record.obj
+
+    parent_index = object_record.parent_index
+    parent = None
+    if parent_index != -1:
+        parent = object_list.get(parent_index)
+
+    obj_transform = object_record.global_matrix
+    if parent is not None:
+        inverse_parent = parent.global_matrix.copy()
+        inverse_parent.invert()
+        obj_transform = inverse_parent @ object_record.global_matrix
 
     obji_header = ObjectInformationHeader()
     obji_header.name = obj.name
-    obji_header.material_name = obj.active_material.name if obj.active_material is not None else ""
+
+    if (object_record.object_type in (ObjectType.GEOMETRY, ObjectType.INSTANCE)):
+        obji_header.material_name = obj.active_material.name if obj.active_material is not None else ''
+    else:
+        obji_header.material_name = ''
+    
     obji_header.model_index = object_record.index
     obji_header.parent_index = object_record.parent_index
     obji_header.instance_index = object_record.instance_index
     obji_header.object_type = object_record.object_type
     obji_header.write(f)
     
-    final_transform = global_transform @ obj_transform
+    #final_transform = global_transform @ obj_transform
+    final_transform = obj_transform
 
     # Fill in object transformation header
     euler = final_transform.to_euler()
@@ -290,6 +170,7 @@ def write_object_mesh(object_record, global_transform, apply_modifiers, depsgrap
         return
     
     try:
+        obj_copy = obj.evaluated_get(depsgraph) if apply_modifiers else obj.original
         me = obj_copy.to_mesh()
     except:
         return
@@ -445,67 +326,6 @@ def write_object_mesh(object_record, global_transform, apply_modifiers, depsgrap
     obj_copy.to_mesh_clear()
 
 
-def expand_object(obj, object_list):
-    if obj.is_instancer:
-        new_object = object_list.add_empty(obj)
-
-        if obj.instance_type == 'COLLECTION':
-            for sub_obj in obj.instance_collection.objects:
-                if sub_obj.is_instancer:
-                    new_instance = expand_object(sub_obj, object_list)
-                    new_instance.parent_index = new_object.index
-                else:
-                    index = object_list.get_index(sub_obj)
-                    ref = object_list.get(index)
-
-                    new_instance = object_list.add_instance(sub_obj, ref.index)
-                    new_instance.parent_index = new_object.index
-    else:
-        new_object = object_list.add_object(obj)
-    
-    return new_object
-
-
-def add_referenced_geometry(obj, object_list):
-    if obj.is_instancer:
-        if obj.instance_type == 'COLLECTION':
-            for sub_obj in obj.instance_collection.objects:
-                if not sub_obj.is_instancer:
-                    index = object_list.get_index(sub_obj)
-                    if index is None:
-                        object_list.add_object(sub_obj)
-                else:
-                    add_referenced_geometry(sub_obj, object_list)
-
-
-def generate_object_list(context, use_selection, depsgraph):
-    scene = context.scene
-
-    if use_selection:
-        objects = context.selected_objects
-    else:
-        objects = scene.objects
-
-    object_list = ObjectList()
-    for obj in objects:
-        add_referenced_geometry(obj, object_list)
-
-    for obj in objects:
-        expand_object(obj, object_list)
-
-    return object_list
-
-    all_objects = []
-    for obj in objects:
-        all_objects += [(obj, obj.matrix_world)]
-        if obj.is_instancer:
-            all_objects += [(dup.instance_object.original, dup.matrix_world.copy())
-                    for dup in depsgraph.object_instances
-                    if dup.parent and dup.parent.original == obj]
-
-    return objects
-
-
 def write_scene_file(context, filepath, *, 
         use_selection, 
         use_mesh_modifiers, 
@@ -523,16 +343,17 @@ def write_scene_file(context, filepath, *,
     else:
         objects = scene.objects
 
-    objects = generate_object_list(context, use_selection, depsgraph)
+    object_list = ObjectList()
+    object_list.generate_object_list(objects)
             
     with open(filepath, 'wb') as f:
         write_id_header(f)
         
         scene_header = SceneHeader()
-        scene_header.object_count = len(objects.object_list)
+        scene_header.object_count = object_list.get_object_count()
         scene_header.write(f)
         
-        for obj in objects.object_list:
-            write_object_mesh(obj, global_matrix, use_mesh_modifiers, depsgraph, f)
+        for obj in object_list.object_list:
+            write_object_mesh(obj, object_list, global_matrix, use_mesh_modifiers, depsgraph, f)
         
     return {'FINISHED'}

@@ -427,7 +427,7 @@ ysError dbasic::AssetManager::LoadAnimationFile(const char *fname) {
     char buffer[1024];
     sprintf_s(buffer, 1024, "%s.dafc", fname);
 
-    animationExportFile.Open(buffer, AnimationExportFile::OPEN_MODE_READ);
+    animationExportFile.Open(buffer, AnimationExportFile::Mode::Read);
     animationExportFile.ReadObjectAnimationData(exportAnimationRead);
     animationExportFile.Close();
 
@@ -504,9 +504,9 @@ dbasic::RenderSkeleton *dbasic::AssetManager::BuildRenderSkeleton(dphysics::Rigi
     newNode->SetParent(nullptr);
     newNode->SetAssetID(rootBone->GetIndex());
     root->AddChild(&newNode->RigidBody);
-    newNode->RigidBody.SetOrientation(ysMath::LoadVector(1.0f, 0.0f, 0.0f, 0.0f));
-    newNode->RigidBody.SetPosition(ysMath::Constants::Zero);
-    newNode->SetModelAsset(nullptr);
+    newNode->RigidBody.SetOrientation(rootBone->GetLocalOrientation());
+    newNode->RigidBody.SetPosition(rootBone->GetPosition());
+    newNode->SetModelAsset(rootBone->m_geometry);
     newNode->SetName(rootBone->m_name);
 
     // Get the root bone
@@ -535,9 +535,7 @@ void dbasic::AssetManager::ProcessRenderNode(SceneObjectAsset *object, RenderSke
     }
 
     for (int i = 0; i < nChildren; i++) {
-        if (GetSceneObject(object->GetChild(i))->GetType() != ysObjectData::ObjectType::Bone) {
-            ProcessRenderNode(GetSceneObject(object->GetChild(i)), skeleton, newNode, top);
-        }
+        ProcessRenderNode(GetSceneObject(object->GetChild(i)), skeleton, newNode, top);
     }
 }
 

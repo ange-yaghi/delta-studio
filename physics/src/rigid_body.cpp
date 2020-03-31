@@ -54,8 +54,8 @@ void dphysics::RigidBody::Integrate(float timeStep) {
     m_velocity = ysMath::Mul(m_velocity, ysMath::LoadScalar(pow(m_linearDamping, timeStep)));
 }
 
-void dphysics::RigidBody::UpdateDerivedData() {
-    if (!m_derivedValid) {
+void dphysics::RigidBody::UpdateDerivedData(bool force) {
+    if (!m_derivedValid || force) {
         m_orientation = ysMath::Normalize(m_orientation);
 
         if (m_parent == nullptr) {

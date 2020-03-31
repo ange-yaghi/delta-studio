@@ -13,6 +13,12 @@ if "bpy" in locals():
     if "delta_interchange_export" in locals():
         importlib.reload(delta_interchange_export)
 
+    if "delta_interchange_animation_export" in locals():
+        importlib.reload(delta_interchange_animation_export)
+
+    if "utilities" in locals():
+        importlib.reload(utilities)
+
     if "object_list" in locals():
         importlib.reload(object_list)
 
@@ -85,12 +91,40 @@ class ExportDeltaAsset(bpy.types.Operator, ExportHelper):
         return delta_interchange_export.write_scene_file(context, **keywords)
 
 
+class ExportDeltaAnimation(bpy.types.Operator, ExportHelper):
+    """Save a Delta Studios Animation File"""
+
+    bl_idname = "export_animation.delta"
+    bl_label = 'Export Delta Animation'
+    bl_options = {'PRESET'}
+
+    filename_ext = ".dimo"
+    filter_glob: StringProperty(
+            default="*.dimo",
+            options={'HIDDEN'},
+            )
+
+    check_extension = True
+
+    def execute(self, context):
+        from . import delta_interchange_animation_export
+
+        keywords = self.as_keywords(ignore=("filter_glob", "check_existing"))
+
+        return delta_interchange_animation_export.write_animation_file(context, **keywords)
+
+
 def menu_func_export(self, context):
-    self.layout.operator(ExportDeltaAsset.bl_idname, text="Delta Interchange (.dia)")
+    self.layout.operator(ExportDeltaAsset.bl_idname, text="Delta Interchange Asset (.dia)")
+
+
+def menu_fun_export_animation(self, context):
+    self.layout.operator(ExportDeltaAnimation.bl_idname, text="Delta Interchange Animation (.dimo)")
 
 
 classes = (
     ExportDeltaAsset,
+    ExportDeltaAnimation
 )
 
 
@@ -99,10 +133,12 @@ def register():
         bpy.utils.register_class(cls)
 
     bpy.types.TOPBAR_MT_file_export.append(menu_func_export)
+    bpy.types.TOPBAR_MT_file_export.append(menu_fun_export_animation)
 
 
 def unregister():
     bpy.types.TOPBAR_MT_file_export.remove(menu_func_export)
+    bpy.types.TOPBAR_MT_file_export.remove(menu_fun_export_animation)
 
     for cls in classes:
         bpy.utils.unregister_class(cls)

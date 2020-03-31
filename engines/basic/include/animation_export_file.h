@@ -11,12 +11,10 @@ namespace dbasic {
 
     class AnimationExportFile : public ysObject {
     public:
-        enum OPEN_MODE {
-
-            OPEN_MODE_WRITE,
-            OPEN_MODE_READ,
-            OPEN_MODE_CLOSED,
-
+        enum Mode {
+            Write,
+            Read,
+            Closed,
         };
 
         static const unsigned int	MAGIC_NUMBER = 0x4B564E44;
@@ -69,7 +67,7 @@ namespace dbasic {
         AnimationExportFile();
         ~AnimationExportFile();
 
-        ysError Open(const char *fname, OPEN_MODE mode = OPEN_MODE_WRITE);
+        ysError Open(const char *fname, Mode mode = Mode::Write);
         void Close();
 
         // Write Functions
@@ -80,7 +78,7 @@ namespace dbasic {
 
     protected:
         int m_fileVersion;
-        OPEN_MODE m_openMode;
+        Mode m_openMode;
 
         std::fstream m_file;
     };

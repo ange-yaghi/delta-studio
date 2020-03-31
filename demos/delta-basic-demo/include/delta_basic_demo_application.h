@@ -24,6 +24,7 @@ namespace dbasic_demo {
 
         dbasic::RenderSkeleton *m_renderSkeleton;
         dphysics::RigidBody m_skeletonBase;
+        dphysics::RigidBody *m_rod;
 
         ysTexture *m_demoTexture;
     };

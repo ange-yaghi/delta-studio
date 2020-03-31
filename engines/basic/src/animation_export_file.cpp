@@ -1,7 +1,7 @@
 #include "../include/animation_export_file.h"
 
 dbasic::AnimationExportFile::AnimationExportFile() : ysObject("ysAnimationExportFile") {
-    m_openMode = OPEN_MODE_CLOSED;
+    m_openMode = Mode::Closed;
     m_fileVersion = -1;
 }
 
@@ -9,18 +9,18 @@ dbasic::AnimationExportFile::~AnimationExportFile() {
     /* void */
 }
 
-ysError dbasic::AnimationExportFile::Open(const char *fname, OPEN_MODE mode) {
+ysError dbasic::AnimationExportFile::Open(const char *fname, Mode mode) {
     YDS_ERROR_DECLARE("Open");
 
-    if (mode != OPEN_MODE_WRITE &&
-        mode != OPEN_MODE_READ) return YDS_ERROR_RETURN(ysError::YDS_INVALID_PARAMETER);
+    if (mode != Mode::Write &&
+        mode != Mode::Read) return YDS_ERROR_RETURN(ysError::YDS_INVALID_PARAMETER);
 
-    if (mode == OPEN_MODE_WRITE)	m_file.open(fname, std::ios::binary | std::ios::out);
-    if (mode == OPEN_MODE_READ)		m_file.open(fname, std::ios::binary | std::ios::in);
+    if (mode == Mode::Write)	m_file.open(fname, std::ios::binary | std::ios::out);
+    if (mode == Mode::Read)		m_file.open(fname, std::ios::binary | std::ios::in);
 
     if (!m_file.is_open()) return YDS_ERROR_RETURN(ysError::YDS_COULD_NOT_OPEN_FILE);
 
-    if (mode == OPEN_MODE_READ) {
+    if (mode == Mode::Read) {
         // Read header
         ExportFileHeader header;
         m_file.read((char *)&header, sizeof(ExportFileHeader));
@@ -42,7 +42,7 @@ ysError dbasic::AnimationExportFile::Open(const char *fname, OPEN_MODE mode) {
 
         m_fileVersion = header.FileVersion;
     }
-    else if (mode == OPEN_MODE_WRITE) {
+    else if (mode == Mode::Write) {
         m_fileVersion = FILE_VERSION;
 
         ExportFileHeader header;
@@ -62,7 +62,7 @@ ysError dbasic::AnimationExportFile::WriteCustomData(void *data, int size) {
 
     if (!m_file.is_open()) return YDS_ERROR_RETURN(ysError::YDS_NO_FILE);
     if (data == NULL) return YDS_ERROR_RETURN(ysError::YDS_INVALID_PARAMETER);
-    if (m_openMode != OPEN_MODE_WRITE) return YDS_ERROR_RETURN(ysError::YDS_INVALID_OPERATION);
+    if (m_openMode != Mode::Write) return YDS_ERROR_RETURN(ysError::YDS_INVALID_OPERATION);
 
     m_file.write((char *)data, size);
 
@@ -74,7 +74,7 @@ ysError dbasic::AnimationExportFile::WriteObjectAnimationData(AnimationExportDat
 
     if (!m_file.is_open()) return YDS_ERROR_RETURN(ysError::YDS_NO_FILE);
     if (objectAnimationData == NULL) return YDS_ERROR_RETURN(ysError::YDS_INVALID_PARAMETER);
-    if (m_openMode != OPEN_MODE_WRITE) return YDS_ERROR_RETURN(ysError::YDS_INVALID_OPERATION);
+    if (m_openMode != Mode::Write) return YDS_ERROR_RETURN(ysError::YDS_INVALID_OPERATION);
 
     // Write Keys First
     KeyframeSectionHeader keyHeader;
@@ -138,7 +138,7 @@ ysError dbasic::AnimationExportFile::ReadObjectAnimationData(AnimationExportData
 
     if (!m_file.is_open()) return YDS_ERROR_RETURN(ysError::YDS_NO_FILE);
     if (objectAnimationData == NULL) return YDS_ERROR_RETURN(ysError::YDS_INVALID_PARAMETER);
-    if (m_openMode != OPEN_MODE_READ) return YDS_ERROR_RETURN(ysError::YDS_INVALID_OPERATION);
+    if (m_openMode != Mode::Read) return YDS_ERROR_RETURN(ysError::YDS_INVALID_OPERATION);
 
     // Read Keys First
     KeyframeSectionHeader keyHeader;
