@@ -23,7 +23,7 @@ dbasic::Material *dbasic::AssetManager::FindMaterial(const char *name) {
         if (strcmp(m_materials.Get(i)->GetName(), name) == 0) return m_materials.Get(i);
     }
 
-    return NULL;
+    return nullptr;
 }
 
 dbasic::SceneObjectAsset *dbasic::AssetManager::NewSceneObject() {
@@ -37,12 +37,12 @@ dbasic::SceneObjectAsset *dbasic::AssetManager::GetSceneObject(const char *name)
     int objectCount = m_sceneObjects.GetNumObjects();
 
     for (int i = 0; i < objectCount; i++) {
-        if (strcmp(m_modelAssets.Get(i)->GetName(), name) == 0) {
+        if (strcmp(m_sceneObjects.Get(i)->GetName(), name) == 0) {
             return m_sceneObjects.Get(i);
         }
     }
 
-    return NULL;
+    return nullptr;
 }
 
 dbasic::SceneObjectAsset *dbasic::AssetManager::GetRoot(SceneObjectAsset *object) {
@@ -67,7 +67,7 @@ dbasic::ModelAsset *dbasic::AssetManager::GetModelAsset(const char *name) {
         }
     }
 
-    return NULL;
+    return nullptr;
 }
 
 ysError dbasic::AssetManager::CompileSceneFile(const char *fname, float scale, bool force) {
@@ -109,7 +109,7 @@ ysError dbasic::AssetManager::CompileSceneFile(const char *fname, float scale, b
         YDS_NESTED_ERROR_CALL(toolFile.ReadObject(&objects[i]));
         Material *material = FindMaterial(objects[i]->m_materialName);
 
-        if (objects[i]->m_objectInformation.ObjectType == ysObjectData::TYPE_GEOMETRY) {
+        if (objects[i]->m_objectInformation.ObjectType == ysObjectData::ObjectType::Geometry) {
             ysGeometryPreprocessing::ResolveSmoothingGroupAmbiguity(objects[i]);
             ysGeometryPreprocessing::CreateAutomaticSmoothingGroups(objects[i]);
             ysGeometryPreprocessing::SeparateBySmoothingGroups(objects[i]);
@@ -151,7 +151,70 @@ ysError dbasic::AssetManager::CompileSceneFile(const char *fname, float scale, b
     return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
 }
 
-ysError dbasic::AssetManager::LoadSceneFile(const char *fname) {
+ysError dbasic::AssetManager::CompileInterchangeFile(const char *fname, float scale, bool force) {
+    YDS_ERROR_DECLARE("CompileInterchangeFile");
+
+    char completePath[512];
+    strcpy_s(completePath, 512, fname);
+
+    ysInterchangeFile0_1 toolFile;
+    strcat_s(completePath, 512, ".dia");
+    YDS_NESTED_ERROR_CALL(toolFile.Open(completePath));
+
+    strcpy_s(completePath, 512, fname);
+    strcat_s(completePath, 512, ".ysce");
+
+    if (toolFile.GetCompilationStatus() && !force) {
+        // Check if the file actually exists
+        struct stat buffer;
+        if (stat(completePath, &buffer) == 0) {
+            YDS_NESTED_ERROR_CALL(toolFile.Close());
+
+            // File already exists, no compilation required
+            return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+        }
+    }
+
+    ysGeometryExportFile exportFile;
+    exportFile.Open(completePath);
+
+    ysInterchangeObject *objects = new ysInterchangeObject[toolFile.GetObjectCount()];
+    int objectCount = toolFile.GetObjectCount();
+
+    CompiledHeader header;
+    header.ObjectCount = objectCount;
+
+    YDS_NESTED_ERROR_CALL(exportFile.WriteCustomData(&header, sizeof(CompiledHeader)));
+
+    for (int i = 0; i < objectCount; i++) {
+        YDS_NESTED_ERROR_CALL(toolFile.ReadObject(&objects[i]));
+        Material *material = FindMaterial(objects[i].MaterialName.c_str());
+
+        ysGeometryExportFile::VertexInfo vertexInfo;
+        if (objects[i].Type == ysInterchangeObject::ObjectType::Geometry) {
+            if (vertexInfo.IncludeNormals) objects[i].RipByNormals();
+            if (vertexInfo.IncludeTangents) objects[i].RipByTangents();
+            if (vertexInfo.IncludeUVs) objects[i].RipByUVs();
+        }
+
+        objects[i].UniformScale(scale);
+
+        YDS_NESTED_ERROR_CALL(exportFile.WriteObject(&objects[i]));
+    }
+
+    // Clear memory
+    delete[] objects;
+
+    // TODO: update compilation status
+
+    // Close files
+    exportFile.Close();
+    toolFile.Close();
+
+    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+}
+
+ysError dbasic::AssetManager::LoadSceneFile(const char *fname, bool placeInVram) {
     char fullPath[512];
     strcpy_s(fullPath, 512, fname);
     strcat_s(fullPath, 512, ".ysce");
@@ -169,25 +232,28 @@ ysError dbasic::AssetManager::LoadSceneFile(const char *fname) {
 
     int initialIndex = m_sceneObjects.GetNumObjects();
 
-    ysGPUBuffer *indexBuffer;
-    ysGPUBuffer *vertexBuffer;
+    ysGPUBuffer *indexBuffer = nullptr;
+    ysGPUBuffer *vertexBuffer = nullptr;
 
-    m_engine->GetDevice()->CreateIndexBuffer(&indexBuffer, 1 * 1024 * 1024, NULL, false);
-    m_engine->GetDevice()->CreateVertexBuffer(&vertexBuffer, 4 * 1024 * 1024, NULL, false);
+    if (placeInVram) {
+        m_engine->GetDevice()->CreateIndexBuffer(&indexBuffer, 1 * 1024 * 1024, nullptr, false);
+        m_engine->GetDevice()->CreateVertexBuffer(&vertexBuffer, 4 * 1024 * 1024, nullptr, false);
+    }
 
     for (int i = 0; i < fileHeader.ObjectCount; i++) {
-
         ysGeometryExportFile::ObjectOutputHeader header;
         file.read((char *)&header, sizeof(ysGeometryExportFile::ObjectOutputHeader));
 
         SceneObjectAsset *newObject = NewSceneObject();
 
-        if (header.ObjectType == ysObjectData::TYPE_BONE ||
-            header.ObjectType == ysObjectData::TYPE_GROUP ||
-            header.ObjectType == ysObjectData::TYPE_PLANE ||
-            header.ObjectType == ysObjectData::TYPE_INSTANCE) {
-
-            newObject->m_type = header.ObjectType;
+        ysObjectData::ObjectType objectType = static_cast<ysObjectData::ObjectType>(header.ObjectType);
+        if (objectType == ysObjectData::ObjectType::Bone ||
+            objectType == ysObjectData::ObjectType::Group ||
+            objectType == ysObjectData::ObjectType::Plane ||
+            objectType == ysObjectData::ObjectType::Instance ||
+            objectType == ysObjectData::ObjectType::Empty) 
+        {
+            newObject->m_type = objectType;
             newObject->m_parent = (header.ParentIndex < 0) ? -1 : header.ParentIndex + initialIndex;
             newObject->m_skeletonIndex = header.SkeletonIndex;
             strcpy_s(newObject->m_name, 64, header.ObjectName);
@@ -220,15 +286,15 @@ ysError dbasic::AssetManager::LoadSceneFile(const char *fname) {
             newObject->m_localOrientation = ysMath::LoadVector(header.Orientation);
             newObject->m_localPosition = translation;
 
-            if (header.ObjectType == ysObjectData::TYPE_PLANE) {
+            if (objectType == ysObjectData::ObjectType::Plane) {
                 return YDS_ERROR_RETURN_MSG(ysError::YDS_UNSUPPORTED_TYPE, "Planes not supported.");
             }
 
-            if (header.ObjectType == ysObjectData::TYPE_INSTANCE) {
-                newObject->m_geometry = GetModelAsset(header.ParentInstanceIndex);
+            if (objectType == ysObjectData::ObjectType::Instance) {
+                newObject->m_geometry = GetModelAsset(header.ParentInstanceIndex + initialIndex);
             }
         }
-        else if (header.ObjectType == ysObjectData::TYPE_GEOMETRY) {
+        else if (objectType == ysObjectData::ObjectType::Geometry) {
             // New model asset
             ModelAsset *newModelAsset = NewModelAsset();
 
@@ -254,7 +320,7 @@ ysError dbasic::AssetManager::LoadSceneFile(const char *fname) {
             }
 
             newObject->m_parent = (header.ParentIndex < 0) ? -1 : header.ParentIndex + initialIndex;
-            newObject->m_type = ysObjectData::TYPE_GEOMETRY;
+            newObject->m_type = ysObjectData::ObjectType::Geometry;
 
             newModelAsset->m_vertexSize = stride;
             newModelAsset->m_UVChannelCount = header.NumUVChannels;
@@ -303,8 +369,10 @@ ysError dbasic::AssetManager::LoadSceneFile(const char *fname) {
         }
     }
 
-    m_engine->GetDevice()->EditBufferData(indexBuffer, (char *)indicesFile);
-    m_engine->GetDevice()->EditBufferData(vertexBuffer, (char *)verticesFile);
+    if (placeInVram) {
+        m_engine->GetDevice()->EditBufferData(indexBuffer, (char *)indicesFile);
+        m_engine->GetDevice()->EditBufferData(vertexBuffer, (char *)verticesFile);
+    }
 
     delete[] indicesFile;
     free(verticesFile);
@@ -359,7 +427,7 @@ ysError dbasic::AssetManager::LoadAnimationFile(const char *fname) {
     char buffer[1024];
     sprintf_s(buffer, 1024, "%s.dafc", fname);
 
-    animationExportFile.Open(buffer, AnimationExportFile::OPEN_MODE_READ);
+    animationExportFile.Open(buffer, AnimationExportFile::Mode::Read);
     animationExportFile.ReadObjectAnimationData(exportAnimationRead);
     animationExportFile.Close();
 
@@ -379,14 +447,14 @@ dbasic::Skeleton *dbasic::AssetManager::BuildSkeleton(ModelAsset *model) {
     int nSceneObjects = GetSceneObjectCount();
     for (int i = 0; i < nSceneObjects; i++) {
         SceneObjectAsset *asset = GetSceneObject(i);
-        if (GetRoot(asset) == rootBoneReference && asset->GetType() == ysObjectData::TYPE_BONE) {
+        if (GetRoot(asset) == rootBoneReference && asset->GetType() == ysObjectData::ObjectType::Bone) {
             newSkeleton->NewBone();
         }
     }
 
     for (int i = 0; i < nSceneObjects; i++) {
         SceneObjectAsset *asset = GetSceneObject(i);
-        if (GetRoot(asset) == rootBoneReference && asset->GetType() == ysObjectData::TYPE_BONE) {
+        if (GetRoot(asset) == rootBoneReference && asset->GetType() == ysObjectData::ObjectType::Bone) {
             boneReference = GetSceneObject(i);
 
             bone = newSkeleton->GetBone(boneReference->m_skeletonIndex);
@@ -424,7 +492,7 @@ dbasic::Skeleton *dbasic::AssetManager::BuildSkeleton(ModelAsset *model) {
     return newSkeleton;
 }
 
-dbasic::RenderSkeleton *dbasic::AssetManager::BuildRenderSkeleton(RigidBody *root, SceneObjectAsset *rootBone) {
+dbasic::RenderSkeleton *dbasic::AssetManager::BuildRenderSkeleton(dphysics::RigidBody *root, SceneObjectAsset *rootBone) {
     SceneObjectAsset *nodeReference = nullptr;
     SceneObjectAsset *nodeParentReference = nullptr;
     RenderNode *node = nullptr;
@@ -436,9 +504,9 @@ dbasic::RenderSkeleton *dbasic::AssetManager::BuildRenderSkeleton(RigidBody *roo
     newNode->SetParent(nullptr);
     newNode->SetAssetID(rootBone->GetIndex());
     root->AddChild(&newNode->RigidBody);
-    newNode->RigidBody.SetOrientation(ysMath::LoadVector(1.0f, 0.0f, 0.0f, 0.0f));
-    newNode->RigidBody.SetPosition(ysMath::Constants::Zero);
-    newNode->SetModelAsset(nullptr);
+    newNode->RigidBody.SetOrientation(rootBone->GetLocalOrientation());
+    newNode->RigidBody.SetPosition(rootBone->GetPosition());
+    newNode->SetModelAsset(rootBone->m_geometry);
     newNode->SetName(rootBone->m_name);
 
     // Get the root bone
@@ -451,9 +519,9 @@ dbasic::RenderSkeleton *dbasic::AssetManager::BuildRenderSkeleton(RigidBody *roo
 
 void dbasic::AssetManager::ProcessRenderNode(SceneObjectAsset *object, RenderSkeleton *skeleton, RenderNode *parent, RenderNode *top) {
     int nChildren = object->GetChildrenCount();
-    RenderNode *newNode = NULL;
+    RenderNode *newNode = nullptr;
 
-    if (parent == NULL) {
+    if (parent == nullptr) {
         newNode = top;
     }
     else {
@@ -467,14 +535,12 @@ void dbasic::AssetManager::ProcessRenderNode(SceneObjectAsset *object, RenderSke
     }
 
     for (int i = 0; i < nChildren; i++) {
-        if (GetSceneObject(object->GetChild(i))->GetType() != ysObjectData::TYPE_BONE) {
-            ProcessRenderNode(GetSceneObject(object->GetChild(i)), skeleton, newNode, top);
-        }
+        ProcessRenderNode(GetSceneObject(object->GetChild(i)), skeleton, newNode, top);
     }
 }
 
 dbasic::AnimationObjectController *dbasic::AssetManager::
-    BuildAnimationObjectController(const char *name, RigidBody *rigidBody) 
+    BuildAnimationObjectController(const char *name, dphysics::RigidBody *rigidBody)
 {
     int nAnimationData = m_animationExportData.GetNumObjects();
 

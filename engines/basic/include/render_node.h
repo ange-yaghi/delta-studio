@@ -2,8 +2,7 @@
 #define DELTA_BASIC_RENDER_NODE_H
 
 #include "delta_core.h"
-
-#include "rigid_body.h"
+#include "delta_physics.h"
 
 namespace dbasic {
 
@@ -16,7 +15,7 @@ namespace dbasic {
         ~RenderNode();
 
         // Rigid body component
-        RigidBody RigidBody;
+        dphysics::RigidBody RigidBody;
 
         void SetParent(RenderNode *node);
         RenderNode *GetParent();

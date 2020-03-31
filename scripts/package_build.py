@@ -13,11 +13,12 @@ from standard_logging import *
 import copy_dlls
 
 class Resource(object):
-    def __init__(self, name, src, target, resource_type='folder'):
+    def __init__(self, name, src, target, resource_type='folder', optional=False):
         self.name = name
         self.src = src
         self.target = target
         self.resource_type = resource_type
+        self.optional = optional
 
     def format(self, d):
         self.src = self.src.format(**d)
@@ -62,7 +63,15 @@ def copy_resource(resource):
             log("ERROR", "Could not copy resource: {} ==> {}, files likely in use".format(resource.src, resource.target))
             sys.exit(1) # Return with an error
     elif resource.resource_type == "file":
-        shutil.copy(resource.src, resource.target)
+        try:
+            shutil.copy(resource.src, resource.target)
+        except FileNotFoundError:
+            if resource.optional:
+                log("INFO", "Optional file not found {}".format(resource.src))
+            else:
+                log("ERROR", "Could not find mandatory file {}".format(resource.src))
+                sys.exit(1) # Return with an error
+
     elif resource.resource_type == "dlls":
         copy_dlls.copy_dlls(resource.src, resource.target)
     else:

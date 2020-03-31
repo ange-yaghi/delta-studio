@@ -122,7 +122,6 @@ ysError dbasic::Console::UpdateDisplay() {
     m_engine->GetDevice()->Draw(2 * 12000, 0, 0);
 
     return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
-
 }
 
 void dbasic::Console::MoveToLocation(const GuiPoint &location) {
@@ -143,11 +142,11 @@ ysError dbasic::Console::SetCharacter(char character) {
 
     if (m_fontBold && (offset < 185)) offset += BOLD_OFFSET;
 
-    float row = offset / (float)23;
-    float column = (float)(offset % 23);
+    int row = offset / 23;
+    int column = offset % 23;
 
     float texOffsetX = (column * 22.0f) / 512.0f;
-    float texOffsetY = ((row) * 32.0f) / 512.0f;
+    float texOffsetY = (row * 32.0f) / 512.0f;
 
     float scaleX = 22.0f;
     float scaleY = 32.0f;

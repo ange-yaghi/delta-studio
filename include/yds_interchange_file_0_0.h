@@ -11,7 +11,7 @@
 class ysInterchangeFile0_0 : public ysObject {
 public:
     static constexpr int MAJOR_VERSION = 0;
-    static constexpr int MINOR_VERSION = 0;
+    static constexpr int MINOR_VERSION = 1;
     static constexpr int MAGIC_NUMBER = 0xFEA4A;
 
 public:
@@ -71,7 +71,7 @@ public:
     unsigned int GetObjectCount() const { return m_objectCount; }
 
     unsigned int GetToolId() const { return m_toolId; }
-    bool GetCompilationStatus() const { return m_objectCount; }
+    bool GetCompilationStatus() const { return m_compilationStatus; }
 
     ysError ReadObject(ysInterchangeObject *object);
 
@@ -88,4 +88,4 @@ protected:
     bool m_compilationStatus;
 };
 
-#endif /* YDS_INTERCHANGE_FILE_H */
+#endif /* YDS_INTERCHANGE_FILE_0_0_H */

@@ -6,10 +6,10 @@
 bool ysInterchangeObject::Validate() const {
     if (ModelIndex < 0) return false;
 
-    int vertexCount = Vertices.size();
-    int normalCount = Normals.size();
-    int tangentCount = Tangents.size();
-    int channelCount = UVChannels.size();
+    int vertexCount = (int)Vertices.size();
+    int normalCount = (int)Normals.size();
+    int tangentCount = (int)Tangents.size();
+    int channelCount = (int)UVChannels.size();
 
     for (const IndexSet &s : VertexIndices) {
         if (s.x >= vertexCount || s.y >= vertexCount || s.z >= vertexCount) return false;
@@ -24,7 +24,7 @@ bool ysInterchangeObject::Validate() const {
     }
 
     for (int i = 0; i < channelCount; ++i) {
-        int channelSize = UVChannels[i].Coordinates.size();
+        int channelSize = (int)UVChannels[i].Coordinates.size();
         for (const IndexSet &s: UVIndices[i]) {
             if (s.x >= channelSize || s.y >= channelSize || s.z >= channelSize) return false;
         }
@@ -33,9 +33,9 @@ bool ysInterchangeObject::Validate() const {
     return true;
 }
 
-void ysInterchangeObject::RipByIndexSet(std::vector <IndexSet> &indices) {
-    int N = Vertices.size();
-    int faces = VertexIndices.size();
+void ysInterchangeObject::RipByIndexSet(std::vector<IndexSet> &indices) {
+    int N = (int)Vertices.size();
+    int faces = (int)VertexIndices.size();
 
     std::vector<int> vertexToIndex(N, -1);
     std::vector<int> newVertex(N, -1);
@@ -80,8 +80,20 @@ void ysInterchangeObject::RipByTangents() {
 }
 
 void ysInterchangeObject::RipByUVs() {
-    int channelCount = UVChannels.size();
+    int channelCount = (int)UVChannels.size();
     for (int i = 0; i < channelCount; ++i) {
         RipByIndexSet(UVIndices[i]);
     }
+}
+
+void ysInterchangeObject::UniformScale(float scale) {
+    for (ysVector3 &vert : Vertices) {
+        vert.x *= scale;
+        vert.y *= scale;
+        vert.z *= scale;
+    }
+
+    Position.x *= scale;
+    Position.y *= scale;
+    Position.z *= scale;
 }

@@ -72,7 +72,7 @@ void ysLoggerOutput::ClearBuffer() {
 }
 
 void ysLoggerOutput::WriteToBuffer(const char *data, int width) {
-	int dataLength = strlen(data);
+	int dataLength = (int)strlen(data);
 	int padding = 0;
 
 	if (width > 0) {

@@ -119,6 +119,10 @@ ysGeneric ysMath::Mul(const ysGeneric &v1, const ysGeneric &v2) {
     return _mm_mul_ps(v1, v2);
 }
 
+ysGeneric ysMath::Sqrt(const ysGeneric &v) {
+    return _mm_sqrt_ps(v);
+}
+
 ysVector ysMath::Dot(const ysVector &v1, const ysVector &v2) {
     ysVector t0 = _mm_mul_ps(v1, v2);
     ysVector t1 = _mm_shuffle_ps(t0, t0, _MM_SHUFFLE(1, 0, 3, 2));
@@ -611,4 +615,14 @@ ysVector ysMath::GetTranslationPart(const ysMatrix &mat) {
     ysMatrix r = ysMath::Transpose(mat);
 
     return r.rows[3];
+}
+
+ysVector ysMath::ComponentMax(const ysVector &a, const ysVector &b) {
+    ysVector result = _mm_max_ps(a, b);
+    return result;
+}
+
+ysVector ysMath::ComponentMin(const ysVector &a, const ysVector &b) {
+    ysVector result = _mm_min_ps(a, b);
+    return result;
 }

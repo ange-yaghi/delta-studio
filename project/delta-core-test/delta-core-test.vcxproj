@@ -33,21 +33,21 @@
   <ImportGroup Label="PropertySheets" />
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>$(SolutionDir)/delta-core-test;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)/../delta-core-test;$(IncludePath)</IncludePath>
     <OutDir>$(ProjectDir)\..\$(PlatformTarget)\$(Configuration)\</OutDir>
     <IntDir>$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <IncludePath>$(SolutionDir)/delta-core-test;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)/../delta-core-test;$(IncludePath)</IncludePath>
     <OutDir>$(ProjectDir)\..\$(PlatformTarget)\$(Configuration)\</OutDir>
     <IntDir>$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>$(SolutionDir)/delta-core-test;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)/../delta-core-test;$(IncludePath)</IncludePath>
     <OutDir>$(ProjectDir)\..\$(PlatformTarget)\$(Configuration)\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>$(SolutionDir)/delta-core-test;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)/../delta-core-test;$(IncludePath)</IncludePath>
     <OutDir>$(ProjectDir)\..\$(PlatformTarget)\$(Configuration)\</OutDir>
   </PropertyGroup>
   <ItemGroup>

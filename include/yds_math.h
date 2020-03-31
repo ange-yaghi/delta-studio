@@ -199,6 +199,7 @@ namespace ysMath {
     ysGeneric Sub(const ysGeneric &v1, const ysGeneric &v2);
     ysGeneric Mul(const ysGeneric &v1, const ysGeneric &v2);
     ysGeneric Div(const ysGeneric &v1, const ysGeneric &v2);
+    ysGeneric Sqrt(const ysGeneric &v);
 
     ysVector Dot(const ysVector &v1, const ysVector &v2);
     ysVector Dot3(const ysVector &v1, const ysVector &v2);
@@ -244,6 +245,9 @@ namespace ysMath {
     ysMatrix RotationTransform(const ysVector &axis, float angle);
 
     ysVector GetTranslationPart(const ysMatrix &mat);
+
+    ysVector ComponentMax(const ysVector &a, const ysVector &b);
+    ysVector ComponentMin(const ysVector &a, const ysVector &b);
 
 };
 

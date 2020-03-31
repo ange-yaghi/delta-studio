@@ -71,13 +71,13 @@ void ysTimingSystem::Update() {
 
     if (m_frameNumber > 1) {
         if (m_averageFrameDuration <= 0) {
-            m_averageFrameDuration = (double)(m_lastFrameDuration / 1000);
+            m_averageFrameDuration = (double)(m_lastFrameDuration / m_div);
         }
         else {
-            m_averageFrameDuration *= 0.99;
-            m_averageFrameDuration += 0.01 * (double)m_lastFrameDuration;
+            m_averageFrameDuration *= 0.95;
+            m_averageFrameDuration += 0.05 * (double)m_lastFrameDuration / m_div;
 
-            m_fps = (float)(1000.0 / m_averageFrameDuration);
+            m_fps = (float)(1 / m_averageFrameDuration);
         }
     }
 }

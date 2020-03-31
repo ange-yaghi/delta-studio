@@ -19,6 +19,10 @@ dbasic::RenderNode *dbasic::RenderSkeleton::GetNode(int index) {
     return m_renderNodes.Get(index);
 }
 
+dbasic::RenderNode *dbasic::RenderSkeleton::GetNode(const char *nodeName) {
+    return FindNode(nodeName);
+}
+
 dbasic::RenderNode *dbasic::RenderSkeleton::FindNode(const char *boneName) {
     int nNodes = m_renderNodes.GetNumObjects();
 

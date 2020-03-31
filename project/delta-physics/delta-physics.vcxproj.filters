@@ -1,0 +1,138 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Header Files\collision-detection">
+      <UniqueIdentifier>{123dcd17-b877-440a-821c-f206efa62d51}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\particles">
+      <UniqueIdentifier>{7a79723e-e9bf-497c-9e99-826188effd15}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\rigid-body">
+      <UniqueIdentifier>{74e2af5a-7817-457c-b6b4-d397cfd1b9bf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\mss">
+      <UniqueIdentifier>{cd41638e-9770-4766-ab9b-8bdc26695079}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\collision-detection">
+      <UniqueIdentifier>{2b2db0c9-2734-4aae-9a3e-cb0bb08ed33b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\mss">
+      <UniqueIdentifier>{c7aaac14-2bc9-4765-b349-58c18fd162df}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\rigid-body">
+      <UniqueIdentifier>{b3c846b8-1382-4a8f-bb91-fd6cc0395a56}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\particles">
+      <UniqueIdentifier>{63395c8f-38d7-4dc0-bb77-ff6b9c00e7a8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="interface">
+      <UniqueIdentifier>{3685eccc-c68a-4c1d-b083-839dbb5c19a2}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\physics\include\grid_partition_system.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\physics\include\hinge_link.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\physics\include\collision_detector.h">
+      <Filter>Header Files\collision-detection</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\physics\include\collision_geometry.h">
+      <Filter>Header Files\collision-detection</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\physics\include\collision_object.h">
+      <Filter>Header Files\collision-detection</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\physics\include\collision_primitives.h">
+      <Filter>Header Files\collision-detection</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\physics\include\particle.h">
+      <Filter>Header Files\particles</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\physics\include\particle_system.h">
+      <Filter>Header Files\particles</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\physics\include\expanding_spring.h">
+      <Filter>Header Files\mss</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\physics\include\mass_spring_system.h">
+      <Filter>Header Files\mss</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\physics\include\spring_link.h">
+      <Filter>Header Files\mss</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\physics\include\rigid_body.h">
+      <Filter>Header Files\rigid-body</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\physics\include\rigid_body_link.h">
+      <Filter>Header Files\rigid-body</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\physics\include\rigid_body_system.h">
+      <Filter>Header Files\rigid-body</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\physics\include\delta_physics.h">
+      <Filter>interface</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\physics\include\delta_core.h">
+      <Filter>interface</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\physics\src\grid_partition_system.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\physics\src\hinge_link.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\physics\src\spring_link.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\physics\src\collision_detector.cpp">
+      <Filter>Source Files\collision-detection</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\physics\src\collision_geometry.cpp">
+      <Filter>Source Files\collision-detection</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\physics\src\collision_object.cpp">
+      <Filter>Source Files\collision-detection</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\physics\src\collision_primitives.cpp">
+      <Filter>Source Files\collision-detection</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\physics\src\mass_spring_system.cpp">
+      <Filter>Source Files\mss</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\physics\src\rigid_body.cpp">
+      <Filter>Source Files\rigid-body</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\physics\src\rigid_body_link.cpp">
+      <Filter>Source Files\rigid-body</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\physics\src\rigid_body_system.cpp">
+      <Filter>Source Files\rigid-body</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\physics\src\particle.cpp">
+      <Filter>Source Files\particles</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\physics\src\particle_system.cpp">
+      <Filter>Source Files\particles</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\physics\src\expanding_spring.cpp">
+      <Filter>Source Files\mss</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

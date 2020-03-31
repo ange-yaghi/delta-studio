@@ -1,9 +1,9 @@
 #include "../include/render_node.h"
 
 dbasic::RenderNode::RenderNode() : ysObject("RenderNode") {
-    m_parent = NULL;
-    m_renderSkeleton = NULL;
-    m_modelAsset = NULL;
+    m_parent = nullptr;
+    m_renderSkeleton = nullptr;
+    m_modelAsset = nullptr;
 }
 
 dbasic::RenderNode::~RenderNode() {
@@ -13,7 +13,7 @@ dbasic::RenderNode::~RenderNode() {
 void dbasic::RenderNode::SetParent(RenderNode *node) {
     m_parent = node;
 
-    if (m_parent != NULL) {
+    if (m_parent != nullptr) {
         m_parent->RigidBody.AddChild(&RigidBody);
     }
 }

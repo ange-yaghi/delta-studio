@@ -25,7 +25,8 @@ namespace dbasic {
         ~AssetManager();
 
         ysError CompileSceneFile(const char *fname, float scale = 1.0f, bool force = false);
-        ysError LoadSceneFile(const char *fname);
+        ysError CompileInterchangeFile(const char *fname, float scale = 1.0f, bool force = false);
+        ysError LoadSceneFile(const char *fname, bool placeInVram = true);
 
         ysError CompileAnimationFile(const char *fname);
         ysError LoadAnimationFile(const char *fname);
@@ -46,10 +47,10 @@ namespace dbasic {
 
         Skeleton *BuildSkeleton(ModelAsset *model);
 
-        RenderSkeleton *BuildRenderSkeleton(RigidBody *root, SceneObjectAsset *rootBone);
+        RenderSkeleton *BuildRenderSkeleton(dphysics::RigidBody *root, SceneObjectAsset *rootBone);
         void ProcessRenderNode(SceneObjectAsset *asset, RenderSkeleton *skeleton, RenderNode *parent, RenderNode *top);
 
-        AnimationObjectController *BuildAnimationObjectController(const char *name, RigidBody *rigidBody);
+        AnimationObjectController *BuildAnimationObjectController(const char *name, dphysics::RigidBody *rigidBody);
 
         void SetEngine(DeltaEngine *engine) { m_engine = engine; }
 

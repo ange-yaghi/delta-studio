@@ -7,15 +7,15 @@ dbasic::SceneObjectAsset::SceneObjectAsset() : ysObject("SceneObjectAsset") {
 
     m_parent = -1;
     m_skeletonIndex = -1;
-    m_type = ysObjectData::TYPE_UNDEFINED;
+    m_type = ysObjectData::ObjectType::Undefined;
 
     m_localTransform = ysMath::LoadIdentity();
     m_localOrientation = ysMath::Constants::QuatIdentity;
     m_localPosition = ysMath::Constants::Zero;
 
-    m_geometry = NULL;
-    m_manager = NULL;
-    m_material = NULL;
+    m_geometry = nullptr;
+    m_manager = nullptr;
+    m_material = nullptr;
 }
 
 dbasic::SceneObjectAsset::~SceneObjectAsset() {
@@ -24,7 +24,7 @@ dbasic::SceneObjectAsset::~SceneObjectAsset() {
 
 ysMatrix dbasic::SceneObjectAsset::GetWorldTransform() const {
     SceneObjectAsset *parent = m_manager->GetSceneObject(m_parent);
-    return (parent != NULL) ? ysMath::MatMult(parent->GetWorldTransform(), m_localTransform) : m_localTransform;
+    return (parent != nullptr) ? ysMath::MatMult(parent->GetWorldTransform(), m_localTransform) : m_localTransform;
 }
 
 void dbasic::SceneObjectAsset::ApplyTransformation(const ysMatrix &transform) {

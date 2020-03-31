@@ -49,6 +49,8 @@ public:
 
 	void SetPrecisionMode(PRECISION_MODE mode);
 
+	float GetFPS() const { return m_fps; }
+
 protected:
 
 	PRECISION_MODE m_precisionMode;

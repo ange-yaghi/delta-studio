@@ -51,6 +51,7 @@ ysError ysInterchangeFile0_0::ReadObject(ysInterchangeObject *object) {
     object->Name = info.Name;
     object->ModelIndex = info.ModelIndex;
     object->ParentIndex = info.ParentIndex;
+    object->InstanceIndex = -1;
     
     ObjectTransformation t;
     m_file.read((char *)&t, sizeof(ObjectTransformation));
@@ -80,7 +81,7 @@ ysError ysInterchangeFile0_0::ReadObject(ysInterchangeObject *object) {
         m_file.read((char *)&channel, sizeof(UVChannel));
 
         ysInterchangeObject::UVChannel objectChannel;
-        for (int j = 0; j < channel.UVCount; ++j) {
+        for (unsigned int j = 0; j < channel.UVCount; ++j) {
             ysVector2 uv;
             m_file.read((char *)&uv, sizeof(ysVector2));
             objectChannel.Coordinates.push_back(uv);

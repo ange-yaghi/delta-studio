@@ -1,6 +1,9 @@
 #include <pch.h>
 
 #include "../include/yds_interchange_file_0_0.h"
+#include "../include/yds_geometry_export_file.h"
+
+#include <fstream>
 
 TEST(GeometryFile, SanityCheck) {
     ysInterchangeFile0_0 f;
@@ -169,6 +172,53 @@ TEST(GeometryFile, ConnectedUVsRip) {
     EXPECT_EQ(obj.Vertices.size(), 18);
 
     EXPECT_TRUE(obj.Validate());
+
+    f.Close();
+}
+
+TEST(GeometryFile, FullRipCompilation) {
+    ysInterchangeFile0_0 f;
+    ysError r = f.Open("../../../test/geometry_files/cube.dia");
+    EXPECT_EQ(r, ysError::YDS_NO_ERROR);
+
+    ysInterchangeObject obj;
+    r = f.ReadObject(&obj);
+    obj.RipByTangents();
+    obj.RipByNormals();
+    obj.RipByUVs();
+
+    f.Close();
+
+    int objectCount = 1;
+
+    ysGeometryExportFile exportFile;
+    exportFile.Open("../../../test/geometry_files/cube.dca");
+    exportFile.WriteCustomData((void *)&objectCount, sizeof(int));
+    exportFile.WriteObject(&obj);
+    exportFile.Close();
+
+    std::fstream file("../../../test/geometry_files/cube.dca", std::ios::in | std::ios::binary);
+
+    int objectCountCompiled;
+    file.read((char *)&objectCountCompiled, sizeof(int));
+
+    EXPECT_EQ(objectCountCompiled, 1);
+
+    ysGeometryExportFile::ObjectOutputHeader header;
+    file.read((char *)&header, sizeof(ysGeometryExportFile::ObjectOutputHeader));
+    file.close();
+}
+
+TEST(GeometryFile, FullModel) {
+    ysInterchangeFile0_0 f;
+    ysError r = f.Open("../../../test/geometry_files/ant.dia");
+    EXPECT_EQ(r, ysError::YDS_NO_ERROR);
+
+    ysInterchangeObject obj;
+    r = f.ReadObject(&obj);
+    obj.RipByTangents();
+    obj.RipByNormals();
+    obj.RipByUVs();
 
     f.Close();
 }

@@ -40,6 +40,12 @@
     <Filter Include="Header Files\assets">
       <UniqueIdentifier>{9b3bbec7-2f7a-4ddb-b1db-419c7d5be205}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\assets\animation">
+      <UniqueIdentifier>{be8fd116-790a-401c-afc2-2b73cface2a8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\assets\animation">
+      <UniqueIdentifier>{6bfc7c6b-dbb5-4273-971c-223eaa424dc4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\include\yds_d3d10_context.h">
@@ -225,9 +231,6 @@
     <ClInclude Include="..\..\include\yds_object_animation_data.h">
       <Filter>Header Files\Unsorted</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\yds_object_data.h">
-      <Filter>Header Files\Unsorted</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\include\yds_queue.h">
       <Filter>Header Files\Unsorted</Filter>
     </ClInclude>
@@ -332,6 +335,27 @@
     </ClInclude>
     <ClInclude Include="..\..\include\yds_interchange_object.h">
       <Filter>Header Files\assets</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\yds_object_data.h">
+      <Filter>Header Files\assets</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\yds_interchange_file_0_1.h">
+      <Filter>Header Files\assets</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\yds_animation_interchange_file_0_0.h">
+      <Filter>Header Files\assets\animation</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\yds_animation_curve.h">
+      <Filter>Header Files\assets\animation</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\yds_animation_action.h">
+      <Filter>Header Files\assets\animation</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\yds_animation_curve.cpp">
+      <Filter>Source Files\assets\animation</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\yds_animation_mixer.h">
+      <Filter>Header Files\assets\animation</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -589,6 +613,15 @@
     </ClCompile>
     <ClCompile Include="..\..\src\yds_interchange_object.cpp">
       <Filter>Source Files\assets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\yds_interchange_file_0_1.cpp">
+      <Filter>Source Files\assets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\yds_animation_action.cpp">
+      <Filter>Source Files\assets\animation</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\yds_animation_mixer.cpp">
+      <Filter>Source Files\assets\animation</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

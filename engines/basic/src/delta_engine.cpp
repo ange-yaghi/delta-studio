@@ -50,9 +50,7 @@ dbasic::DeltaEngine::DeltaEngine() {
     m_cameraAltitude = 10.0f;
     m_cameraAngle = 0.0f;
 
-    PhysicsSystem.SetEngine(this);
-
-    m_currentTarget = DRAW_TARGET_MAIN;
+    m_currentTarget = DrawTarget::Main;
 }
 
 dbasic::DeltaEngine::~DeltaEngine() {
@@ -136,8 +134,8 @@ ysError dbasic::DeltaEngine::EndFrame() {
     YDS_ERROR_DECLARE("EndFrame");
 
     if (IsOpen()) {
-        ExecuteDrawQueue(DRAW_TARGET_MAIN);
-        ExecuteDrawQueue(DRAW_TARGET_GUI);
+        ExecuteDrawQueue(DrawTarget::Main);
+        ExecuteDrawQueue(DrawTarget::Gui);
         m_device->Present();
     }
 
@@ -360,6 +358,10 @@ float dbasic::DeltaEngine::GetFrameLength() {
     return (float)(m_timingSystem->GetFrameDuration());
 }
 
+float dbasic::DeltaEngine::GetAverageFramerate() {
+    return m_timingSystem->GetFPS();
+}
+
 void dbasic::DeltaEngine::SetMultiplyColor(ysVector4 color) {
     m_shaderObjectVariables.MulCol = color;
 }
@@ -400,10 +402,10 @@ ysError dbasic::DeltaEngine::DrawImage(ysTexture *image, int layer, float scaleX
     }
 
     DrawCall *newCall = nullptr;
-    if (m_currentTarget == DRAW_TARGET_MAIN) {
+    if (m_currentTarget == DrawTarget::Main) {
         newCall = &m_drawQueue[layer].New();
     }
-    else if (m_currentTarget == DRAW_TARGET_GUI) {
+    else if (m_currentTarget == DrawTarget::Gui) {
         newCall = &m_drawQueueGui[layer].New();
     }
 
@@ -440,10 +442,10 @@ ysError dbasic::DeltaEngine::DrawBox(const int color[3], float width, float heig
     }
 
     DrawCall *newCall = nullptr;
-    if (m_currentTarget == DRAW_TARGET_MAIN) {
+    if (m_currentTarget == DrawTarget::Main) {
         newCall = &m_drawQueue[layer].New();
     }
-    else if (m_currentTarget == DRAW_TARGET_GUI) {
+    else if (m_currentTarget == DrawTarget::Gui) {
         newCall = &m_drawQueueGui[layer].New();
     }
 
@@ -501,10 +503,10 @@ ysError dbasic::DeltaEngine::DrawModel(ModelAsset *model, const ysMatrix &transf
     }
 
     DrawCall *newCall = nullptr;
-    if (m_currentTarget == DRAW_TARGET_MAIN) {
+    if (m_currentTarget == DrawTarget::Main) {
         newCall = &m_drawQueue[layer].New();
     }
-    else if (m_currentTarget == DRAW_TARGET_GUI) {
+    else if (m_currentTarget == DrawTarget::Gui) {
         newCall = &m_drawQueueGui[layer].New();
     }
 
@@ -517,7 +519,7 @@ ysError dbasic::DeltaEngine::DrawModel(ModelAsset *model, const ysMatrix &transf
     return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
 }
 
-ysError dbasic::DeltaEngine::ExecuteDrawQueue(DRAW_TARGET target) {
+ysError dbasic::DeltaEngine::ExecuteDrawQueue(DrawTarget target) {
     YDS_ERROR_DECLARE("ExecuteDrawQueue");
 
     YDS_NESTED_ERROR_CALL(m_device->EditBufferData(m_shaderSkinningControlsBuffer, (char *)(&m_shaderSkinningControls)));
@@ -525,10 +527,10 @@ ysError dbasic::DeltaEngine::ExecuteDrawQueue(DRAW_TARGET target) {
     if (!m_shaderScreenVariablesSync) {
         float aspect = m_gameWindow->GetScreenWidth() / (float)m_gameWindow->GetScreenHeight();
 
-        if (target == DRAW_TARGET_MAIN) {
+        if (target == DrawTarget::Main) {
             m_shaderScreenVariables.Projection = ysMath::Transpose(ysMath::FrustrumPerspective(ysMath::Constants::PI / 3.0f, aspect, 1.0f, 10000.0f));
         }
-        else if (target == DRAW_TARGET_GUI) {
+        else if (target == DrawTarget::Gui) {
             m_shaderScreenVariables.Projection = ysMath::Transpose(
                 ysMath::OrthographicProjection(
                     (float)m_gameWindow->GetScreenWidth(), 
@@ -543,19 +545,19 @@ ysError dbasic::DeltaEngine::ExecuteDrawQueue(DRAW_TARGET target) {
         ysVector cameraEye;
         ysVector cameraTarget;
 
-        if (target == DRAW_TARGET_MAIN) {
+        if (target == DrawTarget::Main) {
             cameraEye = ysMath::LoadVector(m_cameraX, m_cameraY, m_cameraAltitude, 1.0f);
         }
-        else if (target == DRAW_TARGET_GUI) {
+        else if (target == DrawTarget::Gui) {
             cameraEye = ysMath::LoadVector(0.0f, 0.0f, m_cameraAltitude, 1.0f);
         }
 
         ysVector up = ysMath::LoadVector(-sinRot, cosRot);
 
-        if (target == DRAW_TARGET_MAIN) {
+        if (target == DrawTarget::Main) {
             cameraTarget = ysMath::LoadVector(m_cameraX, m_cameraY, 0.0f, 1.0f);
         }
-        else if (target == DRAW_TARGET_GUI) {
+        else if (target == DrawTarget::Gui) {
             cameraTarget = ysMath::LoadVector(0.0f, 0.0f, 0.0f, 1.0f);
         }
 
@@ -575,13 +577,13 @@ ysError dbasic::DeltaEngine::ExecuteDrawQueue(DRAW_TARGET target) {
     for (int i = 0; i < MAX_LAYERS; i++) {
         int objectsAtLayer = 0;
 
-        if (target == DRAW_TARGET_MAIN) objectsAtLayer = m_drawQueue[i].GetNumObjects();
-        else if (target == DRAW_TARGET_GUI) objectsAtLayer = m_drawQueueGui[i].GetNumObjects();
+        if (target == DrawTarget::Main) objectsAtLayer = m_drawQueue[i].GetNumObjects();
+        else if (target == DrawTarget::Gui) objectsAtLayer = m_drawQueueGui[i].GetNumObjects();
 
         for (int j = 0; j < objectsAtLayer; j++) {
             DrawCall *call = nullptr;
-            if (target == DRAW_TARGET_MAIN) call = &m_drawQueue[i][j];
-            else if (target == DRAW_TARGET_GUI) call = &m_drawQueueGui[i][j];
+            if (target == DrawTarget::Main) call = &m_drawQueue[i][j];
+            else if (target == DrawTarget::Gui) call = &m_drawQueueGui[i][j];
 
             if (call == nullptr) continue;
 
@@ -625,15 +627,15 @@ ysError dbasic::DeltaEngine::ExecuteDrawQueue(DRAW_TARGET target) {
             }
         }
 
-        if (target == DRAW_TARGET_GUI) {
+        if (target == DrawTarget::Gui) {
             m_drawQueueGui[i].Clear();
         }
-        else if (target == DRAW_TARGET_MAIN) {
+        else if (target == DrawTarget::Main) {
             m_drawQueue[i].Clear();
         }
     }
 
-    if (target == DRAW_TARGET_GUI) {
+    if (target == DrawTarget::Gui) {
         ShaderObjectVariables objectSettings;
         objectSettings.ColorReplace = 0;
         objectSettings.Lit = 0;
