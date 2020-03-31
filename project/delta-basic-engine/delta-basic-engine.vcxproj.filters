@@ -76,6 +76,9 @@
     <Filter Include="Header Files\physics">
       <UniqueIdentifier>{c4811fa8-4966-4505-b6a7-1740fa6a3107}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\animation\interchange">
+      <UniqueIdentifier>{ff438a30-c5d3-45fc-891e-b049b0781bf4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\engines\basic\include\animation.h">
