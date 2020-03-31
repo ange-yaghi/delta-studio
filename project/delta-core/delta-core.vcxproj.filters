@@ -351,10 +351,13 @@
     <ClInclude Include="..\..\include\yds_animation_action.h">
       <Filter>Header Files\assets\animation</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\yds_animation_curve.cpp">
-      <Filter>Source Files\assets\animation</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\include\yds_animation_mixer.h">
+      <Filter>Header Files\assets\animation</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\yds_animation_target.h">
+      <Filter>Header Files\assets\animation</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\yds_animation_action_binding.h">
       <Filter>Header Files\assets\animation</Filter>
     </ClInclude>
   </ItemGroup>
@@ -621,6 +624,15 @@
       <Filter>Source Files\assets\animation</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\yds_animation_mixer.cpp">
+      <Filter>Source Files\assets\animation</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\yds_animation_curve.cpp">
+      <Filter>Source Files\assets\animation</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\yds_animation_target.cpp">
+      <Filter>Source Files\assets\animation</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\yds_animation_action_binding.cpp">
       <Filter>Source Files\assets\animation</Filter>
     </ClCompile>
   </ItemGroup>

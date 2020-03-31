@@ -6,7 +6,7 @@
 
 #include <vector>
 
-class ysAnimationAction;
+class ysAnimationActionBinding;
 
 class ysAnimationChannel {
 public:
@@ -24,7 +24,7 @@ public:
 
         bool Fading;
 
-        ysAnimationAction *Action;
+        ysAnimationActionBinding *Action;
     };
 
 public:
@@ -32,18 +32,31 @@ public:
     ~ysAnimationChannel();
 
     void Reset();
-    void Update(float dt);
+    void Sample();
+    void Advance(float dt);
 
-    void AddSegment(ysAnimationAction *action, float fadeIn);
+    void AddSegment(ysAnimationActionBinding *action, float fadeIn);
+    void AddSegmentAtEnd(ysAnimationActionBinding *action, float fadeIn);
 
     void SetAmplitude(float amplitude) { m_amplitude = amplitude; }
     float GetAmplitude() const { return m_amplitude; }
+
+    void Mute() { m_amplitude = 0; }
+    bool IsMuted() const { return m_amplitude == 0; }
+
+    int GetPrevious() const;
+
+    int GetActiveSegments() const;
+
+    // Testing probes
+    float ProbeTotalAmplitude() const;
 
 protected:
     float m_amplitude;
 
 protected:
     void KillSegment(int segment);
+    void IncrementStackPointer();
 
     Segment m_segmentStack[SegmentStackSize];
     int m_currentStackPointer;
@@ -54,8 +67,14 @@ public:
     ysAnimationMixer();
     ~ysAnimationMixer();
 
-    ysAnimationCurve *m_curve;
+    ysAnimationChannel *NewChannel();
+    int GetChannelCount() const { return (int)m_channels.size(); }
 
+    void Sample();
+    void Advance(float dt);
+
+protected:
+    std::vector<ysAnimationChannel *> m_channels;
 };
 
 #endif /* YDS_ANIMATION_MIXER_H */
