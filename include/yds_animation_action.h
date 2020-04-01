@@ -1,8 +1,9 @@
 #ifndef YDS_ANIMATION_ACTION_H
 #define YDS_ANIMATION_ACTION_H
 
-#include "yds_animation_curve.h"
+#include "yds_base.h"
 
+#include "yds_animation_curve.h"
 #include "yds_math.h"
 
 #include <vector>
@@ -11,7 +12,7 @@
 
 class ysAnimationTarget;
 
-class ysAnimationAction {
+class ysAnimationAction : public ysObject {
 public:
     ysAnimationAction();
     ~ysAnimationAction();

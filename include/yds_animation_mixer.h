@@ -13,16 +13,28 @@ public:
     static constexpr int SegmentStackSize = 16;
 
 public:
+    struct ActionSettings {
+        float Speed = 1.0f;
+        float FadeIn = 0.0f;
+        float LeftClip = 0.0f;
+        float RightClip = 0.0f;
+
+        bool Clip = false;
+    };
+
+    static ActionSettings DefaultSettings;
+
     struct Segment {
         bool IsActive() const { return Action != nullptr; }
 
         ysAnimationActionBinding *Action;
+        float Speed;
+        float FadeIn;
+        float LeftClip;
+        float RightClip;
 
         float CurrentOffset;
         float Amplitude;
-        float FadeIn;
-        float Speed;
-
         float FadeStartAmplitude;
         float FadeOutT0;
         float FadeOutT1;
@@ -38,16 +50,21 @@ public:
     void Sample();
     void Advance(float dt);
 
-    void AddSegment(ysAnimationActionBinding *action, float fadeIn, float speed = 1.0f);
-    void AddSegmentAtEnd(ysAnimationActionBinding *action, float fadeIn, float speed = 1.0f);
+    ysAnimationActionBinding *GetCurrentAction() const;
+    bool IsActionComplete() const;
+    float GetPlayhead() const;
+    void AddSegment(
+        ysAnimationActionBinding *action, const ActionSettings &settings = DefaultSettings);
+    void AddSegmentAtOffset(
+        ysAnimationActionBinding *action, float offset, const ActionSettings &settings = DefaultSettings);
+    void AddSegmentAtEnd(
+        ysAnimationActionBinding *action, const ActionSettings &settings = DefaultSettings);
 
     void SetAmplitude(float amplitude) { m_amplitude = amplitude; }
     float GetAmplitude() const { return m_amplitude; }
 
     void Mute() { m_amplitude = 0; }
     bool IsMuted() const { return m_amplitude == 0; }
-
-    int GetPrevious() const;
 
     int GetActiveSegments() const;
 
@@ -58,8 +75,12 @@ protected:
     float m_amplitude;
 
 protected:
+    float ComputeSegmentPlayhead(const Segment &segment) const;
+
     void KillSegment(int segment);
     void IncrementStackPointer();
+
+    int GetPrevious() const;
 
     Segment m_segmentStack[SegmentStackSize];
     int m_currentStackPointer;

@@ -7,7 +7,11 @@ class ysAnimationCurve;
 
 struct TransformTarget {
     void ClearFlags() {
-        Animated[0] = Animated[1] = Animated[2] = Animated[3] = false;
+        Animated = 0;
+    }
+
+    bool IsAnimated() {
+        return Animated > 0;
     }
 
     void ClearRotation(const ysQuaternion &q) {
@@ -29,9 +33,10 @@ struct TransformTarget {
     }
 
     void Accumulate(float t, int index) {
-        if (!Animated[index]) {
+        unsigned int bit = 0x1 << index;
+        if ((Animated & bit) == 0) {
             Data[index] = t;
-            Animated[index] = true;
+            Animated |= bit;
             return;
         }
         else {
@@ -49,7 +54,7 @@ struct TransformTarget {
 
 protected:
     float Data[4];
-    bool Animated[4];
+    unsigned int Animated;
 };
 
 class ysAnimationTarget {

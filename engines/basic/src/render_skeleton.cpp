@@ -23,6 +23,25 @@ dbasic::RenderNode *dbasic::RenderSkeleton::GetNode(const char *nodeName) {
     return FindNode(nodeName);
 }
 
+void dbasic::RenderSkeleton::BindAction(
+    ysAnimationAction *action, ysAnimationActionBinding *binding) 
+{
+    binding->SetAction(action);
+
+    int nNodes = m_renderNodes.GetNumObjects();
+
+    for (int i = 0; i < nNodes; i++) {
+        RenderNode *node = m_renderNodes.Get(i);
+
+        if (action->IsAnimated(node->GetName())) {
+            binding->AddTarget(
+                node->GetName(),
+                node->GetLocationTarget(),
+                node->GetRotationTarget());
+        }
+    }
+}
+
 dbasic::RenderNode *dbasic::RenderSkeleton::FindNode(const char *boneName) {
     int nNodes = m_renderNodes.GetNumObjects();
 
@@ -32,14 +51,47 @@ dbasic::RenderNode *dbasic::RenderSkeleton::FindNode(const char *boneName) {
         }
     }
 
-    return NULL;
+    return nullptr;
 }
 
 void dbasic::RenderSkeleton::Update() {
     int nNodes = m_renderNodes.GetNumObjects();
-
     for (int i = 0; i < nNodes; i++) {
         RenderNode *node = m_renderNodes.Get(i);
         node->RigidBody.UpdateDerivedData();
+    }
+}
+
+void dbasic::RenderSkeleton::UpdateAnimation(float dt) {
+    int nNodes = m_renderNodes.GetNumObjects();
+    for (int i = 0; i < nNodes; ++i) {
+        RenderNode *node = m_renderNodes.Get(i);
+        node->GetLocationTarget()->ClearFlags();
+        node->GetRotationTarget()->ClearFlags();
+    }
+
+    AnimationMixer.Sample();
+    AnimationMixer.Advance(dt);
+    
+    for (int i = 0; i < nNodes; ++i) {
+        RenderNode *node = m_renderNodes.Get(i);
+        TransformTarget *locTarget = node->GetLocationTarget();
+        TransformTarget *rotTarget = node->GetRotationTarget();
+
+        if (locTarget->IsAnimated()) {
+            node->RigidBody.SetVelocity(
+                ysMath::Add(
+                    node->GetRestLocation(), locTarget->GetLocationResult())
+                );
+        }
+
+        if (rotTarget->IsAnimated()) {
+            node->RigidBody.SetOrientation(
+                ysMath::QuatMultiply(
+                    rotTarget->GetQuaternionResult(),
+                    node->GetRestOrientation()
+                    )
+                );
+        }
     }
 }

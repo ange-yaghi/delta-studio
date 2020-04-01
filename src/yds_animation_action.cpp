@@ -2,7 +2,7 @@
 
 #include "../include/yds_animation_target.h"
 
-ysAnimationAction::ysAnimationAction() {
+ysAnimationAction::ysAnimationAction() : ysObject("ysAnimationAction") {
     m_curveCount = 0;
     m_length = 0.0f;
 }

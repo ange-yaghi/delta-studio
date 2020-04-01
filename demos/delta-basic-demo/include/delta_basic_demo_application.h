@@ -24,24 +24,15 @@ namespace dbasic_demo {
 
         dbasic::RenderSkeleton *m_renderSkeleton;
         dphysics::RigidBody m_skeletonBase;
-        dphysics::RigidBody *m_bone;
-        dphysics::RigidBody *m_bone001;
 
         ysTexture *m_demoTexture;
 
-        ysAnimationAction m_riseAction;
-        ysAnimationAction m_twistAction;
+        ysAnimationAction *m_riseAction;
+        ysAnimationAction *m_twistAction;
 
         ysAnimationActionBinding m_riseBinding;
         ysAnimationActionBinding m_twistBinding;
 
-        TransformTarget m_boneTarget;
-        TransformTarget m_bone001Target;
-
-        ysQuaternion m_boneBase;
-        ysQuaternion m_bone001Base;
-
-        ysAnimationMixer m_animationMixer;
         ysAnimationChannel *m_channel1;
         ysAnimationChannel *m_channel2;
     };

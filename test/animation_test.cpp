@@ -24,7 +24,10 @@ TEST(AnimationTest, SanityCheck) {
 
     EXPECT_NEAR(mixer.ProbeTotalAmplitude(), 0.0f, Epsilon);
 
-    mixer.AddSegment(&binding, 0.5);
+    ysAnimationChannel::ActionSettings settings;
+    settings.FadeIn = 0.5f;
+
+    mixer.AddSegment(&binding, settings);
     mixer.Sample();
     EXPECT_NEAR(mixer.ProbeTotalAmplitude(), 0.0f, Epsilon);
 
@@ -46,8 +49,11 @@ TEST(AnimationTest, TransitionTest) {
 
     EXPECT_NEAR(mixer.ProbeTotalAmplitude(), 0.0f, Epsilon);
 
-    mixer.AddSegment(&binding, 0.5f);
-    mixer.AddSegmentAtEnd(&binding, 0.5f);
+    ysAnimationChannel::ActionSettings settings;
+    settings.FadeIn = 0.5f;
+
+    mixer.AddSegment(&binding, settings);
+    mixer.AddSegmentAtEnd(&binding, settings);
     
     mixer.Sample();
     EXPECT_NEAR(mixer.ProbeTotalAmplitude(), 0.0f, Epsilon);
@@ -79,7 +85,9 @@ TEST(AnimationTest, ImmediateTransitionTest) {
 
     EXPECT_NEAR(mixer.ProbeTotalAmplitude(), 0.0f, Epsilon);
 
-    mixer.AddSegment(&binding, 0.0f);
+    ysAnimationChannel::ActionSettings settings;
+    settings.FadeIn = 0.0f;
+    mixer.AddSegment(&binding, settings);
 
     mixer.Sample();
     EXPECT_NEAR(mixer.ProbeTotalAmplitude(), 1.0f, Epsilon);
@@ -137,8 +145,11 @@ TEST(AnimationTest, BindingTest) {
     binding.AddTarget("Bone0", &bone0Loc, nullptr);
     binding.AddTarget("Bone1", &bone1Loc, nullptr);
 
+    ysAnimationChannel::ActionSettings settings;
+    settings.FadeIn = 0.0f;
+
     ysAnimationChannel mixer;
-    mixer.AddSegment(&binding, 0.0f);
+    mixer.AddSegment(&binding, settings);
     mixer.Sample();
     bone0Loc.ClearFlags();
     bone1Loc.ClearFlags();
@@ -183,16 +194,20 @@ TEST(AnimationTest, ActionMixing) {
     binding1.SetAction(&action1);
     binding1.AddTarget("Bone0", &bone0Loc, nullptr);
 
+    ysAnimationChannel::ActionSettings settings;
+    settings.FadeIn = 0.0f;
+
     ysAnimationChannel mixer;
-    mixer.AddSegment(&binding0, 0.0f);
+    mixer.AddSegment(&binding0, settings);
 
     mixer.Sample(); // t = 0
     VecEq(bone0Loc.GetLocationResult(), 
         ysMath::LoadVector(curve0->Sample(0.0f), 2.0f, 3.0f, 0.0f));
     bone0Loc.ClearFlags();
 
+    settings.FadeIn = 0.5f;
     mixer.Advance(1.5f);
-    mixer.AddSegment(&binding1, 0.5f);
+    mixer.AddSegment(&binding1, settings);
 
     mixer.Sample(); // t = 1.5
     VecEq(bone0Loc.GetLocationResult(), 

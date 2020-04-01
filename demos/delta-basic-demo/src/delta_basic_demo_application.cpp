@@ -31,37 +31,29 @@ void dbasic_demo::DeltaBasicDemoApplication::Initialize(void *instance, ysContex
     dbasic::SceneObjectAsset *root = m_assetManager.GetSceneObject("Armature");
     m_renderSkeleton = m_assetManager.BuildRenderSkeleton(&m_skeletonBase, root);
     m_skeletonBase.SetPosition(ysMath::LoadVector(0.0f, 0.0f, 0.0f));
-
-    m_bone001 = &m_renderSkeleton->FindNode("Bone.001")->RigidBody;
-    m_bone = &m_renderSkeleton->FindNode("Bone")->RigidBody;
     
     m_engine.LoadTexture(&m_demoTexture, "../../demos/delta-basic-demo/assets/chicken.png");
 
-    ysAnimationInterchangeFile0_0 interchangeFile;
-    interchangeFile.Open("../../test/animation_files/armature_test.dimo");
-    interchangeFile.ReadAction(&m_riseAction);
-    interchangeFile.ReadAction(&m_twistAction);
-    interchangeFile.Close();
+    m_assetManager.LoadAnimationFile("../../test/animation_files/armature_test.dimo");
+    m_riseAction = m_assetManager.GetAction("Rise");
+    m_twistAction = m_assetManager.GetAction("Twist");
 
-    m_riseBinding.SetAction(&m_riseAction);
-    m_twistBinding.SetAction(&m_twistAction);
+    m_riseAction->SetLength(40.0f);
+    m_twistAction->SetLength(40.0f);
 
-    m_riseBinding.AddTarget("Bone", nullptr, &m_boneTarget);
-    m_twistBinding.AddTarget("Bone.001", nullptr, &m_bone001Target);
-
-    m_boneBase = m_bone001->GetOrientation();
-    m_bone001Base = m_bone001->GetOrientation();
+    m_renderSkeleton->BindAction(m_riseAction, &m_riseBinding);
+    m_renderSkeleton->BindAction(m_twistAction, &m_twistBinding);
 
     m_currentAngle = 0.0f;
 
-    m_channel1 = m_animationMixer.NewChannel();
-    m_channel2 = m_animationMixer.NewChannel();
+    m_channel1 = m_renderSkeleton->AnimationMixer.NewChannel();
+    m_channel2 = m_renderSkeleton->AnimationMixer.NewChannel();
 
-    m_boneTarget.ClearRotation(ysMath::Constants::QuatIdentity);
-    m_bone001Target.ClearRotation(ysMath::Constants::QuatIdentity);
-
-    m_channel1->AddSegment(&m_riseBinding, 0.0f, 0.0f);
-    m_channel2->AddSegment(&m_twistBinding, 0.0f, 0.0f);
+    ysAnimationChannel::ActionSettings paused;
+    paused.Speed = 0.0f;
+    paused.FadeIn = 0.0f;
+    m_channel1->AddSegment(&m_riseBinding, paused);
+    m_channel2->AddSegment(&m_twistBinding, paused);
 }
 
 void dbasic_demo::DeltaBasicDemoApplication::Process() {
@@ -93,32 +85,32 @@ void dbasic_demo::DeltaBasicDemoApplication::Render() {
         if (asset != nullptr) m_engine.DrawModel(asset, m_renderSkeleton->GetNode(i)->RigidBody.GetTransform(), 1.0f, nullptr);
     }
 
-    m_boneTarget.ClearFlags();
-    m_bone001Target.ClearFlags();
+    ysAnimationChannel::ActionSettings doubleSpeed, normalSpeed;
+    doubleSpeed.Speed = 1.0f;
+    doubleSpeed.FadeIn = 5.0f;
+
+    normalSpeed.Speed = 0.5f;
+    normalSpeed.FadeIn = 5.0f;
 
     if (m_engine.ProcessKeyDown(ysKeyboard::KEY_A)) {
         if (m_engine.IsKeyDown(ysKeyboard::KEY_UP)) {
-            m_channel1->AddSegment(&m_riseBinding, 2.0f, 2.0f);
+            m_channel1->AddSegment(&m_riseBinding, doubleSpeed);
         }
         else {
-            m_channel1->AddSegment(&m_riseBinding, 2.0f, 1.0f);
+            m_channel1->AddSegment(&m_riseBinding, normalSpeed);
         }
     }
 
     if (m_engine.ProcessKeyDown(ysKeyboard::KEY_S)) {
         if (m_engine.IsKeyDown(ysKeyboard::KEY_UP)) {
-            m_channel2->AddSegment(&m_twistBinding, 2.0f, 2.0f);
+            m_channel2->AddSegment(&m_twistBinding, doubleSpeed);
         }
         else {
-            m_channel2->AddSegment(&m_twistBinding, 2.0f, 1.0f);
+            m_channel2->AddSegment(&m_twistBinding, normalSpeed);
         }
     }
 
-    m_animationMixer.Sample();
-    m_animationMixer.Advance(m_engine.GetFrameLength() * 5);
-
-    m_bone->SetOrientation(ysMath::QuatMultiply(m_boneTarget.GetQuaternionResult(), m_boneBase));
-    m_bone001->SetOrientation(ysMath::QuatMultiply(m_bone001Target.GetQuaternionResult(), m_bone001Base));
+    m_renderSkeleton->UpdateAnimation(m_engine.GetFrameLength() * 60);
 }
 
 void dbasic_demo::DeltaBasicDemoApplication::Run() {
