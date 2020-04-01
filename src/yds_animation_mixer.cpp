@@ -24,7 +24,7 @@ void ysAnimationChannel::Reset() {
 void ysAnimationChannel::Sample() {
     // Update segment that is fading in first
     for (int i = 0; i < SegmentStackSize; ++i) {
-        if (m_segmentStack[i].Action != nullptr) {
+        if (m_segmentStack[i].IsActive()) {
             if (m_segmentStack[i].Fading) {
                 if (m_segmentStack[i].FadeOutT0 <= 0) {
                     continue;
@@ -47,7 +47,7 @@ void ysAnimationChannel::Sample() {
 
     // Update segments that are fading out
     for (int i = 0; i < SegmentStackSize; ++i) {
-        if (m_segmentStack[i].Action != nullptr && m_segmentStack[i].Fading) {
+        if (m_segmentStack[i].IsActive() && m_segmentStack[i].Fading) {
             float d = 0 - m_segmentStack[i].FadeOutT0;
             float t = m_segmentStack[i].FadeOutT1 - m_segmentStack[i].FadeOutT0;
 
@@ -65,11 +65,12 @@ void ysAnimationChannel::Sample() {
 
     for (int i = 0; i < SegmentStackSize; ++i) {
         Segment &segment = m_segmentStack[i];
-        if (segment.Action != nullptr) {
-            float s = 0 - segment.CurrentOffset;
-
+        if (segment.IsActive()) {
+            float s = (0 - segment.CurrentOffset) * segment.Speed;
             if (s >= 0) {
-                segment.Action->Sample(s, segment.Amplitude);
+                if (segment.Action != nullptr) {
+                    segment.Action->Sample(s, segment.Amplitude);
+                }
             }
         }
     }
@@ -77,7 +78,7 @@ void ysAnimationChannel::Sample() {
 
 void ysAnimationChannel::Advance(float dt) {
     for (int i = 0; i < SegmentStackSize; ++i) {
-        if (m_segmentStack[i].Action != nullptr) {
+        if (m_segmentStack[i].IsActive()) {
             m_segmentStack[i].CurrentOffset -= dt;
 
             if (m_segmentStack[i].Fading) {
@@ -88,11 +89,12 @@ void ysAnimationChannel::Advance(float dt) {
     }
 }
 
-void ysAnimationChannel::AddSegment(ysAnimationActionBinding *action, float fadeIn) {
+void ysAnimationChannel::AddSegment(ysAnimationActionBinding *action, float fadeIn, float speed) {
     int i = m_currentStackPointer;
 
     m_segmentStack[i].Action = action;
     m_segmentStack[i].FadeIn = fadeIn;
+    m_segmentStack[i].Speed = speed;
     m_segmentStack[i].Amplitude = 0.0f;
     m_segmentStack[i].CurrentOffset = 0.0f;
     m_segmentStack[i].Fading = false;
@@ -109,7 +111,7 @@ void ysAnimationChannel::AddSegment(ysAnimationActionBinding *action, float fade
     IncrementStackPointer();
 }
 
-void ysAnimationChannel::AddSegmentAtEnd(ysAnimationActionBinding *action, float fadeIn) {
+void ysAnimationChannel::AddSegmentAtEnd(ysAnimationActionBinding *action, float fadeIn, float speed) {
     int i = m_currentStackPointer;
     int last = GetPrevious();
 
@@ -120,6 +122,7 @@ void ysAnimationChannel::AddSegmentAtEnd(ysAnimationActionBinding *action, float
 
     m_segmentStack[i].Action = action;
     m_segmentStack[i].FadeIn = fadeIn;
+    m_segmentStack[i].Speed = speed;
     m_segmentStack[i].Amplitude = 0.0f;
     m_segmentStack[i].CurrentOffset = offset;
     m_segmentStack[i].Fading = false;

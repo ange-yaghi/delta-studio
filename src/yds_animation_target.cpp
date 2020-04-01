@@ -30,6 +30,20 @@ void ysAnimationTarget::Sample(float s, float amplitude) {
     }
 }
 
+void ysAnimationTarget::SampleRest(float amplitude) {
+    for (int i = 0; i < 4; ++i) {
+        if (m_locationCurves[i] != nullptr) {
+            m_locationTarget->Accumulate(
+                m_locationCurves[i]->GetRestValue() * amplitude, i);
+        }
+
+        if (m_rotationCurves[i] != nullptr) {
+            m_rotationTarget->Accumulate(
+                m_rotationCurves[i]->GetRestValue() * amplitude, i);
+        }
+    }
+}
+
 void ysAnimationTarget::SetLocationCurve(ysAnimationCurve *curve, int index) {
     m_locationCurves[index] = curve;
 }

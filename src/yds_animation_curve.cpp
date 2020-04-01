@@ -34,6 +34,23 @@ float ysAnimationCurve::Sample(float s) {
     return prev->second * w0 + next->second * w1;
 }
 
+float ysAnimationCurve::GetRestValue() {
+    switch (m_curveType) {
+    case CurveType::LocationX:
+    case CurveType::LocationY:
+    case CurveType::LocationZ:
+        return 0.0f;
+    case CurveType::RotationQuatW:
+        return 1.0f;
+    case CurveType::RotationQuatX:
+    case CurveType::RotationQuatY:
+    case CurveType::RotationQuatZ:
+        return 0.0f;
+    default:
+        return 0.0f;
+    }
+}
+
 void ysAnimationCurve::AddSamplePoint(float s, float v) {
     m_samples[s] = v;
 }

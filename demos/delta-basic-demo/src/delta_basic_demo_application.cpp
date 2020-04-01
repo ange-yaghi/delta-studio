@@ -23,8 +23,8 @@ void dbasic_demo::DeltaBasicDemoApplication::Initialize(void *instance, ysContex
     m_assetManager.CompileSceneFile("../../workspace/addon_dev", 1.0f, true);
     m_assetManager.LoadSceneFile("../../workspace/addon_dev");
 
-    m_assetManager.CompileInterchangeFile("../../workspace/armature_test", 1.0f, true);
-    m_assetManager.LoadSceneFile("../../workspace/armature_test");
+    m_assetManager.CompileInterchangeFile("../../test/geometry_files/armature_test", 1.0f, true);
+    m_assetManager.LoadSceneFile("../../test/geometry_files/armature_test");
 
     m_assetManager.ResolveNodeHierarchy();
 
@@ -59,6 +59,9 @@ void dbasic_demo::DeltaBasicDemoApplication::Initialize(void *instance, ysContex
 
     m_boneTarget.ClearRotation(ysMath::Constants::QuatIdentity);
     m_bone001Target.ClearRotation(ysMath::Constants::QuatIdentity);
+
+    m_channel1->AddSegment(&m_riseBinding, 0.0f, 0.0f);
+    m_channel2->AddSegment(&m_twistBinding, 0.0f, 0.0f);
 }
 
 void dbasic_demo::DeltaBasicDemoApplication::Process() {
@@ -94,11 +97,21 @@ void dbasic_demo::DeltaBasicDemoApplication::Render() {
     m_bone001Target.ClearFlags();
 
     if (m_engine.ProcessKeyDown(ysKeyboard::KEY_A)) {
-        m_channel1->AddSegment(&m_riseBinding, 5.0f);
+        if (m_engine.IsKeyDown(ysKeyboard::KEY_UP)) {
+            m_channel1->AddSegment(&m_riseBinding, 2.0f, 2.0f);
+        }
+        else {
+            m_channel1->AddSegment(&m_riseBinding, 2.0f, 1.0f);
+        }
     }
 
     if (m_engine.ProcessKeyDown(ysKeyboard::KEY_S)) {
-        m_channel2->AddSegment(&m_twistBinding, 5.0f);
+        if (m_engine.IsKeyDown(ysKeyboard::KEY_UP)) {
+            m_channel2->AddSegment(&m_twistBinding, 2.0f, 2.0f);
+        }
+        else {
+            m_channel2->AddSegment(&m_twistBinding, 2.0f, 1.0f);
+        }
     }
 
     m_animationMixer.Sample();

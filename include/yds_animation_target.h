@@ -61,6 +61,7 @@ public:
     void SetRotationTarget(TransformTarget *target) { m_rotationTarget = target; }
 
     void Sample(float s, float amplitude);
+    void SampleRest(float amplitude);
 
     void SetLocationCurve(ysAnimationCurve *curve, int index);
     void SetRotationCurve(ysAnimationCurve *curve, int index);

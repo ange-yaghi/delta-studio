@@ -19,6 +19,12 @@ void ysAnimationActionBinding::Sample(float s, float amplitude) {
     }
 }
 
+void ysAnimationActionBinding::SampleRest(float amplitude) {
+    for (ysAnimationTarget *target : m_targets) {
+        target->SampleRest(amplitude);
+    }
+}
+
 void ysAnimationActionBinding::AddTarget(const std::string &name, TransformTarget *locationTarget, TransformTarget *rotationTarget) {
     ysAnimationTarget *newTarget = new ysAnimationTarget;
     newTarget->SetLocationTarget(locationTarget);

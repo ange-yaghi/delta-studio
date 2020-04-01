@@ -14,17 +14,20 @@ public:
 
 public:
     struct Segment {
+        bool IsActive() const { return Action != nullptr; }
+
+        ysAnimationActionBinding *Action;
+
         float CurrentOffset;
         float Amplitude;
         float FadeIn;
+        float Speed;
 
         float FadeStartAmplitude;
         float FadeOutT0;
         float FadeOutT1;
 
         bool Fading;
-
-        ysAnimationActionBinding *Action;
     };
 
 public:
@@ -35,8 +38,8 @@ public:
     void Sample();
     void Advance(float dt);
 
-    void AddSegment(ysAnimationActionBinding *action, float fadeIn);
-    void AddSegmentAtEnd(ysAnimationActionBinding *action, float fadeIn);
+    void AddSegment(ysAnimationActionBinding *action, float fadeIn, float speed = 1.0f);
+    void AddSegmentAtEnd(ysAnimationActionBinding *action, float fadeIn, float speed = 1.0f);
 
     void SetAmplitude(float amplitude) { m_amplitude = amplitude; }
     float GetAmplitude() const { return m_amplitude; }

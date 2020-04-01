@@ -14,6 +14,7 @@ public:
     ~ysAnimationActionBinding();
 
     void Sample(float s, float amplitude);
+    void SampleRest(float amplitude);
     void AddTarget(const std::string &name, TransformTarget *locationTarget, TransformTarget *rotationTarget);
 
     void SetAction(ysAnimationAction *action) { m_action = action; }

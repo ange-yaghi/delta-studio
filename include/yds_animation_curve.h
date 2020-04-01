@@ -29,6 +29,7 @@ public:
     ~ysAnimationCurve();
 
     float Sample(float s);
+    float GetRestValue();
 
     void SetTarget(const std::string &target) { m_target = target; }
     std::string GetTarget() const { return m_target; }
