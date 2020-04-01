@@ -5,6 +5,7 @@
 #include "../include/yds_animation_mixer.h"
 #include "../include/yds_animation_curve.h"
 #include "../include/yds_animation_target.h"
+#include "../include/yds_animation_interchange_file_0_0.h"
 
 #include "utilities.h"
 
@@ -207,4 +208,20 @@ TEST(AnimationTest, ActionMixing) {
     VecEq(bone0Loc.GetLocationResult(),
         ysMath::LoadVector(curve1->Sample(1.0f), 2.0f, 3.0f, 0.0f));
     bone0Loc.ClearFlags();
+}
+
+TEST(AnimationTest, AnimationInterchangeFile) {
+    ysAnimationInterchangeFile0_0 interchangeFile;
+    interchangeFile.Open("../../../test/animation_files/armature_test.dimo");
+
+    int actionCount = interchangeFile.GetActionCount();
+    EXPECT_EQ(actionCount, 2);
+
+    ysAnimationAction actions[2];
+    for (int i = 0; i < actionCount; ++i) {
+        interchangeFile.ReadAction(&actions[i]);
+    }
+
+    EXPECT_EQ(actions[0].GetName(), "Rise");
+    EXPECT_EQ(actions[1].GetName(), "Twist");
 }

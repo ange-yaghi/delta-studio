@@ -97,18 +97,17 @@ class ObjectList(object):
 
 
     def generate_object_list(self, objects):
-        object_list = ObjectList()
         for obj in objects:
             self.add_referenced_geometry(obj)
 
         for obj in objects:
             self.expand_object(obj, mathutils.Matrix.Identity(4))
 
-        for obj in object_list.object_list:
+        for obj in self.object_list:
             if obj.obj.parent is not None and obj.parent_index == -1:
-                obj.parent_index = object_list.resolve_parent(obj)
+                obj.parent_index = self.resolve_parent(obj)
 
-        return object_list
+        return self
 
     def add_object(self, obj):
         n = len(self.object_list)

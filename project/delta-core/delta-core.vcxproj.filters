@@ -342,9 +342,6 @@
     <ClInclude Include="..\..\include\yds_interchange_file_0_1.h">
       <Filter>Header Files\assets</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\yds_animation_interchange_file_0_0.h">
-      <Filter>Header Files\assets\animation</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\include\yds_animation_curve.h">
       <Filter>Header Files\assets\animation</Filter>
     </ClInclude>
@@ -358,6 +355,9 @@
       <Filter>Header Files\assets\animation</Filter>
     </ClInclude>
     <ClInclude Include="..\..\include\yds_animation_action_binding.h">
+      <Filter>Header Files\assets\animation</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\yds_animation_interchange_file_0_0.h">
       <Filter>Header Files\assets\animation</Filter>
     </ClInclude>
   </ItemGroup>
@@ -633,6 +633,9 @@
       <Filter>Source Files\assets\animation</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\yds_animation_action_binding.cpp">
+      <Filter>Source Files\assets\animation</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\yds_animation_interchange_file_0_0.cpp">
       <Filter>Source Files\assets\animation</Filter>
     </ClCompile>
   </ItemGroup>

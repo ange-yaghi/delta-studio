@@ -128,6 +128,7 @@
     <ClCompile Include="..\..\src\yds_animation_action.cpp" />
     <ClCompile Include="..\..\src\yds_animation_action_binding.cpp" />
     <ClCompile Include="..\..\src\yds_animation_curve.cpp" />
+    <ClCompile Include="..\..\src\yds_animation_interchange_file_0_0.cpp" />
     <ClCompile Include="..\..\src\yds_animation_mixer.cpp" />
     <ClCompile Include="..\..\src\yds_animation_target.cpp" />
     <ClCompile Include="..\..\src\yds_audio_buffer.cpp" />

@@ -32,11 +32,33 @@ void dbasic_demo::DeltaBasicDemoApplication::Initialize(void *instance, ysContex
     m_renderSkeleton = m_assetManager.BuildRenderSkeleton(&m_skeletonBase, root);
     m_skeletonBase.SetPosition(ysMath::LoadVector(0.0f, 0.0f, 0.0f));
 
-    m_rod = &m_renderSkeleton->FindNode("Bone.001")->RigidBody;
+    m_bone001 = &m_renderSkeleton->FindNode("Bone.001")->RigidBody;
+    m_bone = &m_renderSkeleton->FindNode("Bone")->RigidBody;
     
     m_engine.LoadTexture(&m_demoTexture, "../../demos/delta-basic-demo/assets/chicken.png");
 
+    ysAnimationInterchangeFile0_0 interchangeFile;
+    interchangeFile.Open("../../test/animation_files/armature_test.dimo");
+    interchangeFile.ReadAction(&m_riseAction);
+    interchangeFile.ReadAction(&m_twistAction);
+    interchangeFile.Close();
+
+    m_riseBinding.SetAction(&m_riseAction);
+    m_twistBinding.SetAction(&m_twistAction);
+
+    m_riseBinding.AddTarget("Bone", nullptr, &m_boneTarget);
+    m_twistBinding.AddTarget("Bone.001", nullptr, &m_bone001Target);
+
+    m_boneBase = m_bone001->GetOrientation();
+    m_bone001Base = m_bone001->GetOrientation();
+
     m_currentAngle = 0.0f;
+
+    m_channel1 = m_animationMixer.NewChannel();
+    m_channel2 = m_animationMixer.NewChannel();
+
+    m_boneTarget.ClearRotation(ysMath::Constants::QuatIdentity);
+    m_bone001Target.ClearRotation(ysMath::Constants::QuatIdentity);
 }
 
 void dbasic_demo::DeltaBasicDemoApplication::Process() {
@@ -52,24 +74,10 @@ void dbasic_demo::DeltaBasicDemoApplication::Render() {
 
     m_engine.SetMultiplyColor(ysVector4(0xe7 / 255.0f, 0x4c / 255.0f, 0x3c / 255.0f, 1.0f));
 
-    /*
-    ysMatrix rotation = ysMath::RotationTransform(ysMath::Constants::XAxis, m_currentAngle * ysMath::Constants::PI / 180.0f);
-    ysMatrix translation = ysMath::TranslationTransform(ysMath::LoadVector(3.0f, 0.0f, 0.0f));
-    m_engine.DrawModel(m_assetManager.GetModelAsset(0), ysMath::MatMult(rotation, translation), 1.0f, nullptr);
-
-    int color[] = { 0xf1, 0xc4, 0x0f };
-    m_engine.SetObjectTransform(ysMath::LoadIdentity());
-    m_engine.DrawBox(color, 2.5f, 2.5f);
-
-    m_engine.SetMultiplyColor(ysVector4(1.0f, 1.0f, 1.0f, 1.0f));
-    translation = ysMath::TranslationTransform(ysMath::LoadVector(-3.0f, 0.0f, 0.0f));
-    m_engine.SetObjectTransform(translation);
-    m_engine.DrawImage(m_demoTexture, 0, (float)m_demoTexture->GetWidth() / m_demoTexture->GetHeight());
-    */
-
     ysQuaternion q = ysMath::Constants::QuatIdentity;
-    q = ysMath::LoadQuaternion(m_currentAngle * ysMath::Constants::PI / 180.0f, ysMath::LoadVector(1.0f, 0.0f, 0.0f));
-    m_skeletonBase.SetOrientation(q);
+    //q = ysMath::LoadQuaternion(m_currentAngle * ysMath::Constants::PI / 180.0f, ysMath::LoadVector(1.0f, 0.0f, 0.0f));
+    q = ysMath::Constants::QuatIdentity;
+    //m_skeletonBase.SetOrientation(q);
 
     q = ysMath::LoadQuaternion(m_currentAngle * ysMath::Constants::PI / 180.0f, ysMath::LoadVector(0.0f, 0.0f, 1.0f));
     //m_rod->SetOrientation(q);
@@ -81,6 +89,23 @@ void dbasic_demo::DeltaBasicDemoApplication::Render() {
         m_engine.SetMultiplyColor(ysVector4((rand() % 255) / 255.0f, (rand() % 255) / 255.0f, (rand() % 255) / 255.0f, 1.0f));
         if (asset != nullptr) m_engine.DrawModel(asset, m_renderSkeleton->GetNode(i)->RigidBody.GetTransform(), 1.0f, nullptr);
     }
+
+    m_boneTarget.ClearFlags();
+    m_bone001Target.ClearFlags();
+
+    if (m_engine.ProcessKeyDown(ysKeyboard::KEY_A)) {
+        m_channel1->AddSegment(&m_riseBinding, 5.0f);
+    }
+
+    if (m_engine.ProcessKeyDown(ysKeyboard::KEY_S)) {
+        m_channel2->AddSegment(&m_twistBinding, 5.0f);
+    }
+
+    m_animationMixer.Sample();
+    m_animationMixer.Advance(m_engine.GetFrameLength() * 5);
+
+    m_bone->SetOrientation(ysMath::QuatMultiply(m_boneTarget.GetQuaternionResult(), m_boneBase));
+    m_bone001->SetOrientation(ysMath::QuatMultiply(m_bone001Target.GetQuaternionResult(), m_bone001Base));
 }
 
 void dbasic_demo::DeltaBasicDemoApplication::Run() {
