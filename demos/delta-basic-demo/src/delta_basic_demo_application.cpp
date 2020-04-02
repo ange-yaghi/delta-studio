@@ -76,6 +76,8 @@ void dbasic_demo::DeltaBasicDemoApplication::Initialize(void *instance, ysContex
     paused.FadeIn = 5.0f;
     m_channel1->AddSegment(&m_idle, paused);
     m_channel2->AddSegment(&m_blink, paused);
+
+    m_blinkTimer = 4.0f;
 }
 
 void dbasic_demo::DeltaBasicDemoApplication::Process() {
@@ -100,13 +102,6 @@ void dbasic_demo::DeltaBasicDemoApplication::Render() {
     m_renderSkeleton->UpdateAnimation(m_engine.GetFrameLength() * 60);
 
     m_skeletonBase.UpdateDerivedData(true);
-    srand(0);
-    //for (int i = 0; i < m_renderSkeleton->GetNodeCount(); ++i) {
-    //    dbasic::ModelAsset *asset = m_renderSkeleton->GetNode(i)->GetModelAsset();
-    //    m_engine.SetMultiplyColor(ysVector4((rand() % 255) / 255.0f, (rand() % 255) / 255.0f, (rand() % 255) / 255.0f, 1.0f));
-    //    if (asset != nullptr) m_engine.DrawModel(asset, m_renderSkeleton->GetNode(i)->RigidBody.GetTransform(), 1.0f, nullptr);
-    //}
-
     m_engine.DrawRenderSkeleton(m_renderSkeleton, 1.0f, 0);
 
     ysAnimationChannel::ActionSettings normalSpeed;
@@ -134,7 +129,10 @@ void dbasic_demo::DeltaBasicDemoApplication::Render() {
             speed = &backwardsSpeed;
         }
 
-        m_channel1->ChangeSpeed(speed->Speed);
+        if (m_channel1->GetSpeed() != speed->Speed) {
+            m_channel1->ChangeSpeed(speed->Speed);
+            m_channel1->ClearQueue();
+        }
 
         if (m_channel1->GetCurrentAction() != &m_walk) {
             m_channel1->AddSegment(&m_walk, *speed);
@@ -155,9 +153,12 @@ void dbasic_demo::DeltaBasicDemoApplication::Render() {
         }
     }
 
-    if (m_engine.ProcessKeyDown(ysKeyboard::KEY_B)) {
+    if (m_engine.ProcessKeyDown(ysKeyboard::KEY_B) || m_blinkTimer <= 0) {
+        m_blinkTimer = ((rand() % 201 - 100) / 100.0f) * 1.0f + 4.0f;
         m_channel2->AddSegment(&m_blink, blinkSpeed);
     }
+
+    m_blinkTimer -= m_engine.GetFrameLength();
 }
 
 void dbasic_demo::DeltaBasicDemoApplication::Run() {

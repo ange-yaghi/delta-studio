@@ -39,6 +39,8 @@ namespace dbasic_demo {
 
         ysAnimationChannel *m_channel1;
         ysAnimationChannel *m_channel2;
+
+        float m_blinkTimer;
     };
 
 } /* namesapce dbasic_demo */
