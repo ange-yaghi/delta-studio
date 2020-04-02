@@ -53,7 +53,7 @@ TEST(AnimationTest, TransitionTest) {
     settings.FadeIn = 0.5f;
 
     mixer.AddSegment(&binding, settings);
-    mixer.AddSegmentAtEnd(&binding, settings);
+    mixer.QueueSegment(&binding, settings);
     
     mixer.Sample();
     EXPECT_NEAR(mixer.ProbeTotalAmplitude(), 0.0f, Epsilon);
@@ -86,10 +86,11 @@ TEST(AnimationTest, LoopInterruption) {
     EXPECT_NEAR(mixer.ProbeTotalAmplitude(), 0.0f, Epsilon);
 
     ysAnimationChannel::ActionSettings settings;
+    settings.Speed = 3.0f;
     settings.FadeIn = 0.5f;
 
     mixer.AddSegment(&binding, settings);
-    mixer.AddSegmentAtEnd(&binding, settings);
+    mixer.QueueSegment(&binding, settings);
 
     mixer.Sample(); mixer.Advance(0.5f);
     EXPECT_NEAR(mixer.ProbeTotalAmplitude(), 0.0f, Epsilon);
@@ -116,7 +117,7 @@ TEST(AnimationTest, LoopInterruption) {
             mixer.AddSegment(&binding, settings);
         }
         else if (rand() % 100 == 1) {
-            mixer.AddSegmentAtEnd(&binding, settings);
+            mixer.QueueSegment(&binding, settings);
         }
     }
 }

@@ -57,10 +57,12 @@ public:
         ysAnimationActionBinding *action, const ActionSettings &settings = DefaultSettings);
     void AddSegmentAtOffset(
         ysAnimationActionBinding *action, float offset, const ActionSettings &settings = DefaultSettings);
-    void AddSegmentAtEnd(
+    void QueueSegment(
         ysAnimationActionBinding *action, const ActionSettings &settings = DefaultSettings);
+    void ClearQueue();
 
     void Balance();
+    void HandleQueue();
 
     void SetAmplitude(float amplitude) { m_amplitude = amplitude; }
     float GetAmplitude() const { return m_amplitude; }
@@ -72,6 +74,8 @@ public:
 
     // Testing probes
     float ProbeTotalAmplitude() const;
+
+    bool HasQueuedSegments() const { return m_actionQueued; }
 
 protected:
     float m_amplitude;
@@ -85,6 +89,10 @@ protected:
     void IncrementStackPointer();
 
     int GetPrevious() const;
+
+    ActionSettings m_queuedSettings;
+    ysAnimationActionBinding *m_queuedAction;
+    bool m_actionQueued;
 
     Segment m_segmentStack[SegmentStackSize];
     int m_currentStackPointer;

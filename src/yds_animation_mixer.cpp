@@ -3,6 +3,7 @@
 #include "../include/yds_animation_action.h"
 #include "../include/yds_animation_action_binding.h"
 
+#include <assert.h>
 #include <algorithm>
 
 ysAnimationChannel::ysAnimationChannel() {
@@ -24,6 +25,8 @@ void ysAnimationChannel::Reset() {
 }
 
 void ysAnimationChannel::Sample() {
+    HandleQueue();
+
     // Update segment that is fading in first
     for (int i = 0; i < SegmentStackSize; ++i) {
         if (m_segmentStack[i].IsActive()) {
@@ -71,11 +74,33 @@ void ysAnimationChannel::Sample() {
         Segment &segment = m_segmentStack[i];
         if (segment.IsActive()) {
             float s = ComputeSegmentPlayhead(segment);
-            if (segment.Action != nullptr) {
+            if (segment.IsActive()) {
                 segment.Action->Sample(s, segment.Amplitude);
             }
         }
     }
+}
+
+void ysAnimationChannel::HandleQueue() {
+    if (!HasQueuedSegments()) return;
+
+    int last = GetPrevious();
+    if (last == -1) {
+        AddSegment(m_queuedAction, m_queuedSettings);
+    }
+    else {
+        Segment &segment = m_segmentStack[last];
+        float s = ComputeSegmentPlayhead(segment);
+        float offset = (segment.Speed < 0)
+            ? s - segment.LeftClip
+            : segment.RightClip - s;
+
+        if (offset <= 0) {
+            AddSegmentAtOffset(m_queuedAction, offset, m_queuedSettings);
+        }
+    }
+
+    m_actionQueued = false;
 }
 
 void ysAnimationChannel::Advance(float dt) {
@@ -94,6 +119,10 @@ void ysAnimationChannel::Advance(float dt) {
 ysAnimationActionBinding *ysAnimationChannel::GetCurrentAction() const {
     int last = GetPrevious();
     if (last == -1) return nullptr;
+
+    if (last >= SegmentStackSize) {
+        int breakHere = 0;
+    }
 
     const Segment &currentSegment = m_segmentStack[last];
     return currentSegment.Action;
@@ -179,23 +208,30 @@ void ysAnimationChannel::Balance() {
     }
 }
 
-void ysAnimationChannel::AddSegmentAtEnd(ysAnimationActionBinding *action, const ActionSettings &settings) {
-    int last = GetPrevious();
+void ysAnimationChannel::QueueSegment(ysAnimationActionBinding *action, const ActionSettings &settings) {
+    m_actionQueued = true;
+    m_queuedAction = action;
+    m_queuedSettings = settings;
+}
 
-    float offset = 0.0f;
-    if (last != -1) {
-        offset = m_segmentStack[last].Action->GetAction()->GetLength() + m_segmentStack[last].CurrentOffset;
-    }
-
-    AddSegmentAtOffset(action, offset, settings);
+void ysAnimationChannel::ClearQueue() {
+    m_actionQueued = false;
+    m_queuedAction = nullptr;
 }
 
 int ysAnimationChannel::GetPrevious() const {
-    int i = m_currentStackPointer - 1;
-    int prev = (i + SegmentStackSize) % SegmentStackSize;
+    int i = m_currentStackPointer;
+    do {
+        int prev = (--i + SegmentStackSize) % SegmentStackSize;
+        i = prev;
 
-    if (m_segmentStack[prev].Action == nullptr) return -1;
-    else return prev;
+        if (!m_segmentStack[prev].IsActive()) return -1;
+        else {
+            if (m_segmentStack[prev].CurrentOffset <= 0) return prev;
+        }
+    } while (i != m_currentStackPointer);
+
+    return -1;
 }
 
 int ysAnimationChannel::GetActiveSegments() const {
@@ -228,9 +264,6 @@ float ysAnimationChannel::ComputeSegmentPlayhead(const Segment &segment) const {
     else {
         s = s + segment.LeftClip;
     }
-
-    if (s < segment.LeftClip) s = segment.LeftClip;
-    if (s > segment.RightClip) s = segment.RightClip;
 
     return s;
 }

@@ -35,8 +35,6 @@ void dbasic_demo::DeltaBasicDemoApplication::Initialize(void *instance, ysContex
     m_probe = &m_renderSkeleton->FindNode("Head")->RigidBody;
     m_probe2 = m_renderSkeleton->FindNode("Circle");
 
-    auto test = m_assetManager.GetSceneObject("Circle");
-    
     m_engine.LoadTexture(&m_demoTexture, "../../demos/delta-basic-demo/assets/chicken.png");
 
     m_assetManager.LoadAnimationFile("../../workspace/ant_rigged.dimo");
@@ -97,24 +95,36 @@ void dbasic_demo::DeltaBasicDemoApplication::Render() {
     normalSpeed.Speed = 1.0f;
     normalSpeed.FadeIn = 20.0f;
 
+    ysAnimationChannel::ActionSettings fastSpeed;
+    fastSpeed.Speed = 2.0f;
+    fastSpeed.FadeIn = 10.0f;
+
     ysAnimationChannel::ActionSettings blinkSpeed;
     blinkSpeed.Speed = 1.0f;
     blinkSpeed.FadeIn = 2.0f;
 
     if (m_engine.IsKeyDown(ysKeyboard::KEY_W)) {
-        if (m_channel1->GetCurrentAction() != &m_walk) {
-            m_channel1->AddSegment(&m_walk, normalSpeed);
+        ysAnimationChannel::ActionSettings *speed = &normalSpeed;
+        if (m_engine.IsKeyDown(ysKeyboard::KEY_UP)) {
+            speed = &fastSpeed;
         }
-        else if (m_channel1->GetPlayhead() > 20.0f) {
-            m_channel1->AddSegmentAtEnd(&m_walk, normalSpeed);
+
+        if (m_channel1->GetCurrentAction() != &m_walk) {
+            m_channel1->AddSegment(&m_walk, *speed);
+            m_channel1->ClearQueue();
+        }
+        else if (!m_channel1->HasQueuedSegments()) {
+            speed->FadeIn = 0.0f;
+            m_channel1->QueueSegment(&m_walk, *speed);
         }
     }
     else {
         if (m_channel1->GetCurrentAction() != &m_idle) {
             m_channel1->AddSegment(&m_idle, normalSpeed);
+            m_channel1->ClearQueue();
         }
-        else if (m_channel1->GetPlayhead() > 50.0f) {
-            m_channel1->AddSegmentAtEnd(&m_idle, normalSpeed);
+        else if (!m_channel1->HasQueuedSegments()) {
+            m_channel1->QueueSegment(&m_idle, normalSpeed);
         }
     }
 
