@@ -33,7 +33,7 @@ void dbasic_demo::DeltaBasicDemoApplication::Initialize(void *instance, ysContex
 
     dbasic::Material *highlight = m_assetManager.NewMaterial();
     highlight->SetName("Highlight");
-    highlight->SetDiffuseColor(ysVector4(1.0f, 1.0f, 1.0f, 0.941667f));
+    highlight->SetDiffuseColor(ysVector4(1.0f, 1.0f, 1.0f, 1.0f - 0.941667f));
 
     m_assetManager.SetEngine(&m_engine);
     m_assetManager.CompileSceneFile("../../workspace/addon_dev", 1.0f, true);
@@ -113,6 +113,10 @@ void dbasic_demo::DeltaBasicDemoApplication::Render() {
     normalSpeed.Speed = 1.0f;
     normalSpeed.FadeIn = 20.0f;
 
+    ysAnimationChannel::ActionSettings backwardsSpeed;
+    backwardsSpeed.Speed = -1.0f;
+    backwardsSpeed.FadeIn = 20.0f;
+
     ysAnimationChannel::ActionSettings fastSpeed;
     fastSpeed.Speed = 2.0f;
     fastSpeed.FadeIn = 10.0f;
@@ -126,6 +130,11 @@ void dbasic_demo::DeltaBasicDemoApplication::Render() {
         if (m_engine.IsKeyDown(ysKeyboard::KEY_UP)) {
             speed = &fastSpeed;
         }
+        else if (m_engine.IsKeyDown(ysKeyboard::KEY_DOWN)) {
+            speed = &backwardsSpeed;
+        }
+
+        m_channel1->ChangeSpeed(speed->Speed);
 
         if (m_channel1->GetCurrentAction() != &m_walk) {
             m_channel1->AddSegment(&m_walk, *speed);

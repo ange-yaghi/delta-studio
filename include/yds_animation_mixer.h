@@ -28,6 +28,8 @@ public:
         bool IsActive() const { return Action != nullptr; }
 
         ysAnimationActionBinding *Action;
+        float Playhead;
+
         float Speed;
         float FadeIn;
         float LeftClip;
@@ -60,6 +62,9 @@ public:
     void QueueSegment(
         ysAnimationActionBinding *action, const ActionSettings &settings = DefaultSettings);
     void ClearQueue();
+
+    void ChangeSpeed(float speed);
+    float GetSpeed() const;
 
     void Balance();
     void HandleQueue();

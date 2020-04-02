@@ -112,6 +112,8 @@ void ysAnimationChannel::Advance(float dt) {
                 m_segmentStack[i].FadeOutT0 -= dt;
                 m_segmentStack[i].FadeOutT1 -= dt;
             }
+
+            m_segmentStack[i].Playhead += m_segmentStack[i].Speed * dt;
         }
     }
 }
@@ -177,6 +179,13 @@ void ysAnimationChannel::AddSegmentAtOffset(ysAnimationActionBinding *action, fl
         m_segmentStack[i].RightClip = action->GetAction()->GetLength();
     }
 
+    if (settings.Speed < 0) {
+        m_segmentStack[i].Playhead = m_segmentStack[i].RightClip;
+    }
+    else {
+        m_segmentStack[i].Playhead = m_segmentStack[i].LeftClip;
+    }
+
     for (int j = 0; j < SegmentStackSize; ++j) {
         if (j != i && m_segmentStack[j].IsActive()) {
             if (!m_segmentStack[j].Fading || m_segmentStack[j].FadeOutT0 > offset) {
@@ -219,6 +228,22 @@ void ysAnimationChannel::ClearQueue() {
     m_queuedAction = nullptr;
 }
 
+void ysAnimationChannel::ChangeSpeed(float speed) {
+    int last = GetPrevious();
+    if (last == -1) return;
+    else {
+        m_segmentStack[last].Speed = speed;
+    }
+}
+
+float ysAnimationChannel::GetSpeed() const {
+    int last = GetPrevious();
+    if (last == -1) return 0.0f;
+    else {
+        return m_segmentStack[last].Speed;
+    }
+}
+
 int ysAnimationChannel::GetPrevious() const {
     int i = m_currentStackPointer;
     do {
@@ -257,15 +282,7 @@ float ysAnimationChannel::ProbeTotalAmplitude() const {
 }
 
 float ysAnimationChannel::ComputeSegmentPlayhead(const Segment &segment) const {
-    float s = (0 - segment.CurrentOffset) * segment.Speed;
-    if (segment.Speed < 0) {
-        s = s + segment.RightClip;
-    }
-    else {
-        s = s + segment.LeftClip;
-    }
-
-    return s;
+    return segment.Playhead;
 }
 
 float ysAnimationChannel::GetTotalAmplitude(int *activeSegments) const {
