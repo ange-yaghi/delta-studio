@@ -3,6 +3,8 @@
 #include "../include/yds_animation_action.h"
 #include "../include/yds_animation_action_binding.h"
 
+#include <algorithm>
+
 ysAnimationChannel::ysAnimationChannel() {
     m_amplitude = 1.0f;
 
@@ -62,6 +64,8 @@ void ysAnimationChannel::Sample() {
             }
         }
     }
+
+    Balance();
 
     for (int i = 0; i < SegmentStackSize; ++i) {
         Segment &segment = m_segmentStack[i];
@@ -146,14 +150,33 @@ void ysAnimationChannel::AddSegmentAtOffset(ysAnimationActionBinding *action, fl
 
     for (int j = 0; j < SegmentStackSize; ++j) {
         if (j != i && m_segmentStack[j].IsActive()) {
-            m_segmentStack[j].FadeStartAmplitude = m_segmentStack[j].Amplitude;
-            m_segmentStack[j].FadeOutT0 = offset;
-            m_segmentStack[j].FadeOutT1 = offset + settings.FadeIn;
+            if (!m_segmentStack[j].Fading || m_segmentStack[j].FadeOutT0 > offset) {
+                m_segmentStack[j].FadeStartAmplitude = m_segmentStack[j].Amplitude;
+                m_segmentStack[j].FadeOutT0 = offset;
+            }
+
+            if (!m_segmentStack[j].Fading || m_segmentStack[j].FadeOutT1 > offset + settings.FadeIn) {
+                m_segmentStack[j].FadeOutT1 = offset + settings.FadeIn;
+            }
+
             m_segmentStack[j].Fading = true;
         }
     }
 
     IncrementStackPointer();
+}
+
+void ysAnimationChannel::Balance() {
+    int activeSegments = 0;
+    float totalAmplitude = GetTotalAmplitude(&activeSegments);
+    if (activeSegments <= 1) return;
+
+    float inv = 1 / totalAmplitude;
+    for (int i = 0; i < SegmentStackSize; ++i) {
+        if (m_segmentStack[i].IsActive() && m_segmentStack[i].CurrentOffset <= 0) {
+            m_segmentStack[i].Amplitude *= inv;
+        }
+    }
 }
 
 void ysAnimationChannel::AddSegmentAtEnd(ysAnimationActionBinding *action, const ActionSettings &settings) {
@@ -189,7 +212,7 @@ int ysAnimationChannel::GetActiveSegments() const {
 float ysAnimationChannel::ProbeTotalAmplitude() const {
     float total = 0.0f;
     for (int i = 0; i < SegmentStackSize; ++i) {
-        if (m_segmentStack[i].Action != nullptr) {
+        if (m_segmentStack[i].IsActive() && m_segmentStack[i].CurrentOffset <= 0) {
             total += m_segmentStack[i].Amplitude;
         }
     }
@@ -210,6 +233,20 @@ float ysAnimationChannel::ComputeSegmentPlayhead(const Segment &segment) const {
     if (s > segment.RightClip) s = segment.RightClip;
 
     return s;
+}
+
+float ysAnimationChannel::GetTotalAmplitude(int *activeSegments) const {
+    *activeSegments = 0;
+    
+    float total = 0.0f;
+    for (int i = 0; i < SegmentStackSize; ++i) {
+        if (m_segmentStack[i].IsActive() && m_segmentStack[i].CurrentOffset <= 0) {
+            total += m_segmentStack[i].Amplitude;
+            ++(*activeSegments);
+        }
+    }
+
+    return total;
 }
 
 void ysAnimationChannel::KillSegment(int segment) {

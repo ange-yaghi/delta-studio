@@ -12,7 +12,7 @@ dbasic::RenderNode::RenderNode() : ysObject("RenderNode") {
     m_rotationTarget.ClearRotation(ysMath::Constants::QuatIdentity);
 
     m_restLocation = ysMath::Constants::Zero;
-    m_restOrientation = ysMath::Constants::QuatIdentity;
+    m_lastValidOrientation = ysMath::Constants::QuatIdentity;
 }
 
 dbasic::RenderNode::~RenderNode() {

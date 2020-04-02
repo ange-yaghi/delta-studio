@@ -60,6 +60,8 @@ public:
     void AddSegmentAtEnd(
         ysAnimationActionBinding *action, const ActionSettings &settings = DefaultSettings);
 
+    void Balance();
+
     void SetAmplitude(float amplitude) { m_amplitude = amplitude; }
     float GetAmplitude() const { return m_amplitude; }
 
@@ -76,6 +78,8 @@ protected:
 
 protected:
     float ComputeSegmentPlayhead(const Segment &segment) const;
+
+    float GetTotalAmplitude(int *activeSegments) const;
 
     void KillSegment(int segment);
     void IncrementStackPointer();

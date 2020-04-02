@@ -36,11 +36,14 @@ namespace dbasic {
         TransformTarget *GetLocationTarget() { return &m_locationTarget; }
         TransformTarget *GetRotationTarget() { return &m_rotationTarget; }
 
-        void SetRestLocation(const ysVector &loc) { m_restLocation = loc; }
-        ysVector GetRestLocation() const { return m_restLocation; }
+        void SetBone(bool bone) { m_bone = bone; }
+        bool IsBone() const { return m_bone; }
 
-        void SetRestOrientation(const ysQuaternion &q) { m_restOrientation = q; }
-        ysQuaternion GetRestOrientation() const { return m_restOrientation; }
+        void SetLastValidOrientation(const ysQuaternion &q) { m_lastValidOrientation = q; }
+        ysQuaternion GetLastValidOrientation() const { return m_lastValidOrientation; }
+
+        void SetRestLocation(const ysVector &v) { m_restLocation = v; }
+        ysVector GetRestLocation() const { return m_restLocation; }
 
     protected:
         // Node name
@@ -58,12 +61,14 @@ namespace dbasic {
         // Model asset
         ModelAsset *m_modelAsset;
 
+        bool m_bone;
+
         // Animation targets
         TransformTarget m_locationTarget;
         TransformTarget m_rotationTarget;
 
         ysVector m_restLocation;
-        ysQuaternion m_restOrientation;
+        ysQuaternion m_lastValidOrientation;
     };
 
 } /* namespace dbasic */

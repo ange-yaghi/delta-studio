@@ -537,9 +537,9 @@ dbasic::RenderSkeleton *dbasic::AssetManager::BuildRenderSkeleton(dphysics::Rigi
     newNode->RigidBody.SetPosition(rootBone->GetPosition());
     newNode->SetModelAsset(rootBone->m_geometry);
     newNode->SetName(rootBone->m_name);
+    newNode->SetBone(rootBone->GetType() == ysObjectData::ObjectType::Bone);
 
     newNode->SetRestLocation(rootBone->GetPosition());
-    newNode->SetRestOrientation(rootBone->GetLocalOrientation());
 
     // Get the root bone
     SceneObjectAsset *rootBoneReference = rootBone;
@@ -564,9 +564,9 @@ void dbasic::AssetManager::ProcessRenderNode(SceneObjectAsset *object, RenderSke
         newNode->RigidBody.SetPosition(object->GetPosition());
         newNode->SetModelAsset(object->m_geometry);
         newNode->SetName(object->m_name);
+        newNode->SetBone(object->GetType() == ysObjectData::ObjectType::Bone);
 
         newNode->SetRestLocation(object->GetPosition());
-        newNode->SetRestOrientation(object->GetLocalOrientation());
     }
 
     for (int i = 0; i < nChildren; i++) {

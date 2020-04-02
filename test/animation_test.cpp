@@ -74,6 +74,53 @@ TEST(AnimationTest, TransitionTest) {
     EXPECT_NEAR(mixer.ProbeTotalAmplitude(), 1.0f, Epsilon);
 }
 
+TEST(AnimationTest, LoopInterruption) {
+    ysAnimationChannel mixer;
+
+    ysAnimationAction action;
+    action.SetLength(10.0f);
+
+    ysAnimationActionBinding binding;
+    binding.SetAction(&action);
+
+    EXPECT_NEAR(mixer.ProbeTotalAmplitude(), 0.0f, Epsilon);
+
+    ysAnimationChannel::ActionSettings settings;
+    settings.FadeIn = 0.5f;
+
+    mixer.AddSegment(&binding, settings);
+    mixer.AddSegmentAtEnd(&binding, settings);
+
+    mixer.Sample(); mixer.Advance(0.5f);
+    EXPECT_NEAR(mixer.ProbeTotalAmplitude(), 0.0f, Epsilon);
+
+    for (int i = 0; i < 1000; ++i) {
+        if (i == 78) {
+            int breakHere = 0;
+        }
+
+        mixer.Advance(0.001f); 
+        mixer.Sample();
+        if (std::isnan(mixer.ProbeTotalAmplitude())) {
+            int breakHere = 0;
+        }
+
+        if (std::abs(mixer.ProbeTotalAmplitude() - 1.0f) > Epsilon) {
+            int breakHere = 0;
+            break;
+        }
+
+        EXPECT_NEAR(mixer.ProbeTotalAmplitude(), 1.0f, Epsilon);
+
+        if (rand() % 100 == 0) {
+            mixer.AddSegment(&binding, settings);
+        }
+        else if (rand() % 100 == 1) {
+            mixer.AddSegmentAtEnd(&binding, settings);
+        }
+    }
+}
+
 TEST(AnimationTest, ImmediateTransitionTest) {
     ysAnimationChannel mixer;
 

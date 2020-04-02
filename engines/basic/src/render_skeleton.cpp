@@ -32,6 +32,7 @@ void dbasic::RenderSkeleton::BindAction(
 
     for (int i = 0; i < nNodes; i++) {
         RenderNode *node = m_renderNodes.Get(i);
+        if (!node->IsBone()) continue;
 
         if (action->IsAnimated(node->GetName())) {
             binding->AddTarget(
@@ -79,19 +80,24 @@ void dbasic::RenderSkeleton::UpdateAnimation(float dt) {
         TransformTarget *rotTarget = node->GetRotationTarget();
 
         if (locTarget->IsAnimated()) {
-            node->RigidBody.SetVelocity(
+            node->RigidBody.SetPosition(
                 ysMath::Add(
                     node->GetRestLocation(), locTarget->GetLocationResult())
                 );
         }
 
         if (rotTarget->IsAnimated()) {
-            node->RigidBody.SetOrientation(
-                ysMath::QuatMultiply(
-                    rotTarget->GetQuaternionResult(),
-                    node->GetRestOrientation()
-                    )
-                );
+            ysQuaternion r = rotTarget->GetQuaternionResult();
+            float mag = ysMath::GetScalar(ysMath::Magnitude(r));
+
+            if (mag <= 1e-5) {
+                r = node->GetLastValidOrientation();
+            }
+            else {
+                node->SetLastValidOrientation(r);
+            }
+
+            node->RigidBody.SetOrientation(ysMath::Normalize(r));
         }
     }
 }
