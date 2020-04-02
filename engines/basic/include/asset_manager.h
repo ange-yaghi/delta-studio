@@ -38,6 +38,7 @@ namespace dbasic {
         Material *NewMaterial();
         Material *FindMaterial(const char *name);
         Material *GetMaterial(int index) { return m_materials.Get(index); }
+        int GetMaterialCount() const { return m_materials.GetNumObjects(); }
 
         SceneObjectAsset *NewSceneObject();
         int GetSceneObjectCount() const { return m_sceneObjects.GetNumObjects(); }

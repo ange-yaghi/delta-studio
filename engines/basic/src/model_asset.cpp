@@ -1,10 +1,11 @@
 #include "../include/model_asset.h"
 
 dbasic::ModelAsset::ModelAsset() : ysObject("MODEL_ASSET") {
-    m_defaultMaterial = NULL;
+    m_name[0] = '\0';
+    m_material = nullptr;
 
-    m_vertexBuffer = NULL;
-    m_indexBuffer = NULL;
+    m_vertexBuffer = nullptr;
+    m_indexBuffer = nullptr;
 
     m_baseVertex = 0;
     m_baseIndex = 0;
@@ -15,7 +16,7 @@ dbasic::ModelAsset::ModelAsset() : ysObject("MODEL_ASSET") {
 
     m_vertexSize = 0;
 
-    m_manager = NULL;
+    m_manager = nullptr;
 }
 
 dbasic::ModelAsset::~ModelAsset() {

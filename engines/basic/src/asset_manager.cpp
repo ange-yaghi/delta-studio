@@ -335,7 +335,7 @@ ysError dbasic::AssetManager::LoadSceneFile(const char *fname, bool placeInVram)
             strcpy_s(newModelAsset->m_name, 64, header.ObjectName);
 
             newObject->m_material = FindMaterial(header.ObjectMaterial);
-            newModelAsset->m_defaultMaterial = FindMaterial(header.ObjectMaterial);
+            newModelAsset->SetMaterial(FindMaterial(header.ObjectMaterial));
             newObject->m_geometry = newModelAsset;
 
             currentIndexOffset += header.NumFaces * 3;

@@ -3,7 +3,13 @@
 #include <string.h>
 
 dbasic::Material::Material() : ysObject("Material") {
-    /* void */
+    m_name[0] = '\0';
+
+    m_diffuseMap = nullptr;
+    m_normalMap = nullptr;
+    m_specularMap = nullptr;
+
+    m_diffuseColor = ysVector4();
 }
 
 dbasic::Material::~Material() {

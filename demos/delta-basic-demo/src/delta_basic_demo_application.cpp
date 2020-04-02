@@ -19,6 +19,22 @@ void dbasic_demo::DeltaBasicDemoApplication::Initialize(void *instance, ysContex
         "../../engines/basic/shaders/"); // TODO: path should be relative to exe
     m_engine.SetClearColor(0x34, 0x98, 0xdb);
 
+    dbasic::Material *lightFill = m_assetManager.NewMaterial();
+    lightFill->SetName("LightFill");
+    lightFill->SetDiffuseColor(ysVector4(0xEF / 255.0f, 0x38 / 255.0f, 0x37 / 255.0f, 1.0f));
+
+    dbasic::Material *lineColor = m_assetManager.NewMaterial();
+    lineColor->SetName("LineColor");
+    lineColor->SetDiffuseColor(ysVector4(0x91 / 255.0f, 0x1A / 255.0f, 0x1D / 255.0f, 1.0f));
+
+    dbasic::Material *darkFill = m_assetManager.NewMaterial();
+    darkFill->SetName("DarkFill");
+    darkFill->SetDiffuseColor(ysVector4(0xC4 / 255.0f, 0x21 / 255.0f, 0x26 / 255.0f, 1.0f));
+
+    dbasic::Material *highlight = m_assetManager.NewMaterial();
+    highlight->SetName("Highlight");
+    highlight->SetDiffuseColor(ysVector4(1.0f, 1.0f, 1.0f, 0.941667f));
+
     m_assetManager.SetEngine(&m_engine);
     m_assetManager.CompileSceneFile("../../workspace/addon_dev", 1.0f, true);
     m_assetManager.LoadSceneFile("../../workspace/addon_dev");
@@ -85,11 +101,13 @@ void dbasic_demo::DeltaBasicDemoApplication::Render() {
 
     m_skeletonBase.UpdateDerivedData(true);
     srand(0);
-    for (int i = 0; i < m_renderSkeleton->GetNodeCount(); ++i) {
-        dbasic::ModelAsset *asset = m_renderSkeleton->GetNode(i)->GetModelAsset();
-        m_engine.SetMultiplyColor(ysVector4((rand() % 255) / 255.0f, (rand() % 255) / 255.0f, (rand() % 255) / 255.0f, 1.0f));
-        if (asset != nullptr) m_engine.DrawModel(asset, m_renderSkeleton->GetNode(i)->RigidBody.GetTransform(), 1.0f, nullptr);
-    }
+    //for (int i = 0; i < m_renderSkeleton->GetNodeCount(); ++i) {
+    //    dbasic::ModelAsset *asset = m_renderSkeleton->GetNode(i)->GetModelAsset();
+    //    m_engine.SetMultiplyColor(ysVector4((rand() % 255) / 255.0f, (rand() % 255) / 255.0f, (rand() % 255) / 255.0f, 1.0f));
+    //    if (asset != nullptr) m_engine.DrawModel(asset, m_renderSkeleton->GetNode(i)->RigidBody.GetTransform(), 1.0f, nullptr);
+    //}
+
+    m_engine.DrawRenderSkeleton(m_renderSkeleton, 1.0f, 0);
 
     ysAnimationChannel::ActionSettings normalSpeed;
     normalSpeed.Speed = 1.0f;
