@@ -23,8 +23,8 @@ void dbasic_demo::DeltaBasicDemoApplication::Initialize(void *instance, ysContex
     m_assetManager.CompileSceneFile("../../workspace/addon_dev", 1.0f, true);
     m_assetManager.LoadSceneFile("../../workspace/addon_dev");
 
-    m_assetManager.CompileInterchangeFile("../../workspace/ant_rigged", 1.0f, true);
-    m_assetManager.LoadSceneFile("../../workspace/ant_rigged");
+    m_assetManager.CompileInterchangeFile("../../test/geometry_files/ant_rigged", 1.0f, true);
+    m_assetManager.LoadSceneFile("../../test/geometry_files/ant_rigged");
 
     m_assetManager.ResolveNodeHierarchy();
 
@@ -37,7 +37,7 @@ void dbasic_demo::DeltaBasicDemoApplication::Initialize(void *instance, ysContex
 
     m_engine.LoadTexture(&m_demoTexture, "../../demos/delta-basic-demo/assets/chicken.png");
 
-    m_assetManager.LoadAnimationFile("../../workspace/ant_rigged.dimo");
+    m_assetManager.LoadAnimationFile("../../test/animation_files/ant_rigged.dimo");
     m_blinkAction = m_assetManager.GetAction("Blink");
     m_idleAction = m_assetManager.GetAction("Idle");
     m_walkAction = m_assetManager.GetAction("Walk");
