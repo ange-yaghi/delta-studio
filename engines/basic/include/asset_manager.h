@@ -28,12 +28,17 @@ namespace dbasic {
         ysError CompileInterchangeFile(const char *fname, float scale = 1.0f, bool force = false);
         ysError LoadSceneFile(const char *fname, bool placeInVram = true);
 
-        ysError CompileAnimationFile(const char *fname);
         ysError LoadAnimationFile(const char *fname);
+        ysAnimationAction *GetAction(const char *name);
+        int GetActionCount() const { return m_actions.GetNumObjects(); }
+
+        ysError CompileAnimationFileLegacy(const char *fname);
+        ysError LoadAnimationFileLegacy(const char *fname);
 
         Material *NewMaterial();
         Material *FindMaterial(const char *name);
         Material *GetMaterial(int index) { return m_materials.Get(index); }
+        int GetMaterialCount() const { return m_materials.GetNumObjects(); }
 
         SceneObjectAsset *NewSceneObject();
         int GetSceneObjectCount() const { return m_sceneObjects.GetNumObjects(); }
@@ -57,13 +62,14 @@ namespace dbasic {
         ysError ResolveNodeHierarchy();
 
     protected:
-        ysDynamicArray<ModelAsset, 4>				m_modelAssets;
+        ysDynamicArray<ModelAsset, 4>			m_modelAssets;
         ysDynamicArray<SceneObjectAsset, 4>		m_sceneObjects;
         ysDynamicArray<Material, 4>				m_materials;
         ysDynamicArray<Skeleton, 4>				m_skeletons;
         ysDynamicArray<RenderSkeleton, 4>			m_renderSkeletons;
         ysDynamicArray<AnimationObjectController, 4>	m_animationControllers;
         ysDynamicArray<AnimationExportData, 4>	m_animationExportData;
+        ysDynamicArray<ysAnimationAction, 4> m_actions;
 
         DeltaEngine *m_engine;
     };

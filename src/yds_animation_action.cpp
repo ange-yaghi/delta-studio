@@ -1,9 +1,49 @@
 #include "../include/yds_animation_action.h"
 
-ysAnimationAction::ysAnimationAction() {
-    /* void */
+#include "../include/yds_animation_target.h"
+
+ysAnimationAction::ysAnimationAction() : ysObject("ysAnimationAction") {
+    m_curveCount = 0;
+    m_length = 0.0f;
 }
 
 ysAnimationAction::~ysAnimationAction() {
-    /* void */
+    for (auto group : m_curves) {
+        for (ysAnimationCurve *curve : group.second) {
+            delete curve;
+        }
+    }
+}
+
+ysAnimationCurve *ysAnimationAction::NewCurve(const std::string &target) {
+    m_curves.emplace(target, std::vector<ysAnimationCurve *>());
+
+    ysAnimationCurve *newCurve = new ysAnimationCurve;
+    newCurve->SetTarget(target);
+    m_curves[target].push_back(newCurve);
+
+    ++m_curveCount;
+
+    return newCurve;
+}
+
+int ysAnimationAction::GetCurveCount() const {
+    return m_curveCount;
+}
+
+bool ysAnimationAction::IsAnimated(const std::string &objectName) const {
+    auto f = m_curves.find(objectName);
+    if (f == m_curves.end()) return false;
+    else return !(*f).second.empty();
+}
+
+void ysAnimationAction::Bind(const std::string &objectName, ysAnimationTarget *target) {
+    auto f = m_curves.find(objectName);
+    if (f == m_curves.end()) return;
+    else {
+        std::vector<ysAnimationCurve *> &curves = (*f).second;
+        for (ysAnimationCurve *curve : curves) {
+            curve->Attach(target);
+        }
+    }
 }

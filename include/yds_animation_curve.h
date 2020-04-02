@@ -4,6 +4,8 @@
 #include <map>
 #include <string>
 
+class ysAnimationTarget;
+
 class ysAnimationCurve {
 public:
     enum class CurveType {
@@ -27,7 +29,7 @@ public:
     ~ysAnimationCurve();
 
     float Sample(float s);
-    void AddSamplePoint(float s, float v);
+    float GetRestValue();
 
     void SetTarget(const std::string &target) { m_target = target; }
     std::string GetTarget() const { return m_target; }
@@ -35,7 +37,10 @@ public:
     void SetCurveType(CurveType curveType) { m_curveType = curveType; }
     CurveType GetCurveType() const { return m_curveType; }
 
+    void AddSamplePoint(float s, float v);
     int GetSampleCount() const { return (int)m_samples.size(); }
+
+    void Attach(ysAnimationTarget *target);
 
 protected:
     std::map<float, float> m_samples;

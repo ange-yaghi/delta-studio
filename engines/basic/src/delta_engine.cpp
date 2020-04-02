@@ -1,6 +1,8 @@
 #include "../include/delta_engine.h"
 
 #include "../include/skeleton.h"
+#include "../include/render_skeleton.h"
+#include "../include/material.h"
 
 dbasic::DeltaEngine::DeltaEngine() {
     m_device = NULL;
@@ -151,6 +153,17 @@ ysError dbasic::DeltaEngine::Destroy() {
     YDS_NESTED_ERROR_CALL(m_device->DestroyDevice());
 
     m_windowSystem->DeleteAllWindows();
+
+    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+}
+
+ysError dbasic::DeltaEngine::UseMaterial(Material *material) {
+    if (material == nullptr) {
+        SetMultiplyColor(ysVector4(1.0f, 0.0f, 1.0f, 1.0f));
+    }
+    else {
+        SetMultiplyColor(material->GetDiffuseColor());
+    }
 
     return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
 }
@@ -514,6 +527,30 @@ ysError dbasic::DeltaEngine::DrawModel(ModelAsset *model, const ysMatrix &transf
         newCall->ObjectVariables = m_shaderObjectVariables;
         newCall->Texture = texture;
         newCall->Model = model;
+    }
+
+    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+}
+
+ysError dbasic::DeltaEngine::DrawRenderSkeleton(RenderSkeleton *skeleton, float scale, int layer) {
+    int nodeCount = skeleton->GetNodeCount();
+    for (int i = 0; i < nodeCount; ++i) {
+        RenderNode *node = skeleton->GetNode(i);
+        if (node->GetModelAsset() != nullptr) {
+            Material *material = node->GetModelAsset()->GetMaterial();
+            UseMaterial(node->GetModelAsset()->GetMaterial());
+
+            ysTexture *diffuseMap = material == nullptr
+                ? nullptr
+                : material->GetDiffuseMap();
+
+            DrawModel(
+                node->GetModelAsset(),
+                node->RigidBody.GetTransform(),
+                scale,
+                diffuseMap,
+                layer);
+        }
     }
 
     return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);

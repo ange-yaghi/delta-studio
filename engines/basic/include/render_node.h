@@ -2,6 +2,7 @@
 #define DELTA_BASIC_RENDER_NODE_H
 
 #include "delta_core.h"
+
 #include "delta_physics.h"
 
 namespace dbasic {
@@ -32,6 +33,18 @@ namespace dbasic {
         void SetAssetID(int assetID) { m_assetID = assetID; }
         int GetAssetID() const { return m_assetID; }
 
+        TransformTarget *GetLocationTarget() { return &m_locationTarget; }
+        TransformTarget *GetRotationTarget() { return &m_rotationTarget; }
+
+        void SetBone(bool bone) { m_bone = bone; }
+        bool IsBone() const { return m_bone; }
+
+        void SetLastValidOrientation(const ysQuaternion &q) { m_lastValidOrientation = q; }
+        ysQuaternion GetLastValidOrientation() const { return m_lastValidOrientation; }
+
+        void SetRestLocation(const ysVector &v) { m_restLocation = v; }
+        ysVector GetRestLocation() const { return m_restLocation; }
+
     protected:
         // Node name
         char m_name[64];
@@ -47,6 +60,15 @@ namespace dbasic {
 
         // Model asset
         ModelAsset *m_modelAsset;
+
+        bool m_bone;
+
+        // Animation targets
+        TransformTarget m_locationTarget;
+        TransformTarget m_rotationTarget;
+
+        ysVector m_restLocation;
+        ysQuaternion m_lastValidOrientation;
     };
 
 } /* namespace dbasic */

@@ -16,6 +16,12 @@
 // Animation
 #include "yds_object_animation_data.h"
 #include "yds_tool_animation_file.h"
+#include "yds_animation_action.h"
+#include "yds_animation_action_binding.h"
+#include "yds_animation_curve.h"
+#include "yds_animation_mixer.h"
+#include "yds_animation_target.h"
+#include "yds_animation_interchange_file_0_0.h"
 
 // Timing
 #include "yds_time_tag_data.h"

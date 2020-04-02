@@ -97,18 +97,17 @@ class ObjectList(object):
 
 
     def generate_object_list(self, objects):
-        object_list = ObjectList()
         for obj in objects:
             self.add_referenced_geometry(obj)
 
         for obj in objects:
             self.expand_object(obj, mathutils.Matrix.Identity(4))
 
-        for obj in object_list.object_list:
+        for obj in self.object_list:
             if obj.obj.parent is not None and obj.parent_index == -1:
-                obj.parent_index = object_list.resolve_parent(obj)
+                obj.parent_index = self.resolve_parent(obj)
 
-        return object_list
+        return self
 
     def add_object(self, obj):
         n = len(self.object_list)
@@ -132,7 +131,7 @@ class ObjectList(object):
         if obj.obj.parent_type == 'BONE':
             return self.get_armature(obj.obj.parent).bone_map[obj.obj.parent_bone].index
         else:
-            return self.get_index(obj.obj)
+            return self.get_index(obj.obj.parent)
 
     def get_index(self, obj):
         for o in self.object_list:
@@ -171,7 +170,8 @@ class ObjectList(object):
         if bone.global_matrix is not None:
             return bone.global_matrix
 
-        bone.global_matrix = self.resolve_bone_transform(self.get(bone.parent_index)) @ bone.obj.matrix_local
+        #bone.global_matrix = self.resolve_bone_transform(self.get(bone.parent_index)) @ bone.obj.matrix_local
+        bone.global_matrix = mathutils.Matrix.Translation(bone.obj.head_local)
         return bone.global_matrix
     
     def add_armature(self, obj):

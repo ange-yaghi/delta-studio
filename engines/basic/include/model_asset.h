@@ -29,10 +29,13 @@ namespace dbasic {
         int GetBoneMap(int boneIndex) const { return m_boneMap[boneIndex]; }
         int GetBoneCount() const { return m_boneMap.GetNumObjects(); }
 
+        Material *GetMaterial() { return m_material; }
+        void SetMaterial(Material *material) { m_material = material; }
+
     protected:
         char m_name[64];
 
-        Material *m_defaultMaterial;
+        Material *m_material;
 
         ysGPUBuffer *m_vertexBuffer;
         ysGPUBuffer *m_indexBuffer;

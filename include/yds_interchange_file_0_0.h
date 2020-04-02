@@ -11,7 +11,7 @@
 class ysInterchangeFile0_0 : public ysObject {
 public:
     static constexpr int MAJOR_VERSION = 0;
-    static constexpr int MINOR_VERSION = 1;
+    static constexpr int MINOR_VERSION = 0;
     static constexpr int MAGIC_NUMBER = 0xFEA4A;
 
 public:

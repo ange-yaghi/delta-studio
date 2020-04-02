@@ -31,8 +31,14 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "build", "build\build.vcxpro
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "delta-physics", "delta-physics\delta-physics.vcxproj", "{AED09032-5029-4526-A032-5BC47185516B}"
+	ProjectSection(ProjectDependencies) = postProject
+		{6DB2FA44-5C75-431B-85F5-BAA11D6EF583} = {6DB2FA44-5C75-431B-85F5-BAA11D6EF583}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "delta-physics-test", "delta-physics-test\delta-physics-test.vcxproj", "{3E7087B3-7D3B-4913-8EE2-4F2CEB984EDA}"
+	ProjectSection(ProjectDependencies) = postProject
+		{6DB2FA44-5C75-431B-85F5-BAA11D6EF583} = {6DB2FA44-5C75-431B-85F5-BAA11D6EF583}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "delta-basic-test", "delta-basic-test\delta-basic-test.vcxproj", "{34C34953-4654-4206-94F4-6FCBC4114570}"
 EndProject

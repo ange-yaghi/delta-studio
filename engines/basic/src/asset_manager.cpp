@@ -335,7 +335,7 @@ ysError dbasic::AssetManager::LoadSceneFile(const char *fname, bool placeInVram)
             strcpy_s(newModelAsset->m_name, 64, header.ObjectName);
 
             newObject->m_material = FindMaterial(header.ObjectMaterial);
-            newModelAsset->m_defaultMaterial = FindMaterial(header.ObjectMaterial);
+            newModelAsset->SetMaterial(FindMaterial(header.ObjectMaterial));
             newObject->m_geometry = newModelAsset;
 
             currentIndexOffset += header.NumFaces * 3;
@@ -382,8 +382,8 @@ ysError dbasic::AssetManager::LoadSceneFile(const char *fname, bool placeInVram)
     return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
 }
 
-ysError dbasic::AssetManager::CompileAnimationFile(const char *fname) {
-    YDS_ERROR_DECLARE("CompileAnimationFile");
+ysError dbasic::AssetManager::CompileAnimationFileLegacy(const char *fname) {
+    YDS_ERROR_DECLARE("CompileAnimationFileLegacy");
 
     char buffer[1024];
     sprintf_s(buffer, 1024, "%s.daf", fname);
@@ -418,8 +418,8 @@ ysError dbasic::AssetManager::CompileAnimationFile(const char *fname) {
     return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
 }
 
-ysError dbasic::AssetManager::LoadAnimationFile(const char *fname) {
-    YDS_ERROR_DECLARE("LoadAnimationFile");
+ysError dbasic::AssetManager::LoadAnimationFileLegacy(const char *fname) {
+    YDS_ERROR_DECLARE("LoadAnimationFileLegacy");
 
     AnimationExportData *exportAnimationRead = m_animationExportData.New();
     AnimationExportFile animationExportFile;
@@ -432,6 +432,35 @@ ysError dbasic::AssetManager::LoadAnimationFile(const char *fname) {
     animationExportFile.Close();
 
     return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+}
+
+
+ysError dbasic::AssetManager::LoadAnimationFile(const char *fname) {
+    YDS_ERROR_DECLARE("LoadAnimationFile");
+
+    ysAnimationInterchangeFile0_0 animationFile;
+    animationFile.Open(fname);
+
+    int actionCount = animationFile.GetActionCount();
+    for (int i = 0; i < actionCount; ++i) {
+        ysAnimationAction *newAction = m_actions.New();
+        animationFile.ReadAction(newAction);
+    }
+
+    animationFile.Close();
+
+    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+}
+
+ysAnimationAction *dbasic::AssetManager::GetAction(const char *name) {
+    int actionCount = GetActionCount();
+    for (int i = 0; i < actionCount; ++i) {
+        if (m_actions.Get(i)->GetName() == name) {
+            return m_actions.Get(i);
+        }
+    }
+
+    return nullptr;
 }
 
 dbasic::Skeleton *dbasic::AssetManager::BuildSkeleton(ModelAsset *model) {
@@ -508,6 +537,9 @@ dbasic::RenderSkeleton *dbasic::AssetManager::BuildRenderSkeleton(dphysics::Rigi
     newNode->RigidBody.SetPosition(rootBone->GetPosition());
     newNode->SetModelAsset(rootBone->m_geometry);
     newNode->SetName(rootBone->m_name);
+    newNode->SetBone(rootBone->GetType() == ysObjectData::ObjectType::Bone);
+
+    newNode->SetRestLocation(rootBone->GetPosition());
 
     // Get the root bone
     SceneObjectAsset *rootBoneReference = rootBone;
@@ -532,6 +564,9 @@ void dbasic::AssetManager::ProcessRenderNode(SceneObjectAsset *object, RenderSke
         newNode->RigidBody.SetPosition(object->GetPosition());
         newNode->SetModelAsset(object->m_geometry);
         newNode->SetName(object->m_name);
+        newNode->SetBone(object->GetType() == ysObjectData::ObjectType::Bone);
+
+        newNode->SetRestLocation(object->GetPosition());
     }
 
     for (int i = 0; i < nChildren; i++) {

@@ -21,6 +21,8 @@ namespace dbasic {
         ModelAsset *Model;
     };
 
+    class RenderSkeleton;
+
     class DeltaEngine : public ysObject {
     public:
         static const int MAX_LAYERS = 256;
@@ -43,10 +45,13 @@ namespace dbasic {
         ysError EndFrame();
         ysError Destroy();
 
+        ysError UseMaterial(Material *material);
+
         ysError DrawImage(ysTexture *image, int layer = 0, float scaleX = 1.0f, float scaleY = 1.0f, float texOffsetU = 0.0f, float texOffsetV = 0.0f, float texScaleX = 1.0f, float texScaleY = 1.0f);
         ysError DrawBox(const int color[3], float width, float height, int layer = 0);
         ysError DrawAxis(const int color[3], const ysVector &position, const ysVector &direction, float width, float length, int layer = 0);
         ysError DrawModel(ModelAsset *model, const ysMatrix &transform, float scale, ysTexture *texture, int layer = 0);
+        ysError DrawRenderSkeleton(RenderSkeleton *skeleton, float scale, int layer);
         ysError LoadTexture(ysTexture **image, const char *fname);
         ysError LoadAnimation(Animation **animation, const char *path, int start, int end);
 

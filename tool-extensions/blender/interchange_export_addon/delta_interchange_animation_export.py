@@ -135,7 +135,10 @@ def write_animation_file(context, filepath):
                 continue
 
             for keyframe in fcurve.keyframe_points:
-                new_curve.keyframes.append(Keyframe(keyframe.co.x, keyframe.co.y))
+                if new_curve.curve_type == CurveType.RotationQuatW:
+                    new_curve.keyframes.append(Keyframe(keyframe.co.x, -keyframe.co.y))
+                else:
+                    new_curve.keyframes.append(Keyframe(keyframe.co.x, keyframe.co.y))
 
             new_curve.target = bone_name
             new_curve.keyframe_count = len(new_curve.keyframes)
@@ -146,6 +149,8 @@ def write_animation_file(context, filepath):
             actions.append(new_action)
             
     with open(filepath, 'wb') as f:
+        write_id_header(f)
+
         file_header = FileHeader(len(actions))
         file_header.write(f)
 

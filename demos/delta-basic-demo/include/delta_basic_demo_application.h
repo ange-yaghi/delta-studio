@@ -24,9 +24,23 @@ namespace dbasic_demo {
 
         dbasic::RenderSkeleton *m_renderSkeleton;
         dphysics::RigidBody m_skeletonBase;
-        dphysics::RigidBody *m_rod;
+        dphysics::RigidBody *m_probe;
+        dbasic::RenderNode *m_probe2;
 
         ysTexture *m_demoTexture;
+
+        ysAnimationAction *m_blinkAction;
+        ysAnimationAction *m_idleAction;
+        ysAnimationAction *m_walkAction;
+
+        ysAnimationActionBinding m_blink;
+        ysAnimationActionBinding m_idle;
+        ysAnimationActionBinding m_walk;
+
+        ysAnimationChannel *m_channel1;
+        ysAnimationChannel *m_channel2;
+
+        float m_blinkTimer;
     };
 
 } /* namesapce dbasic_demo */

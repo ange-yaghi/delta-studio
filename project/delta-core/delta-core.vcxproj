@@ -20,6 +20,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\include\yds_animation_action.h" />
+    <ClInclude Include="..\..\include\yds_animation_action_binding.h" />
     <ClInclude Include="..\..\include\yds_animation_curve.h" />
     <ClInclude Include="..\..\include\yds_animation_interchange_file_0_0.h" />
     <ClInclude Include="..\..\include\yds_core.h" />
@@ -33,6 +34,7 @@
     <ClInclude Include="..\..\include\yds_base.h" />
     <ClInclude Include="..\..\include\yds_context_object.h" />
     <ClInclude Include="..\..\include\yds_animation_mixer.h" />
+    <ClInclude Include="..\..\include\yds_animation_target.h" />
     <ClInclude Include="..\..\include\yds_d3d10_context.h" />
     <ClInclude Include="..\..\include\yds_d3d10_device.h" />
     <ClInclude Include="..\..\include\yds_d3d10_gpu_buffer.h" />
@@ -121,11 +123,14 @@
     <ClInclude Include="..\..\include\yds_window_event_handler.h" />
     <ClInclude Include="..\..\include\yds_window_system.h" />
     <ClInclude Include="..\..\include\yds_window_system_object.h" />
-    <ClInclude Include="..\..\src\yds_animation_curve.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\yds_animation_action.cpp" />
+    <ClCompile Include="..\..\src\yds_animation_action_binding.cpp" />
+    <ClCompile Include="..\..\src\yds_animation_curve.cpp" />
+    <ClCompile Include="..\..\src\yds_animation_interchange_file_0_0.cpp" />
     <ClCompile Include="..\..\src\yds_animation_mixer.cpp" />
+    <ClCompile Include="..\..\src\yds_animation_target.cpp" />
     <ClCompile Include="..\..\src\yds_audio_buffer.cpp" />
     <ClCompile Include="..\..\src\yds_audio_device.cpp" />
     <ClCompile Include="..\..\src\yds_audio_file.cpp" />

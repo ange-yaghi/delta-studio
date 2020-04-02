@@ -1,18 +1,20 @@
-#ifndef YDS_ANIMATION_INTERCHANGE_FILE_0_1_H
-#define YDS_ANIMATION_INTERCHANGE_FILE_0_1_H
+#ifndef YDS_ANIMATION_INTERCHANGE_FILE_0_0_H
+#define YDS_ANIMATION_INTERCHANGE_FILE_0_0_H
 
 #include "yds_base.h"
 
-#include "yds_interchange_object.h"
+#include "yds_animation_curve.h"
 #include "yds_math.h"
 
 #include <fstream>
+
+class ysAnimationAction;
 
 class ysAnimationInterchangeFile0_0 : public ysObject {
 public:
     static constexpr int MAJOR_VERSION = 0x00;
     static constexpr int MINOR_VERSION = 0x00;
-    static constexpr int MAGIC_NUMBER = 0xFEA4A;
+    static constexpr int MAGIC_NUMBER = 0xFEA4AA;
 
 public:
     struct IdHeader {
@@ -58,7 +60,9 @@ public:
     unsigned int GetToolId() const { return m_toolId; }
     bool GetCompilationStatus() const { return m_compilationStatus; }
 
-    ysError ReadAction(ysInterchangeObject *object);
+    ysError ReadAction(ysAnimationAction *action);
+
+    static ysAnimationCurve::CurveType InterpretCurveType(unsigned int curveType);
 
 protected:
     std::fstream m_file;
@@ -73,4 +77,4 @@ protected:
     bool m_compilationStatus;
 };
 
-#endif /* YDS_ANIMATION_INTERCHANGE_FILE_0_1_H */
+#endif /* YDS_ANIMATION_INTERCHANGE_FILE_0_0_H */
