@@ -158,6 +158,8 @@ ysError dbasic::DeltaEngine::Destroy() {
 }
 
 ysError dbasic::DeltaEngine::UseMaterial(Material *material) {
+    YDS_ERROR_DECLARE("UseMaterial");
+
     if (material == nullptr) {
         SetMultiplyColor(ysVector4(1.0f, 0.0f, 1.0f, 1.0f));
     }
@@ -533,6 +535,8 @@ ysError dbasic::DeltaEngine::DrawModel(ModelAsset *model, const ysMatrix &transf
 }
 
 ysError dbasic::DeltaEngine::DrawRenderSkeleton(RenderSkeleton *skeleton, float scale, int layer) {
+    YDS_ERROR_DECLARE("DrawRenderSkeleton");
+
     int nodeCount = skeleton->GetNodeCount();
     for (int i = 0; i < nodeCount; ++i) {
         RenderNode *node = skeleton->GetNode(i);

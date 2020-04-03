@@ -44,6 +44,8 @@ ysError ysInterchangeFile0_1::Open(const char *fname) {
 }
 
 ysError ysInterchangeFile0_1::ReadObject(ysInterchangeObject *object) {
+    YDS_ERROR_DECLARE("ReadObject");
+
     ObjectInformation info;
     m_file.read((char *)&info, sizeof(ObjectInformation));
 

@@ -6,6 +6,8 @@
 
 #include "../include/yds_error_handler.h"
 
+#include <assert.h>
+
 ysErrorSystem *ysErrorSystem::g_instance = NULL;
 
 ysErrorSystem::ysErrorSystem() {
@@ -42,13 +44,13 @@ ysError ysErrorSystem::RaiseError(ysError error, unsigned int line, ysObject *ob
 		m_stackLevel--;
 	}
 
+	assert(m_stackLevel >= 0);
+
 	return error;
 }
 
 void ysErrorSystem::StackRaise(const char *callName) {
-	if (m_stackLevel < 0) {
-		return;
-	}
+	assert(m_stackLevel >= 0);
 
 	m_callStack[m_stackLevel] = callName;
 	m_stackLevel++;

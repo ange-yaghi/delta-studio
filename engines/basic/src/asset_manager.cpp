@@ -6,7 +6,7 @@
 #include <sys/stat.h>
 
 dbasic::AssetManager::AssetManager() : ysObject("ASSET_MANAGER") {
-    m_engine = NULL;
+    m_engine = nullptr;
 }
 
 dbasic::AssetManager::~AssetManager() {
@@ -215,6 +215,8 @@ ysError dbasic::AssetManager::CompileInterchangeFile(const char *fname, float sc
 }
 
 ysError dbasic::AssetManager::LoadSceneFile(const char *fname, bool placeInVram) {
+    YDS_ERROR_DECLARE("LoadSceneFile");
+
     char fullPath[512];
     strcpy_s(fullPath, 512, fname);
     strcat_s(fullPath, 512, ".ysce");
