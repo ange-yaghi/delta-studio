@@ -465,6 +465,30 @@ ysAnimationAction *dbasic::AssetManager::GetAction(const char *name) {
     return nullptr;
 }
 
+ysError dbasic::AssetManager::LoadTexture(const char *fname, const char *name) {
+    YDS_ERROR_DECLARE("LoadTexture");
+
+    ysTexture *texture;
+    m_engine->LoadTexture(&texture, fname);
+
+    TextureAsset *newTextureAsset = m_textures.NewGeneric<TextureAsset>();
+    newTextureAsset->SetName(name);
+    newTextureAsset->SetTexture(texture);
+
+    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+}
+
+dbasic::TextureAsset *dbasic::AssetManager::GetTexture(const char *name) {
+    int textureCount = GetTextureCount();
+    for (int i = 0; i < textureCount; ++i) {
+        if (m_textures.Get(i)->GetName() == name) {
+            return m_textures.Get(i);
+        }
+    }
+
+    return nullptr;
+}
+
 dbasic::Skeleton *dbasic::AssetManager::BuildSkeleton(ModelAsset *model) {
     SceneObjectAsset *boneReference = NULL;
     SceneObjectAsset *boneParentReference = NULL;
@@ -542,6 +566,7 @@ dbasic::RenderSkeleton *dbasic::AssetManager::BuildRenderSkeleton(dphysics::Rigi
     newNode->SetBone(rootBone->GetType() == ysObjectData::ObjectType::Bone);
 
     newNode->SetRestLocation(rootBone->GetPosition());
+    newNode->SetRestOrientation(rootBone->GetLocalOrientation());
 
     // Get the root bone
     SceneObjectAsset *rootBoneReference = rootBone;
@@ -569,6 +594,7 @@ void dbasic::AssetManager::ProcessRenderNode(SceneObjectAsset *object, RenderSke
         newNode->SetBone(object->GetType() == ysObjectData::ObjectType::Bone);
 
         newNode->SetRestLocation(object->GetPosition());
+        newNode->SetRestOrientation(object->GetLocalOrientation());
     }
 
     for (int i = 0; i < nChildren; i++) {

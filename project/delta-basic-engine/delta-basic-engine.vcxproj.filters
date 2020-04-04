@@ -162,6 +162,9 @@
     <ClInclude Include="..\..\engines\basic\include\delta_physics.h">
       <Filter>Header Files\physics</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\engines\basic\include\texture_asset.h">
+      <Filter>Header Files\assets</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\engines\basic\src\animation.cpp">
@@ -232,6 +235,9 @@
     </ClCompile>
     <ClCompile Include="..\..\engines\basic\src\os_utilities.cpp">
       <Filter>Source Files\utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\engines\basic\src\texture_asset.cpp">
+      <Filter>Source Files\assets</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

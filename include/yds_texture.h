@@ -3,17 +3,13 @@
 
 #include "yds_context_object.h"
 
-class ysTexture : public ysContextObject
-{
-
+class ysTexture : public ysContextObject {
 	friend class ysDevice;
 
 public:
-
 	static const int MAX_FILENAME_LENGTH = 256;
 
 public:
-
 	ysTexture();
 	ysTexture(DEVICE_API API);
 	virtual ~ysTexture();
@@ -23,12 +19,10 @@ public:
 	int GetHeight() const { return m_height; }
 
 protected:
-
 	int m_width;
 	int m_height;
 
 	char m_filename[MAX_FILENAME_LENGTH + 1];
-
 };
 
-#endif
+#endif /* YDS_TEXTURE_H */

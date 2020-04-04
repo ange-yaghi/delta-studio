@@ -10,6 +10,7 @@
 #include "render_skeleton.h"
 #include "animation_export_data.h"
 #include "animation_object_controller.h"
+#include "texture_asset.h"
 
 namespace dbasic {
 
@@ -31,6 +32,10 @@ namespace dbasic {
         ysError LoadAnimationFile(const char *fname);
         ysAnimationAction *GetAction(const char *name);
         int GetActionCount() const { return m_actions.GetNumObjects(); }
+
+        ysError LoadTexture(const char *fname, const char *name);
+        TextureAsset *GetTexture(const char *name);
+        int GetTextureCount() const { return m_textures.GetNumObjects(); }
 
         ysError CompileAnimationFileLegacy(const char *fname);
         ysError LoadAnimationFileLegacy(const char *fname);
@@ -58,6 +63,7 @@ namespace dbasic {
         AnimationObjectController *BuildAnimationObjectController(const char *name, dphysics::RigidBody *rigidBody);
 
         void SetEngine(DeltaEngine *engine) { m_engine = engine; }
+        DeltaEngine *GetEngine() const { return m_engine; }
 
         ysError ResolveNodeHierarchy();
 
@@ -70,6 +76,7 @@ namespace dbasic {
         ysDynamicArray<AnimationObjectController, 4>	m_animationControllers;
         ysDynamicArray<AnimationExportData, 4>	m_animationExportData;
         ysDynamicArray<ysAnimationAction, 4> m_actions;
+        ysDynamicArray<TextureAsset, 4> m_textures;
 
         DeltaEngine *m_engine;
     };

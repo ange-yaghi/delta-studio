@@ -3,6 +3,8 @@
 
 #include "yds_math.h"
 
+#include <algorithm>
+
 class ysAnimationCurve;
 
 struct TransformTarget {
@@ -42,6 +44,31 @@ struct TransformTarget {
         else {
             Data[index] += t;
         }
+    }
+
+    void AccumulateQuaternion(ysQuaternion &q, float weight) {
+        if (Animated == 0) {
+            Data[0] = ysMath::GetQuatW(q) * weight;
+            Data[1] = ysMath::GetQuatX(q) * weight;
+            Data[2] = ysMath::GetQuatY(q) * weight;
+            Data[3] = ysMath::GetQuatZ(q) * weight;
+        }
+        else {
+            ysQuaternion current = GetQuaternionResult();
+            float cosTheta = ysMath::GetScalar(ysMath::Dot(current, q));
+
+            ysQuaternion transformed = q;
+            if (cosTheta < 0) {
+                transformed = ysMath::Negate(q);
+            }
+
+            Data[0] += ysMath::GetQuatW(transformed) * weight;
+            Data[1] += ysMath::GetQuatX(transformed) * weight;
+            Data[2] += ysMath::GetQuatY(transformed) * weight;
+            Data[3] += ysMath::GetQuatZ(transformed) * weight;
+        }
+
+        Animated = 0xF;
     }
 
     ysVector GetLocationResult() {

@@ -45,6 +45,9 @@ namespace dbasic {
         void SetRestLocation(const ysVector &v) { m_restLocation = v; }
         ysVector GetRestLocation() const { return m_restLocation; }
 
+        void SetRestOrientation(const ysQuaternion &q) { m_restOrientation = q; }
+        ysQuaternion GetRestOrientation() const { return m_restOrientation; }
+
     protected:
         // Node name
         char m_name[64];
@@ -68,6 +71,7 @@ namespace dbasic {
         TransformTarget m_rotationTarget;
 
         ysVector m_restLocation;
+        ysQuaternion m_restOrientation;
         ysQuaternion m_lastValidOrientation;
     };
 
