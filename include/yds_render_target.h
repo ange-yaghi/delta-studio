@@ -10,15 +10,15 @@ class ysRenderTarget : public ysContextObject {
     friend class ysDevice;
 
 public:
-    enum RENDER_TARGET_TYPE {
-        RENDER_TARGET_ON_SCREEN,
-        RENDER_TARGET_OFF_SCREEN,
-        RENDER_TARGET_SUBDIVISION,
+    enum class Type {
+        OnScreen,
+        OffScreen,
+        Subdivision,
 
-        RENDER_TARGET_UNDEFINED
+        Undefined
     };
 
-    enum RENDER_TARGET_FORMAT {
+    enum class Format {
         RTF_R8G8B8A8_UNORM,
         RTF_R32G32B32_FLOAT
     };
@@ -34,14 +34,17 @@ public:
     int GetPosX() const { return m_posX; }
     int GetPosY() const { return m_posY; }
 
-    RENDER_TARGET_FORMAT GetFormat() const { return m_format; }
-    RENDER_TARGET_TYPE GetType() const { return m_type; }
+    Format GetFormat() const { return m_format; }
+    Type GetType() const { return m_type; }
 
     int GetSampleCount() const { return m_sampleCount; }
     bool HasDepthBuffer() const { return m_hasDepthBuffer; }
 
     ysRenderingContext *GetAssociatedContext() { return m_associatedContext; }
     ysRenderTarget *GetParent() { return m_parent; }
+
+    bool IsDepthTestEnabled() const { return m_depthTestEnabled; }
+    void SetDepthTestEnabled(bool enable) { m_depthTestEnabled = enable; }
 
 protected:
     int m_posX;
@@ -50,11 +53,12 @@ protected:
     int m_width;
     int m_height;
 
-    RENDER_TARGET_TYPE m_type;
-    RENDER_TARGET_FORMAT m_format;
+    Type m_type;
+    Format m_format;
 
     int m_sampleCount;
     bool m_hasDepthBuffer;
+    bool m_depthTestEnabled;
 
     ysRenderTarget *m_parent;
     ysRenderingContext *m_associatedContext;

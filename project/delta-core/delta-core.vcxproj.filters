@@ -46,6 +46,18 @@
     <Filter Include="Source Files\assets\animation">
       <UniqueIdentifier>{6bfc7c6b-dbb5-4273-971c-223eaa424dc4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\api">
+      <UniqueIdentifier>{12791f97-1ef9-433f-8054-19a3c7b99a22}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\api\directx11">
+      <UniqueIdentifier>{505c2014-067f-4293-b830-70669648d0fb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\api\directx10">
+      <UniqueIdentifier>{28058cd1-fdf3-4a55-b693-b739b4e8a748}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\api\opengl">
+      <UniqueIdentifier>{46c1a011-c285-426b-9e29-6f31e885f75a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\include\yds_d3d10_context.h">
@@ -389,54 +401,6 @@
     <ClCompile Include="..\..\src\yds_context_object.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\yds_d3d10_context.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\yds_d3d10_device.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\yds_d3d10_gpu_buffer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\yds_d3d10_input_layout.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\yds_d3d10_render_target.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\yds_d3d10_shader.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\yds_d3d10_shader_program.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\yds_d3d10_texture.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\yds_d3d11_context.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\yds_d3d11_device.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\yds_d3d11_gpu_buffer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\yds_d3d11_input_layout.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\yds_d3d11_render_target.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\yds_d3d11_shader.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\yds_d3d11_shader_program.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\yds_d3d11_texture.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\yds_depth_buffer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -513,33 +477,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\yds_object_data.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\yds_opengl_context.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\yds_opengl_device.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\yds_opengl_gpu_buffer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\yds_opengl_input_layout.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\yds_opengl_render_target.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\yds_opengl_shader.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\yds_opengl_shader_program.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\yds_opengl_texture.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\yds_opengl_windows_context.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\yds_render_geometry_channel.cpp">
@@ -637,6 +574,81 @@
     </ClCompile>
     <ClCompile Include="..\..\src\yds_animation_interchange_file_0_0.cpp">
       <Filter>Source Files\assets\animation</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\yds_d3d11_texture.cpp">
+      <Filter>Source Files\api\directx11</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\yds_d3d11_context.cpp">
+      <Filter>Source Files\api\directx11</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\yds_d3d11_device.cpp">
+      <Filter>Source Files\api\directx11</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\yds_d3d11_gpu_buffer.cpp">
+      <Filter>Source Files\api\directx11</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\yds_d3d11_input_layout.cpp">
+      <Filter>Source Files\api\directx11</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\yds_d3d11_render_target.cpp">
+      <Filter>Source Files\api\directx11</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\yds_d3d11_shader.cpp">
+      <Filter>Source Files\api\directx11</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\yds_d3d11_shader_program.cpp">
+      <Filter>Source Files\api\directx11</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\yds_d3d10_context.cpp">
+      <Filter>Source Files\api\directx10</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\yds_d3d10_device.cpp">
+      <Filter>Source Files\api\directx10</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\yds_d3d10_gpu_buffer.cpp">
+      <Filter>Source Files\api\directx10</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\yds_d3d10_input_layout.cpp">
+      <Filter>Source Files\api\directx10</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\yds_d3d10_render_target.cpp">
+      <Filter>Source Files\api\directx10</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\yds_d3d10_shader.cpp">
+      <Filter>Source Files\api\directx10</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\yds_d3d10_shader_program.cpp">
+      <Filter>Source Files\api\directx10</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\yds_d3d10_texture.cpp">
+      <Filter>Source Files\api\directx10</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\yds_opengl_windows_context.cpp">
+      <Filter>Source Files\api\opengl</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\yds_opengl_device.cpp">
+      <Filter>Source Files\api\opengl</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\yds_opengl_gpu_buffer.cpp">
+      <Filter>Source Files\api\opengl</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\yds_opengl_input_layout.cpp">
+      <Filter>Source Files\api\opengl</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\yds_opengl_render_target.cpp">
+      <Filter>Source Files\api\opengl</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\yds_opengl_shader.cpp">
+      <Filter>Source Files\api\opengl</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\yds_opengl_shader_program.cpp">
+      <Filter>Source Files\api\opengl</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\yds_opengl_texture.cpp">
+      <Filter>Source Files\api\opengl</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\yds_opengl_context.cpp">
+      <Filter>Source Files\api\opengl</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

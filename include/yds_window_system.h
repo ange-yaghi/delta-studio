@@ -19,6 +19,7 @@ protected:
 
 public:
     static ysError CreateWindowSystem(ysWindowSystem **newSystem, Platform platform);
+    static ysError DestroyWindowSystem(ysWindowSystem *&system);
 
     // Window Interface
     virtual ysError NewWindow(ysWindow **window) = 0;

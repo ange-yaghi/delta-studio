@@ -13,6 +13,21 @@ dbasic::AssetManager::~AssetManager() {
     /* void */
 }
 
+ysError dbasic::AssetManager::Destroy() {
+    YDS_ERROR_DECLARE("Destroy");
+
+    int textureCount = m_textures.GetNumObjects();
+    for (int i = 0; i < textureCount; ++i) {
+        m_textures.Get(i)->Destroy(m_engine->GetDevice());
+    }
+
+    for (ysGPUBuffer *buffer : m_buffers) {
+        m_engine->GetDevice()->DestroyGPUBuffer(buffer);
+    }
+
+    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+}
+
 dbasic::Material *dbasic::AssetManager::NewMaterial() {
     Material *newMaterial = m_materials.NewGeneric<Material>();
     return newMaterial;
@@ -381,6 +396,9 @@ ysError dbasic::AssetManager::LoadSceneFile(const char *fname, bool placeInVram)
 
     file.close();
 
+    m_buffers.push_back(indexBuffer);
+    m_buffers.push_back(vertexBuffer);
+
     return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
 }
 
@@ -629,7 +647,7 @@ dbasic::AnimationObjectController *dbasic::AssetManager::
         }
     }
 
-    return NULL;
+    return nullptr;
 }
 
 ysError dbasic::AssetManager::ResolveNodeHierarchy() {

@@ -86,6 +86,5 @@
 #pragma comment(lib, "dxgi.lib")
 #pragma comment(lib, "dsound.lib")
 #pragma comment(lib, "dxerr.lib")
-#pragma comment(lib, "dxguid.lib")
 
 #endif /* YDS_CORE_H */

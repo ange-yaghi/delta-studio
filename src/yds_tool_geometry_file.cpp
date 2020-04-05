@@ -1,7 +1,7 @@
 #include "../include/yds_tool_geometry_file.h"
 
 ysToolGeometryFile::ysToolGeometryFile() : ysObject("ysToolGeometryFile") {
-    m_header = NULL;
+    m_header = nullptr;
     m_fileVersion = -1;
 
     m_lastEditor = EditorId::Undefined;
@@ -111,7 +111,7 @@ ysError ysToolGeometryFile::Close() {
 
     free(m_header);
 
-    m_header = NULL;
+    m_header = nullptr;
     m_fileVersion = -1;
 
     return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);

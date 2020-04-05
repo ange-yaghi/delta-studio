@@ -14,6 +14,7 @@ dbasic::Console::Console() {
     m_shaderProgram = nullptr;
 
     m_standardInputLayout = nullptr;
+    m_font = nullptr;
 
     // Initialize clear color to black
     m_clearColor[0] = 40.0f / 255.0f;
@@ -38,7 +39,10 @@ dbasic::Console::~Console() {
 ysError dbasic::Console::Destroy() {
     YDS_ERROR_DECLARE("Destroy");
 
-    // TODO
+    m_engine->GetDevice()->DestroyGPUBuffer(m_mainIndexBuffer);
+    m_engine->GetDevice()->DestroyGPUBuffer(m_mainVertexBuffer);
+
+    m_engine->GetDevice()->DestroyTexture(m_font);
 
     return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
 }

@@ -34,6 +34,15 @@ ysError ysInputSystem::CreateInputSystem(ysInputSystem** newInputSystem, Platfor
     return YDS_ERROR_RETURN_STATIC(ysError::YDS_NO_ERROR);
 }
 
+ysError ysInputSystem::DestroyInputSystem(ysInputSystem *&inputSystem) {
+	YDS_ERROR_DECLARE("DestroyInputSystem");
+
+	delete inputSystem;
+	inputSystem = nullptr;
+
+	return YDS_ERROR_RETURN_STATIC(ysError::YDS_NO_ERROR);
+}
+
 ysError ysInputSystem::AssignWindowSystem(ysWindowSystem *system) {
 	YDS_ERROR_DECLARE("AssignWindowSystem");
 
@@ -68,11 +77,17 @@ int ysInputSystem::GetNextDeviceID(ysInputDevice::InputDeviceType type) {
         }
     }
 
+	int next = deviceCount;
 	for (int i = 0; i < deviceCount; i++) {
-		if (arr[i] == 0) return i;
+		if (arr[i] == 0) {
+			next = i;
+			break;
+		}
 	}
 
-	return deviceCount;
+	delete[] arr;
+
+	return next;
 }
 
 ysInputDevice *ysInputSystem::GetInputDevice(int id, ysInputDevice::InputDeviceType type) {

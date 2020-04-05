@@ -18,6 +18,8 @@ namespace dbasic {
         void SetTexture(ysTexture *texture) { m_texture = texture; }
         ysTexture *GetTexture() const { return m_texture; }
 
+        ysError Destroy(ysDevice *device);
+
     protected:
         ysTexture *m_texture;
         std::string m_name;

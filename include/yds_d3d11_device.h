@@ -32,11 +32,12 @@ public:
     virtual ysError SetContextMode(ysRenderingContext *context, ysRenderingContext::ContextMode mode);
 
     virtual ysError CreateOnScreenRenderTarget(ysRenderTarget **newTarget, ysRenderingContext *context, bool depthBuffer);
-    virtual ysError CreateOffScreenRenderTarget(ysRenderTarget **newTarget, int width, int height, ysRenderTarget::RENDER_TARGET_FORMAT format, int sampleCount, bool depthBuffer);
+    virtual ysError CreateOffScreenRenderTarget(ysRenderTarget **newTarget, int width, int height, ysRenderTarget::Format format, int sampleCount, bool depthBuffer);
     virtual ysError CreateSubRenderTarget(ysRenderTarget **newTarget, ysRenderTarget *parent, int x, int y, int width, int height);
     virtual ysError ResizeRenderTarget(ysRenderTarget *target, int width, int height);
     virtual ysError DestroyRenderTarget(ysRenderTarget *&target);
     virtual ysError SetRenderTarget(ysRenderTarget *target);
+    virtual ysError SetDepthTestEnabled(ysRenderTarget *target, bool enable);
 
     virtual ysError ClearBuffers(const float *clearColor);
     virtual ysError Present();
@@ -88,11 +89,17 @@ public:
     static DXGI_FORMAT ConvertInputLayoutFormat(ysRenderGeometryChannel::CHANNEL_FORMAT format);
 
     // TEMP
-    ID3D11RasterizerState *m_rasterizerState;
+    struct ID3D11RasterizerState *m_rasterizerState;
+    struct ID3D11SamplerState *m_samplerState;
 
 protected:
     ID3D11Device *m_device;
     ID3D11DeviceContext *m_deviceContext;
+
+    struct ID3D11DepthStencilState *m_depthStencilEnabledState;
+    struct ID3D11DepthStencilState *m_depthStencilDisabledState;
+
+    struct ID3D11BlendState *m_blendState;
 
     IDXGIFactory *m_DXGIFactory;
 
@@ -101,11 +108,11 @@ protected:
 
 protected:
     // Platform specific functionality
-    ysError CreateD3D11DepthBuffer(ID3D11DepthStencilView **newDepthStencil, int width, int height, int count, int quality);
-    ysError DestroyD3D11DepthBuffer(ID3D11DepthStencilView *&depthStencil);
+    ysError CreateD3D11DepthStencilView(ID3D11DepthStencilView **newDepthStencil, int width, int height, int count, int quality);
+    ysError DestroyD3D11DepthStencilView(ID3D11DepthStencilView *&depthStencil);
 
     ysError CreateD3D11OnScreenRenderTarget(ysRenderTarget *target, ysRenderingContext *context, bool depthBuffer);
-    ysError CreateD3D11OffScreenRenderTarget(ysRenderTarget *target, int width, int height, ysRenderTarget::RENDER_TARGET_FORMAT format, int sampleCount, bool depthBuffer);
+    ysError CreateD3D11OffScreenRenderTarget(ysRenderTarget *target, int width, int height, ysRenderTarget::Format format, int sampleCount, bool depthBuffer);
 
     ysError DestroyD3D11RenderTarget(ysRenderTarget *target);
 };

@@ -61,7 +61,7 @@ public:
     virtual ysError CreateOnScreenRenderTarget(ysRenderTarget **newTarget, ysRenderingContext *context, bool depthBuffer) = 0;
 
     // Create an off-screen render target
-    virtual ysError CreateOffScreenRenderTarget(ysRenderTarget **newTarget, int width, int height, ysRenderTarget::RENDER_TARGET_FORMAT format, int sampleCount, bool depthBuffer) = 0;
+    virtual ysError CreateOffScreenRenderTarget(ysRenderTarget **newTarget, int width, int height, ysRenderTarget::Format format, int sampleCount, bool depthBuffer) = 0;
 
     // Create a off-screen copy
     virtual ysError CreateOffScreenRenderTarget(ysRenderTarget **newTarget, const ysRenderTarget *reference);
@@ -71,6 +71,9 @@ public:
 
     // Resize a render target
     virtual ysError ResizeRenderTarget(ysRenderTarget *target, int width, int height);
+
+    // Enable/disable depth testing
+    virtual ysError SetDepthTestEnabled(ysRenderTarget *target, bool enable);
 
     // Destroy a render target
     virtual ysError DestroyRenderTarget(ysRenderTarget *&target);
@@ -181,6 +184,8 @@ public:
 
     // TEMP
     virtual void Draw(int numFaces, int indexOffset, int vertexOffset) { (void)numFaces; (void)indexOffset; (void)vertexOffset; }
+
+    ysRenderTarget *GetActiveRenderTarget() const { return m_activeRenderTarget; }
 
 protected:
     ysRenderTarget *GetActualRenderTarget();

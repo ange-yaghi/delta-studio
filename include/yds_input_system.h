@@ -14,6 +14,7 @@ protected:
 
 public:
     static ysError CreateInputSystem(ysInputSystem **newInputSystem, Platform platform);
+    static ysError DestroyInputSystem(ysInputSystem *&inputSystem);
 
     /* Public Functions */
 

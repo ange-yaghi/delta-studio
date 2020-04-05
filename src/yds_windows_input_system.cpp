@@ -198,10 +198,6 @@ ysWindowsInputDevice *ysWindowsInputSystem::AddDevice(RAWINPUT *rawInput) {
 
     ysInputDevice::InputDeviceType type = TranslateType(rawInput->header.dwType);
 
-    if (rawInput->header.hDevice == NULL) {
-        int a = 0;
-    }
-
     GetRawInputDeviceInfo(rawInput->header.hDevice, RIDI_DEVICEINFO, &info, &size);
     GetRawInputDeviceInfo(rawInput->header.hDevice, RIDI_DEVICENAME, systemName, &nameSize);
 
@@ -231,7 +227,7 @@ int ysWindowsInputSystem::ProcessInputMessage(HRAWINPUT lparam) {
     GetRawInputData(lparam, RID_INPUT, NULL, &dwSize, sizeof(RAWINPUTHEADER));
 
     lpb = new BYTE[dwSize];
-    if (lpb == NULL) return 0;
+    if (lpb == nullptr) return 0;
 
     if (GetRawInputData(lparam, RID_INPUT, lpb, &dwSize, sizeof(RAWINPUTHEADER)) != dwSize) return 0;
 

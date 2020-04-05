@@ -5,27 +5,27 @@
 #include "../include/yds_d3d10_device.h"
 
 ysDevice::ysDevice() : ysContextObject("API_DEVICE", API_UNKNOWN) {
-	m_activeRenderTarget =		NULL;
-	m_activeContext =			NULL;
-	m_activeVertexBuffer =		NULL;
-	m_activeConstantBuffer =	NULL;
-	m_activeIndexBuffer =		NULL;
-	m_activeShaderProgram =		NULL;
-	m_activeInputLayout =		NULL;
-	m_activeTextures =			NULL;
+	m_activeRenderTarget = nullptr;
+	m_activeContext = nullptr;
+	m_activeVertexBuffer = nullptr;
+	m_activeConstantBuffer = nullptr;
+	m_activeIndexBuffer = nullptr;
+	m_activeShaderProgram = nullptr;
+	m_activeInputLayout = nullptr;
+	m_activeTextures = nullptr;
 
 	m_maxTextureSlots = 0;
 }
 
 ysDevice::ysDevice(DEVICE_API API) : ysContextObject("API_DEVICE", API) {
-	m_activeRenderTarget =		NULL;
-	m_activeContext =			NULL;
-	m_activeVertexBuffer =		NULL;
-	m_activeIndexBuffer =		NULL;
-	m_activeConstantBuffer =	NULL;
-	m_activeShaderProgram =		NULL;
-	m_activeInputLayout =		NULL;
-	m_activeTextures =			NULL;
+	m_activeRenderTarget = nullptr;
+	m_activeContext = nullptr;
+	m_activeVertexBuffer = nullptr;
+	m_activeIndexBuffer = nullptr;
+	m_activeConstantBuffer = nullptr;
+	m_activeShaderProgram = nullptr;
+	m_activeInputLayout = nullptr;
+	m_activeTextures = nullptr;
 
 	m_maxTextureSlots = 0;
 }
@@ -37,8 +37,8 @@ ysDevice::~ysDevice() {
 ysError ysDevice::CreateDevice(ysDevice **newDevice, DEVICE_API API) {
 	YDS_ERROR_DECLARE("CreateDevice");
 
-	if (newDevice == NULL) return YDS_ERROR_RETURN_STATIC(ysError::YDS_INVALID_PARAMETER);
-	*newDevice = NULL;
+	if (newDevice == nullptr) return YDS_ERROR_RETURN_STATIC(ysError::YDS_INVALID_PARAMETER);
+	*newDevice = nullptr;
 
 	if (API == API_UNKNOWN) return YDS_ERROR_RETURN_STATIC(ysError::YDS_INVALID_PARAMETER);
 
@@ -60,10 +60,10 @@ ysError ysDevice::CreateDevice(ysDevice **newDevice, DEVICE_API API) {
 ysError ysDevice::DestroyRenderingContext(ysRenderingContext *&context) {
 	YDS_ERROR_DECLARE("DestroyRenderingContext");
 
-	if (context == NULL) return YDS_ERROR_RETURN(ysError::YDS_INVALID_PARAMETER);
+	if (context == nullptr) return YDS_ERROR_RETURN(ysError::YDS_INVALID_PARAMETER);
 
 	m_renderingContexts.Delete(context->GetIndex());
-	context = NULL;
+	context = nullptr;
 
 	return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
 }
@@ -71,7 +71,7 @@ ysError ysDevice::DestroyRenderingContext(ysRenderingContext *&context) {
 ysError ysDevice::SetContextMode(ysRenderingContext *context, ysRenderingContext::ContextMode mode) {
 	YDS_ERROR_DECLARE("SetContextMode");
 
-	if (context == NULL) return YDS_ERROR_RETURN(ysError::YDS_INVALID_PARAMETER);
+	if (context == nullptr) return YDS_ERROR_RETURN(ysError::YDS_INVALID_PARAMETER);
 	context->m_currentMode = mode;
 
 	return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
@@ -86,9 +86,9 @@ ysError ysDevice::SetRenderTarget(ysRenderTarget *newTarget) {
 }
 
 ysRenderTarget *ysDevice::GetActualRenderTarget() {
-	if (m_activeRenderTarget == NULL) return NULL;
+	if (m_activeRenderTarget == nullptr) return nullptr;
 
-	if (m_activeRenderTarget->GetType() == ysRenderTarget::RENDER_TARGET_SUBDIVISION) {
+	if (m_activeRenderTarget->GetType() == ysRenderTarget::Type::Subdivision) {
 		return m_activeRenderTarget->GetParent();
 	}
 
@@ -98,10 +98,10 @@ ysRenderTarget *ysDevice::GetActualRenderTarget() {
 ysError ysDevice::CreateOffScreenRenderTarget(ysRenderTarget **newTarget, const ysRenderTarget *reference) {
 	YDS_ERROR_DECLARE("CreateOffScreenRenderTarget");
 
-	if (newTarget == NULL) return YDS_ERROR_RETURN(ysError::YDS_INVALID_PARAMETER);
-	*newTarget = NULL;
+	if (newTarget == nullptr) return YDS_ERROR_RETURN(ysError::YDS_INVALID_PARAMETER);
+	*newTarget = nullptr;
 
-	if (reference == NULL) return YDS_ERROR_RETURN(ysError::YDS_INVALID_PARAMETER);
+	if (reference == nullptr) return YDS_ERROR_RETURN(ysError::YDS_INVALID_PARAMETER);
 
 	YDS_NESTED_ERROR_CALL( CreateOffScreenRenderTarget(
 		newTarget,
@@ -117,22 +117,18 @@ ysError ysDevice::CreateOffScreenRenderTarget(ysRenderTarget **newTarget, const 
 ysError ysDevice::ResizeRenderTarget(ysRenderTarget* target, int width, int height) {
     YDS_ERROR_DECLARE("ResizeRenderTarget");
 
-    if (target == NULL) return YDS_ERROR_RETURN(ysError::YDS_INVALID_PARAMETER);
+    if (target == nullptr) return YDS_ERROR_RETURN(ysError::YDS_INVALID_PARAMETER);
 
-    if (target->m_associatedContext != NULL) {
+    if (target->m_associatedContext != nullptr) {
         // This is an on-screen render target so the width and height must match
         // the requirements of the parent context.
 
         int reqWidth = target->m_associatedContext->GetWindow()->GetScreenWidth();
         int reqHeight = target->m_associatedContext->GetWindow()->GetScreenHeight();
 
-        if (reqWidth != width || reqHeight != height)
-        {
-
+        if (reqWidth != width || reqHeight != height){
             return YDS_ERROR_RETURN_MSG(ysError::YDS_INVALID_PARAMETER, "On-screen render target size must match window size.");
-
         }
-
     }
 
     target->m_width = width;
@@ -141,13 +137,21 @@ ysError ysDevice::ResizeRenderTarget(ysRenderTarget* target, int width, int heig
     return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
 }
 
+ysError ysDevice::SetDepthTestEnabled(ysRenderTarget *target, bool enable) {
+	YDS_ERROR_DECLARE("SetDepthTestEnable");
+
+	target->SetDepthTestEnabled(enable);
+
+	return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+}
+
 ysError ysDevice::DestroyRenderTarget(ysRenderTarget *&renderTarget) {
 	YDS_ERROR_DECLARE("DestroyRenderTarget");
 
 	if (!renderTarget) return YDS_ERROR_RETURN(ysError::YDS_INVALID_PARAMETER);
 
 	YDS_NESTED_ERROR_CALL( m_renderTargets.Delete(renderTarget->GetIndex()) );
-	renderTarget = NULL;
+	renderTarget = nullptr;
 
 	return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
 }
@@ -163,7 +167,7 @@ ysError ysDevice::UseVertexBuffer(ysGPUBuffer *buffer, int stride, int offset) {
 		else return YDS_ERROR_RETURN(ysError::YDS_INCOMPATIBLE_PLATFORMS);
 	}
 	else {
-		m_activeVertexBuffer = NULL;
+		m_activeVertexBuffer = nullptr;
 	}
 
     return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
@@ -178,7 +182,7 @@ ysError ysDevice::UseIndexBuffer(ysGPUBuffer *buffer, int offset) {
         else return YDS_ERROR_RETURN(ysError::YDS_INVALID_GPU_BUFFER_TYPE);
     }
 	else {
-		m_activeIndexBuffer = NULL;
+		m_activeIndexBuffer = nullptr;
 	}
 
 	return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
@@ -194,7 +198,7 @@ ysError ysDevice::UseConstantBuffer(ysGPUBuffer *buffer, int slot) {
 		else return YDS_ERROR_RETURN(ysError::YDS_INVALID_GPU_BUFFER_TYPE);
 	}
 	else {
-		m_activeConstantBuffer = NULL;
+		m_activeConstantBuffer = nullptr;
 	}
 
 	return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
@@ -209,7 +213,7 @@ ysGPUBuffer *ysDevice::GetActiveBuffer(ysGPUBuffer::GPU_BUFFER_TYPE bufferType) 
 	case ysGPUBuffer::GPU_INDEX_BUFFER:
 		return m_activeIndexBuffer;
 	default:
-		return NULL;
+		return nullptr;
 	}
 }
 
@@ -217,13 +221,13 @@ ysError ysDevice::EditBufferDataRange(ysGPUBuffer *buffer, char *data, int size,
 	YDS_ERROR_DECLARE("EditBufferDataRange");
 
 	// Error checking
-	if (data == NULL) return YDS_ERROR_RETURN(ysError::YDS_INVALID_PARAMETER);
+	if (data == nullptr) return YDS_ERROR_RETURN(ysError::YDS_INVALID_PARAMETER);
 	if ((size + offset) > buffer->GetSize()) return YDS_ERROR_RETURN(ysError::YDS_OUT_OF_BOUNDS);
 	if (size < 0 || offset < 0) return YDS_ERROR_RETURN(ysError::YDS_OUT_OF_BOUNDS);
 
 	if (buffer->m_mirrorToRAM) {
 		// Check that the buffer has a RAM buffer
-		if (buffer->m_RAMMirror == NULL) return YDS_ERROR_RETURN(ysError::YDS_UNINTIALIZED_BUFFER);
+		if (buffer->m_RAMMirror == nullptr) return YDS_ERROR_RETURN(ysError::YDS_UNINTIALIZED_BUFFER);
 
 		// Copy memory
 		memcpy(buffer->m_RAMMirror + offset, data, size);
@@ -247,11 +251,11 @@ ysError ysDevice::DestroyGPUBuffer(ysGPUBuffer *&buffer) {
 
 	if (buffer->m_mirrorToRAM) {
 		delete [] buffer->m_RAMMirror;
-        buffer->m_RAMMirror = NULL;
+        buffer->m_RAMMirror = nullptr;
 	}
 
 	YDS_NESTED_ERROR_CALL( m_gpuBuffers.Delete(buffer->GetIndex()) );
-	buffer = NULL;
+	buffer = nullptr;
 
 	return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR); 
 }
@@ -259,11 +263,11 @@ ysError ysDevice::DestroyGPUBuffer(ysGPUBuffer *&buffer) {
 ysError ysDevice::DestroyShader(ysShader *&shader) {
 	YDS_ERROR_DECLARE("DestroyShader");
 
-	if (shader == NULL) return YDS_ERROR_RETURN(ysError::YDS_INVALID_PARAMETER);
+	if (shader == nullptr) return YDS_ERROR_RETURN(ysError::YDS_INVALID_PARAMETER);
 	if (!CheckCompatibility(shader)) return YDS_ERROR_RETURN(ysError::YDS_INCOMPATIBLE_PLATFORMS);
 
 	YDS_NESTED_ERROR_CALL( m_shaders.Delete(shader->GetIndex()) );
-	shader = NULL;
+	shader = nullptr;
 
 	return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
 }
@@ -273,7 +277,7 @@ ysError ysDevice::DestroyShaderProgram(ysShaderProgram *&program, bool destroySh
 
 	if (!CheckCompatibility(program)) return YDS_ERROR_RETURN(ysError::YDS_INCOMPATIBLE_PLATFORMS);
 
-	if (program == m_activeShaderProgram) UseShaderProgram(NULL);
+	if (program == m_activeShaderProgram) UseShaderProgram(nullptr);
 
 	if (destroyShaders) {
 		for(int i = 0; i < ysShader::SHADER_TYPE_NUM_TYPES; i++) {
@@ -282,7 +286,7 @@ ysError ysDevice::DestroyShaderProgram(ysShaderProgram *&program, bool destroySh
 	}
 
 	YDS_NESTED_ERROR_CALL( m_shaderPrograms.Delete(program->GetIndex()) );
-	program = NULL;
+	program = nullptr;
 
 	return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
 }
@@ -290,7 +294,7 @@ ysError ysDevice::DestroyShaderProgram(ysShaderProgram *&program, bool destroySh
 ysError ysDevice::AttachShader(ysShaderProgram *program, ysShader *shader) {
 	YDS_ERROR_DECLARE("AttachShader");
 
-	if (program == NULL || shader == NULL) return YDS_ERROR_RETURN(ysError::YDS_INVALID_PARAMETER);
+	if (program == nullptr || shader == nullptr) return YDS_ERROR_RETURN(ysError::YDS_INVALID_PARAMETER);
 	if (!CheckCompatibility(program))	return YDS_ERROR_RETURN_MSG(ysError::YDS_INCOMPATIBLE_PLATFORMS, "PROGRAM");
 	if (!CheckCompatibility(shader))	return YDS_ERROR_RETURN_MSG(ysError::YDS_INCOMPATIBLE_PLATFORMS, "SHADER");
 	if (program->m_isLinked)			return YDS_ERROR_RETURN(ysError::YDS_PROGRAM_ALREADY_LINKED);
@@ -303,7 +307,7 @@ ysError ysDevice::AttachShader(ysShaderProgram *program, ysShader *shader) {
 ysError ysDevice::LinkProgram(ysShaderProgram *program) {
 	YDS_ERROR_DECLARE("LinkProgram");
 
-	if (program == NULL)				return YDS_ERROR_RETURN(ysError::YDS_INVALID_PARAMETER);
+	if (program == nullptr)				return YDS_ERROR_RETURN(ysError::YDS_INVALID_PARAMETER);
 	if (!CheckCompatibility(program))	return YDS_ERROR_RETURN(ysError::YDS_INCOMPATIBLE_PLATFORMS);
 	if (program->m_isLinked)			return YDS_ERROR_RETURN(ysError::YDS_PROGRAM_ALREADY_LINKED);
 
@@ -335,7 +339,7 @@ ysError ysDevice::DestroyInputLayout(ysInputLayout *&layout) {
 	if (!CheckCompatibility(layout)) return YDS_ERROR_RETURN(ysError::YDS_INCOMPATIBLE_PLATFORMS);
 
 	YDS_NESTED_ERROR_CALL( m_inputLayouts.Delete(layout->GetIndex()) );
-	layout = NULL;
+	layout = nullptr;
 
 	return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
 }
@@ -347,7 +351,7 @@ ysError ysDevice::UseTexture(ysTexture *texture, int slot) {
 	if (slot < 0 || slot >= this->m_maxTextureSlots) return YDS_ERROR_RETURN(ysError::YDS_OUT_OF_BOUNDS);
 
 	m_activeTextures[slot].Texture = texture;
-	m_activeTextures[slot].RenderTarget = NULL;
+	m_activeTextures[slot].RenderTarget = nullptr;
 
 	return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
 }
@@ -359,7 +363,7 @@ ysError ysDevice::UseRenderTargetAsTexture(ysRenderTarget *texture, int slot) {
 	if (slot < 0 || slot >= this->m_maxTextureSlots) return YDS_ERROR_RETURN(ysError::YDS_OUT_OF_BOUNDS);
 
 	m_activeTextures[slot].RenderTarget = texture;
-	m_activeTextures[slot].Texture = NULL;
+	m_activeTextures[slot].Texture = nullptr;
 
 	return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
 }
@@ -370,7 +374,7 @@ ysError ysDevice::DestroyTexture(ysTexture *&texture) {
 	if (!CheckCompatibility(texture)) return YDS_ERROR_RETURN(ysError::YDS_INCOMPATIBLE_PLATFORMS);
 
 	YDS_NESTED_ERROR_CALL( m_textures.Delete(texture->GetIndex()) );
-	texture = NULL;
+	texture = nullptr;
 
 	return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
 }
