@@ -70,6 +70,9 @@ void dphysics::RigidBodySystem::ProcessGridCell(int x, int y) {
 void dphysics::RigidBodySystem::GenerateCollisions(int start, int count) {
     const int REQUEST_THRESHOLD = 1;
 
+    int rigidBodyCount = m_rigidBodyRegistry.GetNumObjects();
+    std::vector<std::vector<bool>> visited(rigidBodyCount, std::vector<bool>(rigidBodyCount, false));
+
     for (int cell = start; cell < (start + count); cell++) {
         GridCell *gridCell = &m_gridPartitionSystem.m_gridCells[cell];
 
@@ -83,7 +86,10 @@ void dphysics::RigidBodySystem::GenerateCollisions(int start, int count) {
                 for (int j = i + 1; j < cellObjects; j++) {
                     body2 = gridCell->m_objects[j];
 
+                    if (visited[body1->GetIndex()][body2->GetIndex()]) continue;
                     if (body1->GetRoot() == body2->GetRoot()) continue;
+
+                    visited[body1->GetIndex()][body2->GetIndex()] = true;
 
                     GenerateCollisions(body1, body2);
                 }
@@ -126,8 +132,10 @@ void dphysics::RigidBodySystem::GenerateCollisions(RigidBody *body1, RigidBody *
 
             if (mode1 == mode2) {
                 bool sensorTest = mode1 == CollisionObject::Mode::Sensor;
-
-                if (sensorTest && !body1Ord->RequestsInformation() && !body2Ord->RequestsInformation()) {
+                if (sensorTest && 
+                    !body1Ord->RequestsInformation() && 
+                    !body2Ord->RequestsInformation()) 
+                {
                     continue;
                 }
 
@@ -203,7 +211,9 @@ void dphysics::RigidBodySystem::GenerateCollisions(RigidBody *body1, RigidBody *
                     }
                 }
 
-                if (mode1 == CollisionObject::Mode::Sensor && mode2 == CollisionObject::Mode::Sensor) {
+                if (mode1 == CollisionObject::Mode::Sensor && 
+                    mode2 == CollisionObject::Mode::Sensor) 
+                {
                     if (prim1->GetType() == CollisionObject::Type::Circle) {
                         if (prim2->GetType() == CollisionObject::Type::Circle) {
                             bool sense = CollisionDetector.CircleCircleIntersect(
@@ -503,11 +513,19 @@ void dphysics::RigidBodySystem::UpdateDerivedData() {
     }
 }
 
+void dphysics::RigidBodySystem::CheckAwake() {
+    int nObjects = m_rigidBodyRegistry.GetNumObjects();
+    for (int i = 0; i < nObjects; i++) {
+        m_rigidBodyRegistry.Get(i)->CheckAwake();
+    }
+}
+
 void dphysics::RigidBodySystem::Update(float timeStep) {
     Integrate(timeStep);
     GenerateCollisions();
     ResolveCollisions();
     UpdateDerivedData();
+    CheckAwake();
 }
 
 /*

@@ -13,19 +13,36 @@ TEST(CollisionTests, CircleCircleSanityCheck) {
     dphysics::CirclePrimitive c2;
 
     c1.Position = ysMath::LoadVector(1.0f, 0.0f, 0.0f, 0.0f);
-    c1.RadiusSquared = 1.0f;
+    c1.Radius = 1.0f;
 
     c2.Position = ysMath::LoadVector(1.5f, 0.0f, 0.0f, 0.0f);
-    c2.RadiusSquared = 1.0f;
+    c2.Radius = 1.0f;
 
     dphysics::CollisionDetector detector;
     dphysics::Collision collision;
     bool colliding = detector.CircleCircleCollision(collision, nullptr, nullptr, &c1, &c2);
 
     EXPECT_TRUE(colliding);
-    EXPECT_GE(collision.m_penetration, 0);
+    EXPECT_NEAR(collision.m_penetration, 1.5f, 1E-4);
 
     VecEq(collision.m_position, ysMath::LoadVector(2.0f, 0.0f, 0.0f, 0.0f));
+}
+
+TEST(CollisionTests, CircleCircleNotColliding) {
+    dphysics::CirclePrimitive c1;
+    dphysics::CirclePrimitive c2;
+
+    c1.Position = ysMath::LoadVector(1.0f, 0.0f, 0.0f, 0.0f);
+    c1.Radius = 1.0f;
+
+    c2.Position = ysMath::LoadVector(5.5f, 0.0f, 0.0f, 0.0f);
+    c2.Radius = 1.0f;
+
+    dphysics::CollisionDetector detector;
+    dphysics::Collision collision;
+    bool colliding = detector.CircleCircleCollision(collision, nullptr, nullptr, &c1, &c2);
+
+    EXPECT_FALSE(colliding);
 }
 
 TEST(CollisionTests, BoxBoxSanityCheck) {
@@ -165,7 +182,7 @@ TEST(CollisionTests, RayCircleCollision) {
     b1.Direction = ysMath::LoadVector(1.0f, 0.0f, 0.0f, 0.0f);
 
     b2.Position = ysMath::LoadVector(10.0f, 0.0f, 0.0f, 0.0f);
-    b2.RadiusSquared = 1.0f;
+    b2.Radius = 1.0f;
 
     dphysics::RigidBody a;
     dphysics::RigidBody b;
@@ -199,7 +216,7 @@ TEST(CollisionTests, BoxCircleEdgeCase) {
     b1.Orientation = ysMath::LoadIdentity();
 
     b2.Position = ysMath::LoadVector(0.0f, 0.0f, 0.0f, 1.0f);
-    b2.RadiusSquared = 1.0f;
+    b2.Radius = 1.0f;
 
     dphysics::RigidBody a;
     dphysics::RigidBody b;

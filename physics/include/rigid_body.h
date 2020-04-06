@@ -33,6 +33,7 @@ namespace dphysics {
 
         void Integrate(float timeStep);
         void UpdateDerivedData(bool force = false);
+        void CheckAwake();
 
         ysQuaternion GetOrientation() const { return m_orientation; }
 
@@ -74,7 +75,7 @@ namespace dphysics {
 
         void RequestCollisions();
         void ClearCollisions() { m_collisions.Clear(); }
-        void AddCollision(Collision *collision) { m_collisions.New() = collision; }
+        void AddCollision(Collision *collision) { SetAwake(true); m_collisions.New() = collision; }
         int GetCollisionCount() { return m_collisions.GetNumObjects(); }
         Collision *GetCollision(int index) { return m_collisions[index]; }
 
@@ -88,6 +89,9 @@ namespace dphysics {
 
         bool RequestsInformation() const { return m_requestsInformation; }
         void SetRequestsInformation(bool ri) { m_requestsInformation = ri; }
+
+        bool IsAlwaysAwake() const { return m_alwaysAwake; }
+        void SetAlwaysAwake(bool alwaysAwake) { m_alwaysAwake = alwaysAwake; }
 
         void SetHint(RigidBodyHint hint) { m_hint = hint; }
         RigidBodyHint GetHint() const { return m_hint; }
@@ -116,6 +120,7 @@ namespace dphysics {
         bool m_registered;
         bool m_awake;
         bool m_requestsInformation;
+        bool m_alwaysAwake;
 
         float m_inverseMass;
         float m_linearDamping;
@@ -135,6 +140,7 @@ namespace dphysics {
         bool m_derivedValid;
 
         ysVector m_worldPosition;
+        ysVector m_lastWorldPosition;
         ysMatrix m_transform;
         ysMatrix m_inverseTransform;
         ysMatrix m_orientationOnly;
@@ -146,7 +152,6 @@ namespace dphysics {
         RigidBodySystem *m_system;
 
         ysExpandingArray<Collision *, 4> m_collisions;
-
         ysExpandingArray<GridCell, 4> m_gridCells;
 
         RigidBodyHint m_hint;

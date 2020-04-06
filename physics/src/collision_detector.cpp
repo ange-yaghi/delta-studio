@@ -19,7 +19,9 @@ bool dphysics::CollisionDetector::CircleCircleIntersect(RigidBody *body1, RigidB
     ysVector dif = ysMath::Sub(circle1->Position, circle2->Position);
     ysVector distSq = ysMath::MagnitudeSquared3(dif);
 
-    if (ysMath::GetScalar(distSq) <= (circle1->RadiusSquared + circle2->RadiusSquared)) {
+    float combinedRadius = circle1->Radius + circle2->Radius;
+
+    if (ysMath::GetScalar(distSq) <= (combinedRadius * combinedRadius)) {
         return true;
     }
 
@@ -60,7 +62,7 @@ bool dphysics::CollisionDetector::BoxBoxCollision(Collision &collision, RigidBod
 }
 
 bool dphysics::CollisionDetector::CircleBoxCollision(Collision &collision, RigidBody *body1, RigidBody *body2, CirclePrimitive *circle, BoxPrimitive *box) {
-    constexpr float epsilon = 1E-5;
+    constexpr float epsilon = 1E-5f;
 
     ysVector relativePosition = ysMath::Sub(circle->Position, box->Position);
     relativePosition = ysMath::MatMult(ysMath::OrthogonalInverse(box->Orientation), relativePosition);
@@ -74,7 +76,7 @@ bool dphysics::CollisionDetector::CircleBoxCollision(Collision &collision, Rigid
     
     float d0 = ysMath::GetScalar(ysMath::MagnitudeSquared3(ysMath::Sub(circle->Position, box->Position)));
     float d2 = ysMath::GetScalar(ysMath::MagnitudeSquared3(ysMath::Sub(circle->Position, realPosition)));
-    if (d2 > circle->RadiusSquared) return false;
+    if (d2 > circle->Radius * circle->Radius) return false;
 
     ysVector normal;
     if (d0 <= epsilon) {
@@ -82,15 +84,17 @@ bool dphysics::CollisionDetector::CircleBoxCollision(Collision &collision, Rigid
     }
     else if (d2 <= epsilon) {
         normal = ysMath::Mask(ysMath::Sub(circle->Position, box->Position), ysMath::Constants::MaskOffW);
+        normal = ysMath::Mask(normal, ysMath::Constants::MaskOffZ);
     }
     else {
         normal = ysMath::Mask(ysMath::Sub(circle->Position, realPosition), ysMath::Constants::MaskOffW);
+        normal = ysMath::Mask(normal, ysMath::Constants::MaskOffZ);
     }
 
     collision.m_normal = ysMath::Normalize(normal);
     collision.m_body1 = body1;
     collision.m_body2 = body2;
-    collision.m_penetration = std::sqrt(circle->RadiusSquared) - ysMath::GetScalar(ysMath::Magnitude(normal));
+    collision.m_penetration = circle->Radius - ysMath::GetScalar(ysMath::Magnitude(normal));
     collision.m_position = realPosition;
     
     return true;
@@ -98,6 +102,8 @@ bool dphysics::CollisionDetector::CircleBoxCollision(Collision &collision, Rigid
 
 bool dphysics::CollisionDetector::CircleCircleCollision(Collision &collision, RigidBody *body1, RigidBody *body2, CirclePrimitive *circle1, CirclePrimitive *circle2) {
     ysVector delta = ysMath::Sub(circle2->Position, circle1->Position);
+    delta = ysMath::Mask(delta, ysMath::Constants::MaskOffZ);
+
     ysVector direction = ysMath::Normalize(delta);
     ysVector distance = ysMath::Magnitude(delta);
 
@@ -109,15 +115,17 @@ bool dphysics::CollisionDetector::CircleCircleCollision(Collision &collision, Ri
         s_distance = 0.01f;
     }
 
-    if ((s_distance * s_distance) > (circle1->RadiusSquared - circle2->RadiusSquared) ||
-        (s_distance * s_distance) < (circle1->RadiusSquared + circle2->RadiusSquared)) 
+    float combinedRadius = circle1->Radius + circle2->Radius;
+
+    //if ((s_distance * s_distance) > (circle1->RadiusSquared - circle2->RadiusSquared)) ||
+    if ((s_distance * s_distance) < combinedRadius * combinedRadius)
     {
         collision.m_body1 = body1;
         collision.m_body2 = body2;
         collision.m_normal = ysMath::Negate3(direction);
-        collision.m_penetration = sqrt(circle1->RadiusSquared) + sqrt(circle2->RadiusSquared) - s_distance;
+        collision.m_penetration = circle1->Radius + circle2->Radius - s_distance;
         collision.m_position =
-            ysMath::Add(circle1->Position, ysMath::Mul(direction, ysMath::LoadScalar(std::sqrt(circle1->RadiusSquared))));
+            ysMath::Add(circle1->Position, ysMath::Mul(direction, ysMath::LoadScalar(circle1->Radius)));
 
         return true;
     }
@@ -141,7 +149,7 @@ bool dphysics::CollisionDetector::RayCircleCollision(Collision &collision, Rigid
     float D_mag = ysMath::GetScalar(ysMath::MagnitudeSquared3(D));
     float DP_mag = ysMath::GetScalar(ysMath::MagnitudeSquared3(DP));
 
-    float delta = D_dot_DP * D_dot_DP - D_mag * (DP_mag - circle->RadiusSquared);
+    float delta = D_dot_DP * D_dot_DP - D_mag * (DP_mag - circle->Radius * circle->Radius);
     if (delta < 0) return false;
 
     float t1 = (-D_dot_DP + delta) / D_mag;

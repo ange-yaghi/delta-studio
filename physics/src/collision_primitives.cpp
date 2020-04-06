@@ -80,8 +80,6 @@ void dphysics::BoxPrimitive::GetBounds(ysVector &minPoint, ysVector &maxPoint) c
 }
 
 void dphysics::CirclePrimitive::GetBounds(ysVector &minPoint, ysVector &maxPoint) const {
-    float Radius = std::sqrt(RadiusSquared);
-
     maxPoint = ysMath::Add(Position, ysMath::LoadVector(Radius, Radius));
     minPoint = ysMath::Add(Position, ysMath::LoadVector(-Radius, -Radius));
 }

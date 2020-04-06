@@ -59,6 +59,7 @@ namespace dphysics {
 
         void Integrate(float timeStep);
         void UpdateDerivedData();
+        void CheckAwake();
 
         void OrderPrimitives(CollisionObject **prim1, CollisionObject **prim2, RigidBody **body1, RigidBody **body2);
 

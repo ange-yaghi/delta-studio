@@ -55,23 +55,11 @@ void dphysics::RigidBody::Integrate(float timeStep) {
 
     m_angularVelocity = ysMath::Mul(m_angularVelocity, ysMath::LoadScalar(pow(m_angularDamping, timeStep)));
     m_velocity = ysMath::Mul(m_velocity, ysMath::LoadScalar(pow(m_linearDamping, timeStep)));
-
-    // Determine if rigid body is awake
-    ysVector v2 = ysMath::Mul(m_velocity, m_velocity);
-    ysVector a2 = ysMath::Mul(m_angularVelocity, m_angularVelocity);
-    float maxVel = ysMath::GetScalar(ysMath::MaxComponent(v2));
-    float maxAng = ysMath::GetScalar(ysMath::MaxComponent(a2));
-
-    if (maxVel < 1E-4 && maxAng < 1E-4 && GetCollisionCount() == 0) {
-        SetAwake(false);
-    }
-    else {
-        SetAwake(true);
-    }
 }
 
 void dphysics::RigidBody::UpdateDerivedData(bool force) {
     if (!m_derivedValid || force) {
+        m_lastWorldPosition = m_worldPosition;
         m_orientation = ysMath::Normalize(m_orientation);
 
         if (m_parent == nullptr) {
@@ -95,6 +83,21 @@ void dphysics::RigidBody::UpdateDerivedData(bool force) {
             m_children[i]->m_derivedValid = false;
             m_children[i]->UpdateDerivedData();
         }
+    }
+}
+
+void dphysics::RigidBody::CheckAwake() {
+    // Determine if rigid body is awake
+    ysVector d = ysMath::Sub(m_lastWorldPosition, m_worldPosition);
+    ysVector d2 = ysMath::Mask(ysMath::Mul(d, d), ysMath::Constants::MaskOffW);
+
+    float maxMovement = ysMath::GetScalar(ysMath::MaxComponent(d2));
+
+    if (maxMovement < 1E-4 && !IsAlwaysAwake()) {
+        SetAwake(false);
+    }
+    else {
+        SetAwake(true);
     }
 }
 

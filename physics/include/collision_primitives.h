@@ -16,7 +16,7 @@ namespace dphysics {
 
     struct CirclePrimitive {
         ysVector Position;
-        float RadiusSquared;
+        float Radius;
 
         void GetBounds(ysVector &minPoint, ysVector &maxPoint) const;
     };
