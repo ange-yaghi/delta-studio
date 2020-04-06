@@ -2,6 +2,28 @@
 
 #include <math.h>
 
+ysVector ysMath::UniformRandom4(float range) {
+    float r = (rand() % RAND_MAX) / ((float)(RAND_MAX - 1));
+    return LoadScalar(range * r);
+}
+
+float ysMath::UniformRandom(float range) {
+    static constexpr float MAX_RAND = 0.9999f;
+    float r = (rand() % RAND_MAX) / ((float)(RAND_MAX - 1));
+
+    // Limit the random number such that it is less than 1
+    // This approach will be made more robust in future versions
+    r = r > MAX_RAND
+        ? MAX_RAND
+        : r;
+
+    return range * r;
+}
+
+int ysMath::UniformRandomInt(int range) {
+    return rand() % range;
+}
+
 ysGeneric ysMath::LoadScalar(float s) {
     return _mm_set_ps(s, s, s, s);
 }
@@ -625,4 +647,16 @@ ysVector ysMath::ComponentMax(const ysVector &a, const ysVector &b) {
 ysVector ysMath::ComponentMin(const ysVector &a, const ysVector &b) {
     ysVector result = _mm_min_ps(a, b);
     return result;
+}
+
+ysVector ysMath::MaxComponent(const ysVector &v) {
+    // y, x, w, z
+    ysVector r1 = _mm_shuffle_ps(v, v, _MM_SHUFFLE(2, 3, 0, 1));
+    r1 = _mm_max_ps(r1, v);
+
+    // z, z, x, x
+    ysVector r2 = _mm_shuffle_ps(r1, r1, _MM_SHUFFLE(0, 0, 2, 2));
+    r1 = _mm_max_ps(r1, r2);
+
+    return r1;
 }

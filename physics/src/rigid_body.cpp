@@ -26,6 +26,9 @@ dphysics::RigidBody::RigidBody() {
     m_owner = nullptr;
     m_hint = RigidBodyHint::Static;
 
+    m_awake = true;
+    m_requestsInformation = false;
+
     ClearAccumulators();
     m_acceleration = ysMath::Constants::Zero;
 }
@@ -52,6 +55,19 @@ void dphysics::RigidBody::Integrate(float timeStep) {
 
     m_angularVelocity = ysMath::Mul(m_angularVelocity, ysMath::LoadScalar(pow(m_angularDamping, timeStep)));
     m_velocity = ysMath::Mul(m_velocity, ysMath::LoadScalar(pow(m_linearDamping, timeStep)));
+
+    // Determine if rigid body is awake
+    ysVector v2 = ysMath::Mul(m_velocity, m_velocity);
+    ysVector a2 = ysMath::Mul(m_angularVelocity, m_angularVelocity);
+    float maxVel = ysMath::GetScalar(ysMath::MaxComponent(v2));
+    float maxAng = ysMath::GetScalar(ysMath::MaxComponent(a2));
+
+    if (maxVel < 1E-4 && maxAng < 1E-4 && GetCollisionCount() == 0) {
+        SetAwake(false);
+    }
+    else {
+        SetAwake(true);
+    }
 }
 
 void dphysics::RigidBody::UpdateDerivedData(bool force) {

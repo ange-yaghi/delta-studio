@@ -171,6 +171,11 @@ namespace ysMath {
     // Math Functions
     // ----------------------------------------------------
 
+    // Math functions
+    ysVector UniformRandom4(float range = (float)1.0);
+    float UniformRandom(float range = (float)1.0);
+    int UniformRandomInt(int range);
+
     // Vector/General Quaternion
     ysGeneric LoadScalar(float s);
     ysGeneric LoadVector(float x = 0.0f, float y = 0.0f, float z = 0.0f, float w = 0.0f);
@@ -248,6 +253,8 @@ namespace ysMath {
 
     ysVector ComponentMax(const ysVector &a, const ysVector &b);
     ysVector ComponentMin(const ysVector &a, const ysVector &b);
+
+    ysVector MaxComponent(const ysVector &v);
 
 };
 

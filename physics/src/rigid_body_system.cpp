@@ -95,11 +95,13 @@ void dphysics::RigidBodySystem::GenerateCollisions(int start, int count) {
 }
 
 void dphysics::RigidBodySystem::GenerateCollisions(RigidBody *body1, RigidBody *body2) {
+    if (!body1->IsAwake() && !body2->IsAwake()) return;
+
     int nPrim1 = body1->CollisionGeometry.GetNumObjects();
     int nPrim2 = body2->CollisionGeometry.GetNumObjects();
 
-    RigidBody *body1Ord = NULL;
-    RigidBody *body2Ord = NULL;
+    RigidBody *body1Ord = nullptr;
+    RigidBody *body2Ord = nullptr;
 
     bool coarseCollision = true;
     bool coarsePresent = false;
@@ -124,6 +126,10 @@ void dphysics::RigidBodySystem::GenerateCollisions(RigidBody *body1, RigidBody *
 
             if (mode1 == mode2) {
                 bool sensorTest = mode1 == CollisionObject::Mode::Sensor;
+
+                if (sensorTest && !body1Ord->RequestsInformation() && !body2Ord->RequestsInformation()) {
+                    continue;
+                }
 
                 OrderPrimitives(&prim1, &prim2, &body1Ord, &body2Ord);
 
@@ -210,8 +216,8 @@ void dphysics::RigidBodySystem::GenerateCollisions(RigidBody *body1, RigidBody *
                                 newCollisionEntry->m_body2 = body2Ord;
 
                                 m_collisionAccumulator.New() = newCollisionEntry;
-                                body1->AddCollision(newCollisionEntry);
-                                body2->AddCollision(newCollisionEntry);
+                                if (body1->RequestsInformation()) body1->AddCollision(newCollisionEntry);
+                                if (body2->RequestsInformation()) body2->AddCollision(newCollisionEntry);
 
                                 newCollisionEntry->m_collisionObject1 = prim1;
                                 newCollisionEntry->m_collisionObject2 = prim2;
@@ -233,8 +239,8 @@ void dphysics::RigidBodySystem::GenerateCollisions(RigidBody *body1, RigidBody *
                                 Collision *newCollisionEntry = m_dynamicCollisions.NewGeneric<Collision, 16>();
                                 m_collisionAccumulator.New() = newCollisionEntry;
 
-                                body1->AddCollision(newCollisionEntry);
-                                body2->AddCollision(newCollisionEntry);
+                                if (body1->RequestsInformation()) body1->AddCollision(newCollisionEntry);
+                                if (body2->RequestsInformation()) body2->AddCollision(newCollisionEntry);
 
                                 *newCollisionEntry = newCollision;
 

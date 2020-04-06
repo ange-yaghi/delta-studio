@@ -60,6 +60,8 @@ bool dphysics::CollisionDetector::BoxBoxCollision(Collision &collision, RigidBod
 }
 
 bool dphysics::CollisionDetector::CircleBoxCollision(Collision &collision, RigidBody *body1, RigidBody *body2, CirclePrimitive *circle, BoxPrimitive *box) {
+    constexpr float epsilon = 1E-5;
+
     ysVector relativePosition = ysMath::Sub(circle->Position, box->Position);
     relativePosition = ysMath::MatMult(ysMath::OrthogonalInverse(box->Orientation), relativePosition);
 
@@ -70,10 +72,20 @@ bool dphysics::CollisionDetector::CircleBoxCollision(Collision &collision, Rigid
     ysVector realPosition = ysMath::MatMult(box->Orientation, closestPoint);
     realPosition = ysMath::Add(realPosition, box->Position);
     
+    float d0 = ysMath::GetScalar(ysMath::MagnitudeSquared3(ysMath::Sub(circle->Position, box->Position)));
     float d2 = ysMath::GetScalar(ysMath::MagnitudeSquared3(ysMath::Sub(circle->Position, realPosition)));
     if (d2 > circle->RadiusSquared) return false;
 
-    ysVector normal = ysMath::Mask(ysMath::Sub(circle->Position, realPosition), ysMath::Constants::MaskOffW);
+    ysVector normal;
+    if (d0 <= epsilon) {
+        normal = ysMath::Mul(ysMath::Constants::XAxis, ysMath::LoadScalar(0.001f));
+    }
+    else if (d2 <= epsilon) {
+        normal = ysMath::Mask(ysMath::Sub(circle->Position, box->Position), ysMath::Constants::MaskOffW);
+    }
+    else {
+        normal = ysMath::Mask(ysMath::Sub(circle->Position, realPosition), ysMath::Constants::MaskOffW);
+    }
 
     collision.m_normal = ysMath::Normalize(normal);
     collision.m_body1 = body1;

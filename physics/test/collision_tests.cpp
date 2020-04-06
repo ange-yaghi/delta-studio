@@ -188,3 +188,25 @@ TEST(CollisionTests, RayCircleCollision) {
 
     EXPECT_FALSE(colliding);
 }
+
+TEST(CollisionTests, BoxCircleEdgeCase) {
+    dphysics::BoxPrimitive b1;
+    dphysics::CirclePrimitive b2;
+
+    b1.Position = ysMath::LoadVector(0.1f, 0.0f, 0.0f, 1.0f);
+    b1.HalfHeight = 1.0f;
+    b1.HalfWidth = 1.0f;
+    b1.Orientation = ysMath::LoadIdentity();
+
+    b2.Position = ysMath::LoadVector(0.0f, 0.0f, 0.0f, 1.0f);
+    b2.RadiusSquared = 1.0f;
+
+    dphysics::RigidBody a;
+    dphysics::RigidBody b;
+
+    dphysics::CollisionDetector detector;
+    dphysics::Collision collision;
+    bool colliding = detector.CircleBoxCollision(collision, &b, &a, &b2, &b1);
+
+    EXPECT_TRUE(colliding);
+}

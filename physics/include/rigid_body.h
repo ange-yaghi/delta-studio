@@ -16,7 +16,7 @@ namespace dphysics {
     public:
         enum class RigidBodyHint {
             Static,
-            Dynamic,
+            Dynamic
         };
 
         struct GridCell {
@@ -67,7 +67,7 @@ namespace dphysics {
 
         float GetInverseMass() const { return m_inverseMass; }
 
-        RigidBody *GetRoot() { if (m_parent != NULL) return m_parent->GetRoot(); else return this; }
+        RigidBody *GetRoot() { if (m_parent != nullptr) return m_parent->GetRoot(); else return this; }
         void AddChild(RigidBody *body);
         void RemoveChild(RigidBody *child);
         void ClearChildren() { m_children.Clear(); }
@@ -82,6 +82,12 @@ namespace dphysics {
         void SetOwner(void *owner) { m_owner = owner; }
 
         bool IsRegistered() const { return m_registered; }
+
+        bool IsAwake() const { return m_awake; }
+        void SetAwake(bool awake) { m_awake = awake; }
+
+        bool RequestsInformation() const { return m_requestsInformation; }
+        void SetRequestsInformation(bool ri) { m_requestsInformation = ri; }
 
         void SetHint(RigidBodyHint hint) { m_hint = hint; }
         RigidBodyHint GetHint() const { return m_hint; }
@@ -108,6 +114,8 @@ namespace dphysics {
     protected:
         // Properties
         bool m_registered;
+        bool m_awake;
+        bool m_requestsInformation;
 
         float m_inverseMass;
         float m_linearDamping;
