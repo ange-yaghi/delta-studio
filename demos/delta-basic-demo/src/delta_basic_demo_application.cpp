@@ -36,9 +36,6 @@ void dbasic_demo::DeltaBasicDemoApplication::Initialize(void *instance, ysContex
     highlight->SetDiffuseColor(ysVector4(1.0f, 1.0f, 1.0f, 1.0f - 0.941667f));
 
     m_assetManager.SetEngine(&m_engine);
-    m_assetManager.CompileSceneFile("../../workspace/addon_dev", 1.0f, true);
-    m_assetManager.LoadSceneFile("../../workspace/addon_dev");
-
     m_assetManager.CompileInterchangeFile("../../test/geometry_files/ant_rigged", 1.0f, true);
     m_assetManager.LoadSceneFile("../../test/geometry_files/ant_rigged");
 
@@ -50,8 +47,6 @@ void dbasic_demo::DeltaBasicDemoApplication::Initialize(void *instance, ysContex
 
     m_probe = &m_renderSkeleton->FindNode("Head")->RigidBody;
     m_probe2 = m_renderSkeleton->FindNode("Circle");
-
-    m_engine.LoadTexture(&m_demoTexture, "../../demos/delta-basic-demo/assets/chicken.png");
 
     m_assetManager.LoadAnimationFile("../../test/animation_files/ant_rigged.dimo");
     m_blinkAction = m_assetManager.GetAction("Blink");
@@ -159,6 +154,13 @@ void dbasic_demo::DeltaBasicDemoApplication::Render() {
     }
 
     m_blinkTimer -= m_engine.GetFrameLength();
+
+    m_engine.SetAmbientLight(ysVector4(0.5, 0.5, 0.5, 1.0f));
+
+    Light light;
+    light.Position = ysVector4(0.0f, 0.0f, 2.0f, 0.0f);
+    light.Color = ysVector4(1.0f, 1.0f, 1.0f, 0.0f);
+    m_engine.AddLight(light);
 }
 
 void dbasic_demo::DeltaBasicDemoApplication::Run() {
@@ -170,4 +172,7 @@ void dbasic_demo::DeltaBasicDemoApplication::Run() {
 
         m_engine.EndFrame();
     }
+
+    m_assetManager.Destroy();
+    m_engine.Destroy();
 }

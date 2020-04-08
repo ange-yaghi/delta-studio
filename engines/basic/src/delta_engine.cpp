@@ -57,6 +57,8 @@ dbasic::DeltaEngine::DeltaEngine() {
     m_currentTarget = DrawTarget::Main;
 
     m_cameraFov = ysMath::Constants::PI / 3.0f;
+
+    ResetLights();
 }
 
 dbasic::DeltaEngine::~DeltaEngine() {
@@ -77,6 +79,7 @@ dbasic::DeltaEngine::~DeltaEngine() {
     assert(m_shaderObjectVariablesBuffer == nullptr);
     assert(m_shaderScreenVariablesBuffer == nullptr);
     assert(m_shaderSkinningControlsBuffer == nullptr);
+    assert(m_lightingControlBuffer == nullptr);
 }
 
 ysError dbasic::DeltaEngine::CreateGameWindow(const char *title, void *instance, ysContextObject::DEVICE_API API, const char *shaderDirectory, bool depthBuffer) {
@@ -159,6 +162,8 @@ ysError dbasic::DeltaEngine::EndFrame() {
         ExecuteDrawQueue(DrawTarget::Main);
         ExecuteDrawQueue(DrawTarget::Gui);
         m_device->Present();
+
+        ResetLights();
     }
 
     return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
@@ -166,6 +171,8 @@ ysError dbasic::DeltaEngine::EndFrame() {
 
 ysError dbasic::DeltaEngine::Destroy() {
     YDS_ERROR_DECLARE("Destroy");
+
+    YDS_NESTED_ERROR_CALL(GetConsole()->Destroy());
 
     YDS_NESTED_ERROR_CALL(m_device->DestroyRenderTarget(m_mainRenderTarget));
     YDS_NESTED_ERROR_CALL(m_device->DestroyRenderingContext(m_renderingContext));
@@ -175,6 +182,7 @@ ysError dbasic::DeltaEngine::Destroy() {
     YDS_NESTED_ERROR_CALL(m_device->DestroyGPUBuffer(m_shaderObjectVariablesBuffer));
     YDS_NESTED_ERROR_CALL(m_device->DestroyGPUBuffer(m_shaderScreenVariablesBuffer));
     YDS_NESTED_ERROR_CALL(m_device->DestroyGPUBuffer(m_shaderSkinningControlsBuffer));
+    YDS_NESTED_ERROR_CALL(m_device->DestroyGPUBuffer(m_lightingControlBuffer));
 
     YDS_NESTED_ERROR_CALL(m_device->DestroyShader(m_vertexShader));
     YDS_NESTED_ERROR_CALL(m_device->DestroyShader(m_vertexSkinnedShader));
@@ -209,6 +217,15 @@ ysError dbasic::DeltaEngine::UseMaterial(Material *material) {
     }
 
     return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+}
+
+void dbasic::DeltaEngine::ResetLights() {
+    m_lightCount = 0;
+    for (int i = 0; i < LightingControls::MaxLights; ++i) {
+        m_lightingControls.Lights[i].Active = 0;
+    }
+
+    m_lightingControls.AmbientLighting = ysVector4(0.0f, 0.0f, 0.0f, 0.0f);
 }
 
 ysError dbasic::DeltaEngine::InitializeGeometry() {
@@ -276,6 +293,7 @@ ysError dbasic::DeltaEngine::InitializeShaders(const char *shaderDirectory) {
     YDS_NESTED_ERROR_CALL(m_device->CreateConstantBuffer(&m_shaderObjectVariablesBuffer, sizeof(ShaderObjectVariables), nullptr));
     YDS_NESTED_ERROR_CALL(m_device->CreateConstantBuffer(&m_shaderScreenVariablesBuffer, sizeof(ShaderScreenVariables), nullptr));
     YDS_NESTED_ERROR_CALL(m_device->CreateConstantBuffer(&m_shaderSkinningControlsBuffer, sizeof(ShaderSkinningControls), nullptr));
+    YDS_NESTED_ERROR_CALL(m_device->CreateConstantBuffer(&m_lightingControlBuffer, sizeof(LightingControls), nullptr));
 
     return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
 }
@@ -475,7 +493,7 @@ ysError dbasic::DeltaEngine::DrawImage(ysTexture *image, int layer, float scaleX
         m_shaderObjectVariables.TexScale[1] = texScaleV;
 
         m_shaderObjectVariables.ColorReplace = 0;
-        m_shaderObjectVariables.Lit = 0;
+        m_shaderObjectVariables.Lit = 1;
     }
 
     DrawCall *newCall = nullptr;
@@ -491,6 +509,26 @@ ysError dbasic::DeltaEngine::DrawImage(ysTexture *image, int layer, float scaleX
         newCall->Texture = image;
         newCall->Model = nullptr;
     }
+
+    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+}
+
+ysError dbasic::DeltaEngine::AddLight(const Light &light) {
+    YDS_ERROR_DECLARE("AddLight");
+
+    if (m_lightCount >= LightingControls::MaxLights) return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+    m_lightingControls.Lights[m_lightCount] = light;
+    m_lightingControls.Lights[m_lightCount].Active = 1;
+    ++m_lightCount;
+
+
+    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+}
+
+ysError dbasic::DeltaEngine::SetAmbientLight(const ysVector4 &ambient) {
+    YDS_ERROR_DECLARE("SetAmbientLight");
+
+    m_lightingControls.AmbientLighting = ambient;
 
     return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
 }
@@ -515,7 +553,7 @@ ysError dbasic::DeltaEngine::DrawBox(const int color[3], float width, float heig
         m_shaderObjectVariables.MulCol.z = color[2] / 255.0f;
         m_shaderObjectVariables.MulCol.w = 1.0f;
 
-        m_shaderObjectVariables.Lit = 0;
+        m_shaderObjectVariables.Lit = 1;
     }
 
     DrawCall *newCall = nullptr;
@@ -626,6 +664,7 @@ ysError dbasic::DeltaEngine::ExecuteDrawQueue(DrawTarget target) {
     YDS_ERROR_DECLARE("ExecuteDrawQueue");
 
     YDS_NESTED_ERROR_CALL(m_device->EditBufferData(m_shaderSkinningControlsBuffer, (char *)(&m_shaderSkinningControls)));
+    YDS_NESTED_ERROR_CALL(m_device->EditBufferData(m_lightingControlBuffer, (char *)(&m_lightingControls)));
 
     if (!m_shaderScreenVariablesSync) {
         float aspect = m_gameWindow->GetScreenWidth() / (float)m_gameWindow->GetScreenHeight();
@@ -715,6 +754,7 @@ ysError dbasic::DeltaEngine::ExecuteDrawQueue(DrawTarget target) {
                 m_device->UseConstantBuffer(m_shaderScreenVariablesBuffer, 0);
                 m_device->UseConstantBuffer(m_shaderObjectVariablesBuffer, 1);
                 m_device->UseConstantBuffer(m_shaderSkinningControlsBuffer, 2);
+                m_device->UseConstantBuffer(m_lightingControlBuffer, 3);
 
                 m_device->UseTexture(call->Texture, 0);
 
@@ -732,6 +772,7 @@ ysError dbasic::DeltaEngine::ExecuteDrawQueue(DrawTarget target) {
                 m_device->UseConstantBuffer(m_shaderScreenVariablesBuffer, 0);
                 m_device->UseConstantBuffer(m_shaderObjectVariablesBuffer, 1);
                 m_device->UseConstantBuffer(m_shaderSkinningControlsBuffer, 2);
+                m_device->UseConstantBuffer(m_lightingControlBuffer, 3);
 
                 m_device->UseIndexBuffer(m_mainIndexBuffer, 0);
                 m_device->UseVertexBuffer(m_mainVertexBuffer, sizeof(Vertex), 0);
