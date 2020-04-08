@@ -65,8 +65,17 @@ namespace dbasic {
 
         // Shader Controls
         void SetCameraPosition(float x, float y);
+        void GetCameraPosition(float *x, float *y) const;
+
         void SetCameraAngle(float angle);
+
+        float GetCameraFov() const;
+        void SetCameraFov(float fov);
+
+        float GetCameraAspect() const;
+
         void SetCameraAltitude(float altitude);
+        float GetCameraAltitude() const;
 
         void SetObjectTransform(const ysMatrix &mat);
         void SetPositionOffset(const ysVector &position);
@@ -99,6 +108,7 @@ namespace dbasic {
         float m_cameraY;
         float m_cameraAltitude;
         float m_cameraAngle;
+        float m_cameraFov;
 
         ysMatrix m_perspectiveProjection;
         ysMatrix m_orthographicProjection;

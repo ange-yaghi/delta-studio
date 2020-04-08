@@ -55,6 +55,8 @@ dbasic::DeltaEngine::DeltaEngine() {
     m_cameraAngle = 0.0f;
 
     m_currentTarget = DrawTarget::Main;
+
+    m_cameraFov = ysMath::Constants::PI / 3.0f;
 }
 
 dbasic::DeltaEngine::~DeltaEngine() {
@@ -213,10 +215,10 @@ ysError dbasic::DeltaEngine::InitializeGeometry() {
     YDS_ERROR_DECLARE("InitializeGeometry");
 
     Vertex vertexData[] = {
-        { { -1.0f, 1.0f, -1.0f, 1.0f },		{0.0f, 1.0f},	{0.0f, 0.0f, 1.0f, 0.0f} },
-        { { 1.0f, 1.0f, -1.0f, 1.0f },		{1.0f, 1.0f},	{0.0f, 0.0f, 1.0f, 0.0f} },
-        { { 1.0f, -1.0f, -1.0f, 1.0f },		{1.0f, 0.0f},	{0.0f, 0.0f, 1.0f, 0.0f} },
-        { { -1.0f, -1.0f, -1.0f, 1.0f },    {0.0f, 0.0f},	{0.0f, 0.0f, 1.0f, 0.0f} } };
+        { { -1.0f, 1.0f, 0.0f, 1.0f },		{0.0f, 1.0f},	{0.0f, 0.0f, 1.0f, 0.0f} },
+        { { 1.0f, 1.0f, 0.0f, 1.0f },		{1.0f, 1.0f},	{0.0f, 0.0f, 1.0f, 0.0f} },
+        { { 1.0f, -1.0f, 0.0f, 1.0f },		{1.0f, 0.0f},	{0.0f, 0.0f, 1.0f, 0.0f} },
+        { { -1.0f, -1.0f, 0.0f, 1.0f },    {0.0f, 0.0f},	{0.0f, 0.0f, 1.0f, 0.0f} } };
 
     unsigned short indices[] = {
         2, 1, 0,
@@ -323,14 +325,35 @@ void dbasic::DeltaEngine::SetCameraPosition(float x, float y) {
     m_shaderScreenVariablesSync = false;
 }
 
+void dbasic::DeltaEngine::GetCameraPosition(float *x, float *y) const {
+    *x = m_cameraX;
+    *y = m_cameraY;
+}
+
 void dbasic::DeltaEngine::SetCameraAngle(float angle) {
     m_cameraAngle = angle;
     m_shaderScreenVariablesSync = false;
 }
 
+float dbasic::DeltaEngine::GetCameraFov() const {
+    return m_cameraFov;
+}
+
+void dbasic::DeltaEngine::SetCameraFov(float fov) {
+    m_cameraFov = fov;
+}
+
+float dbasic::DeltaEngine::GetCameraAspect() const {
+    return m_gameWindow->GetScreenWidth() / (float)m_gameWindow->GetScreenHeight();
+}
+
 void dbasic::DeltaEngine::SetCameraAltitude(float altitude) {
     m_cameraAltitude = altitude;
     m_shaderScreenVariablesSync = false;
+}
+
+float dbasic::DeltaEngine::GetCameraAltitude() const {
+    return m_cameraAltitude;
 }
 
 void dbasic::DeltaEngine::SetObjectTransform(const ysMatrix &mat) {
@@ -608,7 +631,7 @@ ysError dbasic::DeltaEngine::ExecuteDrawQueue(DrawTarget target) {
         float aspect = m_gameWindow->GetScreenWidth() / (float)m_gameWindow->GetScreenHeight();
 
         if (target == DrawTarget::Main) {
-            m_shaderScreenVariables.Projection = ysMath::Transpose(ysMath::FrustrumPerspective(ysMath::Constants::PI / 3.0f, aspect, 1.0f, 10000.0f));
+            m_shaderScreenVariables.Projection = ysMath::Transpose(ysMath::FrustrumPerspective(m_cameraFov, aspect, 1.0f, 10000.0f));
         }
         else if (target == DrawTarget::Gui) {
             m_shaderScreenVariables.Projection = ysMath::Transpose(
@@ -642,6 +665,14 @@ ysError dbasic::DeltaEngine::ExecuteDrawQueue(DrawTarget target) {
         }
 
         m_shaderScreenVariables.CameraView = ysMath::Transpose(ysMath::CameraTarget(cameraEye, cameraTarget, up));
+
+        ysMatrix proj = m_shaderScreenVariables.Projection;
+        ysMatrix cam = m_shaderScreenVariables.CameraView;
+
+        ysVector v = ysMath::LoadVector(19.3632, 9.74805, 0.0f, 1.0f);
+        v = ysMath::MatMult(cam, v);
+        v = ysMath::MatMult(proj, v);
+        v = ysMath::Div(v, ysMath::LoadScalar(ysMath::GetW(v)));
 
         m_shaderScreenVariables.Eye[0] = m_cameraX;
         m_shaderScreenVariables.Eye[1] = m_cameraY;
