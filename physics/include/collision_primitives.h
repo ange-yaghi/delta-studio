@@ -69,6 +69,8 @@ namespace dphysics {
 
         Collision &operator=(Collision &collision);
 
+        bool IsGhost() const;
+
     protected:
 
         ysVector m_relativePosition[2];

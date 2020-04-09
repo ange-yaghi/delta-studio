@@ -104,8 +104,8 @@ namespace dphysics {
         void SetAcceleration(ysVector &acceleration) { m_acceleration = acceleration; }
         ysVector GetAcceleration() const { return m_acceleration; }
 
-        void AddForceLocalSpace(ysVector &force, ysVector &localPoint);
-        void AddForceWorldSpace(ysVector &force, ysVector &point);
+        void AddForceLocalSpace(const ysVector &force, const ysVector &localPoint);
+        void AddForceWorldSpace(const ysVector &force, const ysVector &point);
         void ClearForceAccumulator() { m_forceAccum = ysMath::Constants::Zero; }
         ysVector GetForce() const { return m_forceAccum; }
 
@@ -114,6 +114,11 @@ namespace dphysics {
         ysVector GetTorque() const { return m_torqueAccum; }
 
         void ClearAccumulators() { ClearForceAccumulator(); ClearTorqueAccumulator(); }
+
+        void SetGhost(bool ghost) { m_ghost = ghost; }
+        bool IsGhost() const { return m_ghost; }
+
+        void SetLinearDamping(float damping) { m_linearDamping = damping; }
 
     protected:
         // Properties
@@ -138,6 +143,7 @@ namespace dphysics {
 
         // Derived
         bool m_derivedValid;
+        bool m_ghost;
 
         ysVector m_worldPosition;
         ysVector m_lastWorldPosition;

@@ -35,7 +35,7 @@ void dphysics::GridCell::DecrementRequestCount() {
 dphysics::GridPartitionSystem::GridPartitionSystem() : ysObject("ysGridPartitionSystem") {
     m_maxCells = 8192;
     m_gridCellSize = 5.0f;
-    m_maxObjectSize = 5.0f;
+    m_maxObjectSize = 10.0f;
     m_gridCells.Allocate(m_maxCells);
 }
 
@@ -129,11 +129,11 @@ void dphysics::GridPartitionSystem::ProcessRigidBody(RigidBody *object) {
     float actual_x = ysMath::GetX(pos);
     float actual_y = ysMath::GetY(pos);
 
-    int x = (int)(actual_x / m_gridCellSize);
-    int y = (int)(actual_y / m_gridCellSize);
+    int x = (int)(std::floor(actual_x / m_gridCellSize));
+    int y = (int)(std::floor(actual_y / m_gridCellSize));
 
-    float nominal_x = m_gridCellSize * x + m_gridCellSize / 2.0f;
-    float nominal_y = m_gridCellSize * y + m_gridCellSize / 2.0f;
+    float nominal_x = m_gridCellSize * x;
+    float nominal_y = m_gridCellSize * y;
 
     AddObject(x, y, object);
 
@@ -152,7 +152,7 @@ void dphysics::GridPartitionSystem::ProcessRigidBody(RigidBody *object) {
             AddObject(x + 1, y - 1, object);
         }
     }
-    else if (-deltax > threshold) {
+    if (-deltax > threshold) {
         AddObject(x - 1, y, object);
 
         if (deltay > threshold) {
@@ -166,7 +166,7 @@ void dphysics::GridPartitionSystem::ProcessRigidBody(RigidBody *object) {
     if (deltay > threshold) {
         AddObject(x, y + 1, object);
     }
-    else if (-deltay > threshold) {
+    if (-deltay > threshold) {
         AddObject(x, y - 1, object);
     }
 }

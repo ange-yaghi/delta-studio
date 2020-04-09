@@ -444,6 +444,7 @@ void dphysics::RigidBodySystem::ResolveCollisions() {
             Collision &collision = *m_collisionAccumulator[i];
 
             if (collision.m_sensor) continue;
+            if (collision.IsGhost()) continue;
 
             collision.UpdateInternals();
 
@@ -462,6 +463,7 @@ void dphysics::RigidBodySystem::ResolveCollisions() {
             Collision &collision = *m_collisionAccumulator[i];
 
             if (collision.m_sensor) continue;
+            if (collision.IsGhost()) continue;
 
             collision.UpdateInternals();
 

@@ -99,6 +99,9 @@ void dbasic_demo::DeltaBasicDemoApplication::Render() {
     m_skeletonBase.UpdateDerivedData(true);
     m_engine.DrawRenderSkeleton(m_renderSkeleton, 1.0f, 0);
 
+    int white[] = { 255, 255, 255 };
+    m_engine.DrawBox(white, 50, 50, 0);
+
     ysAnimationChannel::ActionSettings normalSpeed;
     normalSpeed.Speed = 1.0f;
     normalSpeed.FadeIn = 20.0f;
@@ -157,9 +160,12 @@ void dbasic_demo::DeltaBasicDemoApplication::Render() {
 
     m_engine.SetAmbientLight(ysVector4(0.5, 0.5, 0.5, 1.0f));
 
-    Light light;
+    dbasic::Light light;
     light.Position = ysVector4(0.0f, 0.0f, 2.0f, 0.0f);
     light.Color = ysVector4(1.0f, 1.0f, 1.0f, 0.0f);
+    light.Direction = ysMath::GetVector4(ysMath::Normalize(ysMath::LoadVector(1.0f, 0.0f, -1.0f)));
+    light.Attenuation0 = 0.9f;
+    light.Attenuation1 = 0.89f;
     m_engine.AddLight(light);
 }
 

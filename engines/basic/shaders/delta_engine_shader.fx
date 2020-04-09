@@ -47,6 +47,9 @@ cbuffer SkinningVariables : register(b2) {
 struct Light {
 	float4 Position;
 	float4 Color;
+	float4 Direction;
+	float Attenuation0;
+	float Attenuation1;
 	int FalloffEnabled;
 	int Active;
 };
@@ -157,11 +160,22 @@ float4 PS(VS_OUTPUT input) : SV_Target {
 
 			float3 contribution = dot(d, input.Normal) * light.Color;
 
+			// Spotlight calculation
+			float spotCoherence = -dot(d, light.Direction.xyz);
+			float spotAttenuation = 1.0f;
+			if (spotCoherence > light.Attenuation0) spotAttenuation = 1.0f;
+			else if (spotCoherence < light.Attenuation1) spotAttenuation = 0.0f;
+			else {
+				float t = light.Attenuation0 - light.Attenuation1;
+				if (t == 0) spotAttenuation = 1.0f;
+				else spotAttenuation = (spotCoherence - light.Attenuation1) / t;
+			}
+
 			if (light.FalloffEnabled == 1) {
 				contribution *= (inv_mag * inv_mag);
 			}
 
-			totalLighting += contribution;
+			totalLighting += contribution * spotAttenuation * spotAttenuation * spotAttenuation;
 		}
 	}
 	

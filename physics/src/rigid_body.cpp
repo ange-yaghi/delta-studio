@@ -22,6 +22,7 @@ dphysics::RigidBody::RigidBody() {
 
     m_derivedValid = false;
     m_registered = false;
+    m_ghost = false;
 
     m_owner = nullptr;
     m_hint = RigidBodyHint::Static;
@@ -157,12 +158,13 @@ void dphysics::RigidBody::AddGridCell(int x, int y) {
     gridCell->y = y;
 }
 
-void dphysics::RigidBody::AddForceLocalSpace(ysVector &force, ysVector &localPoint) {
+void dphysics::RigidBody::AddForceLocalSpace(const ysVector &force, const ysVector &localPoint) {
     ysVector worldSpace = GetGlobalSpace(localPoint);
-    AddForceWorldSpace(force, worldSpace);
+    ysVector forceWorldSpace = GetWorldOrientation(force);
+    AddForceWorldSpace(forceWorldSpace, worldSpace);
 }
 
-void dphysics::RigidBody::AddForceWorldSpace(ysVector &force, ysVector &point) {
+void dphysics::RigidBody::AddForceWorldSpace(const ysVector &force, const ysVector &point) {
     ysVector delta = ysMath::Sub(point, GetWorldPosition());
 
     m_forceAccum = ysMath::Add(m_forceAccum, force);

@@ -1,4 +1,5 @@
 #include "../include/collision_primitives.h"
+
 #include "../include/rigid_body.h"
 
 #include <algorithm>
@@ -7,11 +8,11 @@
 dphysics::Collision::Collision() : ysObject("Collision") {
     m_penetration = 0.0f;
     m_normal = ysMath::Constants::Zero;
-    m_body1 = NULL;
-    m_body2 = NULL;
+    m_body1 = nullptr;
+    m_body2 = nullptr;
 
-    m_collisionObject1 = NULL;
-    m_collisionObject2 = NULL;
+    m_collisionObject1 = nullptr;
+    m_collisionObject2 = nullptr;
 
     m_sensor = false;
 }
@@ -39,7 +40,7 @@ dphysics::Collision::~Collision() {
 
 void dphysics::Collision::UpdateInternals() {
     for (int i = 0; i < 2; i++) {
-        if (m_bodies[i] != NULL) {
+        if (m_bodies[i] != nullptr) {
             m_relativePosition[i] = ysMath::Sub(m_position, m_bodies[i]->GetPosition());
         }
     }
@@ -62,6 +63,12 @@ dphysics::Collision &dphysics::Collision::operator=(dphysics::Collision &collisi
     m_relativePosition[1] = collision.m_relativePosition[1];
 
     return *this;
+}
+
+bool dphysics::Collision::IsGhost() const {
+    if (m_collisionObject1 != nullptr && m_collisionObject1->GetParent()->IsGhost()) return true;
+    if (m_collisionObject2 != nullptr && m_collisionObject2->GetParent()->IsGhost()) return true;
+    return false;
 }
 
 void dphysics::BoxPrimitive::GetBounds(ysVector &minPoint, ysVector &maxPoint) const {

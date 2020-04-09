@@ -3,7 +3,7 @@
 #include "../include/rigid_body.h"
 
 dphysics::CollisionObject::CollisionObject() : ysObject("CollisionObject") {
-    m_primitiveHandle = NULL;
+    m_primitiveHandle = nullptr;
     m_type = Type::Undefined;
     m_mode = Mode::Fine;
 
@@ -11,15 +11,15 @@ dphysics::CollisionObject::CollisionObject() : ysObject("CollisionObject") {
     m_relativeOrientation = ysMath::LoadIdentity();
 
     m_collisionLayerMask = 0xFFFFFFFF;
-    m_layerMask = 0xFFFFFFFF;
+    m_layer = 0x0;
 
-    m_parent = NULL;
+    m_parent = nullptr;
 
-    m_msg = NULL;
+    m_msg = 0;
 }
 
 dphysics::CollisionObject::CollisionObject(Type type) : ysObject("CollisionObject") {
-    m_primitiveHandle = NULL;
+    m_primitiveHandle = nullptr;
     m_type = type;
     m_mode = Mode::Fine;
 
@@ -27,11 +27,11 @@ dphysics::CollisionObject::CollisionObject(Type type) : ysObject("CollisionObjec
     m_relativeOrientation = ysMath::LoadIdentity();
 
     m_collisionLayerMask = 0xFFFFFFFF;
-    m_layerMask = 0xFFFFFFFF;
+    m_layer = 0x0;
 
-    m_parent = NULL;
+    m_parent = nullptr;
 
-    m_msg = NULL;
+    m_msg = 0;
 }
 
 dphysics::CollisionObject::~CollisionObject() {
@@ -87,6 +87,25 @@ void dphysics::CollisionObject::ConfigurePrimitive() {
     }
 }
 
+void dphysics::CollisionObject::SetCollidesWith(int layer, bool collides) {
+    if (layer < 0 || layer >= 32) return;
+
+    m_collisionLayerMask &= ~(0x1 << layer);
+    
+    if (collides) m_collisionLayerMask |= (0x1 << layer);
+}
+
+bool dphysics::CollisionObject::CollidesWith(int layer) const {
+    if (layer < 0 || layer >= 32) return false;
+
+    int bit = 0x1 << layer;
+    return (m_collisionLayerMask & bit) > 0;
+}
+
+void dphysics::CollisionObject::SetLayer(int layer) {
+    m_layer = layer;
+}
+
 bool dphysics::CollisionObject::CheckCollisionMask(const CollisionObject *object) const {
-    return ((object->m_collisionLayerMask & m_layerMask) > 0) || ((object->m_layerMask & m_collisionLayerMask) > 0);
+    return CollidesWith(object->GetLayer()) || object->CollidesWith(GetLayer());
 }

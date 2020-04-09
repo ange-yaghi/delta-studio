@@ -52,11 +52,11 @@ namespace dphysics {
 
         void ConfigurePrimitive();
 
-        void SetCollisionLayerExclusionMask(unsigned int mask) { m_collisionLayerMask = ~mask; }
-        unsigned int GetCollisionLasyerMask() const { return m_collisionLayerMask; }
+        void SetCollidesWith(int layer, bool collides);
+        bool CollidesWith(int layer) const;
 
-        void SetLayerMask(unsigned int mask) { m_layerMask = mask; }
-        unsigned int GetLasyerMask() const { return m_layerMask; }
+        void SetLayer(int layer);
+        int GetLayer() const { return m_layer; }
 
         bool CheckCollisionMask(const CollisionObject *object) const;
 
@@ -75,7 +75,7 @@ namespace dphysics {
         ysVector m_relativePosition;
         ysMatrix m_relativeOrientation;
 
-        unsigned int m_layerMask;
+        unsigned int m_layer;
         unsigned int m_collisionLayerMask;
 
     private:

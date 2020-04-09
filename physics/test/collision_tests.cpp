@@ -174,6 +174,31 @@ TEST(CollisionTests, BoxBoxOffCenterDifferentSizesDeep2) {
     VecEq(collision.m_normal, ysMath::LoadVector(-1.0f, 0.0f, 0.0f));
 }
 
+TEST(CollisionTests, BoxBoxBigSmall) {
+    dphysics::BoxPrimitive b1;
+    dphysics::BoxPrimitive b2;
+
+    b1.Position = ysMath::LoadVector(0.0f, 0.0f, 0.0f, 0.0f);
+    b1.HalfHeight = 10.0f;
+    b1.HalfWidth = 10.0f;
+    b1.Orientation = ysMath::LoadIdentity();
+
+    b2.Position = ysMath::LoadVector(11.4f, 0.0f, 0.0f, 0.0f);
+    b2.HalfHeight = 1.5f;
+    b2.HalfWidth = 1.5f;
+    b2.Orientation = ysMath::LoadIdentity();
+
+    dphysics::RigidBody a;
+    dphysics::RigidBody b;
+
+    dphysics::CollisionDetector detector;
+    dphysics::Collision collision;
+    bool colliding = detector.BoxBoxCollision(collision, &b, &a, &b2, &b1);
+
+    EXPECT_TRUE(colliding);
+    EXPECT_NEAR(collision.m_penetration, 0.1f, 1E-4);
+}
+
 TEST(CollisionTests, RayCircleCollision) {
     dphysics::RayPrimitive b1;
     dphysics::CirclePrimitive b2;
