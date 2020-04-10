@@ -113,6 +113,7 @@
     <ClInclude Include="..\..\include\yds_timing.h" />
     <ClInclude Include="..\..\include\yds_tool_animation_file.h" />
     <ClInclude Include="..\..\include\yds_tool_geometry_file.h" />
+    <ClInclude Include="..\..\include\yds_transform.h" />
     <ClInclude Include="..\..\include\yds_window.h" />
     <ClInclude Include="..\..\include\yds_windows_audio_wave_file.h" />
     <ClInclude Include="..\..\include\yds_windows_input_device.h" />
@@ -206,6 +207,7 @@
     <ClCompile Include="..\..\src\yds_timing.cpp" />
     <ClCompile Include="..\..\src\yds_tool_animation_file.cpp" />
     <ClCompile Include="..\..\src\yds_tool_geometry_file.cpp" />
+    <ClCompile Include="..\..\src\yds_transform.cpp" />
     <ClCompile Include="..\..\src\yds_window.cpp" />
     <ClCompile Include="..\..\src\yds_windows_audio_wave_file.cpp" />
     <ClCompile Include="..\..\src\yds_windows_input_device.cpp" />

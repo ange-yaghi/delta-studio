@@ -16,15 +16,16 @@
 #include <d3dx11async.h>
 #include <d3dx11tex.h>
 
-#ifdef _DEBUG
-#include <dxgi1_3.h>
-#include <initguid.h>
-#include <dxgidebug.h>
+//#ifdef _DEBUG
+//#include <dxgi1_3.h>
+//#include <initguid.h>
+//#include <dxgidebug.h>
 
-#include <wrl.h>
+//#include <wrl.h>
 
-typedef HRESULT(WINAPI *DXGIGetDebugInterface_proc) (const IID &riid, void **ppDebug);
-#endif /* _DEBUG */
+//typedef HRESULT(WINAPI *DXGIGetDebugInterface_proc) (const IID &riid, void **ppDebug);
+//#endif /* _DEBUG */
+
 #pragma warning(pop)
 
 ysD3D11Device::ysD3D11Device() : ysDevice(DIRECTX11) {
@@ -40,6 +41,7 @@ ysD3D11Device::ysD3D11Device() : ysDevice(DIRECTX11) {
 
     m_depthStencilDisabledState = nullptr;
     m_depthStencilEnabledState = nullptr;
+    m_samplerState = nullptr;
 
     m_blendState = nullptr;
 }
@@ -101,14 +103,14 @@ ysError ysD3D11Device::DestroyDevice() {
 
     if (m_rasterizerState != nullptr) m_rasterizerState->Release();
 
-#ifdef _DEBUG
-    Microsoft::WRL::ComPtr<IDXGIDebug> dxgiDebug;
-
-    DXGIGetDebugInterface_proc proc = (DXGIGetDebugInterface_proc)GetProcAddress(GetModuleHandle(TEXT("Dxgidebug.dll")), "DXGIGetDebugInterface");
-    const IID &pD = DXGI_DEBUG_ALL;
-    HRESULT r = proc(IID_PPV_ARGS(dxgiDebug.GetAddressOf()));
-    dxgiDebug.Get()->ReportLiveObjects(pD, DXGI_DEBUG_RLO_ALL);
-#endif /* _DEBUG */
+//#ifdef _DEBUG
+//    Microsoft::WRL::ComPtr<IDXGIDebug> dxgiDebug;
+//
+//    DXGIGetDebugInterface_proc proc = (DXGIGetDebugInterface_proc)GetProcAddress(GetModuleHandle(TEXT("Dxgidebug.dll")), "DXGIGetDebugInterface");
+//    const IID &pD = DXGI_DEBUG_ALL;
+//    HRESULT r = proc(IID_PPV_ARGS(dxgiDebug.GetAddressOf()));
+//    dxgiDebug.Get()->ReportLiveObjects(pD, DXGI_DEBUG_RLO_ALL);
+//#endif /* _DEBUG */
 
     return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
 }

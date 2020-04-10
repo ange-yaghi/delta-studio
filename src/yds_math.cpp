@@ -228,9 +228,7 @@ ysVector ysMath::Or(const ysVector &v1, const ysVector &v2) {
 // Quaternion
 
 ysQuaternion ysMath::QuatInvert(const ysQuaternion &q) {
-    ysQuaternion nq = ysMath::LoadVector(1.0f, -1.0f, -1.0f, -1.0f);
-
-    return ysMath::Mul(nq, q);
+    return ysMath::Mul(q, Constants::QuatInvert);
 }
 
 ysQuaternion ysMath::QuatMultiply(const ysQuaternion &q1, const ysQuaternion &q2) {
@@ -256,6 +254,38 @@ ysQuaternion ysMath::QuatMultiply(const ysQuaternion &q1, const ysQuaternion &q2
     ysGeneric result = _mm_add_ps(_mm_add_ps(prod1, prod2), _mm_add_ps(prod3, prod4));
 
     return (ysQuaternion)result;
+}
+
+ysQuaternion ysMath::QuatTransform(const ysQuaternion &q, const ysVector &v) {
+    ysGeneric p = _mm_shuffle_ps(v, v, _MM_SHUFFLE(2, 1, 0, 3)); // wxyz
+    p = _mm_and_ps(p, ysMath::Constants::MaskOffX);
+
+    ysVector mag2 = ysMath::Dot(q, q);
+    ysQuaternion q_inv = _mm_mul_ps(q, ysMath::Constants::QuatInvert);
+
+    ysQuaternion p_trans = QuatMultiply(
+        QuatMultiply(q, p),
+        q_inv);
+
+    return _mm_div_ps(
+        _mm_shuffle_ps(p_trans, p_trans, _MM_SHUFFLE(0, 3, 2, 1)), // xyzw
+        mag2);
+}
+
+ysQuaternion ysMath::QuatTransformInverse(const ysQuaternion &q, const ysVector &v) {
+    ysGeneric p = _mm_shuffle_ps(v, v, _MM_SHUFFLE(2, 1, 0, 3)); // wxyz
+    p = _mm_and_ps(p, ysMath::Constants::MaskOffX);
+
+    ysVector mag2 = ysMath::Dot(q, q);
+    ysQuaternion q_inv = _mm_mul_ps(q, ysMath::Constants::QuatInvert);
+
+    ysQuaternion p_trans = QuatMultiply(
+        QuatMultiply(q_inv, p),
+        q);
+
+    return _mm_div_ps(
+        _mm_shuffle_ps(p_trans, p_trans, _MM_SHUFFLE(0, 3, 2, 1)), // xyzw
+        mag2);
 }
 
 ysQuaternion ysMath::QuatAddScaled(const ysQuaternion &q, const ysVector &vec, float scale) {
