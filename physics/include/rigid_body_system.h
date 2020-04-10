@@ -57,6 +57,7 @@ namespace dphysics {
         void ResolveCollisions();
         void ResolveCollision(Collision *collision, ysVector *velocityChange, ysVector *rotationDirection, float rotationAmount[2], float penetration);
 
+        void GenerateForces(float timeStep);
         void Integrate(float timeStep);
         void UpdateDerivedData();
         void CheckAwake();

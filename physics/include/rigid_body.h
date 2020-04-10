@@ -9,6 +9,7 @@ namespace dphysics {
 
     class Collision;
     class RigidBodySystem;
+    class ForceGenerator;
 
     class RigidBody : public ysObject {
         friend RigidBodySystem;
@@ -49,10 +50,13 @@ namespace dphysics {
         ysVector GetVelocity() const { return m_velocity; }
 
         void SetAngularVelocity(const ysVector &v) { m_angularVelocity = v; }
+        ysVector GetAngularVelocity() const { return m_angularVelocity; }
 
         ysMatrix GetTransform() const { return m_transform; }
         ysMatrix GetInverseTransform() const { return m_inverseTransform; }
         ysMatrix GetOrientationMatrix() const { return m_orientationOnly; }
+
+        ysVector GetVelocityLocal(const ysVector &p) const;
 
         ysVector GetWorldOrientation(const ysVector &v) const { return ysMath::MatMult(m_orientationOnly, v); }
         ysVector GetGlobalSpace(const ysVector &v) const { return ysMath::MatMult(m_transform, v); }
@@ -104,21 +108,39 @@ namespace dphysics {
         void SetAcceleration(ysVector &acceleration) { m_acceleration = acceleration; }
         ysVector GetAcceleration() const { return m_acceleration; }
 
+        void AddAngularImpulseLocal(const ysVector &impulse);
+        void AddImpulseLocalSpace(const ysVector &impulse, const ysVector &localPoint);
+        void AddImpulseWorldSpace(const ysVector &impulse, const ysVector &point);
+        void ClearAngularImpulseAccumulator() { m_angularImpulseAccum = ysMath::Constants::Zero; }
+        void ClearImpulseAccumulator() { m_impulseAccum = ysMath::Constants::Zero; }
+
         void AddForceLocalSpace(const ysVector &force, const ysVector &localPoint);
         void AddForceWorldSpace(const ysVector &force, const ysVector &point);
         void ClearForceAccumulator() { m_forceAccum = ysMath::Constants::Zero; }
         ysVector GetForce() const { return m_forceAccum; }
 
         void AddTorque(const ysVector &torque) { m_torqueAccum = ysMath::Add(m_torqueAccum, torque); }
+        void AddTorqueLocal(const ysVector &torque);
         void ClearTorqueAccumulator() { m_torqueAccum = ysMath::Constants::Zero; }
         ysVector GetTorque() const { return m_torqueAccum; }
 
-        void ClearAccumulators() { ClearForceAccumulator(); ClearTorqueAccumulator(); }
+        void ClearAccumulators();
 
         void SetGhost(bool ghost) { m_ghost = ghost; }
         bool IsGhost() const { return m_ghost; }
 
         void SetLinearDamping(float damping) { m_linearDamping = damping; }
+
+        template <typename T_ForceGenerator>
+        T_ForceGenerator *NewForceGenerator() {
+            T_ForceGenerator *newForceGenerator = 
+                m_forceGenerators.NewGeneric<T_ForceGenerator>();
+            newForceGenerator->Initialize(this);
+
+            return newForceGenerator;
+        }
+
+        void GenerateForces(float dt);
 
     protected:
         // Properties
@@ -138,6 +160,8 @@ namespace dphysics {
         ysVector m_acceleration;
         ysVector m_velocity;
         ysVector m_angularVelocity;
+        ysVector m_impulseAccum;
+        ysVector m_angularImpulseAccum;
 
         ysMatrix m_inverseInertiaTensor;
 
@@ -159,6 +183,7 @@ namespace dphysics {
 
         ysExpandingArray<Collision *, 4> m_collisions;
         ysExpandingArray<GridCell, 4> m_gridCells;
+        ysDynamicArray<ForceGenerator, 4> m_forceGenerators;
 
         RigidBodyHint m_hint;
 

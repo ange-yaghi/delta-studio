@@ -1,6 +1,7 @@
 #include "../include/rigid_body.h"
 
 #include "../include/rigid_body_system.h"
+#include "../include/force_generator.h"
 
 dphysics::RigidBody::RigidBody() {
     m_linearDamping = 0.005f;
@@ -44,9 +45,14 @@ void dphysics::RigidBody::Integrate(float timeStep) {
 
     ysVector acceleration = m_acceleration;
     acceleration = ysMath::Add(acceleration, ysMath::Mul(m_forceAccum, ysMath::LoadScalar(m_inverseMass)));
-    ysVector angularAcceleration = ysMath::MatMult(m_inverseInertiaTensorWorld, m_torqueAccum);
+    ysVector angularAcceleration = ysMath::MatMult(m_inverseInertiaTensor, m_torqueAccum);
 
     ysVector vTimeStep = ysMath::LoadScalar(timeStep);
+
+    m_velocity = 
+        ysMath::Add(m_velocity, ysMath::Mul(m_impulseAccum, ysMath::LoadScalar(m_inverseMass)));
+    m_angularVelocity = 
+        ysMath::Add(m_angularVelocity, ysMath::Mul(m_angularImpulseAccum, ysMath::LoadScalar(m_inverseMass)));
 
     m_velocity = ysMath::Add(m_velocity, ysMath::Mul(acceleration, vTimeStep));
     m_angularVelocity = ysMath::Add(m_angularVelocity, ysMath::Mul(angularAcceleration, vTimeStep));
@@ -56,6 +62,11 @@ void dphysics::RigidBody::Integrate(float timeStep) {
 
     m_angularVelocity = ysMath::Mul(m_angularVelocity, ysMath::LoadScalar(pow(m_angularDamping, timeStep)));
     m_velocity = ysMath::Mul(m_velocity, ysMath::LoadScalar(pow(m_linearDamping, timeStep)));
+
+    int childCount = m_children.GetNumObjects();
+    for (int i = 0; i < childCount; i++) {
+        m_children[i]->Integrate(timeStep);
+    }
 }
 
 void dphysics::RigidBody::UpdateDerivedData(bool force) {
@@ -102,6 +113,14 @@ void dphysics::RigidBody::CheckAwake() {
     }
 }
 
+ysVector dphysics::RigidBody::GetVelocityLocal(const ysVector &p) const {
+    ysVector delta = p;
+
+    ysVector angularComponent = ysMath::Cross(delta, m_angularVelocity);
+    ysVector linearComponent = GetVelocity();
+    return ysMath::Add(angularComponent, linearComponent);
+}
+
 void dphysics::RigidBody::SetInverseInertiaTensor(const ysMatrix &tensor) {
     m_inverseInertiaTensor = tensor;
 }
@@ -139,7 +158,7 @@ void dphysics::RigidBody::RemoveChild(RigidBody *child) {
     //child->m_position = child->GetWorldPosition();
     //child->SetOrientation(ysMath::QuatMultiply(m_orientation, child->m_orientation));
 
-    child->m_parent = NULL;
+    child->m_parent = nullptr;
     m_children.Delete(index);
 }
 
@@ -158,6 +177,30 @@ void dphysics::RigidBody::AddGridCell(int x, int y) {
     gridCell->y = y;
 }
 
+void dphysics::RigidBody::AddAngularImpulseLocal(const ysVector &impulse) {
+    m_angularImpulseAccum = ysMath::Add(impulse, m_angularImpulseAccum);
+    //m_angularVelocity =
+    //    ysMath::Add(m_angularVelocity, ysMath::Mul(impulse, ysMath::LoadScalar(m_inverseMass)));
+}
+
+void dphysics::RigidBody::AddImpulseLocalSpace(const ysVector &impulse, const ysVector &localPoint) {
+    ysVector delta = localPoint;
+    m_impulseAccum = ysMath::Add(m_impulseAccum, impulse);
+    //m_velocity =
+    //    ysMath::Add(m_velocity, ysMath::Mul(m_impulseAccum, ysMath::LoadScalar(m_inverseMass)));
+
+    ysVector angularImpulse = ysMath::Cross(impulse, delta);
+    //AddAngularImpulseLocal(angularImpulse);
+    m_angularImpulseAccum = ysMath::Add(m_angularImpulseAccum, angularImpulse);
+}
+
+void dphysics::RigidBody::AddImpulseWorldSpace(const ysVector &impulse, const ysVector &point) {
+    ysVector local = GetLocalSpace(point);
+    //ysVector localImpulse = ysMath::MatMult(ysMath::OrthogonalInverse(m_orientationOnly), impulse);
+
+    AddImpulseLocalSpace(impulse, local);
+}
+
 void dphysics::RigidBody::AddForceLocalSpace(const ysVector &force, const ysVector &localPoint) {
     ysVector worldSpace = GetGlobalSpace(localPoint);
     ysVector forceWorldSpace = GetWorldOrientation(force);
@@ -169,4 +212,29 @@ void dphysics::RigidBody::AddForceWorldSpace(const ysVector &force, const ysVect
 
     m_forceAccum = ysMath::Add(m_forceAccum, force);
     AddTorque(ysMath::Cross(force, delta));
+}
+
+void dphysics::RigidBody::AddTorqueLocal(const ysVector &torque) {
+    m_torqueAccum = ysMath::Add(m_torqueAccum, torque);
+}
+
+void dphysics::RigidBody::GenerateForces(float dt) {
+    //for (int j = 0; j < 8; ++j) {
+        ClearAccumulators();
+
+        int generatorCount = m_forceGenerators.GetNumObjects();
+        for (int i = 0; i < generatorCount; ++i) {
+            m_forceGenerators.Get(i)->GenerateForces(dt);
+        }
+
+        //Integrate(dt);
+        //UpdateDerivedData();
+    //}
+}
+
+void dphysics::RigidBody::ClearAccumulators() {
+    ClearForceAccumulator(); 
+    ClearTorqueAccumulator();
+    ClearAngularImpulseAccumulator();
+    ClearImpulseAccumulator();
 }

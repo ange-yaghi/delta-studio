@@ -90,6 +90,9 @@
     <ClInclude Include="..\..\physics\include\delta_core.h">
       <Filter>interface</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\physics\include\force_generator.h">
+      <Filter>Header Files\rigid-body</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\physics\src\grid_partition_system.cpp">
@@ -133,6 +136,9 @@
     </ClCompile>
     <ClCompile Include="..\..\physics\src\expanding_spring.cpp">
       <Filter>Source Files\mss</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\physics\src\force_generator.cpp">
+      <Filter>Source Files\rigid-body</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
