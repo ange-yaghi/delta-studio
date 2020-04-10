@@ -394,7 +394,7 @@ void dphysics::RigidBodySystem::ResolveCollision(Collision *collision, ysVector 
     }
 
     for (b = 0; b < 2; b++) {
-        if (collision->m_bodies[b] != NULL) {
+        if (collision->m_bodies[b] != nullptr) {
             if (angularMove[b] != ((float)0.0)) {
                 ysVector t = ysMath::Cross(collision->m_relativePosition[b], collision->m_normal);
 
@@ -500,6 +500,13 @@ void dphysics::RigidBodySystem::ResolveCollisions() {
     }
 }
 
+void dphysics::RigidBodySystem::GenerateForces(float timeStep) {
+    int nObjects = m_rigidBodyRegistry.GetNumObjects();
+    for (int i = 0; i < nObjects; i++) {
+        m_rigidBodyRegistry.Get(i)->GenerateForces(timeStep);
+    }
+}
+
 void dphysics::RigidBodySystem::Integrate(float timeStep) {
     int nObjects = m_rigidBodyRegistry.GetNumObjects();
     for (int i = 0; i < nObjects; i++) {
@@ -523,7 +530,12 @@ void dphysics::RigidBodySystem::CheckAwake() {
 }
 
 void dphysics::RigidBodySystem::Update(float timeStep) {
+    UpdateDerivedData();
+    GenerateForces(timeStep);
+    UpdateDerivedData();
     Integrate(timeStep);
+    UpdateDerivedData();
+
     GenerateCollisions();
     ResolveCollisions();
     UpdateDerivedData();
