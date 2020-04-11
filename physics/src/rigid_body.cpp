@@ -52,6 +52,14 @@ void dphysics::RigidBody::Integrate(float timeStep) {
     m_velocity = ysMath::Add(m_velocity, ysMath::Mul(acceleration, vTimeStep));
     m_angularVelocity = ysMath::Add(m_angularVelocity, ysMath::Mul(angularAcceleration, vTimeStep));
 
+    ysQuaternion orientation = Transform.GetLocalOrientation();
+    ysVector position = Transform.GetLocalPosition();
+    orientation = ysMath::QuatAddScaled(orientation, m_angularVelocity, timeStep);
+    position = ysMath::Add(position, ysMath::Mul(m_velocity, vTimeStep));
+
+    Transform.SetOrientation(orientation);
+    Transform.SetPosition(position);
+
     m_angularVelocity = ysMath::Mul(m_angularVelocity, ysMath::LoadScalar(pow(m_angularDamping, timeStep)));
     m_velocity = ysMath::Mul(m_velocity, ysMath::LoadScalar(pow(m_linearDamping, timeStep)));
 
@@ -80,12 +88,25 @@ void dphysics::RigidBody::CheckAwake() {
     }
 }
 
-ysVector dphysics::RigidBody::GetVelocityLocal(const ysVector &p) const {
-    ysVector delta = p;
+ysVector dphysics::RigidBody::GetVelocityAtLocalPoint(const ysVector &localPoint) {
+    ysVector delta = Transform.LocalToParentDirection(localPoint);
 
-    ysVector angularComponent = ysMath::Cross(delta, m_angularVelocity);
+    ysVector angularComponent = ysMath::Cross(m_angularVelocity, delta);
     ysVector linearComponent = GetVelocity();
-    return ysMath::Add(angularComponent, linearComponent);
+    return Transform.ParentToWorldDirection(
+        ysMath::Add(angularComponent, linearComponent));
+}
+
+ysVector dphysics::RigidBody::GetVelocityAtWorldPoint(const ysVector &worldPoint) {
+    ysVector delta = ysMath::Sub(
+        worldPoint,
+        Transform.GetWorldPosition());
+    delta = Transform.WorldToParentDirection(delta);
+
+    ysVector angularComponent = ysMath::Cross(m_angularVelocity, delta);
+    ysVector linearComponent = GetVelocity();
+    return Transform.ParentToWorldDirection(
+        ysMath::Add(angularComponent, linearComponent));
 }
 
 ysMatrix dphysics::RigidBody::GetInverseInertiaTensorWorld() {
@@ -150,27 +171,28 @@ void dphysics::RigidBody::AddGridCell(int x, int y) {
 }
 
 void dphysics::RigidBody::AddAngularImpulseLocal(const ysVector &impulse) {
-    m_angularImpulseAccum = ysMath::Add(impulse, m_angularImpulseAccum);
-    //m_angularVelocity =
-    //    ysMath::Add(m_angularVelocity, ysMath::Mul(impulse, ysMath::LoadScalar(m_inverseMass)));
+    ysVector impulseWorld = Transform.LocalToParentDirection(impulse);
+    m_angularImpulseAccum = ysMath::Add(impulseWorld, m_angularImpulseAccum);
 }
 
 void dphysics::RigidBody::AddImpulseLocalSpace(const ysVector &impulse, const ysVector &localPoint) {
-    ysVector delta = localPoint;
+    ysVector impulseWorld = Transform.LocalToParentDirection(impulse);
+    ysVector delta = Transform.LocalToParentDirection(localPoint);
     m_impulseAccum = ysMath::Add(m_impulseAccum, impulse);
-    //m_velocity =
-    //    ysMath::Add(m_velocity, ysMath::Mul(m_impulseAccum, ysMath::LoadScalar(m_inverseMass)));
 
-    ysVector angularImpulse = ysMath::Cross(impulse, delta);
-    //AddAngularImpulseLocal(angularImpulse);
+    ysVector angularImpulse = ysMath::Cross(delta, impulse);
     m_angularImpulseAccum = ysMath::Add(m_angularImpulseAccum, angularImpulse);
 }
 
 void dphysics::RigidBody::AddImpulseWorldSpace(const ysVector &impulse, const ysVector &point) {
-    ysVector local = Transform.WorldToLocalSpace(point);
-    //ysVector localImpulse = ysMath::MatMult(ysMath::OrthogonalInverse(m_orientationOnly), impulse);
+    ysVector delta = ysMath::Sub(point, Transform.GetWorldPosition());
+    delta = Transform.WorldToParentDirection(delta);
+    ysVector impulseParent = Transform.WorldToParentDirection(impulse);
 
-    AddImpulseLocalSpace(impulse, local);
+    m_impulseAccum = ysMath::Add(m_impulseAccum, impulseParent);
+
+    ysVector angularImpulse = ysMath::Cross(delta, impulseParent);
+    m_angularImpulseAccum = ysMath::Add(m_angularImpulseAccum, angularImpulse);
 }
 
 void dphysics::RigidBody::AddForceLocalSpace(const ysVector &force, const ysVector &localPoint) {

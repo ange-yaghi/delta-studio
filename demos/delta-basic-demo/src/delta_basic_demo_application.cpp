@@ -83,7 +83,7 @@ void dbasic_demo::DeltaBasicDemoApplication::Render() {
     m_engine.SetCameraPosition(0.0f, 0.0f);
     m_engine.SetCameraAltitude(20.0f);
 
-    m_currentAngle += 0.5f;
+    m_currentAngle += 1.0f;
     if (m_currentAngle > 360.0f) m_currentAngle -= 360.0f;
 
     m_engine.SetMultiplyColor(ysVector4(0xe7 / 255.0f, 0x4c / 255.0f, 0x3c / 255.0f, 1.0f));
@@ -92,12 +92,16 @@ void dbasic_demo::DeltaBasicDemoApplication::Render() {
     q = ysMath::LoadQuaternion(45 * ysMath::Constants::PI / 180.0f, ysMath::LoadVector(1.0f, 0.0f, 0.0f));
     //m_skeletonBase.SetOrientation(q);
 
-    q = ysMath::LoadQuaternion(-m_currentAngle * ysMath::Constants::PI / 180.0f, ysMath::LoadVector(1.0f, 0.0f, 0.0f));
-    m_skeletonBase.SetOrientation(q);
+    q = ysMath::LoadQuaternion(m_currentAngle * ysMath::Constants::PI / 180.0f, ysMath::LoadVector(0.0f, 0.0f, 1.0f));
+    //m_skeletonBase.SetOrientation(q);
 
     m_renderSkeleton->UpdateAnimation(m_engine.GetFrameLength() * 60);
+    //m_renderSkeleton->GetNode()
 
     //m_skeletonBase.UpdateDerivedData(true);
+    int color[] = { 0xff, 0x0, 0x0 };
+    //m_engine.SetObjectTransform(ysMath::LoadMatrix(q));
+    //m_engine.DrawBox(color, 5.0f, 5.0f, 0);
     m_engine.DrawRenderSkeleton(m_renderSkeleton, 1.0f, 0);
 
     ysAnimationChannel::ActionSettings normalSpeed;

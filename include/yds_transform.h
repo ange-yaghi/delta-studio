@@ -14,10 +14,21 @@ public:
     ysMatrix GetWorldTransform();
 
     ysVector WorldToLocalSpace(const ysVector &p);
+    ysVector WorldToParentSpace(const ysVector &p);
     ysVector LocalToWorldSpace(const ysVector &p);
+    ysVector LocalToParentSpace(const ysVector &p);
 
     ysVector WorldToLocalDirection(const ysVector &dir);
+    ysVector WorldToParentDirection(const ysVector &dir);
     ysVector LocalToWorldDirection(const ysVector &dir);
+    ysVector LocalToParentDirection(const ysVector &dir);
+
+    ysVector ParentToLocalSpace(const ysVector &p);
+    ysVector ParentToWorldSpace(const ysVector &p);
+    ysVector ParentToLocalDirection(const ysVector &p);
+    ysVector ParentToWorldDirection(const ysVector &p);
+
+    ysQuaternion WorldToParentOrientation(const ysQuaternion &q);
 
     ysQuaternion GetLocalOrientation() const;
     ysQuaternion GetWorldOrientation();

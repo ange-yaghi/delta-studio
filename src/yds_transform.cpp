@@ -37,6 +37,10 @@ ysVector ysTransform::WorldToLocalSpace(const ysVector &p) {
     return ysMath::QuatTransformInverse(m_orientation, ysMath::Sub(d, m_position));
 }
 
+ysVector ysTransform::WorldToParentSpace(const ysVector &p) {
+    return LocalToParentSpace(WorldToLocalSpace(p));
+}
+
 ysVector ysTransform::LocalToWorldSpace(const ysVector &p) {
     ysVector d = ysMath::Add(ysMath::QuatTransform(m_orientation, p), m_position);
     
@@ -44,14 +48,58 @@ ysVector ysTransform::LocalToWorldSpace(const ysVector &p) {
     else return m_parent->LocalToWorldSpace(d);
 }
 
+ysVector ysTransform::LocalToParentSpace(const ysVector &p) {
+    ysVector world = LocalToWorldSpace(p);
+    
+    if (m_parent == nullptr) return world;
+    else return m_parent->WorldToLocalSpace(world);
+}
+
 ysVector ysTransform::WorldToLocalDirection(const ysVector &dir) {
     ysQuaternion worldOrientation = GetWorldOrientation();
     return ysMath::QuatTransformInverse(worldOrientation, dir);
 }
 
+ysVector ysTransform::WorldToParentDirection(const ysVector &dir) {
+    return LocalToParentDirection(WorldToLocalDirection(dir));
+}
+
 ysVector ysTransform::LocalToWorldDirection(const ysVector &dir) {
     ysQuaternion worldOrientation = GetWorldOrientation();
     return ysMath::QuatTransform(worldOrientation, dir);
+}
+
+ysVector ysTransform::LocalToParentDirection(const ysVector &dir) {
+    ysVector world = LocalToWorldDirection(dir);
+
+    if (m_parent == nullptr) return world;
+    else return m_parent->WorldToLocalDirection(world);
+}
+
+ysVector ysTransform::ParentToLocalSpace(const ysVector &p) {
+    if (m_parent == nullptr) return WorldToLocalSpace(p);
+    else return WorldToLocalSpace(ParentToWorldSpace(p));
+}
+
+ysVector ysTransform::ParentToWorldSpace(const ysVector &p) {
+    if (m_parent == nullptr) return p;
+    else return m_parent->LocalToWorldSpace(p);
+}
+
+ysVector ysTransform::ParentToLocalDirection(const ysVector &p) {
+    if (m_parent == nullptr) return WorldToLocalDirection(p);
+    else return WorldToLocalDirection(ParentToWorldDirection(p));
+}
+
+ysVector ysTransform::ParentToWorldDirection(const ysVector &p) {
+    if (m_parent == nullptr) return p;
+    else return m_parent->LocalToWorldDirection(p);
+}
+
+ysQuaternion ysTransform::WorldToParentOrientation(const ysQuaternion &q) {
+    if (m_parent == nullptr) return q;
+    else return ysMath::QuatMultiply(
+        ysMath::QuatInvert(ysMath::Normalize(m_parent->GetWorldOrientation())), q);
 }
 
 ysQuaternion ysTransform::GetLocalOrientation() const {

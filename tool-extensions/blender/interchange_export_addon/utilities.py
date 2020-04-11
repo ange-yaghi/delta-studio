@@ -121,7 +121,7 @@ class Quaternion(object):
     @staticmethod
     def from_bquat(bquat):
         return Quaternion(
-            -bquat.w,
+            bquat.w,
             bquat.x,
             bquat.y,
             bquat.z

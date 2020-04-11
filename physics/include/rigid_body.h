@@ -45,7 +45,8 @@ namespace dphysics {
         void SetAngularVelocity(const ysVector &v) { m_angularVelocity = v; }
         ysVector GetAngularVelocity() const { return m_angularVelocity; }
 
-        ysVector GetVelocityLocal(const ysVector &p) const;
+        ysVector GetVelocityAtLocalPoint(const ysVector &localPoint);
+        ysVector GetVelocityAtWorldPoint(const ysVector &worldPoint);
 
         ysMatrix GetInverseInertiaTensor() const { return m_inverseInertiaTensor; }
         ysMatrix GetInverseInertiaTensorWorld();

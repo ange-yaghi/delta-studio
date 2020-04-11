@@ -136,7 +136,7 @@ def write_animation_file(context, filepath):
 
             for keyframe in fcurve.keyframe_points:
                 if new_curve.curve_type == CurveType.RotationQuatW:
-                    new_curve.keyframes.append(Keyframe(keyframe.co.x, -keyframe.co.y))
+                    new_curve.keyframes.append(Keyframe(keyframe.co.x, keyframe.co.y))
                 else:
                     new_curve.keyframes.append(Keyframe(keyframe.co.x, keyframe.co.y))
 
