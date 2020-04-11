@@ -16,7 +16,7 @@ namespace dbasic {
         ~RenderNode();
 
         // Rigid body component
-        dphysics::RigidBody RigidBody;
+        ysTransform Transform;
 
         void SetParent(RenderNode *node);
         RenderNode *GetParent();

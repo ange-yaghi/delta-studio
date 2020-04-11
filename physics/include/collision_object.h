@@ -45,10 +45,10 @@ namespace dphysics {
         RigidBody *GetParent() const { return m_parent; }
 
         void SetRelativePosition(const ysVector &pos) { m_relativePosition = pos; }
-        void SetRelativeOrientation(const ysMatrix &orientation) { m_relativeOrientation = orientation; }
+        void SetRelativeOrientation(const ysQuaternion &orientation) { m_relativeOrientation = orientation; }
 
         ysVector GetRelativePosition() const { return m_relativePosition; }
-        ysMatrix GetRelativeOrientation() const { return m_relativeOrientation; }
+        ysQuaternion GetRelativeOrientation() const { return m_relativeOrientation; }
 
         void ConfigurePrimitive();
 
@@ -73,7 +73,7 @@ namespace dphysics {
         void *m_primitiveHandle;
 
         ysVector m_relativePosition;
-        ysMatrix m_relativeOrientation;
+        ysQuaternion m_relativeOrientation;
 
         unsigned int m_layer;
         unsigned int m_collisionLayerMask;

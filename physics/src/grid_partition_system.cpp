@@ -124,7 +124,7 @@ void dphysics::GridPartitionSystem::AddObject(int x, int y, RigidBody *body) {
 void dphysics::GridPartitionSystem::ProcessRigidBody(RigidBody *object) {
     object->ClearGridCells();
 
-    ysVector pos = object->GetWorldPosition();
+    ysVector pos = object->Transform.GetWorldPosition();
 
     float actual_x = ysMath::GetX(pos);
     float actual_y = ysMath::GetY(pos);

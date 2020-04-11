@@ -650,7 +650,7 @@ ysError dbasic::DeltaEngine::DrawRenderSkeleton(RenderSkeleton *skeleton, float 
 
             DrawModel(
                 node->GetModelAsset(),
-                node->RigidBody.GetTransform(),
+                node->Transform.GetWorldTransform(),
                 scale,
                 diffuseMap,
                 layer);

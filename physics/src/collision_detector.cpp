@@ -65,13 +65,13 @@ bool dphysics::CollisionDetector::CircleBoxCollision(Collision &collision, Rigid
     constexpr float epsilon = 1E-5f;
 
     ysVector relativePosition = ysMath::Sub(circle->Position, box->Position);
-    relativePosition = ysMath::MatMult(ysMath::OrthogonalInverse(box->Orientation), relativePosition);
+    relativePosition = ysMath::QuatTransformInverse(box->Orientation, relativePosition);
 
     float closestX = std::min(std::max(ysMath::GetX(relativePosition), -box->HalfWidth), box->HalfWidth);
     float closestY = std::min(std::max(ysMath::GetY(relativePosition), -box->HalfHeight), box->HalfHeight);
 
     ysVector closestPoint = ysMath::LoadVector(closestX, closestY, ysMath::GetZ(relativePosition));
-    ysVector realPosition = ysMath::MatMult(box->Orientation, closestPoint);
+    ysVector realPosition = ysMath::QuatTransform(box->Orientation, closestPoint);
     realPosition = ysMath::Add(realPosition, box->Position);
     
     float d0 = ysMath::GetScalar(ysMath::MagnitudeSquared3(ysMath::Sub(circle->Position, box->Position)));
@@ -176,18 +176,18 @@ bool dphysics::CollisionDetector::RayCircleCollision(Collision &collision, Rigid
 bool dphysics::CollisionDetector::_BoxBoxCollision(Collision *collision, BoxPrimitive *body1, BoxPrimitive *body2) {
     bool ret = false;
 
-    ysVector point1 = ysMath::Add(ysMath::MatMult(body1->Orientation, ysMath::LoadVector(body1->HalfWidth, body1->HalfHeight)), body1->Position);
-    ysVector point2 = ysMath::Add(ysMath::MatMult(body1->Orientation, ysMath::LoadVector(-body1->HalfWidth, body1->HalfHeight)), body1->Position);
-    ysVector point3 = ysMath::Add(ysMath::MatMult(body1->Orientation, ysMath::LoadVector(body1->HalfWidth, -body1->HalfHeight)), body1->Position);
-    ysVector point4 = ysMath::Add(ysMath::MatMult(body1->Orientation, ysMath::LoadVector(-body1->HalfWidth, -body1->HalfHeight)), body1->Position);
+    ysVector point1 = ysMath::Add(ysMath::QuatTransform(body1->Orientation, ysMath::LoadVector(body1->HalfWidth, body1->HalfHeight)), body1->Position);
+    ysVector point2 = ysMath::Add(ysMath::QuatTransform(body1->Orientation, ysMath::LoadVector(-body1->HalfWidth, body1->HalfHeight)), body1->Position);
+    ysVector point3 = ysMath::Add(ysMath::QuatTransform(body1->Orientation, ysMath::LoadVector(body1->HalfWidth, -body1->HalfHeight)), body1->Position);
+    ysVector point4 = ysMath::Add(ysMath::QuatTransform(body1->Orientation, ysMath::LoadVector(-body1->HalfWidth, -body1->HalfHeight)), body1->Position);
 
-    ysMatrix invBody2 = ysMath::Transpose(body2->Orientation);
-    ysMatrix final = ysMath::MatMult(invBody2, body1->Orientation);
+    ysQuaternion invBody2 = ysMath::QuatInvert(body2->Orientation);
+    ysQuaternion final = ysMath::QuatMultiply(invBody2, body1->Orientation);
 
-    ysVector edgeNormal_1 = ysMath::MatMult(final, ysMath::LoadVector(1.0f, 0.0f));
-    ysVector edgeNormal_2 = ysMath::MatMult(final, ysMath::LoadVector(-1.0f, 0.0f));
-    ysVector edgeNormal_3 = ysMath::MatMult(final, ysMath::LoadVector(0.0f, 1.0f));
-    ysVector edgeNormal_4 = ysMath::MatMult(final, ysMath::LoadVector(0.0f, -1.0f));
+    ysVector edgeNormal_1 = ysMath::QuatTransform(final, ysMath::LoadVector(1.0f, 0.0f));
+    ysVector edgeNormal_2 = ysMath::QuatTransform(final, ysMath::LoadVector(-1.0f, 0.0f));
+    ysVector edgeNormal_3 = ysMath::QuatTransform(final, ysMath::LoadVector(0.0f, 1.0f));
+    ysVector edgeNormal_4 = ysMath::QuatTransform(final, ysMath::LoadVector(0.0f, -1.0f));
 
     ysVector normal1_1 = edgeNormal_1;
     ysVector normal2_1 = edgeNormal_2;
@@ -208,8 +208,8 @@ bool dphysics::CollisionDetector::_BoxBoxCollision(Collision *collision, BoxPrim
 
     ysVector xaxis = ysMath::Constants::XAxis;
     ysVector yaxis = ysMath::Constants::YAxis;
-    xaxis = ysMath::MatMult(body2->Orientation, xaxis);
-    yaxis = ysMath::MatMult(body2->Orientation, yaxis);
+    xaxis = ysMath::QuatTransform(body2->Orientation, xaxis);
+    yaxis = ysMath::QuatTransform(body2->Orientation, yaxis);
 
     ysVector del = ysMath::Sub(body2->Position, body1->Position);
     ysVector delDir = ysMath::Normalize(del);
@@ -283,14 +283,14 @@ bool dphysics::CollisionDetector::_BoxBoxCollision(Collision *collision, BoxPrim
 bool dphysics::CollisionDetector::_BoxBoxEdgeDetect(Collision *collisions, BoxPrimitive *body1, BoxPrimitive *body2) {
     bool ret = false;
 
-    ysVector point1 = ysMath::Add(ysMath::MatMult(body1->Orientation, ysMath::LoadVector(body1->HalfWidth, body1->HalfHeight)), body1->Position);
-    ysVector point2 = ysMath::Add(ysMath::MatMult(body1->Orientation, ysMath::LoadVector(-body1->HalfWidth, body1->HalfHeight)), body1->Position);
-    ysVector point3 = ysMath::Add(ysMath::MatMult(body1->Orientation, ysMath::LoadVector(body1->HalfWidth, -body1->HalfHeight)), body1->Position);
-    ysVector point4 = ysMath::Add(ysMath::MatMult(body1->Orientation, ysMath::LoadVector(-body1->HalfWidth, -body1->HalfHeight)), body1->Position);
+    ysVector point1 = ysMath::Add(ysMath::QuatTransform(body1->Orientation, ysMath::LoadVector(body1->HalfWidth, body1->HalfHeight)), body1->Position);
+    ysVector point2 = ysMath::Add(ysMath::QuatTransform(body1->Orientation, ysMath::LoadVector(-body1->HalfWidth, body1->HalfHeight)), body1->Position);
+    ysVector point3 = ysMath::Add(ysMath::QuatTransform(body1->Orientation, ysMath::LoadVector(body1->HalfWidth, -body1->HalfHeight)), body1->Position);
+    ysVector point4 = ysMath::Add(ysMath::QuatTransform(body1->Orientation, ysMath::LoadVector(-body1->HalfWidth, -body1->HalfHeight)), body1->Position);
 
-    ysVector edgeNormal_1 = ysMath::MatMult(body1->Orientation, ysMath::LoadVector(1.0f, 0.0f));
+    ysVector edgeNormal_1 = ysMath::QuatTransform(body1->Orientation, ysMath::LoadVector(1.0f, 0.0f));
     ysVector edgeNormal_2 = ysMath::Negate(edgeNormal_1);
-    ysVector edgeNormal_3 = ysMath::MatMult(body1->Orientation, ysMath::LoadVector(0.0f, 1.0f));
+    ysVector edgeNormal_3 = ysMath::QuatTransform(body1->Orientation, ysMath::LoadVector(0.0f, 1.0f));
     ysVector edgeNormal_4 = ysMath::Negate(edgeNormal_3);
 
     ysVector normal1_1 = edgeNormal_1;
@@ -314,8 +314,8 @@ bool dphysics::CollisionDetector::_BoxBoxEdgeDetect(Collision *collisions, BoxPr
 
     ysVector xaxis = ysMath::Constants::XAxis;
     ysVector yaxis = ysMath::Constants::YAxis;
-    xaxis = ysMath::MatMult(body2->Orientation, xaxis);
-    yaxis = ysMath::MatMult(body2->Orientation, yaxis);
+    xaxis = ysMath::QuatTransform(body2->Orientation, xaxis);
+    yaxis = ysMath::QuatTransform(body2->Orientation, yaxis);
 
     ysVector del = ysMath::Sub(body2->Position, body1->Position);
     ysVector delDir = ysMath::Normalize(del);

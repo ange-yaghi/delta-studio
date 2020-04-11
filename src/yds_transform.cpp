@@ -19,20 +19,29 @@ void ysTransform::SetOrientation(const ysQuaternion &q) {
     m_orientation = q;
 }
 
-ysVector ysTransform::WorldToLocalSpace(const ysVector &p) {
-    ysVector origin = GetWorldPosition();
-    ysQuaternion worldOrientation = GetWorldOrientation();
+ysMatrix ysTransform::GetWorldTransform() {
+    ysMatrix localTransformation = ysMath::LoadMatrix(m_orientation, m_position);
+    if (m_parent == nullptr) {
+        return localTransformation;
+    }
+    else {
+        return ysMath::MatMult(m_parent->GetWorldTransform(), localTransformation);
+    }
+}
 
-    ysVector d = ysMath::Sub(p, origin);
-    return ysMath::QuatTransformInverse(worldOrientation, d);
+ysVector ysTransform::WorldToLocalSpace(const ysVector &p) {
+    ysVector d;
+    if (m_parent == nullptr) d = p;
+    else d = m_parent->WorldToLocalSpace(p);
+
+    return ysMath::QuatTransformInverse(m_orientation, ysMath::Sub(d, m_position));
 }
 
 ysVector ysTransform::LocalToWorldSpace(const ysVector &p) {
-    ysVector origin = GetWorldPosition();
-    ysQuaternion worldOrientation = GetWorldOrientation();
-
-    ysVector d = ysMath::QuatTransform(worldOrientation, p);
-    return ysMath::Add(d, origin);
+    ysVector d = ysMath::Add(ysMath::QuatTransform(m_orientation, p), m_position);
+    
+    if (m_parent == nullptr) return d;
+    else return m_parent->LocalToWorldSpace(d);
 }
 
 ysVector ysTransform::WorldToLocalDirection(const ysVector &dir) {

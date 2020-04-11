@@ -16,8 +16,8 @@ dphysics::SpringLink::~SpringLink() {
 }
 
 int dphysics::SpringLink::GenerateCollisions(Collision *collisionArray) {
-    ysVector actualPosition1 = m_body1->GetGlobalSpace(m_relativePos1);
-    ysVector actualPosition2 = m_body2->GetGlobalSpace(m_relativePos2);
+    ysVector actualPosition1 = m_body1->Transform.LocalToWorldSpace(m_relativePos1);
+    ysVector actualPosition2 = m_body2->Transform.LocalToWorldSpace(m_relativePos2);
 
     ysVector delta = ysMath::Sub(actualPosition2, actualPosition1);
     ysVector length = ysMath::Magnitude(delta);

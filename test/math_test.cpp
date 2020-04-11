@@ -64,3 +64,45 @@ TEST(MathTest, QuatVecTransformScaled) {
     ysVector t = ysMath::QuatTransform(quat, v);
     VecEq(t, ysMath::LoadVector(-1.0f, 0.0f, 0.0f, 0.0f));
 }
+
+TEST(MathTest, QuatVecTransformWithMatrix) {
+    ysQuaternion quat = ysMath::LoadVector(15.0f, 67.0f, 10.0f, -10.0f);
+    ysVector translation = ysMath::LoadVector(10.0f, 56.0f, 67.0f, 0.0f);
+
+    ysVector probe = ysMath::LoadVector(0.0f, 1.0f, 0.0f, 1.0f);
+
+    ysMatrix mat = ysMath::LoadMatrix(quat, translation);
+    
+    ysVector matTransform = ysMath::MatMult(mat, probe);
+    ysVector quatTransform = ysMath::ExtendVector(ysMath::Add(ysMath::QuatTransform(quat, probe), translation));
+
+    VecEq(matTransform, quatTransform);
+}
+
+TEST(MathTest, QuatVecTransformWithMatrixNoTranslation) {
+    ysQuaternion quat = ysMath::LoadVector(15.0f, 67.0f, 10.0f, -10.0f);
+    ysVector translation = ysMath::LoadVector(0.0f, 0.0f, 0.0f, 0.0f);
+
+    ysVector probe = ysMath::LoadVector(0.0f, 1.0f, 0.0f, 1.0f);
+
+    ysMatrix mat = ysMath::LoadMatrix(quat, translation);
+
+    ysVector matTransform = ysMath::MatMult(mat, probe);
+    ysVector quatTransform = ysMath::ExtendVector(ysMath::Add(ysMath::QuatTransform(quat, probe), translation));
+
+    VecEq(matTransform, quatTransform);
+}
+
+TEST(MathTest, QuatVecTransformWithMatrixNoTranslationSimple) {
+    ysQuaternion quat = ysMath::LoadQuaternion(0.5f, ysMath::Constants::XAxis);
+    ysVector translation = ysMath::LoadVector(0.0f, 0.0f, 0.0f, 0.0f);
+
+    ysVector probe = ysMath::LoadVector(0.0f, 1.0f, 0.0f, 1.0f);
+
+    ysMatrix mat = ysMath::LoadMatrix(quat, translation);
+
+    ysVector matTransform = ysMath::MatMult(mat, probe);
+    ysVector quatTransform = ysMath::ExtendVector(ysMath::Add(ysMath::QuatTransform(quat, probe), translation));
+
+    VecEq(matTransform, quatTransform);
+}

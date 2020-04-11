@@ -11,6 +11,8 @@ public:
     void SetPosition(const ysVector &position);
     void SetOrientation(const ysQuaternion &q);
 
+    ysMatrix GetWorldTransform();
+
     ysVector WorldToLocalSpace(const ysVector &p);
     ysVector LocalToWorldSpace(const ysVector &p);
 

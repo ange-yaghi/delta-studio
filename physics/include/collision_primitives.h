@@ -6,7 +6,7 @@
 namespace dphysics {
 
     struct BoxPrimitive {
-        ysMatrix Orientation;
+        ysQuaternion Orientation;
         ysVector Position;
         float HalfWidth;
         float HalfHeight;

@@ -8,7 +8,7 @@ dphysics::CollisionObject::CollisionObject() : ysObject("CollisionObject") {
     m_mode = Mode::Fine;
 
     m_relativePosition = ysMath::Constants::Zero;
-    m_relativeOrientation = ysMath::LoadIdentity();
+    m_relativeOrientation = ysMath::Constants::QuatIdentity;
 
     m_collisionLayerMask = 0xFFFFFFFF;
     m_layer = 0x0;
@@ -24,7 +24,7 @@ dphysics::CollisionObject::CollisionObject(Type type) : ysObject("CollisionObjec
     m_mode = Mode::Fine;
 
     m_relativePosition = ysMath::Constants::Zero;
-    m_relativeOrientation = ysMath::LoadIdentity();
+    m_relativeOrientation = ysMath::Constants::QuatIdentity;
 
     m_collisionLayerMask = 0xFFFFFFFF;
     m_layer = 0x0;
@@ -55,22 +55,22 @@ void dphysics::CollisionObject::GetBounds(ysVector &minPoint, ysVector &maxPoint
 void dphysics::CollisionObject::ConfigureBox() {
     BoxPrimitive *prim = GetAsBox();
 
-    prim->Orientation = ysMath::MatMult(m_relativeOrientation, m_parent->GetOrientationMatrix());
-    prim->Position = ysMath::MatMult(m_parent->GetTransform(), ysMath::ExtendVector(m_relativePosition));
+    prim->Orientation = ysMath::QuatMultiply(m_parent->Transform.GetWorldOrientation(), m_relativeOrientation);
+    prim->Position = m_parent->Transform.LocalToWorldSpace(m_relativePosition);
 }
 
 void dphysics::CollisionObject::ConfigureCircle() {
     CirclePrimitive *prim = GetAsCircle();
 
-    prim->Position = ysMath::MatMult(m_parent->GetTransform(), ysMath::ExtendVector(m_relativePosition));
+    prim->Position = m_parent->Transform.LocalToWorldSpace(m_relativePosition);
 }
 
 void dphysics::CollisionObject::ConfigureRay() {
     RayPrimitive *prim = GetAsRay();
 
-    ysMatrix orientation = ysMath::MatMult(m_relativeOrientation, m_parent->GetOrientationMatrix());
-    prim->Position = ysMath::MatMult(m_parent->GetTransform(), ysMath::ExtendVector(m_relativePosition));
-    prim->Direction = ysMath::MatMult(orientation, ysMath::ExtendVector(prim->RelativeDirection));
+    ysQuaternion orientation = ysMath::QuatMultiply(m_parent->Transform.GetWorldOrientation(), m_relativeOrientation);
+    prim->Position = m_parent->Transform.LocalToWorldSpace(m_relativePosition);
+    prim->Direction = m_parent->Transform.LocalToWorldDirection(prim->RelativeDirection);
 }
 
 void dphysics::CollisionObject::ConfigurePrimitive() {

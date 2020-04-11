@@ -45,7 +45,7 @@ void dbasic_demo::DeltaBasicDemoApplication::Initialize(void *instance, ysContex
     m_renderSkeleton = m_assetManager.BuildRenderSkeleton(&m_skeletonBase, root);
     m_skeletonBase.SetPosition(ysMath::LoadVector(0.0f, 0.0f, 0.0f));
 
-    m_probe = &m_renderSkeleton->FindNode("Head")->RigidBody;
+    m_probe = &m_renderSkeleton->FindNode("Head")->Transform;
     m_probe2 = m_renderSkeleton->FindNode("Circle");
 
     m_assetManager.LoadAnimationFile("../../test/animation_files/ant_rigged.dimo");
@@ -92,15 +92,13 @@ void dbasic_demo::DeltaBasicDemoApplication::Render() {
     q = ysMath::LoadQuaternion(45 * ysMath::Constants::PI / 180.0f, ysMath::LoadVector(1.0f, 0.0f, 0.0f));
     //m_skeletonBase.SetOrientation(q);
 
-    q = ysMath::LoadQuaternion(m_currentAngle * ysMath::Constants::PI / 180.0f, ysMath::LoadVector(0.0f, 0.0f, 1.0f));
+    q = ysMath::LoadQuaternion(-m_currentAngle * ysMath::Constants::PI / 180.0f, ysMath::LoadVector(1.0f, 0.0f, 0.0f));
+    m_skeletonBase.SetOrientation(q);
 
     m_renderSkeleton->UpdateAnimation(m_engine.GetFrameLength() * 60);
 
-    m_skeletonBase.UpdateDerivedData(true);
+    //m_skeletonBase.UpdateDerivedData(true);
     m_engine.DrawRenderSkeleton(m_renderSkeleton, 1.0f, 0);
-
-    int white[] = { 255, 255, 255 };
-    m_engine.DrawBox(white, 50, 50, 0);
 
     ysAnimationChannel::ActionSettings normalSpeed;
     normalSpeed.Speed = 1.0f;

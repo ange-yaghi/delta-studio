@@ -533,8 +533,8 @@ dbasic::Skeleton *dbasic::AssetManager::BuildSkeleton(ModelAsset *model) {
             bone = newSkeleton->GetBone(boneReference->m_skeletonIndex);
             bone->SetAssetID(i);
             bone->SetReferenceTransform(boneReference->GetWorldTransform());
-            bone->RigidBody.SetOrientation(boneReference->GetLocalOrientation());
-            bone->RigidBody.SetPosition(boneReference->GetPosition());
+            bone->Transform.SetOrientation(boneReference->GetLocalOrientation());
+            bone->Transform.SetPosition(boneReference->GetPosition());
             bone->SetName(boneReference->m_name);
 
             if (asset == rootBoneReference) {
@@ -565,7 +565,7 @@ dbasic::Skeleton *dbasic::AssetManager::BuildSkeleton(ModelAsset *model) {
     return newSkeleton;
 }
 
-dbasic::RenderSkeleton *dbasic::AssetManager::BuildRenderSkeleton(dphysics::RigidBody *root, SceneObjectAsset *rootBone) {
+dbasic::RenderSkeleton *dbasic::AssetManager::BuildRenderSkeleton(ysTransform *root, SceneObjectAsset *rootBone) {
     SceneObjectAsset *nodeReference = nullptr;
     SceneObjectAsset *nodeParentReference = nullptr;
     RenderNode *node = nullptr;
@@ -576,9 +576,9 @@ dbasic::RenderSkeleton *dbasic::AssetManager::BuildRenderSkeleton(dphysics::Rigi
     newNode = newRenderSkeleton->NewNode();
     newNode->SetParent(nullptr);
     newNode->SetAssetID(rootBone->GetIndex());
-    root->AddChild(&newNode->RigidBody);
-    newNode->RigidBody.SetOrientation(rootBone->GetLocalOrientation());
-    newNode->RigidBody.SetPosition(rootBone->GetPosition());
+    newNode->Transform.SetParent(root);
+    newNode->Transform.SetOrientation(rootBone->GetLocalOrientation());
+    newNode->Transform.SetPosition(rootBone->GetPosition());
     newNode->SetModelAsset(rootBone->m_geometry);
     newNode->SetName(rootBone->m_name);
     newNode->SetBone(rootBone->GetType() == ysObjectData::ObjectType::Bone);
@@ -605,8 +605,8 @@ void dbasic::AssetManager::ProcessRenderNode(SceneObjectAsset *object, RenderSke
         newNode = skeleton->NewNode();
         newNode->SetParent(parent);
         newNode->SetAssetID(object->GetIndex());
-        newNode->RigidBody.SetOrientation(object->GetLocalOrientation());
-        newNode->RigidBody.SetPosition(object->GetPosition());
+        newNode->Transform.SetOrientation(object->GetLocalOrientation());
+        newNode->Transform.SetPosition(object->GetPosition());
         newNode->SetModelAsset(object->m_geometry);
         newNode->SetName(object->m_name);
         newNode->SetBone(object->GetType() == ysObjectData::ObjectType::Bone);
@@ -621,7 +621,7 @@ void dbasic::AssetManager::ProcessRenderNode(SceneObjectAsset *object, RenderSke
 }
 
 dbasic::AnimationObjectController *dbasic::AssetManager::
-    BuildAnimationObjectController(const char *name, dphysics::RigidBody *rigidBody)
+    BuildAnimationObjectController(const char *name, ysTransform *transform)
 {
     int nAnimationData = m_animationExportData.GetNumObjects();
 
@@ -635,7 +635,7 @@ dbasic::AnimationObjectController *dbasic::AssetManager::
                 int nKeys = data->GetKeyCount();
 
                 AnimationObjectController *newController = m_animationControllers.New();
-                newController->SetTarget(rigidBody);
+                newController->SetTarget(transform);
 
                 for (int k = 0; k < nKeys; k++) {
                     Keyframe *newKey = newController->AppendKeyframe();

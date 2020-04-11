@@ -395,11 +395,13 @@ void dphysics::RigidBodySystem::ResolveCollision(Collision *collision, ysVector 
 
     for (b = 0; b < 2; b++) {
         if (collision->m_bodies[b] != nullptr) {
+            RigidBody *body = collision->m_bodies[b];
+
             if (angularMove[b] != ((float)0.0)) {
                 ysVector t = ysMath::Cross(collision->m_relativePosition[b], collision->m_normal);
 
                 ysMatrix inverseInertiaTensor;
-                inverseInertiaTensor = collision->m_bodies[b]->GetInverseInertiaTensorWorld();
+                inverseInertiaTensor = body->GetInverseInertiaTensorWorld();
                 rotationDirection[b] = ysMath::MatMult(inverseInertiaTensor, t);
 
                 rotationAmount[b] = angularMove[b] / angularInertia[b];
@@ -412,15 +414,13 @@ void dphysics::RigidBodySystem::ResolveCollision(Collision *collision, ysVector 
             velocityChange[b] = collision->m_normal;
             velocityChange[b] = ysMath::Mul(velocityChange[b], ysMath::LoadScalar(linearMove[b] / rotationAmount[b]));
 
-            ysVector pos;
-            pos = collision->m_bodies[b]->GetPosition();
+            ysVector pos = body->Transform.GetLocalPosition();
             pos = ysMath::Add(pos, ysMath::Mul(collision->m_normal, ysMath::LoadScalar(linearMove[b])));
-            collision->m_bodies[b]->SetPosition(pos);
+            body->Transform.SetPosition(pos);
 
-            ysQuaternion q;
-            q = collision->m_bodies[b]->GetOrientation();
+            ysQuaternion q = body->Transform.GetLocalOrientation();
             q = ysMath::QuatAddScaled(q, rotationDirection[b], -rotationAmount[b]);
-            collision->m_bodies[b]->SetOrientation(q);
+            body->Transform.SetOrientation(q);
         }
     }
 }

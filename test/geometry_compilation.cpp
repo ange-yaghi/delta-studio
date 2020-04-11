@@ -22,9 +22,9 @@ TEST(GeometryCompilation, HierarchyTest) {
     EXPECT_EQ(instance1->GetChildrenCount(), 2);
     EXPECT_EQ(instance1->GetChildrenCount(), 2);
 
-    dphysics::RigidBody rigidBody1, rigidBody2;
-    dbasic::RenderSkeleton *skeleton1 = assetManager.BuildRenderSkeleton(&rigidBody1, instance1);
-    dbasic::RenderSkeleton *skeleton2 = assetManager.BuildRenderSkeleton(&rigidBody2, instance2);
+    ysTransform transform1, transform2;
+    dbasic::RenderSkeleton *skeleton1 = assetManager.BuildRenderSkeleton(&transform1, instance1);
+    dbasic::RenderSkeleton *skeleton2 = assetManager.BuildRenderSkeleton(&transform2, instance2);
 
     int a = 0;
 }

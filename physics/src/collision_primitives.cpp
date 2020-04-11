@@ -41,7 +41,7 @@ dphysics::Collision::~Collision() {
 void dphysics::Collision::UpdateInternals() {
     for (int i = 0; i < 2; i++) {
         if (m_bodies[i] != nullptr) {
-            m_relativePosition[i] = ysMath::Sub(m_position, m_bodies[i]->GetPosition());
+            m_relativePosition[i] = ysMath::Sub(m_position, m_bodies[i]->Transform.GetWorldPosition());
         }
     }
 }
@@ -72,10 +72,10 @@ bool dphysics::Collision::IsGhost() const {
 }
 
 void dphysics::BoxPrimitive::GetBounds(ysVector &minPoint, ysVector &maxPoint) const {
-    ysVector point1 = ysMath::Add(ysMath::MatMult(Orientation, ysMath::LoadVector(HalfWidth, HalfHeight)), Position);
-    ysVector point2 = ysMath::Add(ysMath::MatMult(Orientation, ysMath::LoadVector(-HalfWidth, HalfHeight)), Position);
-    ysVector point3 = ysMath::Add(ysMath::MatMult(Orientation, ysMath::LoadVector(HalfWidth, -HalfHeight)), Position);
-    ysVector point4 = ysMath::Add(ysMath::MatMult(Orientation, ysMath::LoadVector(-HalfWidth, -HalfHeight)), Position);
+    ysVector point1 = ysMath::Add(ysMath::QuatTransform(Orientation, ysMath::LoadVector(HalfWidth, HalfHeight)), Position);
+    ysVector point2 = ysMath::Add(ysMath::QuatTransform(Orientation, ysMath::LoadVector(-HalfWidth, HalfHeight)), Position);
+    ysVector point3 = ysMath::Add(ysMath::QuatTransform(Orientation, ysMath::LoadVector(HalfWidth, -HalfHeight)), Position);
+    ysVector point4 = ysMath::Add(ysMath::QuatTransform(Orientation, ysMath::LoadVector(-HalfWidth, -HalfHeight)), Position);
 
     maxPoint = ysMath::ComponentMax(point1, point2);
     maxPoint = ysMath::ComponentMax(maxPoint, point3);

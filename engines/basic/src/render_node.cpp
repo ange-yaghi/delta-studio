@@ -22,10 +22,7 @@ dbasic::RenderNode::~RenderNode() {
 
 void dbasic::RenderNode::SetParent(RenderNode *node) {
     m_parent = node;
-
-    if (m_parent != nullptr) {
-        m_parent->RigidBody.AddChild(&RigidBody);
-    }
+    Transform.SetParent(&node->Transform);
 }
 
 dbasic::RenderNode *dbasic::RenderNode::GetParent() {

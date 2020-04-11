@@ -23,8 +23,8 @@ namespace dbasic_demo {
         dbasic::AssetManager m_assetManager;
 
         dbasic::RenderSkeleton *m_renderSkeleton;
-        dphysics::RigidBody m_skeletonBase;
-        dphysics::RigidBody *m_probe;
+        ysTransform m_skeletonBase;
+        ysTransform *m_probe;
         dbasic::RenderNode *m_probe2;
 
         ysTexture *m_demoTexture;

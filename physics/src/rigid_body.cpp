@@ -7,15 +7,10 @@ dphysics::RigidBody::RigidBody() {
     m_linearDamping = 0.005f;
     m_angularDamping = 0.005f;
 
-    m_position = ysMath::Constants::Zero;
     m_velocity = ysMath::Constants::Zero;
     m_angularVelocity = ysMath::Constants::Zero;
-    m_orientation = ysMath::Constants::QuatIdentity;
 
     m_inverseInertiaTensor = ysMath::LoadMatrix(ysMath::Constants::Zero, ysMath::Constants::Zero, ysMath::Constants::Zero, ysMath::Constants::IdentityRow4);
-
-    m_transform = ysMath::LoadIdentity();
-    m_inverseTransform = ysMath::LoadIdentity();
 
     CollisionGeometry.SetParent(this);
 
@@ -57,9 +52,6 @@ void dphysics::RigidBody::Integrate(float timeStep) {
     m_velocity = ysMath::Add(m_velocity, ysMath::Mul(acceleration, vTimeStep));
     m_angularVelocity = ysMath::Add(m_angularVelocity, ysMath::Mul(angularAcceleration, vTimeStep));
 
-    m_orientation = ysMath::QuatAddScaled(m_orientation, m_angularVelocity, timeStep);
-    m_position = ysMath::Add(m_position, ysMath::Mul(m_velocity, vTimeStep));
-
     m_angularVelocity = ysMath::Mul(m_angularVelocity, ysMath::LoadScalar(pow(m_angularDamping, timeStep)));
     m_velocity = ysMath::Mul(m_velocity, ysMath::LoadScalar(pow(m_linearDamping, timeStep)));
 
@@ -70,37 +62,12 @@ void dphysics::RigidBody::Integrate(float timeStep) {
 }
 
 void dphysics::RigidBody::UpdateDerivedData(bool force) {
-    if (!m_derivedValid || force) {
-        m_lastWorldPosition = m_worldPosition;
-        m_orientation = ysMath::Normalize(m_orientation);
-
-        if (m_parent == nullptr) {
-            m_worldPosition = m_position;
-            m_finalOrientation = m_orientation;
-        }
-        else {
-            m_worldPosition = ysMath::MatMult(m_parent->m_transform, ysMath::ExtendVector(m_position));
-            m_finalOrientation = ysMath::Normalize(ysMath::QuatMultiply(m_orientation, m_parent->m_finalOrientation));
-        }
-
-        ysMath::LoadMatrix(m_finalOrientation, m_worldPosition, &m_transform, &m_orientationOnly);
-        m_inverseInertiaTensorWorld = ysMath::MatMult(m_inverseInertiaTensor, m_orientationOnly);
-
-        m_inverseTransform = ysMath::OrthogonalInverse(m_transform);
-
-        m_derivedValid = true;
-
-        int childCount = m_children.GetNumObjects();
-        for (int i = 0; i < childCount; i++) {
-            m_children[i]->m_derivedValid = false;
-            m_children[i]->UpdateDerivedData();
-        }
-    }
+    /* void */
 }
 
 void dphysics::RigidBody::CheckAwake() {
     // Determine if rigid body is awake
-    ysVector d = ysMath::Sub(m_lastWorldPosition, m_worldPosition);
+    ysVector d = ysMath::Sub(m_lastWorldPosition, Transform.GetWorldPosition());
     ysVector d2 = ysMath::Mask(ysMath::Mul(d, d), ysMath::Constants::MaskOffW);
 
     float maxMovement = ysMath::GetScalar(ysMath::MaxComponent(d2));
@@ -119,6 +86,11 @@ ysVector dphysics::RigidBody::GetVelocityLocal(const ysVector &p) const {
     ysVector angularComponent = ysMath::Cross(delta, m_angularVelocity);
     ysVector linearComponent = GetVelocity();
     return ysMath::Add(angularComponent, linearComponent);
+}
+
+ysMatrix dphysics::RigidBody::GetInverseInertiaTensorWorld() {
+    ysMatrix orientation = ysMath::LoadMatrix(Transform.GetWorldOrientation());
+    return ysMath::MatMult(orientation, m_inverseInertiaTensor);
 }
 
 void dphysics::RigidBody::SetInverseInertiaTensor(const ysMatrix &tensor) {
@@ -195,20 +167,20 @@ void dphysics::RigidBody::AddImpulseLocalSpace(const ysVector &impulse, const ys
 }
 
 void dphysics::RigidBody::AddImpulseWorldSpace(const ysVector &impulse, const ysVector &point) {
-    ysVector local = GetLocalSpace(point);
+    ysVector local = Transform.WorldToLocalSpace(point);
     //ysVector localImpulse = ysMath::MatMult(ysMath::OrthogonalInverse(m_orientationOnly), impulse);
 
     AddImpulseLocalSpace(impulse, local);
 }
 
 void dphysics::RigidBody::AddForceLocalSpace(const ysVector &force, const ysVector &localPoint) {
-    ysVector worldSpace = GetGlobalSpace(localPoint);
-    ysVector forceWorldSpace = GetWorldOrientation(force);
+    ysVector worldSpace = Transform.LocalToWorldSpace(localPoint);
+    ysVector forceWorldSpace = Transform.LocalToWorldDirection(force);
     AddForceWorldSpace(forceWorldSpace, worldSpace);
 }
 
 void dphysics::RigidBody::AddForceWorldSpace(const ysVector &force, const ysVector &point) {
-    ysVector delta = ysMath::Sub(point, GetWorldPosition());
+    ysVector delta = ysMath::Sub(point, Transform.GetWorldPosition());
 
     m_forceAccum = ysMath::Add(m_forceAccum, force);
     AddTorque(ysMath::Cross(force, delta));
