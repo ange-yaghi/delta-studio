@@ -76,7 +76,8 @@ namespace dphysics {
         ysMatrix m_contactSpace;
         ysVector m_contactVelocity;
 
-        float m_friction;
+        float m_staticFriction;
+        float m_dynamicFriction;
         float m_desiredDeltaVelocity;
         float m_restitution;
 

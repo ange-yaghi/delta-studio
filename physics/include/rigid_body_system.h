@@ -34,6 +34,12 @@ namespace dphysics {
         // Collision Detector Interface
         CollisionDetector CollisionDetector;
 
+        void InitializeFrictionTable(
+            int materialCount, float defaultStaticFriction, float defaultDynamicFriction);
+        float GetDynamicFriction(int material1, int material2);
+        float GetStaticFriction(int material1, int material2);
+        void SetFriction(int material1, int material2, float staticFriction, float dynamicFriction);
+
         void RegisterRigidBody(RigidBody *body);
         void RemoveRigidBody(RigidBody *body);
 
@@ -81,6 +87,12 @@ namespace dphysics {
 
         ysDynamicArray<Collision, 4> m_dynamicCollisions;
         ysExpandingArray<Collision *, 8192> m_collisionAccumulator;
+
+        std::vector<std::vector<float>> m_dynamicFrictionTable;
+        std::vector<std::vector<float>> m_staticFrictionTable;
+
+        float m_defaultDynamicFriction;
+        float m_defaultStaticFriction;
 
         int m_lastLoadMeasurement;
         int m_loadMeasurement;

@@ -37,6 +37,9 @@ namespace dphysics {
         void UpdateDerivedData(bool force = false);
         void CheckAwake();
 
+        void SetMaterial(int material) { m_material = material; }
+        int GetMaterial() const { return m_material; }
+
         void AddAngularVelocity(const ysVector &v) { m_angularVelocity = ysMath::Add(v, m_angularVelocity); }
         void AddVelocity(const ysVector &v) { m_velocity = ysMath::Add(v, m_velocity); }
 
@@ -138,6 +141,7 @@ namespace dphysics {
         bool m_requestsInformation;
         bool m_alwaysAwake;
 
+        int m_material;
         float m_inverseMass;
         float m_linearDamping;
         float m_angularDamping;

@@ -680,8 +680,8 @@ ysMatrix ysMath::MatAdd(const ysMatrix &m1, const ysMatrix &m2) {
 ysMatrix ysMath::MatConvert3x3(const ysMatrix &m) {
     return LoadMatrix(
         ysMath::Mask(m.rows[0], ysMath::Constants::MaskOffW),
-        ysMath::Mask(m.rows[0], ysMath::Constants::MaskOffW),
-        ysMath::Mask(m.rows[0], ysMath::Constants::MaskOffW),
+        ysMath::Mask(m.rows[1], ysMath::Constants::MaskOffW),
+        ysMath::Mask(m.rows[2], ysMath::Constants::MaskOffW),
         ysMath::Constants::IdentityRow4
     );
 }

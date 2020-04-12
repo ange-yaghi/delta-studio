@@ -28,6 +28,8 @@ dphysics::RigidBody::RigidBody() {
 
     ClearAccumulators();
     m_acceleration = ysMath::Constants::Zero;
+
+    m_material = -1;
 }
 
 dphysics::RigidBody::~RigidBody() {

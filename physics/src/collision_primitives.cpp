@@ -16,8 +16,9 @@ dphysics::Collision::Collision() : ysObject("Collision") {
 
     m_sensor = false;
 
-    m_friction = 0.0f;
-    m_restitution = 0.0f;
+    m_dynamicFriction = 0.0f;
+    m_staticFriction = 0.0f;
+    m_restitution = 1.0f;
 }
 
 dphysics::Collision::Collision(Collision &collision) : ysObject("Collision") {
@@ -36,8 +37,9 @@ dphysics::Collision::Collision(Collision &collision) : ysObject("Collision") {
     m_relativePosition[0] = collision.m_relativePosition[0];
     m_relativePosition[1] = collision.m_relativePosition[1];
 
-    m_friction = collision.m_friction;
-    m_restitution = 0.0f;
+    m_dynamicFriction = collision.m_dynamicFriction;
+    m_staticFriction = collision.m_staticFriction;
+    m_restitution = collision.m_restitution;
 }
 
 dphysics::Collision::~Collision() {
@@ -127,20 +129,22 @@ void dphysics::Collision::CalculateContactSpace() {
     ysVector contactTangent1;
 
     if (std::abs(ysMath::GetX(m_normal)) > std::abs(ysMath::GetY(m_normal))) {
-        contactTangent0 = ysMath::Cross(m_normal, ysMath::Constants::YAxis);
-        contactTangent1 = ysMath::Cross(contactTangent0, m_normal);
+        contactTangent0 = ysMath::Normalize(
+            ysMath::Cross(m_normal, ysMath::Constants::YAxis));
+        contactTangent1 = ysMath::Cross(m_normal, contactTangent0);
     }
     else {
-        contactTangent0 = ysMath::Cross(m_normal, ysMath::Constants::XAxis);
-        contactTangent1 = ysMath::Cross(contactTangent0, m_normal);
+        contactTangent0 = ysMath::Normalize(
+            ysMath::Cross(m_normal, ysMath::Constants::XAxis));
+        contactTangent1 = ysMath::Cross(m_normal, contactTangent0);
     }
 
-    m_contactSpace = ysMath::LoadMatrix(
+    m_contactSpace = ysMath::Transpose(ysMath::LoadMatrix(
         m_normal,
         contactTangent0,
         contactTangent1,
         ysMath::Constants::IdentityRow4
-    );
+    ));
 }
 
 void dphysics::BoxPrimitive::GetBounds(ysVector &minPoint, ysVector &maxPoint) const {

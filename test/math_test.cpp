@@ -118,6 +118,20 @@ TEST(MathTest, SkewSymmetricMatrix) {
     VecEq(a_x_b_ref, a_x_b_sym);
 }
 
+TEST(MathTest, CrossProductTest) {
+    ysVector a = ysMath::LoadVector(1.0f, 2.0f, -3.0f);
+    ysVector b = ysMath::LoadVector(-4.0f, 5.0f, 6.0f);
+    
+    a = ysMath::Normalize(a);
+    b = ysMath::Normalize(b);
+
+    ysVector c = ysMath::Cross(a, b);
+    ysVector a_dot_c = ysMath::Dot(a, c);
+    ysVector b_dot_c = ysMath::Dot(b, c);
+    VecEq(a_dot_c, ysMath::Constants::Zero);
+    VecEq(b_dot_c, ysMath::Constants::Zero);
+}
+
 TEST(MathTest, MatrixDet) {
     ysMatrix mat = ysMath::LoadMatrix(
         { 10.0f, 2.3f, 32.0f, 0.0f },

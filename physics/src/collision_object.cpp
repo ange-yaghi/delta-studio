@@ -65,7 +65,7 @@ void dphysics::CollisionObject::WriteInfo(std::fstream &target) {
             ysMath::GetX(b->Position) << " " <<
             ysMath::GetY(b->Position) << " " <<
             ysMath::GetZ(b->Position) << "\n";
-        target << "ORIENTATION" <<
+        target << "ORIENTATION " <<
             ysMath::GetQuatW(b->Orientation) << " " <<
             ysMath::GetQuatX(b->Orientation) << " " <<
             ysMath::GetQuatY(b->Orientation) << " " <<
