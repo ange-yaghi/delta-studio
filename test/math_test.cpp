@@ -106,3 +106,42 @@ TEST(MathTest, QuatVecTransformWithMatrixNoTranslationSimple) {
 
     VecEq(matTransform, quatTransform);
 }
+
+TEST(MathTest, SkewSymmetricMatrix) {
+    ysVector a = ysMath::LoadVector(1.0f, 2.0f, 3.0f);
+    ysVector b = ysMath::LoadVector(4.0f, 5.0f, 6.0f);
+    ysMatrix mat = ysMath::SkewSymmetric(a);
+
+    ysVector a_x_b_ref = ysMath::Cross(a, b);
+    ysVector a_x_b_sym = ysMath::MatMult(mat, b);
+
+    VecEq(a_x_b_ref, a_x_b_sym);
+}
+
+TEST(MathTest, MatrixDet) {
+    ysMatrix mat = ysMath::LoadMatrix(
+        { 10.0f, 2.3f, 32.0f, 0.0f },
+        { 4.0f, 15.0f, 6.0f, 0.0f },
+        { 7.123f, 8.0f, 90.543f, 0.0f },
+        { 0.0f, 0.0f, 0.0f, 0.0f });
+
+    ysVector det = ysMath::Det3x3(mat);
+
+    VecEq(det, ysMath::LoadScalar(9971.7118f));
+}
+
+TEST(MathTest, MatrixInverse) {
+    ysMatrix mat = ysMath::LoadMatrix(
+        { 10.0f, 2.3f, 32.0f, 0.0f },
+        { 4.0f, 15.0f, 6.0f, 0.0f },
+        { 7.123f, 8.0f, 90.543f, 0.0f },
+        { 0.0f, 0.0f, 0.0f, 0.0f });
+
+    ysMatrix inverse = ysMath::Inverse3x3(mat);
+    ysMatrix I = ysMath::MatMult(mat, inverse);
+
+    VecEq(I.rows[0], ysMath::Constants::IdentityRow1);
+    VecEq(I.rows[1], ysMath::Constants::IdentityRow2);
+    VecEq(I.rows[2], ysMath::Constants::IdentityRow3);
+    VecEq(I.rows[3], ysMath::Constants::Zero);
+}

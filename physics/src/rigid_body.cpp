@@ -232,3 +232,18 @@ void dphysics::RigidBody::ClearAccumulators() {
     ClearAngularImpulseAccumulator();
     ClearImpulseAccumulator();
 }
+
+void dphysics::RigidBody::WriteInfo(std::fstream &target) {
+    target << "<RigidBody>" << "\n";
+
+    int collisionObjects = CollisionGeometry.GetNumObjects();
+    int count = 0;
+    for (int i = 0; i < collisionObjects; ++i) {
+        CollisionObject *object = CollisionGeometry.GetCollisionObject(i);
+        if (object->GetMode() == CollisionObject::Mode::Fine) {
+            object->WriteInfo(target);
+        }
+    }
+
+    target << "</RigidBody>" << "\n";
+}

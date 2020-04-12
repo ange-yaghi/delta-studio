@@ -64,6 +64,7 @@ namespace dphysics {
         unsigned int GetEventMessage() const { return m_msg; }
 
         void GetBounds(ysVector &minPoint, ysVector &maxPoint) const;
+        void WriteInfo(std::fstream &target);
 
     protected:
         void ConfigureBox();

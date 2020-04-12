@@ -5,7 +5,7 @@
 
 #include "../include/delta_physics.h"
 
-void VecEq(const ysVector &a, const ysVector &b) {
+inline void VecEq(const ysVector &a, const ysVector &b) {
     EXPECT_NEAR(ysMath::GetX(a), ysMath::GetX(b), 0.0001f);
     EXPECT_NEAR(ysMath::GetY(a), ysMath::GetY(b), 0.0001f);
     EXPECT_NEAR(ysMath::GetZ(a), ysMath::GetZ(b), 0.0001f);

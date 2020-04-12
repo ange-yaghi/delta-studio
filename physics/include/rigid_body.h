@@ -38,6 +38,7 @@ namespace dphysics {
         void CheckAwake();
 
         void AddAngularVelocity(const ysVector &v) { m_angularVelocity = ysMath::Add(v, m_angularVelocity); }
+        void AddVelocity(const ysVector &v) { m_velocity = ysMath::Add(v, m_velocity); }
 
         void SetVelocity(const ysVector &v) { m_velocity = v; }
         ysVector GetVelocity() const { return m_velocity; }
@@ -116,6 +117,8 @@ namespace dphysics {
         bool IsGhost() const { return m_ghost; }
 
         void SetLinearDamping(float damping) { m_linearDamping = damping; }
+
+        void WriteInfo(std::fstream &target);
 
         template <typename T_ForceGenerator>
         T_ForceGenerator *NewForceGenerator() {

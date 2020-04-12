@@ -50,12 +50,18 @@ namespace dphysics {
 
         void ProcessGridCell(int x, int y);
 
+        void OpenReplayFile(const std::string &fname);
+        void CloseReplayFile();
+
     protected:
         void GenerateCollisions();
         void GenerateCollisions(RigidBody *body1, RigidBody *body2);
 
-        void ResolveCollisions();
+        void ResolveCollisions(float dt);
         void ResolveCollision(Collision *collision, ysVector *velocityChange, ysVector *rotationDirection, float rotationAmount[2], float penetration);
+
+        void AdjustVelocities(float timestep);
+        void AdjustVelocity(Collision *collision, ysVector velocityChange[2], ysVector rotationChange[2]);
 
         void GenerateForces(float timeStep);
         void Integrate(float timeStep);
@@ -65,6 +71,8 @@ namespace dphysics {
         void OrderPrimitives(CollisionObject **prim1, CollisionObject **prim2, RigidBody **body1, RigidBody **body2);
 
         void GenerateCollisions(int start, int count);
+
+        void WriteFrameToReplayFile();
 
     protected:
         ysRegistry<RigidBody, 512> m_rigidBodyRegistry;
@@ -81,6 +89,11 @@ namespace dphysics {
         // TEST
         GridPartitionSystem m_gridPartitionSystem;
         std::ofstream m_loggingOutput;
+
+    protected:
+        // Debug
+        std::fstream m_outputFile;
+        bool m_replayEnabled;
     };
 
 } /* namespace dbasic */

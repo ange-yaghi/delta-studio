@@ -65,15 +65,27 @@ namespace dphysics {
 
         bool m_sensor;
 
-        void UpdateInternals();
+        void UpdateInternals(float timestep);
 
         Collision &operator=(Collision &collision);
 
         bool IsGhost() const;
 
     protected:
-
         ysVector m_relativePosition[2];
+        ysMatrix m_contactSpace;
+        ysVector m_contactVelocity;
+
+        float m_friction;
+        float m_desiredDeltaVelocity;
+        float m_restitution;
+
+        void CalculateDesiredDeltaVelocity(float timestep);
+
+        ysVector CalculateLocalVelocity(int bodyIndex, float timestep);
+
+    private:
+        void CalculateContactSpace();
     };
 
 } /* namespace dbasic */

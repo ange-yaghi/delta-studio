@@ -15,6 +15,9 @@ dphysics::Collision::Collision() : ysObject("Collision") {
     m_collisionObject2 = nullptr;
 
     m_sensor = false;
+
+    m_friction = 0.0f;
+    m_restitution = 0.0f;
 }
 
 dphysics::Collision::Collision(Collision &collision) : ysObject("Collision") {
@@ -32,18 +35,31 @@ dphysics::Collision::Collision(Collision &collision) : ysObject("Collision") {
 
     m_relativePosition[0] = collision.m_relativePosition[0];
     m_relativePosition[1] = collision.m_relativePosition[1];
+
+    m_friction = collision.m_friction;
+    m_restitution = 0.0f;
 }
 
 dphysics::Collision::~Collision() {
     /* void */
 }
 
-void dphysics::Collision::UpdateInternals() {
+void dphysics::Collision::UpdateInternals(float timestep) {
+    CalculateContactSpace();
+
     for (int i = 0; i < 2; i++) {
         if (m_bodies[i] != nullptr) {
             m_relativePosition[i] = ysMath::Sub(m_position, m_bodies[i]->Transform.GetWorldPosition());
         }
     }
+
+    m_contactVelocity = CalculateLocalVelocity(0, timestep);
+
+    if (m_bodies[1] != nullptr) {
+        m_contactVelocity = ysMath::Sub(m_contactVelocity, CalculateLocalVelocity(1, timestep));
+    }
+
+    CalculateDesiredDeltaVelocity(timestep);
 }
 
 dphysics::Collision &dphysics::Collision::operator=(dphysics::Collision &collision) {
@@ -69,6 +85,62 @@ bool dphysics::Collision::IsGhost() const {
     if (m_collisionObject1 != nullptr && m_collisionObject1->GetParent()->IsGhost()) return true;
     if (m_collisionObject2 != nullptr && m_collisionObject2->GetParent()->IsGhost()) return true;
     return false;
+}
+
+void dphysics::Collision::CalculateDesiredDeltaVelocity(float timestep) {
+    const static float VelocityLimit = 0.25f;
+
+    ///>NewVelocityCalculation
+        // Calculate the acceleration induced velocity accumulated this frame
+    //real velocityFromAcc = body[0]->getLastFrameAcceleration() * duration * contactNormal;
+    float velocityFromAcc = 0.0f;
+
+    //if (body[1]) {
+    //    velocityFromAcc -= body[1]->getLastFrameAcceleration() * duration * contactNormal;
+    //}
+
+    // If the velocity is very slow, limit the restitution
+    float thisRestitution = m_restitution;
+    if (std::abs(ysMath::GetX(m_contactVelocity)) < VelocityLimit) {
+        thisRestitution = 0.0f;
+    }
+
+    // Combine the bounce velocity with the removed
+    // acceleration velocity.
+    m_desiredDeltaVelocity =
+        -ysMath::GetX(m_contactVelocity)
+        - thisRestitution * (ysMath::GetX(m_contactVelocity) - velocityFromAcc);
+}
+
+ysVector dphysics::Collision::CalculateLocalVelocity(int bodyIndex, float timestep) {
+    RigidBody *body = m_bodies[bodyIndex];
+    ysVector position = ysMath::Add(m_relativePosition[bodyIndex], body->Transform.GetWorldPosition());
+
+    ysVector velocity = body->GetVelocityAtWorldPoint(position);
+    ysVector contactVelocity = ysMath::MatMult(ysMath::OrthogonalInverse(m_contactSpace), velocity);
+
+    return contactVelocity;
+}
+
+void dphysics::Collision::CalculateContactSpace() {
+    ysVector contactTangent0;
+    ysVector contactTangent1;
+
+    if (std::abs(ysMath::GetX(m_normal)) > std::abs(ysMath::GetY(m_normal))) {
+        contactTangent0 = ysMath::Cross(m_normal, ysMath::Constants::YAxis);
+        contactTangent1 = ysMath::Cross(contactTangent0, m_normal);
+    }
+    else {
+        contactTangent0 = ysMath::Cross(m_normal, ysMath::Constants::XAxis);
+        contactTangent1 = ysMath::Cross(contactTangent0, m_normal);
+    }
+
+    m_contactSpace = ysMath::LoadMatrix(
+        m_normal,
+        contactTangent0,
+        contactTangent1,
+        ysMath::Constants::IdentityRow4
+    );
 }
 
 void dphysics::BoxPrimitive::GetBounds(ysVector &minPoint, ysVector &maxPoint) const {

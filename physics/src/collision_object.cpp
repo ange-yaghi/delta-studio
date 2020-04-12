@@ -52,6 +52,39 @@ void dphysics::CollisionObject::GetBounds(ysVector &minPoint, ysVector &maxPoint
     }
 }
 
+void dphysics::CollisionObject::WriteInfo(std::fstream &target) {
+    target << "<CollisionObject>" << "\n";
+
+    if (GetType() == Type::Box) {
+        target << "TYPE BOX" << "\n";
+        BoxPrimitive *b = GetAsBox();
+        
+        target << "HALF_WIDTH " << b->HalfWidth << "\n";
+        target << "HALF_HEIGHT " << b->HalfHeight << "\n";
+        target << "POSITION " << 
+            ysMath::GetX(b->Position) << " " <<
+            ysMath::GetY(b->Position) << " " <<
+            ysMath::GetZ(b->Position) << "\n";
+        target << "ORIENTATION" <<
+            ysMath::GetQuatW(b->Orientation) << " " <<
+            ysMath::GetQuatX(b->Orientation) << " " <<
+            ysMath::GetQuatY(b->Orientation) << " " <<
+            ysMath::GetQuatZ(b->Orientation) << "\n";
+    }
+    else if (GetType() == Type::Circle) {
+        target << "TYPE CIRCLE" << "\n";
+        CirclePrimitive *b = GetAsCircle();
+
+        target << "RADIUS " << b->Radius << "\n";
+        target << "POSITION " <<
+            ysMath::GetX(b->Position) << " " <<
+            ysMath::GetY(b->Position) << " " <<
+            ysMath::GetZ(b->Position) << "\n";
+    }
+
+    target << "</CollisionObject>" << "\n";
+}
+
 void dphysics::CollisionObject::ConfigureBox() {
     BoxPrimitive *prim = GetAsBox();
 

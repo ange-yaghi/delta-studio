@@ -492,6 +492,128 @@ ysMatrix ysMath::OrthogonalInverse(const ysMatrix &m) {
     return r;
 }
 
+ysVector ysMath::Det3x3(const ysMatrix &m) {
+    // m[0][0] * (m[1][1] * m[2][2] - m[1][2] * m[2][1]) -
+    // m[0][1] * (m[1][0] * m[2][2] - m[1][2] * m[2][0]) +
+    // m[0][2] * (m[1][0] * m[2][1] - m[1][1] * m[2][0])
+
+    ysVector c0 = _mm_shuffle_ps(m.rows[1], m.rows[1], _MM_SHUFFLE(3, 0, 0, 1));
+    ysVector c1 = _mm_shuffle_ps(m.rows[2], m.rows[2], _MM_SHUFFLE(3, 1, 2, 2));
+    ysVector c2 = _mm_shuffle_ps(m.rows[1], m.rows[1], _MM_SHUFFLE(3, 1, 2, 2));
+    ysVector c3 = _mm_shuffle_ps(m.rows[2], m.rows[2], _MM_SHUFFLE(3, 0, 0, 1));
+
+    ysVector k = _mm_shuffle_ps(m.rows[0], m.rows[0], _MM_SHUFFLE(3, 2, 1, 0));
+
+    ysVector interior = _mm_sub_ps(
+        _mm_mul_ps(c0, c1),
+        _mm_mul_ps(c2, c3));
+
+    interior = _mm_mul_ps(k, interior);
+
+    ysVector k0 = _mm_replicate_x_ps(interior);
+    ysVector k1 = _mm_replicate_y_ps(interior);
+    ysVector k2 = _mm_replicate_z_ps(interior);
+
+    return _mm_add_ps(k0, _mm_sub_ps(k2, k1));
+}
+
+ysMatrix ysMath::Inverse3x3(const ysMatrix &m) {
+    // Row 1
+    // m[1][1] * m[2][2] - m[1][2] * m[2][1]
+    // m[0][2] * m[2][1] - m[0][1] * m[2][2]
+    // m[0][1] * m[1][2] - m[0][2] * m[1][1]
+
+    // Row 2
+    // m[1][2] * m[2][0] - m[1][0] * m[2][2]
+    // m[0][0] * m[2][2] - m[0][2] * m[2][0]
+    // m[0][2] * m[1][0] - m[0][0] * m[1][2]
+
+    // Row 3
+    // m[1][0] * m[2][1] - m[1][1] * m[2][0]
+    // m[0][1] * m[2][0] - m[0][0] * m[2][1]
+    // m[0][0] * m[1][1] - m[0][1] * m[1][0]
+
+    ysVector inv_det = Det3x3(m);
+    inv_det = _mm_div_ps(ysMath::Constants::One, inv_det);
+
+    // Calculate row 1
+    ysVector r1_0 = _mm_shuffle_ps(m.rows[1], m.rows[0], _MM_SHUFFLE(1, 2, 3, 1));
+    r1_0 = _mm_shuffle_ps(r1_0, r1_0, _MM_SHUFFLE(1, 3, 2, 0));
+
+    ysVector r1_1 = _mm_shuffle_ps(m.rows[2], m.rows[1], _MM_SHUFFLE(3, 2, 1, 2));
+    ysVector r1_2 = _mm_shuffle_ps(m.rows[1], m.rows[0], _MM_SHUFFLE(2, 1, 3, 2));
+    r1_2 = _mm_shuffle_ps(r1_2, r1_2, _MM_SHUFFLE(1, 3, 2, 0));
+
+    ysVector r1_3 = _mm_shuffle_ps(m.rows[2], m.rows[1], _MM_SHUFFLE(3, 1, 2, 1));
+
+    ysVector row1 = _mm_sub_ps(_mm_mul_ps(r1_0, r1_1), _mm_mul_ps(r1_2, r1_3));
+    row1 = _mm_mul_ps(inv_det, row1);
+
+    // Calculate row 2
+    ysVector r2_0 = _mm_shuffle_ps(m.rows[1], m.rows[0], _MM_SHUFFLE(2, 0, 3, 2));
+    r2_0 = _mm_shuffle_ps(r2_0, r2_0, _MM_SHUFFLE(1, 3, 2, 0));
+
+    ysVector r2_1 = _mm_shuffle_ps(m.rows[2], m.rows[1], _MM_SHUFFLE(3, 0, 2, 0));
+    ysVector r2_2 = _mm_shuffle_ps(m.rows[1], m.rows[0], _MM_SHUFFLE(0, 2, 3, 0));
+    r2_2 = _mm_shuffle_ps(r2_2, r2_2, _MM_SHUFFLE(1, 3, 2, 0));
+
+    ysVector r2_3 = _mm_shuffle_ps(m.rows[2], m.rows[1], _MM_SHUFFLE(3, 2, 0, 2));
+
+    ysVector row2 = _mm_sub_ps(_mm_mul_ps(r2_0, r2_1), _mm_mul_ps(r2_2, r2_3));
+    row2 = _mm_mul_ps(inv_det, row2);
+
+    // Calculate row 3
+    ysVector r3_0 = _mm_shuffle_ps(m.rows[1], m.rows[0], _MM_SHUFFLE(0, 1, 3, 0));
+    r3_0 = _mm_shuffle_ps(r3_0, r3_0, _MM_SHUFFLE(1, 3, 2, 0));
+
+    ysVector r3_1 = _mm_shuffle_ps(m.rows[2], m.rows[1], _MM_SHUFFLE(3, 1, 0, 1));
+    ysVector r3_2 = _mm_shuffle_ps(m.rows[1], m.rows[0], _MM_SHUFFLE(1, 0, 3, 1));
+    r3_2 = _mm_shuffle_ps(r3_2, r3_2, _MM_SHUFFLE(1, 3, 2, 0));
+
+    ysVector r3_3 = _mm_shuffle_ps(m.rows[2], m.rows[1], _MM_SHUFFLE(3, 0, 1, 0));
+
+    ysVector row3 = _mm_sub_ps(_mm_mul_ps(r3_0, r3_1), _mm_mul_ps(r3_2, r3_3));
+    row3 = _mm_mul_ps(inv_det, row3);
+
+    return LoadMatrix(
+        row1,
+        row2,
+        row3,
+        Constants::Zero
+    );
+}
+
+ysMatrix ysMath::Negate4x4(const ysMatrix &m) {
+    return ysMath::LoadMatrix(
+        ysMath::Negate(m.rows[0]),
+        ysMath::Negate(m.rows[1]),
+        ysMath::Negate(m.rows[2]),
+        ysMath::Negate(m.rows[3])
+    );
+}
+
+ysMatrix ysMath::Negate3x3(const ysMatrix &m) {
+    return ysMath::LoadMatrix(
+        ysMath::Negate3(m.rows[0]),
+        ysMath::Negate3(m.rows[1]),
+        ysMath::Negate3(m.rows[2]),
+        m.rows[3]
+    );
+}
+
+ysMatrix ysMath::SkewSymmetric(const ysVector &v) {
+    ysVector v0 = ysMath::Mask(v, ysMath::Constants::MaskOffW);
+    ysVector vn = ysMath::Negate(v0);
+
+    ysVector row0 = _mm_shuffle_ps(vn, v0, _MM_SHUFFLE(3, 1, 2, 3));
+    ysVector row1 = _mm_shuffle_ps(v0, vn, _MM_SHUFFLE(3, 0, 3, 2));
+
+    ysVector row2 = _mm_shuffle_ps(vn, v0, _MM_SHUFFLE(3, 0, 3, 1));
+    row2 = _mm_shuffle_ps(row2, row2, _MM_SHUFFLE(3, 1, 2, 0));
+
+    return LoadMatrix(row0, row1, row2, ysMath::Constants::IdentityRow4);
+}
+
 ysMatrix44 ysMath::GetMatrix44(const ysMatrix &m) {
     ysMatrix44 r;
     r.rows[0] = ysMath::GetVector4(m.rows[0]);
@@ -544,6 +666,24 @@ ysMatrix ysMath::MatMult(const ysMatrix &m1, const ysMatrix &m2) {
     }
 
     return r;
+}
+
+ysMatrix ysMath::MatAdd(const ysMatrix &m1, const ysMatrix &m2) {
+    return LoadMatrix(
+        ysMath::Add(m1.rows[0], m2.rows[0]),
+        ysMath::Add(m1.rows[1], m2.rows[1]),
+        ysMath::Add(m1.rows[2], m2.rows[2]),
+        ysMath::Add(m1.rows[3], m2.rows[3])
+    );
+}
+
+ysMatrix ysMath::MatConvert3x3(const ysMatrix &m) {
+    return LoadMatrix(
+        ysMath::Mask(m.rows[0], ysMath::Constants::MaskOffW),
+        ysMath::Mask(m.rows[0], ysMath::Constants::MaskOffW),
+        ysMath::Mask(m.rows[0], ysMath::Constants::MaskOffW),
+        ysMath::Constants::IdentityRow4
+    );
 }
 
 ysMatrix ysMath::FrustrumPerspective(float fovy, float aspect, float near, float far) {
