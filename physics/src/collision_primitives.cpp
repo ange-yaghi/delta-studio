@@ -18,7 +18,7 @@ dphysics::Collision::Collision() : ysObject("Collision") {
 
     m_dynamicFriction = 0.0f;
     m_staticFriction = 0.0f;
-    m_restitution = 1.0f;
+    m_restitution = 0.0f;
 }
 
 dphysics::Collision::Collision(Collision &collision) : ysObject("Collision") {

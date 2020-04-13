@@ -657,9 +657,14 @@ void dphysics::RigidBodySystem::AdjustVelocity(Collision *collision, ysVector ve
     if (planarImpulse > std::abs(ysMath::GetX(impulseContact)) * collision->m_staticFriction) {
         ysVector ic = ysMath::Mask(impulseContact, ysMath::Constants::MaskOffX);
         ic = ysMath::Div(ic, planarImpulse_v);
-        ic = ysMath::Mul(ic, ysMath::LoadScalar(collision->m_dynamicFriction * ysMath::GetX(impulseContact)));
+        ic = ysMath::Mul(ic, ysMath::LoadScalar(collision->m_dynamicFriction));
 
-        ysVector icx = ysMath::Mask(impulseContact, ysMath::Constants::MaskKeepX);
+        ysVector icx = ysMath::Dot(deltaVelocity.rows[0], ysMath::Or(ic, ysMath::Constants::XAxis));
+        icx = ysMath::Div(ysMath::LoadScalar(collision->m_desiredDeltaVelocity), icx);
+
+        ic = ysMath::Mul(ic, icx);
+        icx = ysMath::Mask(icx, ysMath::Constants::MaskKeepX);
+
         impulseContact = ysMath::Add(ic, icx);
     }
     ///<UpdateVelWithFriction
@@ -803,13 +808,14 @@ void dphysics::RigidBodySystem::CheckAwake() {
 }
 
 void dphysics::RigidBodySystem::Update(float timestep) {
-    GenerateForces(timestep);
-    Integrate(timestep);
+    //GenerateForces(timestep);
 
     GenerateCollisions();
     ResolveCollisions(timestep);
-    //AdjustVelocities(timestep);
+    AdjustVelocities(timestep);
     CheckAwake();
+
+    Integrate(timestep);
 
     if (m_replayEnabled) {
         WriteFrameToReplayFile();

@@ -35,7 +35,7 @@ void dphysics::GridCell::DecrementRequestCount() {
 dphysics::GridPartitionSystem::GridPartitionSystem() : ysObject("ysGridPartitionSystem") {
     m_maxCells = 8192;
     m_gridCellSize = 5.0f;
-    m_maxObjectSize = 10.0f;
+    m_maxObjectSize = 30.0f;
     m_gridCells.Allocate(m_maxCells);
 }
 
