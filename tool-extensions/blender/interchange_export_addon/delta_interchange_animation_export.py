@@ -2,6 +2,8 @@ from . object_list import ObjectList
 from . utilities import write_32_bit_unsigned, write_32_bit_signed, write_32_bit_float, write_string, Vector2, Vector3, Quaternion
 import bpy
 import re
+import mathutils
+import math
 
 def write_id_header(f):
     MAJOR_VERSION = 0x0
