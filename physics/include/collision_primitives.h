@@ -64,6 +64,9 @@ namespace dphysics {
         };
 
         bool m_sensor;
+        float m_restitution;
+        float m_staticFriction;
+        float m_dynamicFriction;
 
         void UpdateInternals(float timestep);
 
@@ -76,10 +79,8 @@ namespace dphysics {
         ysMatrix m_contactSpace;
         ysVector m_contactVelocity;
 
-        float m_staticFriction;
-        float m_dynamicFriction;
         float m_desiredDeltaVelocity;
-        float m_restitution;
+
 
         void CalculateDesiredDeltaVelocity(float timestep);
 

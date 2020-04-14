@@ -159,3 +159,9 @@ TEST(MathTest, MatrixInverse) {
     VecEq(I.rows[2], ysMath::Constants::IdentityRow3);
     VecEq(I.rows[3], ysMath::Constants::Zero);
 }
+
+TEST(MathTest, QuatTestAxisRotate) {
+    ysQuaternion q = ysMath::LoadQuaternion(ysMath::Constants::PI / 2.0f, ysMath::Constants::YAxis);
+    q = ysMath::LoadQuaternion(ysMath::Constants::PI / 2.0f, ysMath::Constants::XAxis);
+    q = ysMath::LoadQuaternion(ysMath::Constants::PI / 2.0f, ysMath::Constants::ZAxis);
+}

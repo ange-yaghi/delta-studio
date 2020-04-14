@@ -95,11 +95,11 @@ void dphysics::Collision::CalculateDesiredDeltaVelocity(float timestep) {
     ///>NewVelocityCalculation
         // Calculate the acceleration induced velocity accumulated this frame
     //real velocityFromAcc = body[0]->getLastFrameAcceleration() * duration * contactNormal;
-    float velocityFromAcc = 0.0f;
+    float velocityFromAcc = ysMath::GetScalar(ysMath::Dot(m_bodies[0]->GetAcceleration(), m_normal)) * timestep;
 
-    //if (body[1]) {
-    //    velocityFromAcc -= body[1]->getLastFrameAcceleration() * duration * contactNormal;
-    //}
+    if (m_bodies[1] != nullptr) {
+        velocityFromAcc -= ysMath::GetScalar(ysMath::Dot(m_bodies[1]->GetAcceleration(), m_normal)) * timestep;;
+    }
 
     // If the velocity is very slow, limit the restitution
     float thisRestitution = m_restitution;

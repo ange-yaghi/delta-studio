@@ -125,7 +125,7 @@ namespace dphysics {
 
         template <typename T_ForceGenerator>
         T_ForceGenerator *NewForceGenerator() {
-            T_ForceGenerator *newForceGenerator = 
+            T_ForceGenerator *newForceGenerator =
                 m_forceGenerators.NewGeneric<T_ForceGenerator>();
             newForceGenerator->Initialize(this);
 
@@ -134,12 +134,16 @@ namespace dphysics {
 
         void GenerateForces(float dt);
 
+        void SetFixedPosition(bool fixed) { m_fixedPosition = fixed; }
+        bool GetFixedPosition() const { return m_fixedPosition; }
+
     protected:
         // Properties
         bool m_registered;
         bool m_awake;
         bool m_requestsInformation;
         bool m_alwaysAwake;
+        bool m_fixedPosition;
 
         int m_material;
         float m_inverseMass;

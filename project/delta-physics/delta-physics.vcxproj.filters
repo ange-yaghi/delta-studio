@@ -98,9 +98,6 @@
     <ClCompile Include="..\..\physics\src\grid_partition_system.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\physics\src\hinge_link.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\physics\src\spring_link.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -138,6 +135,9 @@
       <Filter>Source Files\mss</Filter>
     </ClCompile>
     <ClCompile Include="..\..\physics\src\force_generator.cpp">
+      <Filter>Source Files\rigid-body</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\physics\src\hinge_link.cpp">
       <Filter>Source Files\rigid-body</Filter>
     </ClCompile>
   </ItemGroup>

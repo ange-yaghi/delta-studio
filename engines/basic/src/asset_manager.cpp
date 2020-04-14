@@ -508,9 +508,9 @@ dbasic::TextureAsset *dbasic::AssetManager::GetTexture(const char *name) {
 }
 
 dbasic::Skeleton *dbasic::AssetManager::BuildSkeleton(ModelAsset *model) {
-    SceneObjectAsset *boneReference = NULL;
-    SceneObjectAsset *boneParentReference = NULL;
-    Bone *bone = NULL;
+    SceneObjectAsset *boneReference = nullptr;
+    SceneObjectAsset *boneParentReference = nullptr;
+    Bone *bone = nullptr;
     int nBones = model->GetBoneCount();
 
     Skeleton *newSkeleton = m_skeletons.NewGeneric<Skeleton, 16>();

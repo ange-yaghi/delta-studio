@@ -404,12 +404,12 @@ void dphysics::RigidBodySystem::GenerateCollisions() {
     for (int i = 0; i < nLinks; i++) {
         int nGenerated = m_rigidBodyLinks.Get(i)->GenerateCollisions(collisions);
         for (int j = 0; j < nGenerated; j++) {
-            Collision *collision = m_collisionAccumulator.New();
-            m_collisionAccumulator.New() = collision;
-            *collision = collisions[j];
+            Collision *newCollisionEntry = m_dynamicCollisions.NewGeneric<Collision, 16>();
+            m_collisionAccumulator.New() = newCollisionEntry;
+            *newCollisionEntry = collisions[j];
 
-            collision->m_body1->AddCollision(collision);
-            collision->m_body2->AddCollision(collision);
+            newCollisionEntry->m_body1->AddCollision(newCollisionEntry);
+            newCollisionEntry->m_body2->AddCollision(newCollisionEntry);
         }
     }
 }
@@ -571,7 +571,7 @@ void dphysics::RigidBodySystem::AdjustVelocities(float timestep) {
 
             if (c->m_bodies[1] != nullptr) {
                 if (c->m_bodies[1] == biggestCollision->m_bodies[0]) {
-                    cp = ysMath::Cross(rotationChange[0], c->m_relativePosition[0]);
+                    cp = ysMath::Cross(rotationChange[0], c->m_relativePosition[1]);
                     cp = ysMath::Add(cp, velocityChange[0]);
 
                     c->m_contactVelocity = ysMath::Sub(c->m_contactVelocity,
@@ -579,7 +579,7 @@ void dphysics::RigidBodySystem::AdjustVelocities(float timestep) {
                     c->CalculateDesiredDeltaVelocity(timestep);
                 }
                 else if (c->m_bodies[1] == biggestCollision->m_bodies[1]) {
-                    cp = ysMath::Cross(rotationChange[1], c->m_relativePosition[0]);
+                    cp = ysMath::Cross(rotationChange[1], c->m_relativePosition[1]);
                     cp = ysMath::Add(cp, velocityChange[1]);
 
                     c->m_contactVelocity = ysMath::Sub(c->m_contactVelocity,
@@ -592,7 +592,7 @@ void dphysics::RigidBodySystem::AdjustVelocities(float timestep) {
 }
 
 void dphysics::RigidBodySystem::AdjustVelocity(Collision *collision, ysVector velocityChange[2], ysVector rotationChange[2]) {
-    // Inverse mass and intertian tensor in world coordinates
+    // Inverse mass and inertia tensor in world coordinates
     ysMatrix inverseInertiaTensor[2];
     inverseInertiaTensor[0] = collision->m_bodies[0]->GetInverseInertiaTensorWorld();
 
@@ -810,12 +810,12 @@ void dphysics::RigidBodySystem::CheckAwake() {
 void dphysics::RigidBodySystem::Update(float timestep) {
     //GenerateForces(timestep);
 
+    Integrate(timestep);
+
     GenerateCollisions();
     ResolveCollisions(timestep);
     AdjustVelocities(timestep);
-    CheckAwake();
-
-    Integrate(timestep);
+    CheckAwake();    
 
     if (m_replayEnabled) {
         WriteFrameToReplayFile();

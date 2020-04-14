@@ -45,9 +45,9 @@ namespace dphysics {
 
         void Update(float timeStep);
 
-        template<typename TYPE>
-        TYPE *CreateLink(RigidBody *body1, RigidBody *body2) {
-            TYPE *newLink = m_rigidBodyLinks.NewGeneric<TYPE>(16);
+        template<typename T_Link>
+        T_Link *CreateLink(RigidBody *body1, RigidBody *body2) {
+            T_Link *newLink = m_rigidBodyLinks.NewGeneric<T_Link, 16>();
             newLink->SetRigidBodies(body1, body2);
             return newLink;
         }
