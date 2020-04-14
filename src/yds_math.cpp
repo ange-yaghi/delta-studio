@@ -1,6 +1,7 @@
 #include "../include/yds_math.h"
 
 #include <math.h>
+#include <cmath>
 
 ysVector ysMath::UniformRandom4(float range) {
     float r = (rand() % RAND_MAX) / ((float)(RAND_MAX - 1));
@@ -821,4 +822,14 @@ ysVector ysMath::MaxComponent(const ysVector &v) {
     r1 = _mm_max_ps(r1, r2);
 
     return r1;
+}
+
+bool ysMath::IsValid(const ysVector &v) {
+    ysVector4 vcom = GetVector4(v);
+
+    for (int i = 0; i < 4; ++i) {
+        if (std::isnan(vcom.vec[i]) || std::isinf(vcom.vec[i])) return false;
+    }
+
+    return true;
 }

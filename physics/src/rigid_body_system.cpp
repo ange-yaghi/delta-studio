@@ -3,6 +3,7 @@
 #include <process.h>
 #include <Windows.h>
 #include <ctime>
+#include <assert.h>
 
 float dphysics::RigidBodySystem::ResolutionPenetrationEpsilon = 10e-3f;
 
@@ -12,8 +13,8 @@ dphysics::RigidBodySystem::RigidBodySystem() : ysObject("RigidBodySystem") {
     m_loadMeasurement = 0;
     m_replayEnabled = false;
 
-    m_defaultDynamicFriction = 0.0f;
-    m_defaultStaticFriction = 0.0f;
+    m_defaultDynamicFriction = 1.0f;
+    m_defaultStaticFriction = 0.5f;
 }
 
 dphysics::RigidBodySystem::~RigidBodySystem() {
@@ -107,6 +108,10 @@ void dphysics::RigidBodySystem::ProcessGridCell(int x, int y) {
 
 void dphysics::RigidBodySystem::OpenReplayFile(const std::string &fname) {
     m_outputFile = std::fstream(fname, std::ios::out);
+
+    if (!m_outputFile.is_open()) {
+        return;
+    }
     
     int bodyCount = m_rigidBodyRegistry.GetNumObjects();
 
@@ -529,8 +534,12 @@ void dphysics::RigidBodySystem::AdjustVelocities(float timestep) {
         float max = 1E-4;
         unsigned index = numContacts;
         for(unsigned i = 0; i < numContacts; ++i) {
-            if (m_collisionAccumulator[i]->m_desiredDeltaVelocity > max) {
-                max = m_collisionAccumulator[i]->m_desiredDeltaVelocity;
+            Collision &collision = *m_collisionAccumulator[i];
+            if (collision.m_desiredDeltaVelocity > max) {
+                if (collision.m_sensor) continue;
+                if (collision.IsGhost()) continue;
+
+                max = collision.m_desiredDeltaVelocity;
                 index = i;
             }
         }
@@ -549,6 +558,9 @@ void dphysics::RigidBodySystem::AdjustVelocities(float timestep) {
         // velocities need recomputing.
         for (unsigned i = 0; i < numContacts; i++) {
             Collision *c = m_collisionAccumulator[i];
+
+            if (c->m_sensor) continue;
+            if (c->IsGhost()) continue;
 
             if (c->m_bodies[0] != nullptr) {
                 if (c->m_bodies[0] == biggestCollision->m_bodies[0]) {
@@ -693,6 +705,11 @@ void dphysics::RigidBodySystem::AdjustVelocity(Collision *collision, ysVector ve
         collision->m_bodies[1]->AddVelocity(velocityChange[1]);
         collision->m_bodies[1]->AddAngularVelocity(rotationChange[1]);
     }
+
+    assert(ysMath::IsValid(velocityChange[0]));
+    assert(ysMath::IsValid(velocityChange[1]));
+    assert(ysMath::IsValid(rotationChange[0]));
+    assert(ysMath::IsValid(rotationChange[1]));
 }
 
 void dphysics::RigidBodySystem::ResolveCollisions(float dt) {
@@ -820,6 +837,17 @@ void dphysics::RigidBodySystem::Update(float timestep) {
     if (m_replayEnabled) {
         WriteFrameToReplayFile();
     }
+}
+
+bool dphysics::RigidBodySystem::CheckState() {
+    int nBodies = m_rigidBodyRegistry.GetNumObjects();
+
+    for (int i = 0; i < nBodies; ++i) {
+        bool valid = m_rigidBodyRegistry.Get(i)->CheckState();
+        if (!valid) return false;
+    }
+
+    return true;
 }
 
 /*

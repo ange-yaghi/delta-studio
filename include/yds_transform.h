@@ -39,6 +39,8 @@ public:
     void SetParent(ysTransform *parent);
     ysTransform *GetParent() const { return m_parent; }
 
+    bool IsValid();
+
 private:
     ysVector m_position;
     ysQuaternion m_orientation;

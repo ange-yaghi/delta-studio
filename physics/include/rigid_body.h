@@ -137,6 +137,8 @@ namespace dphysics {
         void SetFixedPosition(bool fixed) { m_fixedPosition = fixed; }
         bool GetFixedPosition() const { return m_fixedPosition; }
 
+        bool CheckState();
+
     protected:
         // Properties
         bool m_registered;

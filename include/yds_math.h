@@ -166,7 +166,7 @@ namespace ysMath {
         // Quaternions
         YS_MATH_CONST ysQuaternion QuatIdentity = { 1.0f, 0.0f, 0.0f, 0.0f };
 
-    }
+    } /* namespace Constants */
 
     // ----------------------------------------------------
     // Math Functions
@@ -267,6 +267,8 @@ namespace ysMath {
 
     ysVector MaxComponent(const ysVector &v);
 
-};
+    bool IsValid(const ysVector &v);
+
+} /* namespace ysMath */
 
 #endif /* YDS_MATH_H */

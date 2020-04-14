@@ -132,3 +132,9 @@ ysVector ysTransform::GetWorldPosition() {
 void ysTransform::SetParent(ysTransform *parent) {
     m_parent = parent;
 }
+
+bool ysTransform::IsValid() {
+    if (!ysMath::IsValid(m_orientation)) return false;
+    if (!ysMath::IsValid(m_position)) return false;
+    return true;
+}

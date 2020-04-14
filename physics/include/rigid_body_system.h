@@ -52,6 +52,8 @@ namespace dphysics {
             return newLink;
         }
 
+        bool CheckState();
+
         void DeleteLink(RigidBodyLink *link);
 
         void ProcessGridCell(int x, int y);

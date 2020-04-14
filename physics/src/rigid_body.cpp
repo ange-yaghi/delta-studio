@@ -137,21 +137,13 @@ ysMatrix dphysics::RigidBody::GetRectangleTensor(float dx, float dy) {
 }
 
 void dphysics::RigidBody::AddChild(RigidBody *body) {
-    //body->m_position = GetLocalSpace(body->GetWorldPosition());
-
-    //body->m_orientation = ysMath::QuatMultiply(body->m_orientation, ysMath::QuatInvert(m_finalOrientation));
-
     body->m_parent = this;
     m_children.New() = body;
 }
 
 void dphysics::RigidBody::RemoveChild(RigidBody *child) {
     int index = m_children.Find(child);
-
     if (index == -1) return;
-
-    //child->m_position = child->GetWorldPosition();
-    //child->SetOrientation(ysMath::QuatMultiply(m_orientation, child->m_orientation));
 
     child->m_parent = nullptr;
     m_children.Delete(index);
@@ -226,6 +218,17 @@ void dphysics::RigidBody::GenerateForces(float dt) {
         //Integrate(dt);
         //UpdateDerivedData();
     //}
+}
+
+bool dphysics::RigidBody::CheckState() {
+    if (!Transform.IsValid()) return false;
+    if (!ysMath::IsValid(m_acceleration)) return false;
+    if (!ysMath::IsValid(m_angularVelocity)) return false;
+    if (!ysMath::IsValid(m_forceAccum)) return false;
+    if (!ysMath::IsValid(m_impulseAccum)) return false;
+    if (!ysMath::IsValid(m_torqueAccum)) return false;
+    if (!ysMath::IsValid(m_velocity)) return false;
+    return true;
 }
 
 void dphysics::RigidBody::ClearAccumulators() {
