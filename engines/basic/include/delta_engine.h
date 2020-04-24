@@ -48,6 +48,8 @@ namespace dbasic {
         ysError UseMaterial(Material *material);
 
         ysError DrawImage(ysTexture *image, int layer = 0, float scaleX = 1.0f, float scaleY = 1.0f, float texOffsetU = 0.0f, float texOffsetV = 0.0f, float texScaleX = 1.0f, float texScaleY = 1.0f);
+        ysError AddLight(const Light &light);
+        ysError SetAmbientLight(const ysVector4 &ambient);
         ysError DrawBox(const int color[3], float width, float height, int layer = 0);
         ysError DrawAxis(const int color[3], const ysVector &position, const ysVector &direction, float width, float length, int layer = 0);
         ysError DrawModel(ModelAsset *model, const ysMatrix &transform, float scale, ysTexture *texture, int layer = 0);
@@ -65,8 +67,17 @@ namespace dbasic {
 
         // Shader Controls
         void SetCameraPosition(float x, float y);
+        void GetCameraPosition(float *x, float *y) const;
+
         void SetCameraAngle(float angle);
+
+        float GetCameraFov() const;
+        void SetCameraFov(float fov);
+
+        float GetCameraAspect() const;
+
         void SetCameraAltitude(float altitude);
+        float GetCameraAltitude() const;
 
         void SetObjectTransform(const ysMatrix &mat);
         void SetPositionOffset(const ysVector &position);
@@ -99,6 +110,7 @@ namespace dbasic {
         float m_cameraY;
         float m_cameraAltitude;
         float m_cameraAngle;
+        float m_cameraFov;
 
         ysMatrix m_perspectiveProjection;
         ysMatrix m_orthographicProjection;
@@ -129,6 +141,12 @@ namespace dbasic {
         ysGPUBuffer *m_shaderObjectVariablesBuffer;
         ShaderObjectVariables m_shaderObjectVariables;
         bool m_shaderObjectVariablesSync;
+
+        ysGPUBuffer *m_lightingControlBuffer;
+        LightingControls m_lightingControls;
+        int m_lightCount;
+
+        void ResetLights();
 
         ysGPUBuffer *m_shaderScreenVariablesBuffer;
         ShaderScreenVariables m_shaderScreenVariables;

@@ -22,11 +22,16 @@ void ysAnimationTarget::Sample(float s, float amplitude) {
             m_locationTarget->Accumulate(
                 m_locationCurves[i]->Sample(s) * amplitude, i);
         }
+    }
 
-        if (m_rotationCurves[i] != nullptr) {
-            m_rotationTarget->Accumulate(
-                m_rotationCurves[i]->Sample(s) * amplitude, i);
+    if (m_rotationCurves[0] != nullptr) {
+        float rotation[4];
+        for (int i = 0; i < 4; ++i) {
+            rotation[i] = m_rotationCurves[i]->Sample(s);
         }
+
+        ysQuaternion q = ysMath::LoadVector(rotation[0], rotation[1], rotation[2], rotation[3]);
+        m_rotationTarget->AccumulateQuaternion(q, amplitude);
     }
 }
 

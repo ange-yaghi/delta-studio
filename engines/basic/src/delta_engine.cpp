@@ -4,25 +4,27 @@
 #include "../include/render_skeleton.h"
 #include "../include/material.h"
 
+#include <assert.h>
+
 dbasic::DeltaEngine::DeltaEngine() {
-    m_device = NULL;
+    m_device = nullptr;
 
-    m_windowSystem = NULL;
-    m_gameWindow = NULL;
+    m_windowSystem = nullptr;
+    m_gameWindow = nullptr;
 
-    m_renderingContext = NULL;
-    m_mainRenderTarget = NULL;
+    m_renderingContext = nullptr;
+    m_mainRenderTarget = nullptr;
 
-    m_audioSystem = NULL;
+    m_audioSystem = nullptr;
 
-    m_mainVertexBuffer = NULL;
-    m_mainIndexBuffer = NULL;
+    m_mainVertexBuffer = nullptr;
+    m_mainIndexBuffer = nullptr;
 
-    m_vertexShader = NULL;
-    m_pixelShader = NULL;
-    m_shaderProgram = NULL;
+    m_vertexShader = nullptr;
+    m_pixelShader = nullptr;
+    m_shaderProgram = nullptr;
 
-    m_inputLayout = NULL;
+    m_inputLayout = nullptr;
 
     m_initialized = false;
 
@@ -53,10 +55,31 @@ dbasic::DeltaEngine::DeltaEngine() {
     m_cameraAngle = 0.0f;
 
     m_currentTarget = DrawTarget::Main;
+
+    m_cameraFov = ysMath::Constants::PI / 3.0f;
+
+    ResetLights();
 }
 
 dbasic::DeltaEngine::~DeltaEngine() {
-    /* void */
+    assert(m_windowSystem == nullptr);
+    assert(m_gameWindow == nullptr);
+    assert(m_audioSystem == nullptr);
+    assert(m_mainVertexBuffer == nullptr);
+    assert(m_mainIndexBuffer == nullptr);
+    assert(m_vertexShader == nullptr);
+    assert(m_vertexSkinnedShader == nullptr);
+    assert(m_pixelShader == nullptr);
+    assert(m_shaderProgram == nullptr);
+    assert(m_inputLayout == nullptr);
+    assert(m_skinnedInputLayout == nullptr);
+    assert(m_mainKeyboard == nullptr);
+    assert(m_inputSystem == nullptr);
+    assert(m_mainMouse == nullptr);
+    assert(m_shaderObjectVariablesBuffer == nullptr);
+    assert(m_shaderScreenVariablesBuffer == nullptr);
+    assert(m_shaderSkinningControlsBuffer == nullptr);
+    assert(m_lightingControlBuffer == nullptr);
 }
 
 ysError dbasic::DeltaEngine::CreateGameWindow(const char *title, void *instance, ysContextObject::DEVICE_API API, const char *shaderDirectory, bool depthBuffer) {
@@ -82,7 +105,7 @@ ysError dbasic::DeltaEngine::CreateGameWindow(const char *title, void *instance,
 
     // Create the game window
     YDS_NESTED_ERROR_CALL(m_windowSystem->NewWindow(&m_gameWindow));
-    YDS_NESTED_ERROR_CALL(m_gameWindow->InitializeWindow(NULL, title, ysWindow::WindowStyle::WINDOWED, mainMonitor));
+    YDS_NESTED_ERROR_CALL(m_gameWindow->InitializeWindow(nullptr, title, ysWindow::WindowStyle::WINDOWED, mainMonitor));
     m_gameWindow->AttachEventHandler(&m_windowHandler);
 
     // Create the graphics device
@@ -139,6 +162,8 @@ ysError dbasic::DeltaEngine::EndFrame() {
         ExecuteDrawQueue(DrawTarget::Main);
         ExecuteDrawQueue(DrawTarget::Gui);
         m_device->Present();
+
+        ResetLights();
     }
 
     return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
@@ -147,17 +172,43 @@ ysError dbasic::DeltaEngine::EndFrame() {
 ysError dbasic::DeltaEngine::Destroy() {
     YDS_ERROR_DECLARE("Destroy");
 
+    YDS_NESTED_ERROR_CALL(GetConsole()->Destroy());
+
     YDS_NESTED_ERROR_CALL(m_device->DestroyRenderTarget(m_mainRenderTarget));
     YDS_NESTED_ERROR_CALL(m_device->DestroyRenderingContext(m_renderingContext));
 
+    YDS_NESTED_ERROR_CALL(m_device->DestroyGPUBuffer(m_mainIndexBuffer));
+    YDS_NESTED_ERROR_CALL(m_device->DestroyGPUBuffer(m_mainVertexBuffer));
+    YDS_NESTED_ERROR_CALL(m_device->DestroyGPUBuffer(m_shaderObjectVariablesBuffer));
+    YDS_NESTED_ERROR_CALL(m_device->DestroyGPUBuffer(m_shaderScreenVariablesBuffer));
+    YDS_NESTED_ERROR_CALL(m_device->DestroyGPUBuffer(m_shaderSkinningControlsBuffer));
+    YDS_NESTED_ERROR_CALL(m_device->DestroyGPUBuffer(m_lightingControlBuffer));
+
+    YDS_NESTED_ERROR_CALL(m_device->DestroyShader(m_vertexShader));
+    YDS_NESTED_ERROR_CALL(m_device->DestroyShader(m_vertexSkinnedShader));
+    YDS_NESTED_ERROR_CALL(m_device->DestroyShader(m_pixelShader));
+    YDS_NESTED_ERROR_CALL(m_device->DestroyShaderProgram(m_shaderProgram));
+
+    YDS_NESTED_ERROR_CALL(m_device->DestroyInputLayout(m_inputLayout));
+    YDS_NESTED_ERROR_CALL(m_device->DestroyInputLayout(m_skinnedInputLayout));
+
     YDS_NESTED_ERROR_CALL(m_device->DestroyDevice());
+    m_mainKeyboard = nullptr;
+    m_mainMouse = nullptr;
+
+    YDS_NESTED_ERROR_CALL(ysInputSystem::DestroyInputSystem(m_inputSystem));
 
     m_windowSystem->DeleteAllWindows();
+    m_gameWindow = nullptr;
+
+    ysWindowSystem::DestroyWindowSystem(m_windowSystem);
 
     return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
 }
 
 ysError dbasic::DeltaEngine::UseMaterial(Material *material) {
+    YDS_ERROR_DECLARE("UseMaterial");
+
     if (material == nullptr) {
         SetMultiplyColor(ysVector4(1.0f, 0.0f, 1.0f, 1.0f));
     }
@@ -168,14 +219,23 @@ ysError dbasic::DeltaEngine::UseMaterial(Material *material) {
     return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
 }
 
+void dbasic::DeltaEngine::ResetLights() {
+    m_lightCount = 0;
+    for (int i = 0; i < LightingControls::MaxLights; ++i) {
+        m_lightingControls.Lights[i].Active = 0;
+    }
+
+    m_lightingControls.AmbientLighting = ysVector4(0.0f, 0.0f, 0.0f, 0.0f);
+}
+
 ysError dbasic::DeltaEngine::InitializeGeometry() {
     YDS_ERROR_DECLARE("InitializeGeometry");
 
     Vertex vertexData[] = {
-        { { -1.0f, 1.0f, -1.0f, 1.0f },		{0.0f, 1.0f},	{0.0f, 0.0f, 1.0f, 0.0f} },
-        { { 1.0f, 1.0f, -1.0f, 1.0f },		{1.0f, 1.0f},	{0.0f, 0.0f, 1.0f, 0.0f} },
-        { { 1.0f, -1.0f, -1.0f, 1.0f },		{1.0f, 0.0f},	{0.0f, 0.0f, 1.0f, 0.0f} },
-        { { -1.0f, -1.0f, -1.0f, 1.0f },    {0.0f, 0.0f},	{0.0f, 0.0f, 1.0f, 0.0f} } };
+        { { -1.0f, 1.0f, 0.0f, 1.0f },		{0.0f, 1.0f},	{0.0f, 0.0f, 1.0f, 0.0f} },
+        { { 1.0f, 1.0f, 0.0f, 1.0f },		{1.0f, 1.0f},	{0.0f, 0.0f, 1.0f, 0.0f} },
+        { { 1.0f, -1.0f, 0.0f, 1.0f },		{1.0f, 0.0f},	{0.0f, 0.0f, 1.0f, 0.0f} },
+        { { -1.0f, -1.0f, 0.0f, 1.0f },    {0.0f, 0.0f},	{0.0f, 0.0f, 1.0f, 0.0f} } };
 
     unsigned short indices[] = {
         2, 1, 0,
@@ -230,9 +290,10 @@ ysError dbasic::DeltaEngine::InitializeShaders(const char *shaderDirectory) {
     YDS_NESTED_ERROR_CALL(m_device->LinkProgram(m_skinnedShaderProgram));
 
     // Create shader controls
-    YDS_NESTED_ERROR_CALL(m_device->CreateConstantBuffer(&m_shaderObjectVariablesBuffer, sizeof(ShaderObjectVariables), NULL));
-    YDS_NESTED_ERROR_CALL(m_device->CreateConstantBuffer(&m_shaderScreenVariablesBuffer, sizeof(ShaderScreenVariables), NULL));
-    YDS_NESTED_ERROR_CALL(m_device->CreateConstantBuffer(&m_shaderSkinningControlsBuffer, sizeof(ShaderSkinningControls), NULL));
+    YDS_NESTED_ERROR_CALL(m_device->CreateConstantBuffer(&m_shaderObjectVariablesBuffer, sizeof(ShaderObjectVariables), nullptr));
+    YDS_NESTED_ERROR_CALL(m_device->CreateConstantBuffer(&m_shaderScreenVariablesBuffer, sizeof(ShaderScreenVariables), nullptr));
+    YDS_NESTED_ERROR_CALL(m_device->CreateConstantBuffer(&m_shaderSkinningControlsBuffer, sizeof(ShaderSkinningControls), nullptr));
+    YDS_NESTED_ERROR_CALL(m_device->CreateConstantBuffer(&m_lightingControlBuffer, sizeof(LightingControls), nullptr));
 
     return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
 }
@@ -282,14 +343,35 @@ void dbasic::DeltaEngine::SetCameraPosition(float x, float y) {
     m_shaderScreenVariablesSync = false;
 }
 
+void dbasic::DeltaEngine::GetCameraPosition(float *x, float *y) const {
+    *x = m_cameraX;
+    *y = m_cameraY;
+}
+
 void dbasic::DeltaEngine::SetCameraAngle(float angle) {
     m_cameraAngle = angle;
     m_shaderScreenVariablesSync = false;
 }
 
+float dbasic::DeltaEngine::GetCameraFov() const {
+    return m_cameraFov;
+}
+
+void dbasic::DeltaEngine::SetCameraFov(float fov) {
+    m_cameraFov = fov;
+}
+
+float dbasic::DeltaEngine::GetCameraAspect() const {
+    return m_gameWindow->GetScreenWidth() / (float)m_gameWindow->GetScreenHeight();
+}
+
 void dbasic::DeltaEngine::SetCameraAltitude(float altitude) {
     m_cameraAltitude = altitude;
     m_shaderScreenVariablesSync = false;
+}
+
+float dbasic::DeltaEngine::GetCameraAltitude() const {
+    return m_cameraAltitude;
 }
 
 void dbasic::DeltaEngine::SetObjectTransform(const ysMatrix &mat) {
@@ -311,14 +393,14 @@ void dbasic::DeltaEngine::SetClearColor(int r, int g, int b) {
     float fg = g / 255.0f;
     float fb = b / 255.0f;
 
-    m_clearColor[0] = fr; // 1.055f * std::pow(fr, 1 / 2.4f) - 0.055f;
-    m_clearColor[1] = fg; // 1.055f * std::pow(fg, 1 / 2.4f) - 0.055f;
-    m_clearColor[2] = fb; // 1.055f * std::pow(fb, 1 / 2.4f) - 0.055f;
+    m_clearColor[0] = fr;
+    m_clearColor[1] = fg;
+    m_clearColor[2] = fb;
     m_clearColor[3] = 1.0f;
 }
 
 bool dbasic::DeltaEngine::IsKeyDown(ysKeyboard::KEY_CODE key) {
-    if (m_mainKeyboard != NULL) {
+    if (m_mainKeyboard != nullptr) {
         ysKeyboard *keyboard = m_mainKeyboard->GetAsKeyboard();
         return keyboard->GetKey(key)->IsDown();
     }
@@ -327,7 +409,7 @@ bool dbasic::DeltaEngine::IsKeyDown(ysKeyboard::KEY_CODE key) {
 }
 
 bool dbasic::DeltaEngine::ProcessKeyDown(ysKeyboard::KEY_CODE key) {
-    if (m_mainKeyboard != NULL) {
+    if (m_mainKeyboard != nullptr) {
         ysKeyboard *keyboard = m_mainKeyboard->GetAsKeyboard();
         return keyboard->ProcessKeyTransition(key);
     }
@@ -336,7 +418,7 @@ bool dbasic::DeltaEngine::ProcessKeyDown(ysKeyboard::KEY_CODE key) {
 }
 
 bool dbasic::DeltaEngine::IsMouseKeyDown(ysMouse::BUTTON_CODE key) {
-    if (m_mainMouse != NULL) {
+    if (m_mainMouse != nullptr) {
         ysMouse *mouse = m_mainMouse->GetAsMouse();
         return mouse->GetButton(key)->IsDown();
     }
@@ -345,7 +427,7 @@ bool dbasic::DeltaEngine::IsMouseKeyDown(ysMouse::BUTTON_CODE key) {
 }
 
 int dbasic::DeltaEngine::GetMouseWheel() {
-    if (m_mainMouse != NULL) {
+    if (m_mainMouse != nullptr) {
         ysMouse *mouse = m_mainMouse->GetAsMouse();
         return mouse->GetWheel();
     }
@@ -354,14 +436,14 @@ int dbasic::DeltaEngine::GetMouseWheel() {
 }
 
 void dbasic::DeltaEngine::GetMousePos(int *x, int *y) {
-    if (m_mainMouse != NULL) {
+    if (m_mainMouse != nullptr) {
         ysMouse *mouse = m_mainMouse->GetAsMouse();
 
-        if (x != NULL) {
+        if (x != nullptr) {
             *x = mouse->GetX();
         }
 
-        if (y != NULL) {
+        if (y != nullptr) {
             *y = mouse->GetY();
         }
     }
@@ -411,7 +493,7 @@ ysError dbasic::DeltaEngine::DrawImage(ysTexture *image, int layer, float scaleX
         m_shaderObjectVariables.TexScale[1] = texScaleV;
 
         m_shaderObjectVariables.ColorReplace = 0;
-        m_shaderObjectVariables.Lit = 0;
+        m_shaderObjectVariables.Lit = 1;
     }
 
     DrawCall *newCall = nullptr;
@@ -425,8 +507,28 @@ ysError dbasic::DeltaEngine::DrawImage(ysTexture *image, int layer, float scaleX
     if (newCall != nullptr) {
         newCall->ObjectVariables = m_shaderObjectVariables;
         newCall->Texture = image;
-        newCall->Model = NULL;
+        newCall->Model = nullptr;
     }
+
+    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+}
+
+ysError dbasic::DeltaEngine::AddLight(const Light &light) {
+    YDS_ERROR_DECLARE("AddLight");
+
+    if (m_lightCount >= LightingControls::MaxLights) return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+    m_lightingControls.Lights[m_lightCount] = light;
+    m_lightingControls.Lights[m_lightCount].Active = 1;
+    ++m_lightCount;
+
+
+    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+}
+
+ysError dbasic::DeltaEngine::SetAmbientLight(const ysVector4 &ambient) {
+    YDS_ERROR_DECLARE("SetAmbientLight");
+
+    m_lightingControls.AmbientLighting = ambient;
 
     return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
 }
@@ -451,7 +553,7 @@ ysError dbasic::DeltaEngine::DrawBox(const int color[3], float width, float heig
         m_shaderObjectVariables.MulCol.z = color[2] / 255.0f;
         m_shaderObjectVariables.MulCol.w = 1.0f;
 
-        m_shaderObjectVariables.Lit = 0;
+        m_shaderObjectVariables.Lit = 1;
     }
 
     DrawCall *newCall = nullptr;
@@ -464,8 +566,8 @@ ysError dbasic::DeltaEngine::DrawBox(const int color[3], float width, float heig
 
     if (newCall != nullptr) {
         newCall->ObjectVariables = m_shaderObjectVariables;
-        newCall->Texture = NULL;
-        newCall->Model = NULL;
+        newCall->Texture = nullptr;
+        newCall->Model = nullptr;
     }
 
     return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
@@ -533,12 +635,14 @@ ysError dbasic::DeltaEngine::DrawModel(ModelAsset *model, const ysMatrix &transf
 }
 
 ysError dbasic::DeltaEngine::DrawRenderSkeleton(RenderSkeleton *skeleton, float scale, int layer) {
+    YDS_ERROR_DECLARE("DrawRenderSkeleton");
+
     int nodeCount = skeleton->GetNodeCount();
     for (int i = 0; i < nodeCount; ++i) {
         RenderNode *node = skeleton->GetNode(i);
         if (node->GetModelAsset() != nullptr) {
             Material *material = node->GetModelAsset()->GetMaterial();
-            UseMaterial(node->GetModelAsset()->GetMaterial());
+            UseMaterial(material);
 
             ysTexture *diffuseMap = material == nullptr
                 ? nullptr
@@ -546,7 +650,7 @@ ysError dbasic::DeltaEngine::DrawRenderSkeleton(RenderSkeleton *skeleton, float 
 
             DrawModel(
                 node->GetModelAsset(),
-                node->RigidBody.GetTransform(),
+                node->Transform.GetWorldTransform(),
                 scale,
                 diffuseMap,
                 layer);
@@ -560,12 +664,13 @@ ysError dbasic::DeltaEngine::ExecuteDrawQueue(DrawTarget target) {
     YDS_ERROR_DECLARE("ExecuteDrawQueue");
 
     YDS_NESTED_ERROR_CALL(m_device->EditBufferData(m_shaderSkinningControlsBuffer, (char *)(&m_shaderSkinningControls)));
+    YDS_NESTED_ERROR_CALL(m_device->EditBufferData(m_lightingControlBuffer, (char *)(&m_lightingControls)));
 
     if (!m_shaderScreenVariablesSync) {
         float aspect = m_gameWindow->GetScreenWidth() / (float)m_gameWindow->GetScreenHeight();
 
         if (target == DrawTarget::Main) {
-            m_shaderScreenVariables.Projection = ysMath::Transpose(ysMath::FrustrumPerspective(ysMath::Constants::PI / 3.0f, aspect, 1.0f, 10000.0f));
+            m_shaderScreenVariables.Projection = ysMath::Transpose(ysMath::FrustrumPerspective(m_cameraFov, aspect, 1.0f, 10000.0f));
         }
         else if (target == DrawTarget::Gui) {
             m_shaderScreenVariables.Projection = ysMath::Transpose(
@@ -600,6 +705,14 @@ ysError dbasic::DeltaEngine::ExecuteDrawQueue(DrawTarget target) {
 
         m_shaderScreenVariables.CameraView = ysMath::Transpose(ysMath::CameraTarget(cameraEye, cameraTarget, up));
 
+        ysMatrix proj = m_shaderScreenVariables.Projection;
+        ysMatrix cam = m_shaderScreenVariables.CameraView;
+
+        ysVector v = ysMath::LoadVector(19.3632, 9.74805, 0.0f, 1.0f);
+        v = ysMath::MatMult(cam, v);
+        v = ysMath::MatMult(proj, v);
+        v = ysMath::Div(v, ysMath::LoadScalar(ysMath::GetW(v)));
+
         m_shaderScreenVariables.Eye[0] = m_cameraX;
         m_shaderScreenVariables.Eye[1] = m_cameraY;
         m_shaderScreenVariables.Eye[2] = m_cameraAltitude;
@@ -626,7 +739,9 @@ ysError dbasic::DeltaEngine::ExecuteDrawQueue(DrawTarget target) {
 
             m_device->EditBufferData(m_shaderObjectVariablesBuffer, (char *)(&call->ObjectVariables));
 
-            if (call->Model != NULL) {
+            if (call->Model != nullptr) {
+                m_device->SetDepthTestEnabled(m_mainRenderTarget, true);
+
                 if (call->Model->GetBoneCount() <= 0) {
                     m_device->UseInputLayout(m_inputLayout);
                     m_device->UseShaderProgram(m_shaderProgram);
@@ -639,6 +754,7 @@ ysError dbasic::DeltaEngine::ExecuteDrawQueue(DrawTarget target) {
                 m_device->UseConstantBuffer(m_shaderScreenVariablesBuffer, 0);
                 m_device->UseConstantBuffer(m_shaderObjectVariablesBuffer, 1);
                 m_device->UseConstantBuffer(m_shaderSkinningControlsBuffer, 2);
+                m_device->UseConstantBuffer(m_lightingControlBuffer, 3);
 
                 m_device->UseTexture(call->Texture, 0);
 
@@ -648,12 +764,15 @@ ysError dbasic::DeltaEngine::ExecuteDrawQueue(DrawTarget target) {
                 m_device->Draw(call->Model->GetFaceCount(), call->Model->GetBaseIndex(), call->Model->GetBaseVertex());
             }
             else {
+                m_device->SetDepthTestEnabled(m_mainRenderTarget, false);
+
                 m_device->UseInputLayout(m_inputLayout);
                 m_device->UseShaderProgram(m_shaderProgram);
 
                 m_device->UseConstantBuffer(m_shaderScreenVariablesBuffer, 0);
                 m_device->UseConstantBuffer(m_shaderObjectVariablesBuffer, 1);
                 m_device->UseConstantBuffer(m_shaderSkinningControlsBuffer, 2);
+                m_device->UseConstantBuffer(m_lightingControlBuffer, 3);
 
                 m_device->UseIndexBuffer(m_mainIndexBuffer, 0);
                 m_device->UseVertexBuffer(m_mainVertexBuffer, sizeof(Vertex), 0);

@@ -35,6 +35,6 @@ void dbasic::Skeleton::Update() {
     int nBones = m_bones.GetNumObjects();
     for (int i = 0; i < nBones; i++) {
         Bone *bone = m_bones.Get(i);
-        bone->RigidBody.UpdateDerivedData();
+        //bone->RigidBody.UpdateDerivedData();
     }
 }

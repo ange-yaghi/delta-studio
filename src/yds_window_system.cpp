@@ -51,6 +51,15 @@ ysError ysWindowSystem::CreateWindowSystem(ysWindowSystem **newSystem, Platform 
     return YDS_ERROR_RETURN_STATIC(ysError::YDS_NO_ERROR);
 }
 
+ysError ysWindowSystem::DestroyWindowSystem(ysWindowSystem *&system) {
+    YDS_ERROR_DECLARE("DestroyWindowSystem");
+
+    delete system;
+    system = nullptr;
+
+    return YDS_ERROR_RETURN_STATIC(ysError::YDS_NO_ERROR);
+}
+
 ysWindowSystem *ysWindowSystem::Get() {
     return g_instance;
 }

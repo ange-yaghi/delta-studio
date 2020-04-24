@@ -3,35 +3,35 @@
 #include "../include/rigid_body.h"
 
 dphysics::CollisionObject::CollisionObject() : ysObject("CollisionObject") {
-    m_primitiveHandle = NULL;
+    m_primitiveHandle = nullptr;
     m_type = Type::Undefined;
     m_mode = Mode::Fine;
 
     m_relativePosition = ysMath::Constants::Zero;
-    m_relativeOrientation = ysMath::LoadIdentity();
+    m_relativeOrientation = ysMath::Constants::QuatIdentity;
 
     m_collisionLayerMask = 0xFFFFFFFF;
-    m_layerMask = 0xFFFFFFFF;
+    m_layer = 0x0;
 
-    m_parent = NULL;
+    m_parent = nullptr;
 
-    m_msg = NULL;
+    m_msg = 0;
 }
 
 dphysics::CollisionObject::CollisionObject(Type type) : ysObject("CollisionObject") {
-    m_primitiveHandle = NULL;
+    m_primitiveHandle = nullptr;
     m_type = type;
     m_mode = Mode::Fine;
 
     m_relativePosition = ysMath::Constants::Zero;
-    m_relativeOrientation = ysMath::LoadIdentity();
+    m_relativeOrientation = ysMath::Constants::QuatIdentity;
 
     m_collisionLayerMask = 0xFFFFFFFF;
-    m_layerMask = 0xFFFFFFFF;
+    m_layer = 0x0;
 
-    m_parent = NULL;
+    m_parent = nullptr;
 
-    m_msg = NULL;
+    m_msg = 0;
 }
 
 dphysics::CollisionObject::~CollisionObject() {
@@ -52,25 +52,58 @@ void dphysics::CollisionObject::GetBounds(ysVector &minPoint, ysVector &maxPoint
     }
 }
 
+void dphysics::CollisionObject::WriteInfo(std::fstream &target) {
+    target << "<CollisionObject>" << "\n";
+
+    if (GetType() == Type::Box) {
+        target << "TYPE BOX" << "\n";
+        BoxPrimitive *b = GetAsBox();
+        
+        target << "HALF_WIDTH " << b->HalfWidth << "\n";
+        target << "HALF_HEIGHT " << b->HalfHeight << "\n";
+        target << "POSITION " << 
+            ysMath::GetX(b->Position) << " " <<
+            ysMath::GetY(b->Position) << " " <<
+            ysMath::GetZ(b->Position) << "\n";
+        target << "ORIENTATION " <<
+            ysMath::GetQuatW(b->Orientation) << " " <<
+            ysMath::GetQuatX(b->Orientation) << " " <<
+            ysMath::GetQuatY(b->Orientation) << " " <<
+            ysMath::GetQuatZ(b->Orientation) << "\n";
+    }
+    else if (GetType() == Type::Circle) {
+        target << "TYPE CIRCLE" << "\n";
+        CirclePrimitive *b = GetAsCircle();
+
+        target << "RADIUS " << b->Radius << "\n";
+        target << "POSITION " <<
+            ysMath::GetX(b->Position) << " " <<
+            ysMath::GetY(b->Position) << " " <<
+            ysMath::GetZ(b->Position) << "\n";
+    }
+
+    target << "</CollisionObject>" << "\n";
+}
+
 void dphysics::CollisionObject::ConfigureBox() {
     BoxPrimitive *prim = GetAsBox();
 
-    prim->Orientation = ysMath::MatMult(m_relativeOrientation, m_parent->GetOrientationMatrix());
-    prim->Position = ysMath::MatMult(m_parent->GetTransform(), ysMath::ExtendVector(m_relativePosition));
+    prim->Orientation = ysMath::QuatMultiply(m_parent->Transform.GetWorldOrientation(), m_relativeOrientation);
+    prim->Position = m_parent->Transform.LocalToWorldSpace(m_relativePosition);
 }
 
 void dphysics::CollisionObject::ConfigureCircle() {
     CirclePrimitive *prim = GetAsCircle();
 
-    prim->Position = ysMath::MatMult(m_parent->GetTransform(), ysMath::ExtendVector(m_relativePosition));
+    prim->Position = m_parent->Transform.LocalToWorldSpace(m_relativePosition);
 }
 
 void dphysics::CollisionObject::ConfigureRay() {
     RayPrimitive *prim = GetAsRay();
 
-    ysMatrix orientation = ysMath::MatMult(m_relativeOrientation, m_parent->GetOrientationMatrix());
-    prim->Position = ysMath::MatMult(m_parent->GetTransform(), ysMath::ExtendVector(m_relativePosition));
-    prim->Direction = ysMath::MatMult(orientation, ysMath::ExtendVector(prim->RelativeDirection));
+    ysQuaternion orientation = ysMath::QuatMultiply(m_parent->Transform.GetWorldOrientation(), m_relativeOrientation);
+    prim->Position = m_parent->Transform.LocalToWorldSpace(m_relativePosition);
+    prim->Direction = m_parent->Transform.LocalToWorldDirection(prim->RelativeDirection);
 }
 
 void dphysics::CollisionObject::ConfigurePrimitive() {
@@ -87,6 +120,25 @@ void dphysics::CollisionObject::ConfigurePrimitive() {
     }
 }
 
+void dphysics::CollisionObject::SetCollidesWith(int layer, bool collides) {
+    if (layer < 0 || layer >= 32) return;
+
+    m_collisionLayerMask &= ~(0x1 << layer);
+    
+    if (collides) m_collisionLayerMask |= (0x1 << layer);
+}
+
+bool dphysics::CollisionObject::CollidesWith(int layer) const {
+    if (layer < 0 || layer >= 32) return false;
+
+    int bit = 0x1 << layer;
+    return (m_collisionLayerMask & bit) > 0;
+}
+
+void dphysics::CollisionObject::SetLayer(int layer) {
+    m_layer = layer;
+}
+
 bool dphysics::CollisionObject::CheckCollisionMask(const CollisionObject *object) const {
-    return ((object->m_collisionLayerMask & m_layerMask) > 0) || ((object->m_layerMask & m_collisionLayerMask) > 0);
+    return CollidesWith(object->GetLayer()) || object->CollidesWith(GetLayer());
 }

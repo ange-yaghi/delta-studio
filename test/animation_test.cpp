@@ -11,7 +11,7 @@
 
 #include <fstream>
 
-constexpr float Epsilon = 1E-5;
+constexpr float Epsilon = 1E-5f;
 
 TEST(AnimationTest, SanityCheck) {
     ysAnimationChannel mixer;

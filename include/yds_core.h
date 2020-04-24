@@ -49,6 +49,9 @@
 #include "yds_geometry_preprocessing.h"
 #include "yds_geometry_export_file.h"
 
+// Object
+#include "yds_transform.h"
+
 // Graphics API
 #include "yds_device.h"
 
@@ -86,6 +89,5 @@
 #pragma comment(lib, "dxgi.lib")
 #pragma comment(lib, "dsound.lib")
 #pragma comment(lib, "dxerr.lib")
-#pragma comment(lib, "dxguid.lib")
 
 #endif /* YDS_CORE_H */

@@ -162,12 +162,12 @@ ysError ysOpenGLDevice::CreateOnScreenRenderTarget(ysRenderTarget **newTarget, y
 
     openglContext->m_attachedRenderTarget = newRenderTarget;
 
-    newRenderTarget->m_type = ysRenderTarget::RENDER_TARGET_ON_SCREEN;
+    newRenderTarget->m_type = ysRenderTarget::Type::OnScreen;
     newRenderTarget->m_posX = 0;
     newRenderTarget->m_posY = 0;
     newRenderTarget->m_width = context->GetWindow()->GetScreenWidth();
     newRenderTarget->m_height = context->GetWindow()->GetScreenHeight();
-    newRenderTarget->m_format = ysRenderTarget::RTF_R8G8B8A8_UNORM;
+    newRenderTarget->m_format = ysRenderTarget::Format::RTF_R8G8B8A8_UNORM;
     newRenderTarget->m_hasDepthBuffer = depthBuffer;
     newRenderTarget->m_associatedContext = context;
 
@@ -176,7 +176,7 @@ ysError ysOpenGLDevice::CreateOnScreenRenderTarget(ysRenderTarget **newTarget, y
     return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
 }
 
-ysError ysOpenGLDevice::CreateOffScreenRenderTarget(ysRenderTarget **newTarget, int width, int height, ysRenderTarget::RENDER_TARGET_FORMAT format, int sampleCount, bool depthBuffer) {
+ysError ysOpenGLDevice::CreateOffScreenRenderTarget(ysRenderTarget **newTarget, int width, int height, ysRenderTarget::Format format, int sampleCount, bool depthBuffer) {
     YDS_ERROR_DECLARE("CreateOffScreenRenderTarget");
 
     if (newTarget == NULL) return YDS_ERROR_RETURN(ysError::YDS_INVALID_PARAMETER);
@@ -198,16 +198,16 @@ ysError ysOpenGLDevice::CreateSubRenderTarget(ysRenderTarget **newTarget, ysRend
     YDS_ERROR_DECLARE("CreateSubRenderTarget");
 
     if (newTarget == NULL) return YDS_ERROR_RETURN(ysError::YDS_INVALID_PARAMETER);
-    if (parent->GetType() == ysRenderTarget::RENDER_TARGET_SUBDIVISION) return YDS_ERROR_RETURN(ysError::YDS_INVALID_PARAMETER);
+    if (parent->GetType() == ysRenderTarget::Type::Subdivision) return YDS_ERROR_RETURN(ysError::YDS_INVALID_PARAMETER);
 
     ysOpenGLRenderTarget *newRenderTarget = m_renderTargets.NewGeneric<ysOpenGLRenderTarget>();
 
-    newRenderTarget->m_type = ysRenderTarget::RENDER_TARGET_SUBDIVISION;
+    newRenderTarget->m_type = ysRenderTarget::Type::Subdivision;
     newRenderTarget->m_posX = x;
     newRenderTarget->m_posY = y;
     newRenderTarget->m_width = width;
     newRenderTarget->m_height = height;
-    newRenderTarget->m_format = ysRenderTarget::RTF_R8G8B8A8_UNORM;
+    newRenderTarget->m_format = ysRenderTarget::Format::RTF_R8G8B8A8_UNORM;
     newRenderTarget->m_hasDepthBuffer = parent->HasDepthBuffer();
     newRenderTarget->m_associatedContext = parent->GetAssociatedContext();
     newRenderTarget->m_parent = parent;
@@ -230,13 +230,13 @@ ysError ysOpenGLDevice::ResizeRenderTarget(ysRenderTarget *target, int width, in
         SetRenderTarget(NULL);
     }
 
-    if (target->GetType() == ysRenderTarget::RENDER_TARGET_ON_SCREEN) {
+    if (target->GetType() == ysRenderTarget::Type::OnScreen) {
         // Nothing needs to be done
     }
-    else if (target->GetType() == ysRenderTarget::RENDER_TARGET_OFF_SCREEN) {
+    else if (target->GetType() == ysRenderTarget::Type::OffScreen) {
         YDS_NESTED_ERROR_CALL(CreateOpenGLOffScreenRenderTarget(target, width, height, target->GetFormat(), target->GetSampleCount(), target->HasDepthBuffer()));
     }
-    else if (target->GetType() == ysRenderTarget::RENDER_TARGET_SUBDIVISION) {
+    else if (target->GetType() == ysRenderTarget::Type::Subdivision) {
         // Nothing needs to be done
     }
 
@@ -252,7 +252,7 @@ ysError ysOpenGLDevice::SetRenderTarget(ysRenderTarget *target) {
 
     if (target) {
         ysOpenGLRenderTarget *openglTarget = static_cast<ysOpenGLRenderTarget *>(target);
-        ysOpenGLRenderTarget *realTarget = (target->GetType() == ysRenderTarget::RENDER_TARGET_SUBDIVISION) ?
+        ysOpenGLRenderTarget *realTarget = (target->GetType() == ysRenderTarget::Type::Subdivision) ?
             static_cast<ysOpenGLRenderTarget *>(target->GetParent()) : openglTarget;
 
         if (realTarget != m_activeRenderTarget) {
@@ -261,10 +261,10 @@ ysError ysOpenGLDevice::SetRenderTarget(ysRenderTarget *target) {
             }
         }
 
-        if (realTarget->GetType() == ysRenderTarget::RENDER_TARGET_ON_SCREEN) {
+        if (realTarget->GetType() == ysRenderTarget::Type::OnScreen) {
             m_realContext->glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
         }
-        else if (realTarget->GetType() == ysRenderTarget::RENDER_TARGET_OFF_SCREEN) {
+        else if (realTarget->GetType() == ysRenderTarget::Type::OffScreen) {
             m_realContext->glBindFramebuffer(GL_DRAW_FRAMEBUFFER, realTarget->GetFramebuffer());
         }
 
@@ -295,7 +295,7 @@ ysError ysOpenGLDevice::DestroyRenderTarget(ysRenderTarget *&target) {
 
     ysOpenGLRenderTarget *openglTarget = static_cast<ysOpenGLRenderTarget *>(target);
 
-    if (target->GetType() == ysRenderTarget::RENDER_TARGET_OFF_SCREEN) {
+    if (target->GetType() == ysRenderTarget::Type::OffScreen) {
         unsigned int buffers[] = { openglTarget->GetFramebuffer(), openglTarget->GetDepthBuffer() };
         m_realContext->glDeleteRenderbuffers(2, buffers);
 
@@ -329,7 +329,7 @@ ysError ysOpenGLDevice::Present() {
     YDS_ERROR_DECLARE("Present");
 
     if (m_activeContext == NULL) return YDS_ERROR_RETURN(ysError::YDS_NO_CONTEXT);
-    if (m_activeRenderTarget->GetType() == ysRenderTarget::RENDER_TARGET_SUBDIVISION) return YDS_ERROR_RETURN(ysError::YDS_INVALID_OPERATION);
+    if (m_activeRenderTarget->GetType() == ysRenderTarget::Type::Subdivision) return YDS_ERROR_RETURN(ysError::YDS_INVALID_OPERATION);
 
     ysOpenGLVirtualContext *currentContext = static_cast<ysOpenGLVirtualContext *>(m_activeContext);
     currentContext->Present();
@@ -1062,7 +1062,7 @@ void ysOpenGLDevice::Draw(int numFaces, int indexOffset, int vertexOffset) {
     }
 }
 
-ysError ysOpenGLDevice::CreateOpenGLOffScreenRenderTarget(ysRenderTarget *target, int width, int height, ysRenderTarget::RENDER_TARGET_FORMAT format, int sampleCount, bool depthBuffer) {
+ysError ysOpenGLDevice::CreateOpenGLOffScreenRenderTarget(ysRenderTarget *target, int width, int height, ysRenderTarget::Format format, int sampleCount, bool depthBuffer) {
     YDS_ERROR_DECLARE("CreateOpenGLOffScreenRenderTarget");
 
     // Generate the empty texture
@@ -1079,11 +1079,11 @@ ysError ysOpenGLDevice::CreateOpenGLOffScreenRenderTarget(ysRenderTarget *target
     int glType;
 
     switch (format) {
-    case ysRenderTarget::RTF_R8G8B8A8_UNORM:
+    case ysRenderTarget::Format::RTF_R8G8B8A8_UNORM:
         glFormat = GL_RGBA8;
         glType = GL_UNSIGNED_BYTE;
         break;
-    case ysRenderTarget::RTF_R32G32B32_FLOAT:
+    case ysRenderTarget::Format::RTF_R32G32B32_FLOAT:
         glFormat = GL_RGBA32F_ARB;
         glType = GL_FLOAT;
         break;
@@ -1112,7 +1112,7 @@ ysError ysOpenGLDevice::CreateOpenGLOffScreenRenderTarget(ysRenderTarget *target
 
     ysOpenGLRenderTarget *newRenderTarget = static_cast<ysOpenGLRenderTarget *>(target);
 
-    newRenderTarget->m_type = ysRenderTarget::RENDER_TARGET_OFF_SCREEN;
+    newRenderTarget->m_type = ysRenderTarget::Type::OffScreen;
     newRenderTarget->m_posX = 0;
     newRenderTarget->m_posY = 0;
     newRenderTarget->m_width = width;
@@ -1133,7 +1133,7 @@ ysError ysOpenGLDevice::DestroyOpenGLRenderTarget(ysRenderTarget *target) {
 
     ysOpenGLRenderTarget *openglTarget = static_cast<ysOpenGLRenderTarget *>(target);
 
-    if (target->GetType() == ysRenderTarget::RENDER_TARGET_OFF_SCREEN) {
+    if (target->GetType() == ysRenderTarget::Type::OffScreen) {
         unsigned int buffers[] = { openglTarget->GetFramebuffer(), openglTarget->GetDepthBuffer() };
         m_realContext->glDeleteRenderbuffers(2, buffers);
 

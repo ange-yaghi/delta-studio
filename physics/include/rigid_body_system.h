@@ -34,35 +34,53 @@ namespace dphysics {
         // Collision Detector Interface
         CollisionDetector CollisionDetector;
 
+        void InitializeFrictionTable(
+            int materialCount, float defaultStaticFriction, float defaultDynamicFriction);
+        float GetDynamicFriction(int material1, int material2);
+        float GetStaticFriction(int material1, int material2);
+        void SetFriction(int material1, int material2, float staticFriction, float dynamicFriction);
+
         void RegisterRigidBody(RigidBody *body);
         void RemoveRigidBody(RigidBody *body);
 
         void Update(float timeStep);
 
-        template<typename TYPE>
-        TYPE *CreateLink(RigidBody *body1, RigidBody *body2) {
-            TYPE *newLink = m_rigidBodyLinks.NewGeneric<TYPE>(16);
+        template<typename T_Link>
+        T_Link *CreateLink(RigidBody *body1, RigidBody *body2) {
+            T_Link *newLink = m_rigidBodyLinks.NewGeneric<T_Link, 16>();
             newLink->SetRigidBodies(body1, body2);
             return newLink;
         }
+
+        bool CheckState();
 
         void DeleteLink(RigidBodyLink *link);
 
         void ProcessGridCell(int x, int y);
 
+        void OpenReplayFile(const std::string &fname);
+        void CloseReplayFile();
+
     protected:
         void GenerateCollisions();
         void GenerateCollisions(RigidBody *body1, RigidBody *body2);
 
-        void ResolveCollisions();
+        void ResolveCollisions(float dt);
         void ResolveCollision(Collision *collision, ysVector *velocityChange, ysVector *rotationDirection, float rotationAmount[2], float penetration);
 
+        void AdjustVelocities(float timestep);
+        void AdjustVelocity(Collision *collision, ysVector velocityChange[2], ysVector rotationChange[2]);
+
+        void GenerateForces(float timeStep);
         void Integrate(float timeStep);
         void UpdateDerivedData();
+        void CheckAwake();
 
         void OrderPrimitives(CollisionObject **prim1, CollisionObject **prim2, RigidBody **body1, RigidBody **body2);
 
         void GenerateCollisions(int start, int count);
+
+        void WriteFrameToReplayFile();
 
     protected:
         ysRegistry<RigidBody, 512> m_rigidBodyRegistry;
@@ -72,6 +90,12 @@ namespace dphysics {
         ysDynamicArray<Collision, 4> m_dynamicCollisions;
         ysExpandingArray<Collision *, 8192> m_collisionAccumulator;
 
+        std::vector<std::vector<float>> m_dynamicFrictionTable;
+        std::vector<std::vector<float>> m_staticFrictionTable;
+
+        float m_defaultDynamicFriction;
+        float m_defaultStaticFriction;
+
         int m_lastLoadMeasurement;
         int m_loadMeasurement;
         float m_currentStep;
@@ -79,6 +103,11 @@ namespace dphysics {
         // TEST
         GridPartitionSystem m_gridPartitionSystem;
         std::ofstream m_loggingOutput;
+
+    protected:
+        // Debug
+        std::fstream m_outputFile;
+        bool m_replayEnabled;
     };
 
 } /* namespace dbasic */

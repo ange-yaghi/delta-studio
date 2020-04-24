@@ -83,6 +83,8 @@ ysAnimationCurve::CurveType ysAnimationInterchangeFile0_0::InterpretCurveType(un
 }
 
 ysError ysAnimationInterchangeFile0_0::ReadAction(ysAnimationAction *action) {
+    YDS_ERROR_DECLARE("ReadAction");
+
     ActionHeader actionHeader;
     m_file.read((char *)&actionHeader, sizeof(ActionHeader));
 

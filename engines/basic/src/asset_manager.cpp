@@ -6,11 +6,26 @@
 #include <sys/stat.h>
 
 dbasic::AssetManager::AssetManager() : ysObject("ASSET_MANAGER") {
-    m_engine = NULL;
+    m_engine = nullptr;
 }
 
 dbasic::AssetManager::~AssetManager() {
     /* void */
+}
+
+ysError dbasic::AssetManager::Destroy() {
+    YDS_ERROR_DECLARE("Destroy");
+
+    int textureCount = m_textures.GetNumObjects();
+    for (int i = 0; i < textureCount; ++i) {
+        m_textures.Get(i)->Destroy(m_engine->GetDevice());
+    }
+
+    for (ysGPUBuffer *buffer : m_buffers) {
+        m_engine->GetDevice()->DestroyGPUBuffer(buffer);
+    }
+
+    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
 }
 
 dbasic::Material *dbasic::AssetManager::NewMaterial() {
@@ -215,6 +230,8 @@ ysError dbasic::AssetManager::CompileInterchangeFile(const char *fname, float sc
 }
 
 ysError dbasic::AssetManager::LoadSceneFile(const char *fname, bool placeInVram) {
+    YDS_ERROR_DECLARE("LoadSceneFile");
+
     char fullPath[512];
     strcpy_s(fullPath, 512, fname);
     strcat_s(fullPath, 512, ".ysce");
@@ -379,6 +396,9 @@ ysError dbasic::AssetManager::LoadSceneFile(const char *fname, bool placeInVram)
 
     file.close();
 
+    m_buffers.push_back(indexBuffer);
+    m_buffers.push_back(vertexBuffer);
+
     return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
 }
 
@@ -463,10 +483,34 @@ ysAnimationAction *dbasic::AssetManager::GetAction(const char *name) {
     return nullptr;
 }
 
+ysError dbasic::AssetManager::LoadTexture(const char *fname, const char *name) {
+    YDS_ERROR_DECLARE("LoadTexture");
+
+    ysTexture *texture;
+    m_engine->LoadTexture(&texture, fname);
+
+    TextureAsset *newTextureAsset = m_textures.NewGeneric<TextureAsset>();
+    newTextureAsset->SetName(name);
+    newTextureAsset->SetTexture(texture);
+
+    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+}
+
+dbasic::TextureAsset *dbasic::AssetManager::GetTexture(const char *name) {
+    int textureCount = GetTextureCount();
+    for (int i = 0; i < textureCount; ++i) {
+        if (m_textures.Get(i)->GetName() == name) {
+            return m_textures.Get(i);
+        }
+    }
+
+    return nullptr;
+}
+
 dbasic::Skeleton *dbasic::AssetManager::BuildSkeleton(ModelAsset *model) {
-    SceneObjectAsset *boneReference = NULL;
-    SceneObjectAsset *boneParentReference = NULL;
-    Bone *bone = NULL;
+    SceneObjectAsset *boneReference = nullptr;
+    SceneObjectAsset *boneParentReference = nullptr;
+    Bone *bone = nullptr;
     int nBones = model->GetBoneCount();
 
     Skeleton *newSkeleton = m_skeletons.NewGeneric<Skeleton, 16>();
@@ -489,8 +533,8 @@ dbasic::Skeleton *dbasic::AssetManager::BuildSkeleton(ModelAsset *model) {
             bone = newSkeleton->GetBone(boneReference->m_skeletonIndex);
             bone->SetAssetID(i);
             bone->SetReferenceTransform(boneReference->GetWorldTransform());
-            bone->RigidBody.SetOrientation(boneReference->GetLocalOrientation());
-            bone->RigidBody.SetPosition(boneReference->GetPosition());
+            bone->Transform.SetOrientation(boneReference->GetLocalOrientation());
+            bone->Transform.SetPosition(boneReference->GetPosition());
             bone->SetName(boneReference->m_name);
 
             if (asset == rootBoneReference) {
@@ -521,7 +565,7 @@ dbasic::Skeleton *dbasic::AssetManager::BuildSkeleton(ModelAsset *model) {
     return newSkeleton;
 }
 
-dbasic::RenderSkeleton *dbasic::AssetManager::BuildRenderSkeleton(dphysics::RigidBody *root, SceneObjectAsset *rootBone) {
+dbasic::RenderSkeleton *dbasic::AssetManager::BuildRenderSkeleton(ysTransform *root, SceneObjectAsset *rootBone) {
     SceneObjectAsset *nodeReference = nullptr;
     SceneObjectAsset *nodeParentReference = nullptr;
     RenderNode *node = nullptr;
@@ -532,14 +576,15 @@ dbasic::RenderSkeleton *dbasic::AssetManager::BuildRenderSkeleton(dphysics::Rigi
     newNode = newRenderSkeleton->NewNode();
     newNode->SetParent(nullptr);
     newNode->SetAssetID(rootBone->GetIndex());
-    root->AddChild(&newNode->RigidBody);
-    newNode->RigidBody.SetOrientation(rootBone->GetLocalOrientation());
-    newNode->RigidBody.SetPosition(rootBone->GetPosition());
+    newNode->Transform.SetParent(root);
+    newNode->Transform.SetOrientation(rootBone->GetLocalOrientation());
+    newNode->Transform.SetPosition(rootBone->GetPosition());
     newNode->SetModelAsset(rootBone->m_geometry);
     newNode->SetName(rootBone->m_name);
     newNode->SetBone(rootBone->GetType() == ysObjectData::ObjectType::Bone);
 
     newNode->SetRestLocation(rootBone->GetPosition());
+    newNode->SetRestOrientation(rootBone->GetLocalOrientation());
 
     // Get the root bone
     SceneObjectAsset *rootBoneReference = rootBone;
@@ -560,13 +605,14 @@ void dbasic::AssetManager::ProcessRenderNode(SceneObjectAsset *object, RenderSke
         newNode = skeleton->NewNode();
         newNode->SetParent(parent);
         newNode->SetAssetID(object->GetIndex());
-        newNode->RigidBody.SetOrientation(object->GetLocalOrientation());
-        newNode->RigidBody.SetPosition(object->GetPosition());
+        newNode->Transform.SetOrientation(object->GetLocalOrientation());
+        newNode->Transform.SetPosition(object->GetPosition());
         newNode->SetModelAsset(object->m_geometry);
         newNode->SetName(object->m_name);
         newNode->SetBone(object->GetType() == ysObjectData::ObjectType::Bone);
 
         newNode->SetRestLocation(object->GetPosition());
+        newNode->SetRestOrientation(object->GetLocalOrientation());
     }
 
     for (int i = 0; i < nChildren; i++) {
@@ -575,7 +621,7 @@ void dbasic::AssetManager::ProcessRenderNode(SceneObjectAsset *object, RenderSke
 }
 
 dbasic::AnimationObjectController *dbasic::AssetManager::
-    BuildAnimationObjectController(const char *name, dphysics::RigidBody *rigidBody)
+    BuildAnimationObjectController(const char *name, ysTransform *transform)
 {
     int nAnimationData = m_animationExportData.GetNumObjects();
 
@@ -589,7 +635,7 @@ dbasic::AnimationObjectController *dbasic::AssetManager::
                 int nKeys = data->GetKeyCount();
 
                 AnimationObjectController *newController = m_animationControllers.New();
-                newController->SetTarget(rigidBody);
+                newController->SetTarget(transform);
 
                 for (int k = 0; k < nKeys; k++) {
                     Keyframe *newKey = newController->AppendKeyframe();
@@ -601,7 +647,7 @@ dbasic::AnimationObjectController *dbasic::AssetManager::
         }
     }
 
-    return NULL;
+    return nullptr;
 }
 
 ysError dbasic::AssetManager::ResolveNodeHierarchy() {

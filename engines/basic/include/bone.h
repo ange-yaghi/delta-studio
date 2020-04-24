@@ -14,7 +14,7 @@ namespace dbasic {
         Bone();
         ~Bone();
 
-        dphysics::RigidBody RigidBody;
+        ysTransform Transform;
 
         void SetParent(Bone *parent);
         Bone *GetParent() { return m_parent; }

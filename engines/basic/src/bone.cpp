@@ -12,9 +12,7 @@ dbasic::Bone::~Bone() {
 void dbasic::Bone::SetParent(Bone *parent) {
     m_parent = parent;
 
-    if (m_parent != NULL) {
-        m_parent->RigidBody.AddChild(&RigidBody);
-    }
+    Transform.SetParent(&parent->Transform);
 }
 
 void dbasic::Bone::SetReferenceTransform(const ysMatrix &m) {
@@ -31,7 +29,7 @@ ysMatrix dbasic::Bone::GetSkinMatrix() {
 
     ysMatrix test = ysMath::MatMult(invRef, ref);
 
-    ysMatrix trans = RigidBody.GetTransform();
+    ysMatrix trans = Transform.GetWorldTransform();
 
     ysMatrix skin = ysMath::MatMult(trans, invRef);
 

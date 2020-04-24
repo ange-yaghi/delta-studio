@@ -38,14 +38,14 @@ void dbasic::Character::SetAnimationData(AnimationExportData *animationData) {
 
 void dbasic::Character::ConstructBoneController(const char *boneName, AnimationGroup *group) {
     Bone *bone = m_skeleton->FindBone(boneName);
-    AnimationObjectController *newController = m_assetManager->BuildAnimationObjectController(bone->GetName(), &bone->RigidBody);
+    AnimationObjectController *newController = m_assetManager->BuildAnimationObjectController(bone->GetName(), &bone->Transform);
 
     group->AddAnimationController(newController);
 }
 
 void dbasic::Character::ConstructNodeController(const char *nodeName, AnimationGroup *group) {
     RenderNode *node = m_renderSkeleton->FindNode(nodeName);
-    AnimationObjectController *newController = m_assetManager->BuildAnimationObjectController(node->GetName(), &node->RigidBody);
+    AnimationObjectController *newController = m_assetManager->BuildAnimationObjectController(node->GetName(), &node->Transform);
 
     group->AddAnimationController(newController);
 }

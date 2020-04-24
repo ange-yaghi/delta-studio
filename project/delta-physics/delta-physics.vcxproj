@@ -26,6 +26,7 @@
     <ClInclude Include="..\..\physics\include\delta_core.h" />
     <ClInclude Include="..\..\physics\include\delta_physics.h" />
     <ClInclude Include="..\..\physics\include\expanding_spring.h" />
+    <ClInclude Include="..\..\physics\include\force_generator.h" />
     <ClInclude Include="..\..\physics\include\grid_partition_system.h" />
     <ClInclude Include="..\..\physics\include\hinge_link.h" />
     <ClInclude Include="..\..\physics\include\mass_spring_system.h" />
@@ -42,6 +43,7 @@
     <ClCompile Include="..\..\physics\src\collision_object.cpp" />
     <ClCompile Include="..\..\physics\src\collision_primitives.cpp" />
     <ClCompile Include="..\..\physics\src\expanding_spring.cpp" />
+    <ClCompile Include="..\..\physics\src\force_generator.cpp" />
     <ClCompile Include="..\..\physics\src\grid_partition_system.cpp" />
     <ClCompile Include="..\..\physics\src\hinge_link.cpp" />
     <ClCompile Include="..\..\physics\src\mass_spring_system.cpp" />

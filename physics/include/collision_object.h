@@ -45,18 +45,18 @@ namespace dphysics {
         RigidBody *GetParent() const { return m_parent; }
 
         void SetRelativePosition(const ysVector &pos) { m_relativePosition = pos; }
-        void SetRelativeOrientation(const ysMatrix &orientation) { m_relativeOrientation = orientation; }
+        void SetRelativeOrientation(const ysQuaternion &orientation) { m_relativeOrientation = orientation; }
 
         ysVector GetRelativePosition() const { return m_relativePosition; }
-        ysMatrix GetRelativeOrientation() const { return m_relativeOrientation; }
+        ysQuaternion GetRelativeOrientation() const { return m_relativeOrientation; }
 
         void ConfigurePrimitive();
 
-        void SetCollisionLayerExclusionMask(unsigned int mask) { m_collisionLayerMask = ~mask; }
-        unsigned int GetCollisionLasyerMask() const { return m_collisionLayerMask; }
+        void SetCollidesWith(int layer, bool collides);
+        bool CollidesWith(int layer) const;
 
-        void SetLayerMask(unsigned int mask) { m_layerMask = mask; }
-        unsigned int GetLasyerMask() const { return m_layerMask; }
+        void SetLayer(int layer);
+        int GetLayer() const { return m_layer; }
 
         bool CheckCollisionMask(const CollisionObject *object) const;
 
@@ -64,6 +64,7 @@ namespace dphysics {
         unsigned int GetEventMessage() const { return m_msg; }
 
         void GetBounds(ysVector &minPoint, ysVector &maxPoint) const;
+        void WriteInfo(std::fstream &target);
 
     protected:
         void ConfigureBox();
@@ -73,9 +74,9 @@ namespace dphysics {
         void *m_primitiveHandle;
 
         ysVector m_relativePosition;
-        ysMatrix m_relativeOrientation;
+        ysQuaternion m_relativeOrientation;
 
-        unsigned int m_layerMask;
+        unsigned int m_layer;
         unsigned int m_collisionLayerMask;
 
     private:

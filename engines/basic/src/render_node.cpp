@@ -12,6 +12,7 @@ dbasic::RenderNode::RenderNode() : ysObject("RenderNode") {
     m_rotationTarget.ClearRotation(ysMath::Constants::QuatIdentity);
 
     m_restLocation = ysMath::Constants::Zero;
+    m_restOrientation = ysMath::Constants::QuatIdentity;
     m_lastValidOrientation = ysMath::Constants::QuatIdentity;
 }
 
@@ -21,10 +22,7 @@ dbasic::RenderNode::~RenderNode() {
 
 void dbasic::RenderNode::SetParent(RenderNode *node) {
     m_parent = node;
-
-    if (m_parent != nullptr) {
-        m_parent->RigidBody.AddChild(&RigidBody);
-    }
+    if (node != nullptr) Transform.SetParent(&node->Transform);
 }
 
 dbasic::RenderNode *dbasic::RenderNode::GetParent() {

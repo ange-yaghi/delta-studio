@@ -6,6 +6,8 @@
 #include <assert.h>
 #include <algorithm>
 
+ysAnimationChannel::ActionSettings ysAnimationChannel::DefaultSettings;
+
 ysAnimationChannel::ysAnimationChannel() {
     m_amplitude = 1.0f;
 

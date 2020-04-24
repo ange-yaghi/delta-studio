@@ -4,11 +4,8 @@
 #include "yds_dynamic_array.h"
 #include "yds_syntax.h"
 
-class ysObject : public ysDynamicArrayElement
-{
-
+class ysObject : public ysDynamicArrayElement {
 public:
-
 	ysObject();
 	ysObject(const char *typeID);
 	~ysObject();
@@ -24,14 +21,12 @@ public:
 	const char *GetTypeID() const { return m_typeID; }
 
 protected:
-
 	const char *m_debugName;
 	const char *m_typeID;
-
 };
 
 
 // TEMP
 #include "yds_error_system.h"
 
-#endif
+#endif /* YDS_BASE_H */

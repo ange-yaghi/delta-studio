@@ -2,8 +2,8 @@
 #include "../include/yds_device.h"
 
 ysRenderingContext::ysRenderingContext() : ysContextObject("RENDERING_CONTEXT", API_UNKNOWN) {
-    m_targetWindow = NULL;
-    m_attachedRenderTarget = NULL;
+    m_targetWindow = nullptr;
+    m_attachedRenderTarget = nullptr;
 
     m_currentMode = ContextMode::UNDEFINED;
 
@@ -11,8 +11,8 @@ ysRenderingContext::ysRenderingContext() : ysContextObject("RENDERING_CONTEXT", 
 }
 
 ysRenderingContext::ysRenderingContext(DEVICE_API API, ysWindowSystem::Platform platform) : ysContextObject("RENDERING_CONTEXT", API) {
-    m_targetWindow = NULL;
-    m_attachedRenderTarget = NULL;
+    m_targetWindow = nullptr;
+    m_attachedRenderTarget = nullptr;
 
     m_currentMode = ContextMode::UNDEFINED;
 

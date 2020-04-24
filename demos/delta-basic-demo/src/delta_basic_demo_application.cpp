@@ -36,9 +36,6 @@ void dbasic_demo::DeltaBasicDemoApplication::Initialize(void *instance, ysContex
     highlight->SetDiffuseColor(ysVector4(1.0f, 1.0f, 1.0f, 1.0f - 0.941667f));
 
     m_assetManager.SetEngine(&m_engine);
-    m_assetManager.CompileSceneFile("../../workspace/addon_dev", 1.0f, true);
-    m_assetManager.LoadSceneFile("../../workspace/addon_dev");
-
     m_assetManager.CompileInterchangeFile("../../test/geometry_files/ant_rigged", 1.0f, true);
     m_assetManager.LoadSceneFile("../../test/geometry_files/ant_rigged");
 
@@ -48,10 +45,8 @@ void dbasic_demo::DeltaBasicDemoApplication::Initialize(void *instance, ysContex
     m_renderSkeleton = m_assetManager.BuildRenderSkeleton(&m_skeletonBase, root);
     m_skeletonBase.SetPosition(ysMath::LoadVector(0.0f, 0.0f, 0.0f));
 
-    m_probe = &m_renderSkeleton->FindNode("Head")->RigidBody;
+    m_probe = &m_renderSkeleton->FindNode("Head")->Transform;
     m_probe2 = m_renderSkeleton->FindNode("Circle");
-
-    m_engine.LoadTexture(&m_demoTexture, "../../demos/delta-basic-demo/assets/chicken.png");
 
     m_assetManager.LoadAnimationFile("../../test/animation_files/ant_rigged.dimo");
     m_blinkAction = m_assetManager.GetAction("Blink");
@@ -88,7 +83,7 @@ void dbasic_demo::DeltaBasicDemoApplication::Render() {
     m_engine.SetCameraPosition(0.0f, 0.0f);
     m_engine.SetCameraAltitude(20.0f);
 
-    m_currentAngle += 0.5f;
+    m_currentAngle += 1.0f;
     if (m_currentAngle > 360.0f) m_currentAngle -= 360.0f;
 
     m_engine.SetMultiplyColor(ysVector4(0xe7 / 255.0f, 0x4c / 255.0f, 0x3c / 255.0f, 1.0f));
@@ -98,10 +93,15 @@ void dbasic_demo::DeltaBasicDemoApplication::Render() {
     //m_skeletonBase.SetOrientation(q);
 
     q = ysMath::LoadQuaternion(m_currentAngle * ysMath::Constants::PI / 180.0f, ysMath::LoadVector(0.0f, 0.0f, 1.0f));
+    //m_skeletonBase.SetOrientation(q);
 
     m_renderSkeleton->UpdateAnimation(m_engine.GetFrameLength() * 60);
+    //m_renderSkeleton->GetNode()
 
-    m_skeletonBase.UpdateDerivedData(true);
+    //m_skeletonBase.UpdateDerivedData(true);
+    int color[] = { 0xff, 0x0, 0x0 };
+    //m_engine.SetObjectTransform(ysMath::LoadMatrix(q));
+    //m_engine.DrawBox(color, 5.0f, 5.0f, 0);
     m_engine.DrawRenderSkeleton(m_renderSkeleton, 1.0f, 0);
 
     ysAnimationChannel::ActionSettings normalSpeed;
@@ -159,6 +159,16 @@ void dbasic_demo::DeltaBasicDemoApplication::Render() {
     }
 
     m_blinkTimer -= m_engine.GetFrameLength();
+
+    m_engine.SetAmbientLight(ysVector4(0.5, 0.5, 0.5, 1.0f));
+
+    dbasic::Light light;
+    light.Position = ysVector4(0.0f, 0.0f, 2.0f, 0.0f);
+    light.Color = ysVector4(1.0f, 1.0f, 1.0f, 0.0f);
+    light.Direction = ysMath::GetVector4(ysMath::Normalize(ysMath::LoadVector(1.0f, 0.0f, -1.0f)));
+    light.Attenuation0 = 0.9f;
+    light.Attenuation1 = 0.89f;
+    m_engine.AddLight(light);
 }
 
 void dbasic_demo::DeltaBasicDemoApplication::Run() {
@@ -170,4 +180,7 @@ void dbasic_demo::DeltaBasicDemoApplication::Run() {
 
         m_engine.EndFrame();
     }
+
+    m_assetManager.Destroy();
+    m_engine.Destroy();
 }
