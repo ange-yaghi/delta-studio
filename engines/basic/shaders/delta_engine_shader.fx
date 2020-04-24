@@ -158,7 +158,10 @@ float4 PS(VS_OUTPUT input) : SV_Target {
 			float inv_mag = 1.0 / length(d);
 			d *= inv_mag;
 
-			float3 contribution = dot(d, input.Normal) * light.Color;
+			float d_dot_n = dot(d, input.Normal);
+			if (d_dot_n < 0) continue;
+
+			float3 contribution = d_dot_n * light.Color;
 
 			// Spotlight calculation
 			float spotCoherence = -dot(d, light.Direction.xyz);

@@ -81,6 +81,7 @@ struct ysVector4 {
     ysVector4(const ysVector3 &v) : x(v.x), y(v.y), z(v.z), w(0.0f) {}
 
     void Set(float x, float y, float z, float w) { this->x = x; this->y = y; this->z = z; this->w = w; }
+    void Scale(float s) { this->x *= s; this->y *= s; this->z *= s; this->w *= s; }
 
     union {
         struct {
