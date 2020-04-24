@@ -5,7 +5,7 @@
 #include "../include/yds_animation_mixer.h"
 #include "../include/yds_animation_curve.h"
 #include "../include/yds_animation_target.h"
-#include "../include/yds_animation_interchange_file_0_0.h"
+#include "../include/yds_animation_interchange_file.h"
 
 #include "utilities.h"
 
@@ -143,10 +143,10 @@ TEST(AnimationTest, ImmediateTransitionTest) {
 
 TEST(AnimationTest, CurveTest) {
     ysAnimationCurve curve;
-    curve.AddSamplePoint(1.0f, 0.1f);
-    curve.AddSamplePoint(2.0f, 1.0f);
-    curve.AddSamplePoint(3.0f, 0.5f);
-    curve.AddSamplePoint(4.0f, 0.25f);
+    curve.AddLinearSamplePoint(1.0f, 0.1f);
+    curve.AddLinearSamplePoint(2.0f, 1.0f);
+    curve.AddLinearSamplePoint(3.0f, 0.5f);
+    curve.AddLinearSamplePoint(4.0f, 0.25f);
 
     float s0 = curve.Sample(0.0f);
     EXPECT_NEAR(s0, 0.1f, Epsilon);
@@ -171,17 +171,17 @@ TEST(AnimationTest, BindingTest) {
 
     ysAnimationCurve *curve0 = action.NewCurve("Bone0");
     curve0->SetCurveType(ysAnimationCurve::CurveType::LocationX);
-    curve0->AddSamplePoint(1.0f, 0.1f);
-    curve0->AddSamplePoint(2.0f, 1.0f);
-    curve0->AddSamplePoint(3.0f, 0.5f);
-    curve0->AddSamplePoint(4.0f, 0.25f);
+    curve0->AddLinearSamplePoint(1.0f, 0.1f);
+    curve0->AddLinearSamplePoint(2.0f, 1.0f);
+    curve0->AddLinearSamplePoint(3.0f, 0.5f);
+    curve0->AddLinearSamplePoint(4.0f, 0.25f);
 
     ysAnimationCurve *curve1 = action.NewCurve("Bone1");
     curve1->SetCurveType(ysAnimationCurve::CurveType::LocationY);
-    curve1->AddSamplePoint(1.0f, 0.5f);
-    curve1->AddSamplePoint(2.0f, 0.5f);
-    curve1->AddSamplePoint(3.0f, 0.5f);
-    curve1->AddSamplePoint(4.0f, 0.25f);
+    curve1->AddLinearSamplePoint(1.0f, 0.5f);
+    curve1->AddLinearSamplePoint(2.0f, 0.5f);
+    curve1->AddLinearSamplePoint(3.0f, 0.5f);
+    curve1->AddLinearSamplePoint(4.0f, 0.25f);
 
     TransformTarget bone0Loc, bone1Loc;
 
@@ -214,10 +214,10 @@ TEST(AnimationTest, ActionMixing) {
 
     ysAnimationCurve *curve0 = action0.NewCurve("Bone0");
     curve0->SetCurveType(ysAnimationCurve::CurveType::LocationX);
-    curve0->AddSamplePoint(1.0f, 0.5f);
-    curve0->AddSamplePoint(2.0f, 1.0f);
-    curve0->AddSamplePoint(3.0f, 0.5f);
-    curve0->AddSamplePoint(4.0f, 0.25f);
+    curve0->AddLinearSamplePoint(1.0f, 0.5f);
+    curve0->AddLinearSamplePoint(2.0f, 1.0f);
+    curve0->AddLinearSamplePoint(3.0f, 0.5f);
+    curve0->AddLinearSamplePoint(4.0f, 0.25f);
 
     ysAnimationAction action1;
     action1.SetLength(4.0f);
@@ -225,10 +225,10 @@ TEST(AnimationTest, ActionMixing) {
 
     ysAnimationCurve *curve1 = action1.NewCurve("Bone0");
     curve1->SetCurveType(ysAnimationCurve::CurveType::LocationX);
-    curve1->AddSamplePoint(1.0f, 3.0f);
-    curve1->AddSamplePoint(2.0f, 2.0f);
-    curve1->AddSamplePoint(3.0f, 3.0f);
-    curve1->AddSamplePoint(4.0f, 4.0f);
+    curve1->AddLinearSamplePoint(1.0f, 3.0f);
+    curve1->AddLinearSamplePoint(2.0f, 2.0f);
+    curve1->AddLinearSamplePoint(3.0f, 3.0f);
+    curve1->AddLinearSamplePoint(4.0f, 4.0f);
 
     TransformTarget bone0Loc;
 
@@ -274,7 +274,7 @@ TEST(AnimationTest, ActionMixing) {
 }
 
 TEST(AnimationTest, AnimationInterchangeFile) {
-    ysAnimationInterchangeFile0_0 interchangeFile;
+    ysAnimationInterchangeFile interchangeFile;
     interchangeFile.Open("../../../test/animation_files/armature_test.dimo");
 
     int actionCount = interchangeFile.GetActionCount();
@@ -287,4 +287,29 @@ TEST(AnimationTest, AnimationInterchangeFile) {
 
     EXPECT_EQ(actions[0].GetName(), "Rise");
     EXPECT_EQ(actions[1].GetName(), "Twist");
+}
+
+TEST(AnimationTest, BezierTest) {
+    ysAnimationInterchangeFile interchangeFile;
+    interchangeFile.Open("../../../test/animation_files/bezier_test.dimo");
+
+    int actionCount = interchangeFile.GetActionCount();
+    EXPECT_EQ(actionCount, 1);
+
+    ysAnimationAction actions[1];
+    for (int i = 0; i < actionCount; ++i) {
+        interchangeFile.ReadAction(&actions[i]);
+    }
+
+    EXPECT_EQ(actions[0].GetName(), "TestAction");
+
+    ysAnimationCurve *curve = actions[0].GetCurve("Bone", ysAnimationCurve::CurveType::LocationY);
+    EXPECT_NE(curve, nullptr);
+
+    EXPECT_NEAR(curve->Sample(0.0f), 0.0f, 1E-4);
+    EXPECT_NEAR(curve->Sample(10.0f), 0.527372f, 1E-4);
+    EXPECT_NEAR(curve->Sample(20.0f), 1.14506f, 1E-4);
+    EXPECT_NEAR(curve->Sample(36.0f), 0.414749f, 1E-4);
+    EXPECT_NEAR(curve->Sample(46.0f), 0.079635f, 1E-4);
+    EXPECT_NEAR(curve->Sample(70.0f), 0.0f, 1E-4);
 }

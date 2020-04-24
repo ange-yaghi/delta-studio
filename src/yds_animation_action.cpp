@@ -27,6 +27,20 @@ ysAnimationCurve *ysAnimationAction::NewCurve(const std::string &target) {
     return newCurve;
 }
 
+ysAnimationCurve *ysAnimationAction::GetCurve(const std::string &target, ysAnimationCurve::CurveType type) {
+    auto f = m_curves.find(target);
+    if (f == m_curves.end()) return nullptr;
+
+    std::vector<ysAnimationCurve *> &curveList = f->second;
+    for (ysAnimationCurve *curve : curveList) {
+        if (curve->GetCurveType() == type) {
+            return curve;
+        }
+    }
+
+    return nullptr;
+}
+
 int ysAnimationAction::GetCurveCount() const {
     return m_curveCount;
 }

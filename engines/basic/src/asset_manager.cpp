@@ -458,7 +458,7 @@ ysError dbasic::AssetManager::LoadAnimationFileLegacy(const char *fname) {
 ysError dbasic::AssetManager::LoadAnimationFile(const char *fname) {
     YDS_ERROR_DECLARE("LoadAnimationFile");
 
-    ysAnimationInterchangeFile0_0 animationFile;
+    ysAnimationInterchangeFile animationFile;
     animationFile.Open(fname);
 
     int actionCount = animationFile.GetActionCount();

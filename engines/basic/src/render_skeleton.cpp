@@ -97,7 +97,9 @@ void dbasic::RenderSkeleton::UpdateAnimation(float dt) {
                 node->SetLastValidOrientation(r);
             }
 
-            node->Transform.SetOrientation(ysMath::QuatMultiply(node->GetRestOrientation(), ysMath::Normalize(r)));
+            ysQuaternion newOrientation = ysMath::Normalize(
+                ysMath::QuatMultiply(node->GetRestOrientation(), ysMath::Normalize(r)));
+            node->Transform.SetOrientation(newOrientation);
         }
     }
 }

@@ -22,7 +22,10 @@
     <ClInclude Include="..\..\include\yds_animation_action.h" />
     <ClInclude Include="..\..\include\yds_animation_action_binding.h" />
     <ClInclude Include="..\..\include\yds_animation_curve.h" />
-    <ClInclude Include="..\..\include\yds_animation_interchange_file_0_0.h" />
+    <ClInclude Include="..\..\include\yds_animation_interchange_file.h" />
+    <ClInclude Include="..\..\include\yds_animation_interchange_file_reader_0_0.h" />
+    <ClInclude Include="..\..\include\yds_animation_interchange_file_reader_0_1.h" />
+    <ClInclude Include="..\..\include\yds_animation_interchange_file_reader.h" />
     <ClInclude Include="..\..\include\yds_core.h" />
     <ClInclude Include="..\..\include\yds_audio_buffer.h" />
     <ClInclude Include="..\..\include\yds_audio_device.h" />
@@ -129,7 +132,10 @@
     <ClCompile Include="..\..\src\yds_animation_action.cpp" />
     <ClCompile Include="..\..\src\yds_animation_action_binding.cpp" />
     <ClCompile Include="..\..\src\yds_animation_curve.cpp" />
-    <ClCompile Include="..\..\src\yds_animation_interchange_file_0_0.cpp" />
+    <ClCompile Include="..\..\src\yds_animation_interchange_file.cpp" />
+    <ClCompile Include="..\..\src\yds_animation_interchange_file_reader.cpp" />
+    <ClCompile Include="..\..\src\yds_animation_interchange_file_reader_0_0.cpp" />
+    <ClCompile Include="..\..\src\yds_animation_interchange_file_reader_0_1.cpp" />
     <ClCompile Include="..\..\src\yds_animation_mixer.cpp" />
     <ClCompile Include="..\..\src\yds_animation_target.cpp" />
     <ClCompile Include="..\..\src\yds_audio_buffer.cpp" />

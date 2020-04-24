@@ -8,6 +8,25 @@ class ysAnimationTarget;
 
 class ysAnimationCurve {
 public:
+    struct CurveHandle {
+        enum class InterpolationMode {
+            Linear,
+            Bezier
+        };
+
+        float s;
+        float v;
+        
+        float l_handle_x;
+        float l_handle_y;
+
+        float r_handle_x;
+        float r_handle_y;
+
+        InterpolationMode mode;
+    };
+
+public:
     enum class CurveType {
         Undefined = 0x0,
 
@@ -37,13 +56,16 @@ public:
     void SetCurveType(CurveType curveType) { m_curveType = curveType; }
     CurveType GetCurveType() const { return m_curveType; }
 
-    void AddSamplePoint(float s, float v);
+    void AddSamplePoint(const CurveHandle &handle);
+    void AddLinearSamplePoint(float s, float t);
     int GetSampleCount() const { return (int)m_samples.size(); }
 
     void Attach(ysAnimationTarget *target);
 
+    static float Bezier_t(float x, float p0_x, float p1_x, float p2_x, float p3_x);
+
 protected:
-    std::map<float, float> m_samples;
+    std::map<float, CurveHandle> m_samples;
     std::string m_target;
     CurveType m_curveType;
 };

@@ -70,6 +70,12 @@
     <Filter Include="Header Files\sound">
       <UniqueIdentifier>{c4b2df5f-d52d-4157-87ef-15f4f4acf306}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\assets\animation\interchange">
+      <UniqueIdentifier>{eb9fcf05-0f45-440f-ba92-5ad3d8fd5006}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\assets\animation\interchange">
+      <UniqueIdentifier>{a96a3f07-7737-479c-af67-97871f8fab9f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\include\yds_d3d10_context.h">
@@ -351,9 +357,6 @@
     <ClInclude Include="..\..\include\yds_animation_action_binding.h">
       <Filter>Header Files\assets\animation</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\yds_animation_interchange_file_0_0.h">
-      <Filter>Header Files\assets\animation</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\include\yds_transform.h">
       <Filter>Header Files\object</Filter>
     </ClInclude>
@@ -387,6 +390,18 @@
     <ClInclude Include="..\..\include\yds_ds8_system.h">
       <Filter>Header Files\sound</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\include\yds_animation_interchange_file.h">
+      <Filter>Header Files\assets\animation\interchange</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\yds_animation_interchange_file_reader.h">
+      <Filter>Header Files\assets\animation\interchange</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\yds_animation_interchange_file_reader_0_0.h">
+      <Filter>Header Files\assets\animation\interchange</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\yds_animation_interchange_file_reader_0_1.h">
+      <Filter>Header Files\assets\animation\interchange</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\yds_interchange_file_0_0.cpp">
@@ -411,9 +426,6 @@
       <Filter>Source Files\assets\animation</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\yds_animation_action_binding.cpp">
-      <Filter>Source Files\assets\animation</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\yds_animation_interchange_file_0_0.cpp">
       <Filter>Source Files\assets\animation</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\yds_d3d11_texture.cpp">
@@ -667,6 +679,18 @@
     </ClCompile>
     <ClCompile Include="..\..\src\yds_transform.cpp">
       <Filter>Source Files\object</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\yds_animation_interchange_file_reader_0_0.cpp">
+      <Filter>Source Files\assets\animation\interchange</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\yds_animation_interchange_file_reader_0_1.cpp">
+      <Filter>Source Files\assets\animation\interchange</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\yds_animation_interchange_file.cpp">
+      <Filter>Source Files\assets\animation\interchange</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\yds_animation_interchange_file_reader.cpp">
+      <Filter>Source Files\assets\animation\interchange</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -17,21 +17,43 @@ float ysAnimationCurve::Sample(float s) {
 
     auto next = m_samples.lower_bound(s);
     if (next == m_samples.begin()) {
-        return next->second;
+        return next->second.v;
     }
 
     auto prev = next; --prev;
     if (next == m_samples.end()) {
-        return prev->second;
+        return prev->second.v;
     }
 
-    float dist = (next->first - prev->first);
-    float sdist = s - prev->first;
+    CurveHandle &handle1 = prev->second;
+    CurveHandle &handle2 = next->second;
 
-    float w1 = (sdist / dist);
-    float w0 = 1.0f - w1;
+    if (handle1.mode == CurveHandle::InterpolationMode::Linear) {
+        // Linear interpolation
+        float dist = (handle2.s - handle1.s);
+        float sdist = s - handle1.s;
 
-    return prev->second * w0 + next->second * w1;
+        float w1 = (sdist / dist);
+        float w0 = 1.0f - w1;
+
+        return handle1.v * w0 + handle2.v * w1;
+    }
+    else if (handle1.mode == CurveHandle::InterpolationMode::Bezier) {
+        // Cubic bezier interpolation
+        float t = Bezier_t(s, 
+            handle1.s, handle1.r_handle_x, handle2.l_handle_x, handle2.s);
+
+        float B_t_y =
+            (1 - t) * (1 - t) * (1 - t) * handle1.v +
+            3 * t * (1 - t) * (1 - t) * handle1.r_handle_y +
+            3 * t * t * (1 - t) * handle2.l_handle_y +
+            t * t * t * handle2.v;
+
+        return B_t_y;
+    }
+    else {
+        return 0.0f;
+    }
 }
 
 float ysAnimationCurve::GetRestValue() {
@@ -51,8 +73,19 @@ float ysAnimationCurve::GetRestValue() {
     }
 }
 
-void ysAnimationCurve::AddSamplePoint(float s, float v) {
-    m_samples[s] = v;
+void ysAnimationCurve::AddSamplePoint( const ysAnimationCurve::CurveHandle &handle) {
+    m_samples[handle.s] = handle;
+}
+
+void ysAnimationCurve::AddLinearSamplePoint(float s, float t) {
+    CurveHandle handle;
+    handle.mode = CurveHandle::InterpolationMode::Linear;
+    handle.l_handle_x = handle.l_handle_y = 0.0f;
+    handle.r_handle_x = handle.r_handle_y = 0.0f;
+    handle.s = s;
+    handle.v = t;
+
+    AddSamplePoint(handle);
 }
 
 void ysAnimationCurve::Attach(ysAnimationTarget *target) {
@@ -85,4 +118,36 @@ void ysAnimationCurve::Attach(ysAnimationTarget *target) {
         /* Not implemented */
         break;
     }
+}
+
+float ysAnimationCurve::Bezier_t(float x, float p0_x, float p1_x, float p2_x, float p3_x) {
+    // B(t) = (1 - t)^3 * P0 + 3t(1 - t)^2 * P1 + 3t^2(1 - t) * P2 + t^3 * P3
+
+    constexpr float Epsilon = 0.001f;
+    constexpr int MaxIterations = 20;
+
+    float l = 0.0f;
+    float r = 1.0f;
+
+    for (int i = 0; i < MaxIterations; ++i) {
+        float t = (l + r) / 2.0f;
+
+        float B_t_x =
+            (1 - t) * (1 - t) * (1 - t) * p0_x +
+            3 * t * (1 - t) * (1 - t) * p1_x +
+            3 * t * t * (1 - t) * p2_x +
+            t * t * t * p3_x;
+
+        float d = std::abs(B_t_x - x);
+        if (d < Epsilon) return t;
+
+        if (B_t_x < x) {
+            l = t;
+        }
+        else if (B_t_x > x) {
+            r = t;
+        }
+    }
+
+    return (l + r) / 2.0f;
 }
