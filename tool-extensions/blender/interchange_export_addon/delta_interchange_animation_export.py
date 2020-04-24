@@ -2,6 +2,8 @@ from . object_list import ObjectList
 from . utilities import write_32_bit_unsigned, write_32_bit_signed, write_32_bit_float, write_string, Vector2, Vector3, Quaternion
 import bpy
 import re
+import mathutils
+import math
 
 def write_id_header(f):
     MAJOR_VERSION = 0x0
@@ -136,7 +138,7 @@ def write_animation_file(context, filepath):
 
             for keyframe in fcurve.keyframe_points:
                 if new_curve.curve_type == CurveType.RotationQuatW:
-                    new_curve.keyframes.append(Keyframe(keyframe.co.x, -keyframe.co.y))
+                    new_curve.keyframes.append(Keyframe(keyframe.co.x, keyframe.co.y))
                 else:
                     new_curve.keyframes.append(Keyframe(keyframe.co.x, keyframe.co.y))
 

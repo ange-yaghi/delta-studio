@@ -166,12 +166,13 @@ class ObjectList(object):
 
         return new_object
 
-    def resolve_bone_transform(self, bone):
+    def resolve_bone_transform(self, bone, armature_transform):
         if bone.global_matrix is not None:
             return bone.global_matrix
 
         #bone.global_matrix = self.resolve_bone_transform(self.get(bone.parent_index)) @ bone.obj.matrix_local
-        bone.global_matrix = mathutils.Matrix.Translation(bone.obj.head_local)
+        bone.global_matrix = armature_transform @ bone.obj.matrix_local
+        #bone.global_matrix = mathutils.Matrix.Translation(bone.obj.head_local)
         return bone.global_matrix
     
     def add_armature(self, obj):
@@ -206,6 +207,6 @@ class ObjectList(object):
                 bone.parent_index = new_armature.bone_map[parent_bone_name].index
 
         for name, bone in new_armature.bone_map.items():
-            self.resolve_bone_transform(bone)
+            self.resolve_bone_transform(bone, top_level.global_matrix)
 
         return top_level
