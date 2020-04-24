@@ -81,6 +81,7 @@ struct ysVector4 {
     ysVector4(const ysVector3 &v) : x(v.x), y(v.y), z(v.z), w(0.0f) {}
 
     void Set(float x, float y, float z, float w) { this->x = x; this->y = y; this->z = z; this->w = w; }
+    void Scale(float s) { this->x *= s; this->y *= s; this->z *= s; this->w *= s; }
 
     union {
         struct {
@@ -166,7 +167,7 @@ namespace ysMath {
         // Quaternions
         YS_MATH_CONST ysQuaternion QuatIdentity = { 1.0f, 0.0f, 0.0f, 0.0f };
 
-    }
+    } /* namespace Constants */
 
     // ----------------------------------------------------
     // Math Functions
@@ -234,7 +235,13 @@ namespace ysMath {
     void LoadMatrix(const ysQuaternion &quat, const ysVector &origin, ysMatrix *full, ysMatrix *orientation);
 
     ysMatrix Transpose(const ysMatrix &m);
+    ysVector Det3x3(const ysMatrix &m);
     ysMatrix OrthogonalInverse(const ysMatrix &m);
+    ysMatrix Inverse3x3(const ysMatrix &m);
+    ysMatrix Negate4x4(const ysMatrix &m);
+    ysMatrix Negate3x3(const ysMatrix &m);
+
+    ysMatrix SkewSymmetric(const ysVector &v);
 
     ysMatrix44 GetMatrix44(const ysMatrix &m);
     ysMatrix33 GetMatrix33(const ysMatrix &m);
@@ -242,6 +249,8 @@ namespace ysMath {
     ysVector ExtendVector(const ysVector &v);
     ysVector MatMult(const ysMatrix &m, const ysVector &v);
     ysMatrix MatMult(const ysMatrix &m1, const ysMatrix &m2);
+    ysMatrix MatAdd(const ysMatrix &m1, const ysMatrix &m2);
+    ysMatrix MatConvert3x3(const ysMatrix &m);
 
     // Common Matrix Calculations
     ysMatrix FrustrumPerspective(float fovy, float aspect, float near, float far);
@@ -259,6 +268,8 @@ namespace ysMath {
 
     ysVector MaxComponent(const ysVector &v);
 
-};
+    bool IsValid(const ysVector &v);
+
+} /* namespace ysMath */
 
 #endif /* YDS_MATH_H */

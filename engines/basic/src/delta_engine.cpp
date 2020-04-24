@@ -642,7 +642,7 @@ ysError dbasic::DeltaEngine::DrawRenderSkeleton(RenderSkeleton *skeleton, float 
         RenderNode *node = skeleton->GetNode(i);
         if (node->GetModelAsset() != nullptr) {
             Material *material = node->GetModelAsset()->GetMaterial();
-            UseMaterial(node->GetModelAsset()->GetMaterial());
+            UseMaterial(material);
 
             ysTexture *diffuseMap = material == nullptr
                 ? nullptr
@@ -650,7 +650,7 @@ ysError dbasic::DeltaEngine::DrawRenderSkeleton(RenderSkeleton *skeleton, float 
 
             DrawModel(
                 node->GetModelAsset(),
-                node->RigidBody.GetTransform(),
+                node->Transform.GetWorldTransform(),
                 scale,
                 diffuseMap,
                 layer);

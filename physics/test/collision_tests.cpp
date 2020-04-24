@@ -52,12 +52,12 @@ TEST(CollisionTests, BoxBoxSanityCheck) {
     b1.Position = ysMath::LoadVector(0.0f, 0.0f, 0.0f, 0.0f);
     b1.HalfHeight = 0.5f;
     b1.HalfWidth = 0.5f;
-    b1.Orientation = ysMath::LoadIdentity();
+    b1.Orientation = ysMath::Constants::QuatIdentity;
 
     b2.Position = ysMath::LoadVector(1.0f - 0.001f, 0.0f, 0.0f, 0.0f);
     b2.HalfHeight = 0.5f;
     b2.HalfWidth = 0.5f;
-    b2.Orientation = ysMath::LoadIdentity();
+    b2.Orientation = ysMath::Constants::QuatIdentity;
 
     dphysics::CollisionDetector detector;
     dphysics::Collision collision;
@@ -75,12 +75,12 @@ TEST(CollisionTests, BoxBoxOffCenter) {
     b1.Position = ysMath::LoadVector(0.0f, 0.0f, 0.0f, 0.0f);
     b1.HalfHeight = 0.5f;
     b1.HalfWidth = 0.5f;
-    b1.Orientation = ysMath::LoadIdentity();
+    b1.Orientation = ysMath::Constants::QuatIdentity;
 
     b2.Position = ysMath::LoadVector(1.0f - 0.001f, 0.25f, 0.0f, 0.0f);
     b2.HalfHeight = 0.5f;
     b2.HalfWidth = 0.5f;
-    b2.Orientation = ysMath::LoadIdentity();
+    b2.Orientation = ysMath::Constants::QuatIdentity;
 
     dphysics::CollisionDetector detector;
     dphysics::Collision collision;
@@ -100,12 +100,12 @@ TEST(CollisionTests, BoxBoxOffCenterDifferentSizes) {
     b1.Position = ysMath::LoadVector(0.0f, 0.0f, 0.0f, 0.0f);
     b1.HalfHeight = 0.5f;
     b1.HalfWidth = 0.5f;
-    b1.Orientation = ysMath::LoadIdentity();
+    b1.Orientation = ysMath::Constants::QuatIdentity;
 
     b2.Position = ysMath::LoadVector(0.75f - Penetration, 0.25f, 0.0f, 0.0f);
     b2.HalfHeight = 0.25f;
     b2.HalfWidth = 0.25f;
-    b2.Orientation = ysMath::LoadIdentity();
+    b2.Orientation = ysMath::Constants::QuatIdentity;
 
     dphysics::CollisionDetector detector;
     dphysics::Collision collision;
@@ -125,12 +125,12 @@ TEST(CollisionTests, BoxBoxOffCenterDifferentSizesDeep) {
     b1.Position = ysMath::LoadVector(0.0f, 0.0f, 0.0f, 0.0f);
     b1.HalfHeight = 0.5f;
     b1.HalfWidth = 0.5f;
-    b1.Orientation = ysMath::LoadIdentity();
+    b1.Orientation = ysMath::Constants::QuatIdentity;
 
     b2.Position = ysMath::LoadVector(0.75f - Penetration, 0.5f, 0.0f, 0.0f);
     b2.HalfHeight = 0.25f;
     b2.HalfWidth = 0.25f;
-    b2.Orientation = ysMath::LoadIdentity();
+    b2.Orientation = ysMath::Constants::QuatIdentity;
 
     dphysics::RigidBody a;
     dphysics::RigidBody b;
@@ -153,12 +153,12 @@ TEST(CollisionTests, BoxBoxOffCenterDifferentSizesDeep2) {
     b1.Position = ysMath::LoadVector(0.0f, 0.0f, 0.0f, 0.0f);
     b1.HalfHeight = 0.5f;
     b1.HalfWidth = 0.5f;
-    b1.Orientation = ysMath::LoadIdentity();
+    b1.Orientation = ysMath::Constants::QuatIdentity;
 
     b2.Position = ysMath::LoadVector(1.682f, 1.08866f, 0.0f, 0.0f);
     b2.HalfHeight = 1.25f;
     b2.HalfWidth = 1.25f;
-    b2.Orientation = ysMath::LoadIdentity();
+    b2.Orientation = ysMath::Constants::QuatIdentity;
 
     dphysics::RigidBody a;
     dphysics::RigidBody b;
@@ -181,12 +181,12 @@ TEST(CollisionTests, BoxBoxBigSmall) {
     b1.Position = ysMath::LoadVector(0.0f, 0.0f, 0.0f, 0.0f);
     b1.HalfHeight = 10.0f;
     b1.HalfWidth = 10.0f;
-    b1.Orientation = ysMath::LoadIdentity();
+    b1.Orientation = ysMath::Constants::QuatIdentity;
 
     b2.Position = ysMath::LoadVector(11.4f, 0.0f, 0.0f, 0.0f);
     b2.HalfHeight = 1.5f;
     b2.HalfWidth = 1.5f;
-    b2.Orientation = ysMath::LoadIdentity();
+    b2.Orientation = ysMath::Constants::QuatIdentity;
 
     dphysics::RigidBody a;
     dphysics::RigidBody b;
@@ -238,7 +238,7 @@ TEST(CollisionTests, BoxCircleEdgeCase) {
     b1.Position = ysMath::LoadVector(0.1f, 0.0f, 0.0f, 1.0f);
     b1.HalfHeight = 1.0f;
     b1.HalfWidth = 1.0f;
-    b1.Orientation = ysMath::LoadIdentity();
+    b1.Orientation = ysMath::Constants::QuatIdentity;
 
     b2.Position = ysMath::LoadVector(0.0f, 0.0f, 0.0f, 1.0f);
     b2.Radius = 1.0f;

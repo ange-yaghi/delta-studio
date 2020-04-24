@@ -3,6 +3,7 @@
 #include <process.h>
 #include <Windows.h>
 #include <ctime>
+#include <assert.h>
 
 float dphysics::RigidBodySystem::ResolutionPenetrationEpsilon = 10e-3f;
 
@@ -10,10 +11,48 @@ dphysics::RigidBodySystem::RigidBodySystem() : ysObject("RigidBodySystem") {
     m_currentStep = 0.1f;
     m_lastLoadMeasurement = 0;
     m_loadMeasurement = 0;
+    m_replayEnabled = false;
+
+    m_defaultDynamicFriction = 1.0f;
+    m_defaultStaticFriction = 0.5f;
 }
 
 dphysics::RigidBodySystem::~RigidBodySystem() {
     /* void */
+}
+
+void dphysics::RigidBodySystem::InitializeFrictionTable(
+    int materialCount, float defaultStaticFriction, float defaultDynamicFriction) 
+{
+    m_dynamicFrictionTable = std::vector<std::vector<float>>(
+        materialCount, std::vector<float>(materialCount, defaultDynamicFriction));
+    m_staticFrictionTable = std::vector<std::vector<float>>(
+        materialCount, std::vector<float>(materialCount, defaultStaticFriction));
+
+    m_defaultDynamicFriction = defaultDynamicFriction;
+    m_defaultStaticFriction = defaultStaticFriction;
+}
+
+float dphysics::RigidBodySystem::GetDynamicFriction(int material1, int material2) {
+    if (material1 == -1 || material2 == -1) return m_defaultDynamicFriction;
+
+    return m_dynamicFrictionTable[material1][material2];
+}
+
+float dphysics::RigidBodySystem::GetStaticFriction(int material1, int material2) {
+    if (material1 == -1 || material2 == -1) return m_defaultStaticFriction;
+
+    return m_staticFrictionTable[material1][material2];
+}
+
+void dphysics::RigidBodySystem::SetFriction(
+    int material1, int material2, float staticFriction, float dynamicFriction) 
+{
+    m_dynamicFrictionTable[material1][material2] = dynamicFriction;
+    m_dynamicFrictionTable[material2][material1] = dynamicFriction;
+
+    m_staticFrictionTable[material1][material2] = staticFriction;
+    m_staticFrictionTable[material2][material1] = staticFriction;
 }
 
 void dphysics::RigidBodySystem::RegisterRigidBody(RigidBody *body) {
@@ -67,6 +106,32 @@ void dphysics::RigidBodySystem::ProcessGridCell(int x, int y) {
     }
 }
 
+void dphysics::RigidBodySystem::OpenReplayFile(const std::string &fname) {
+    m_outputFile = std::fstream(fname, std::ios::out);
+
+    if (!m_outputFile.is_open()) {
+        return;
+    }
+    
+    int bodyCount = m_rigidBodyRegistry.GetNumObjects();
+
+    m_outputFile << "<Objects>" << "\n";
+
+    for (int i = 0; i < bodyCount; ++i) {
+        RigidBody *body = m_rigidBodyRegistry.Get(i);
+        body->WriteInfo(m_outputFile);
+    }
+
+    m_outputFile << "</Objects>" << "\n";
+
+    m_replayEnabled = true;
+}
+
+void dphysics::RigidBodySystem::CloseReplayFile() {
+    m_replayEnabled = false;
+    m_outputFile.close();
+}
+
 void dphysics::RigidBodySystem::GenerateCollisions(int start, int count) {
     const int REQUEST_THRESHOLD = 1;
 
@@ -98,6 +163,29 @@ void dphysics::RigidBodySystem::GenerateCollisions(int start, int count) {
             gridCell->m_processed = true;
         }
     }
+}
+
+void dphysics::RigidBodySystem::WriteFrameToReplayFile() {
+    m_outputFile << "<Frame>" << "\n";
+
+    int bodyCount = m_rigidBodyRegistry.GetNumObjects();
+    for (int i = 0; i < bodyCount; ++i) {
+        RigidBody *body = m_rigidBodyRegistry.Get(i);
+        
+        m_outputFile << "<Body>" << "\n";
+        m_outputFile << "POSITION " <<
+            ysMath::GetX(body->Transform.GetWorldPosition()) << " " <<
+            ysMath::GetY(body->Transform.GetWorldPosition()) << " " <<
+            ysMath::GetZ(body->Transform.GetWorldPosition()) << "\n";
+        m_outputFile << "ORIENTATION " <<
+            ysMath::GetQuatW(body->Transform.GetWorldOrientation()) << " " <<
+            ysMath::GetQuatX(body->Transform.GetWorldOrientation()) << " " <<
+            ysMath::GetQuatY(body->Transform.GetWorldOrientation()) << " " <<
+            ysMath::GetQuatZ(body->Transform.GetWorldOrientation()) << "\n";
+        m_outputFile << "</Body>" << "\n";
+    }
+
+    m_outputFile << "</Frame>" << "\n";
 }
 
 void dphysics::RigidBodySystem::GenerateCollisions(RigidBody *body1, RigidBody *body2) {
@@ -163,6 +251,10 @@ void dphysics::RigidBodySystem::GenerateCollisions(RigidBody *body1, RigidBody *
                                 newCollisionEntry->m_collisionObject1 = prim1;
                                 newCollisionEntry->m_collisionObject2 = prim2;
                                 newCollisionEntry->m_sensor = sensorTest;
+                                newCollisionEntry->m_dynamicFriction = 
+                                    GetDynamicFriction(body1->GetMaterial(), body2->GetMaterial());
+                                newCollisionEntry->m_staticFriction =
+                                    GetStaticFriction(body1->GetMaterial(), body2->GetMaterial());
                             }
                         }
                         else if (prim2->GetType() == CollisionObject::Type::Box) {
@@ -183,6 +275,11 @@ void dphysics::RigidBodySystem::GenerateCollisions(RigidBody *body1, RigidBody *
                                 newCollisionEntry->m_collisionObject1 = prim1;
                                 newCollisionEntry->m_collisionObject2 = prim2;
                                 newCollisionEntry->m_sensor = sensorTest;
+
+                                newCollisionEntry->m_dynamicFriction =
+                                    GetDynamicFriction(body1->GetMaterial(), body2->GetMaterial());
+                                newCollisionEntry->m_staticFriction =
+                                    GetStaticFriction(body1->GetMaterial(), body2->GetMaterial());
                             }
                         }
                     }
@@ -207,6 +304,11 @@ void dphysics::RigidBodySystem::GenerateCollisions(RigidBody *body1, RigidBody *
                             newCollisionEntry->m_collisionObject1 = prim1;
                             newCollisionEntry->m_collisionObject2 = prim2;
                             newCollisionEntry->m_sensor = sensorTest;
+
+                            newCollisionEntry->m_dynamicFriction =
+                                GetDynamicFriction(body1->GetMaterial(), body2->GetMaterial());
+                            newCollisionEntry->m_staticFriction =
+                                GetStaticFriction(body1->GetMaterial(), body2->GetMaterial());
                         }
                     }
                 }
@@ -302,22 +404,17 @@ void dphysics::RigidBodySystem::GenerateCollisions() {
 
     m_lastLoadMeasurement = m_loadMeasurement;
 
-    //m_gridPartitionSystem.SetGridCellSize(m_gridPartitionSystem.GetGridCellSize() + m_currentStep);
-
-    sprintf_s(buffer, 1024, "%d\t%d\t%f\n", nObjects, load, m_gridPartitionSystem.GetGridCellSize());
-    m_loggingOutput.write(buffer, strlen(buffer));
-
     Collision collisions[16];
     int nLinks = m_rigidBodyLinks.GetNumObjects();
     for (int i = 0; i < nLinks; i++) {
         int nGenerated = m_rigidBodyLinks.Get(i)->GenerateCollisions(collisions);
         for (int j = 0; j < nGenerated; j++) {
-            Collision *collision = m_collisionAccumulator.New();
-            m_collisionAccumulator.New() = collision;
-            *collision = collisions[j];
+            Collision *newCollisionEntry = m_dynamicCollisions.NewGeneric<Collision, 16>();
+            m_collisionAccumulator.New() = newCollisionEntry;
+            *newCollisionEntry = collisions[j];
 
-            collision->m_body1->AddCollision(collision);
-            collision->m_body2->AddCollision(collision);
+            newCollisionEntry->m_body1->AddCollision(newCollisionEntry);
+            newCollisionEntry->m_body2->AddCollision(newCollisionEntry);
         }
     }
 }
@@ -395,11 +492,13 @@ void dphysics::RigidBodySystem::ResolveCollision(Collision *collision, ysVector 
 
     for (b = 0; b < 2; b++) {
         if (collision->m_bodies[b] != nullptr) {
+            RigidBody *body = collision->m_bodies[b];
+
             if (angularMove[b] != ((float)0.0)) {
                 ysVector t = ysMath::Cross(collision->m_relativePosition[b], collision->m_normal);
 
                 ysMatrix inverseInertiaTensor;
-                inverseInertiaTensor = collision->m_bodies[b]->GetInverseInertiaTensorWorld();
+                inverseInertiaTensor = body->GetInverseInertiaTensorWorld();
                 rotationDirection[b] = ysMath::MatMult(inverseInertiaTensor, t);
 
                 rotationAmount[b] = angularMove[b] / angularInertia[b];
@@ -412,20 +511,208 @@ void dphysics::RigidBodySystem::ResolveCollision(Collision *collision, ysVector 
             velocityChange[b] = collision->m_normal;
             velocityChange[b] = ysMath::Mul(velocityChange[b], ysMath::LoadScalar(linearMove[b] / rotationAmount[b]));
 
-            ysVector pos;
-            pos = collision->m_bodies[b]->GetPosition();
+            ysVector pos = body->Transform.GetLocalPosition();
             pos = ysMath::Add(pos, ysMath::Mul(collision->m_normal, ysMath::LoadScalar(linearMove[b])));
-            collision->m_bodies[b]->SetPosition(pos);
+            body->Transform.SetPosition(pos);
 
-            ysQuaternion q;
-            q = collision->m_bodies[b]->GetOrientation();
-            q = ysMath::QuatAddScaled(q, rotationDirection[b], -rotationAmount[b]);
-            collision->m_bodies[b]->SetOrientation(q);
+            ysQuaternion q = body->Transform.GetLocalOrientation();
+            q = ysMath::QuatAddScaled(q, rotationDirection[b], rotationAmount[b] * 0.5f);
+            body->Transform.SetOrientation(q);
         }
     }
 }
 
-void dphysics::RigidBodySystem::ResolveCollisions() {
+void dphysics::RigidBodySystem::AdjustVelocities(float timestep) {
+    int numContacts = m_collisionAccumulator.GetNumObjects();
+
+    ysVector velocityChange[2], rotationChange[2];
+    ysVector cp;
+
+    // iteratively handle impacts in order of severity.
+    for (int velocityIterationsUsed = 0; velocityIterationsUsed < 100; ++velocityIterationsUsed) {
+        // Find contact with maximum magnitude of probable velocity change.
+        float max = 1E-4;
+        unsigned index = numContacts;
+        for(unsigned i = 0; i < numContacts; ++i) {
+            Collision &collision = *m_collisionAccumulator[i];
+            if (collision.m_desiredDeltaVelocity > max) {
+                if (collision.m_sensor) continue;
+                if (collision.IsGhost()) continue;
+
+                max = collision.m_desiredDeltaVelocity;
+                index = i;
+            }
+        }
+        if (index == numContacts) break;
+
+        Collision *biggestCollision = m_collisionAccumulator[index];
+
+        // Match the awake state at the contact
+        //c[index].matchAwakeState();
+
+        // Do the resolution on the contact that came out top.
+        AdjustVelocity(biggestCollision, velocityChange, rotationChange);
+
+        // With the change in velocity of the two bodies, the update of 
+        // contact velocities means that some of the relative closing 
+        // velocities need recomputing.
+        for (unsigned i = 0; i < numContacts; i++) {
+            Collision *c = m_collisionAccumulator[i];
+
+            if (c->m_sensor) continue;
+            if (c->IsGhost()) continue;
+
+            if (c->m_bodies[0] != nullptr) {
+                if (c->m_bodies[0] == biggestCollision->m_bodies[0]) {
+                    cp = ysMath::Cross(rotationChange[0], c->m_relativePosition[0]);
+                    cp = ysMath::Add(cp, velocityChange[0]);
+
+                    c->m_contactVelocity = ysMath::Add(c->m_contactVelocity,
+                        ysMath::MatMult(ysMath::OrthogonalInverse(c->m_contactSpace), cp));
+                    c->CalculateDesiredDeltaVelocity(timestep);
+                }
+                else if (c->m_bodies[0] == biggestCollision->m_bodies[1]) {
+                    cp = ysMath::Cross(rotationChange[1], c->m_relativePosition[0]);
+                    cp = ysMath::Add(cp, velocityChange[1]);
+
+                    c->m_contactVelocity = ysMath::Add(c->m_contactVelocity,
+                        ysMath::MatMult(ysMath::OrthogonalInverse(c->m_contactSpace), cp));
+                    c->CalculateDesiredDeltaVelocity(timestep);
+                }
+            }
+
+            if (c->m_bodies[1] != nullptr) {
+                if (c->m_bodies[1] == biggestCollision->m_bodies[0]) {
+                    cp = ysMath::Cross(rotationChange[0], c->m_relativePosition[1]);
+                    cp = ysMath::Add(cp, velocityChange[0]);
+
+                    c->m_contactVelocity = ysMath::Sub(c->m_contactVelocity,
+                        ysMath::MatMult(ysMath::OrthogonalInverse(c->m_contactSpace), cp));
+                    c->CalculateDesiredDeltaVelocity(timestep);
+                }
+                else if (c->m_bodies[1] == biggestCollision->m_bodies[1]) {
+                    cp = ysMath::Cross(rotationChange[1], c->m_relativePosition[1]);
+                    cp = ysMath::Add(cp, velocityChange[1]);
+
+                    c->m_contactVelocity = ysMath::Sub(c->m_contactVelocity,
+                        ysMath::MatMult(ysMath::OrthogonalInverse(c->m_contactSpace), cp));
+                    c->CalculateDesiredDeltaVelocity(timestep);
+                }
+            }
+        }
+    }
+}
+
+void dphysics::RigidBodySystem::AdjustVelocity(Collision *collision, ysVector velocityChange[2], ysVector rotationChange[2]) {
+    // Inverse mass and inertia tensor in world coordinates
+    ysMatrix inverseInertiaTensor[2];
+    inverseInertiaTensor[0] = collision->m_bodies[0]->GetInverseInertiaTensorWorld();
+
+    ysVector impulseContact;
+    float inverseMass = collision->m_bodies[0]->GetInverseMass();
+    ysMatrix impulseToTorque = ysMath::SkewSymmetric(collision->m_relativePosition[0]);
+
+    // Build the matrix to convert contact impulse to change in velocity
+    // in world coordinates.
+    ysMatrix deltaVelWorld = impulseToTorque;
+    deltaVelWorld = ysMath::MatMult(deltaVelWorld, inverseInertiaTensor[0]);
+    deltaVelWorld = ysMath::MatMult(deltaVelWorld, impulseToTorque);
+    deltaVelWorld = ysMath::Negate3x3(deltaVelWorld);
+
+    // Check if we need to add body two's data
+    if (collision->m_bodies[1] != nullptr) {
+        // Find the inertia tensor for this body
+        inverseInertiaTensor[1] = collision->m_bodies[1]->GetInverseInertiaTensorWorld();
+
+        // Set the cross product matrix
+        impulseToTorque = ysMath::SkewSymmetric(collision->m_relativePosition[1]);
+
+        // Calculate the velocity change matrix
+        ysMatrix deltaVelWorld2 = impulseToTorque;
+        deltaVelWorld2 = ysMath::MatMult(deltaVelWorld2, inverseInertiaTensor[1]);
+        deltaVelWorld2 = ysMath::MatMult(deltaVelWorld2, impulseToTorque);
+        deltaVelWorld2 = ysMath::Negate3x3(deltaVelWorld2);
+
+        // Add to the total delta velocity.
+        deltaVelWorld = ysMath::MatAdd(deltaVelWorld2, deltaVelWorld);
+        ///<AngularVelocityFriction
+
+        // Add to the inverse mass
+        inverseMass += collision->m_bodies[1]->GetInverseMass();
+        ///>AngularVelocityFriction
+    }
+
+    // Do a change of basis to convert into contact coordinates.
+    ysMatrix deltaVelocity = ysMath::OrthogonalInverse(collision->m_contactSpace);
+    deltaVelocity = ysMath::MatMult(deltaVelocity, deltaVelWorld);
+    deltaVelocity = ysMath::MatMult(deltaVelocity, collision->m_contactSpace);
+    ///<AngularVelocityFriction
+
+    // Add in the linear velocity change
+    deltaVelocity = ysMath::MatAdd(deltaVelocity, ysMath::ScaleTransform(ysMath::LoadScalar(inverseMass)));
+    deltaVelocity = ysMath::MatConvert3x3(deltaVelocity);
+
+    // Invert to get the impulse needed per unit velocity
+    ysMatrix impulseMatrix = ysMath::Inverse3x3(deltaVelocity);
+
+    // Find the target velocities to kill
+    ysVector velKill = ysMath::LoadVector(collision->m_desiredDeltaVelocity,
+        -ysMath::GetY(collision->m_contactVelocity),
+        -ysMath::GetZ(collision->m_contactVelocity));
+
+    // Find the impulse to kill target velocities
+    impulseContact = ysMath::MatMult(impulseMatrix, velKill);
+
+    // Check for exceeding friction
+    ysVector planarImpulse_v = ysMath::Magnitude(ysMath::Mask(impulseContact, ysMath::Constants::MaskOffX));
+    float planarImpulse = ysMath::GetScalar(planarImpulse_v);
+    if (planarImpulse > std::abs(ysMath::GetX(impulseContact)) * collision->m_staticFriction) {
+        ysVector ic = ysMath::Mask(impulseContact, ysMath::Constants::MaskOffX);
+        ic = ysMath::Div(ic, planarImpulse_v);
+        ic = ysMath::Mul(ic, ysMath::LoadScalar(collision->m_dynamicFriction));
+
+        ysVector icx = ysMath::Dot(deltaVelocity.rows[0], ysMath::Or(ic, ysMath::Constants::XAxis));
+        icx = ysMath::Div(ysMath::LoadScalar(collision->m_desiredDeltaVelocity), icx);
+
+        ic = ysMath::Mul(ic, icx);
+        icx = ysMath::Mask(icx, ysMath::Constants::MaskKeepX);
+
+        impulseContact = ysMath::Add(ic, icx);
+    }
+    ///<UpdateVelWithFriction
+
+    ///>ImpulseToWorld
+        // Convert impulse to world coordinates
+    ysVector impulse = ysMath::MatMult(collision->m_contactSpace, impulseContact);
+    ///<ImpulseToWorld
+
+    // Split in the impulse into linear and rotational components
+    ysVector impulsiveTorque = ysMath::Cross(collision->m_relativePosition[0], impulse);
+    rotationChange[0] = ysMath::MatMult(inverseInertiaTensor[0], impulsiveTorque);
+    velocityChange[0] = ysMath::Mul(impulse, ysMath::LoadScalar(collision->m_bodies[0]->GetInverseMass()));
+
+    // Apply the changes
+    collision->m_bodies[0]->AddVelocity(velocityChange[0]);
+    collision->m_bodies[0]->AddAngularVelocity(rotationChange[0]);
+
+    if (collision->m_bodies[1] != nullptr) {
+        // Work out body one's linear and angular changes
+        ysVector impulsiveTorque = ysMath::Cross(impulse, collision->m_relativePosition[1]);
+        rotationChange[1] = ysMath::MatMult(inverseInertiaTensor[1], impulsiveTorque);
+        velocityChange[1] = ysMath::Mul(impulse, ysMath::LoadScalar(-collision->m_bodies[1]->GetInverseMass()));
+
+        // And apply them.
+        collision->m_bodies[1]->AddVelocity(velocityChange[1]);
+        collision->m_bodies[1]->AddAngularVelocity(rotationChange[1]);
+    }
+
+    assert(ysMath::IsValid(velocityChange[0]));
+    assert(ysMath::IsValid(velocityChange[1]));
+    assert(ysMath::IsValid(rotationChange[0]));
+    assert(ysMath::IsValid(rotationChange[1]));
+}
+
+void dphysics::RigidBodySystem::ResolveCollisions(float dt) {
     int i, index;
     int numContacts = m_collisionAccumulator.GetNumObjects();
 
@@ -446,7 +733,7 @@ void dphysics::RigidBodySystem::ResolveCollisions() {
             if (collision.m_sensor) continue;
             if (collision.IsGhost()) continue;
 
-            collision.UpdateInternals();
+            collision.UpdateInternals(dt);
 
             if (collision.m_penetration > max) {
                 max = collision.m_penetration;
@@ -456,8 +743,14 @@ void dphysics::RigidBodySystem::ResolveCollisions() {
 
         if (index == numContacts) return;
 
-        m_collisionAccumulator[index]->UpdateInternals();
-        ResolveCollision(m_collisionAccumulator[index], velocityChange, rotationChange, rotationAmount, max);
+        Collision *biggestCollision = m_collisionAccumulator[index];
+
+        biggestCollision->UpdateInternals(dt);
+        ResolveCollision(biggestCollision,
+            velocityChange, 
+            rotationChange, 
+            rotationAmount, 
+            max);
 
         for (i = 0; i < numContacts; i++) {
             Collision &collision = *m_collisionAccumulator[i];
@@ -465,38 +758,40 @@ void dphysics::RigidBodySystem::ResolveCollisions() {
             if (collision.m_sensor) continue;
             if (collision.IsGhost()) continue;
 
-            collision.UpdateInternals();
-
-            if (m_collisionAccumulator[i]->m_body1 == m_collisionAccumulator[index]->m_body1) {
-                cp = ysMath::Cross(rotationChange[0], m_collisionAccumulator[i]->m_relativePosition[0]);
+            if (collision.m_body1 == biggestCollision->m_body1) {
+                cp = ysMath::Cross(rotationChange[0], collision.m_relativePosition[0]);
                 cp = ysMath::Add(cp, velocityChange[0]);
 
-                m_collisionAccumulator[i]->m_penetration -= rotationAmount[0] * ysMath::GetScalar(ysMath::Dot(cp, m_collisionAccumulator[i]->m_normal));
+                collision.m_penetration -= 
+                    rotationAmount[0] * ysMath::GetScalar(ysMath::Dot(cp, collision.m_normal));
             }
-            else if (m_collisionAccumulator[i]->m_body1 == m_collisionAccumulator[index]->m_body2) {
-                cp = ysMath::Cross(rotationChange[1], m_collisionAccumulator[i]->m_relativePosition[0]);
+            else if (collision.m_body1 == biggestCollision->m_body2) {
+                cp = ysMath::Cross(rotationChange[1], collision.m_relativePosition[0]);
                 cp = ysMath::Add(cp, velocityChange[1]);
 
-                m_collisionAccumulator[i]->m_penetration -= rotationAmount[1] * ysMath::GetScalar(ysMath::Dot(cp, m_collisionAccumulator[i]->m_normal));
+                collision.m_penetration -= 
+                    rotationAmount[1] * ysMath::GetScalar(ysMath::Dot(cp, collision.m_normal));
             }
 
-            if (m_collisionAccumulator[i]->m_body2 != nullptr) {
-                if (m_collisionAccumulator[i]->m_body2 == m_collisionAccumulator[index]->m_body1) {
-                    cp = ysMath::Cross(rotationChange[0], m_collisionAccumulator[i]->m_relativePosition[1]);
+            if (collision.m_body2 != nullptr) {
+                if (collision.m_body2 == biggestCollision->m_body1) {
+                    cp = ysMath::Cross(rotationChange[0], collision.m_relativePosition[1]);
                     cp = ysMath::Add(cp, velocityChange[0]);
 
-                    m_collisionAccumulator[i]->m_penetration += rotationAmount[0] * ysMath::GetScalar(ysMath::Dot(cp, m_collisionAccumulator[i]->m_normal));
+                    collision.m_penetration += 
+                        rotationAmount[0] * ysMath::GetScalar(ysMath::Dot(cp, collision.m_normal));
                 }
-                else if (m_collisionAccumulator[i]->m_body2 == m_collisionAccumulator[index]->m_body2) {
-                    cp = ysMath::Cross(rotationChange[1], m_collisionAccumulator[i]->m_relativePosition[1]);
+                else if (collision.m_body2 == biggestCollision->m_body2) {
+                    cp = ysMath::Cross(rotationChange[1], collision.m_relativePosition[1]);
                     cp = ysMath::Add(cp, velocityChange[1]);
 
-                    m_collisionAccumulator[i]->m_penetration += rotationAmount[1] * ysMath::GetScalar(ysMath::Dot(cp, m_collisionAccumulator[i]->m_normal));
+                    collision.m_penetration += 
+                        rotationAmount[1] * ysMath::GetScalar(ysMath::Dot(cp, collision.m_normal));
                 }
             }
         }
 
-        iterationsUsed++;
+        ++iterationsUsed;
     }
 }
 
@@ -529,17 +824,30 @@ void dphysics::RigidBodySystem::CheckAwake() {
     }
 }
 
-void dphysics::RigidBodySystem::Update(float timeStep) {
-    UpdateDerivedData();
-    GenerateForces(timeStep);
-    UpdateDerivedData();
-    Integrate(timeStep);
-    UpdateDerivedData();
+void dphysics::RigidBodySystem::Update(float timestep) {
+    //GenerateForces(timestep);
+
+    Integrate(timestep);
 
     GenerateCollisions();
-    ResolveCollisions();
-    UpdateDerivedData();
-    CheckAwake();
+    ResolveCollisions(timestep);
+    AdjustVelocities(timestep);
+    CheckAwake();    
+
+    if (m_replayEnabled) {
+        WriteFrameToReplayFile();
+    }
+}
+
+bool dphysics::RigidBodySystem::CheckState() {
+    int nBodies = m_rigidBodyRegistry.GetNumObjects();
+
+    for (int i = 0; i < nBodies; ++i) {
+        bool valid = m_rigidBodyRegistry.Get(i)->CheckState();
+        if (!valid) return false;
+    }
+
+    return true;
 }
 
 /*

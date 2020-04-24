@@ -6,7 +6,7 @@
 namespace dphysics {
 
     struct BoxPrimitive {
-        ysMatrix Orientation;
+        ysQuaternion Orientation;
         ysVector Position;
         float HalfWidth;
         float HalfHeight;
@@ -64,16 +64,30 @@ namespace dphysics {
         };
 
         bool m_sensor;
+        float m_restitution;
+        float m_staticFriction;
+        float m_dynamicFriction;
 
-        void UpdateInternals();
+        void UpdateInternals(float timestep);
 
         Collision &operator=(Collision &collision);
 
         bool IsGhost() const;
 
     protected:
-
         ysVector m_relativePosition[2];
+        ysMatrix m_contactSpace;
+        ysVector m_contactVelocity;
+
+        float m_desiredDeltaVelocity;
+
+
+        void CalculateDesiredDeltaVelocity(float timestep);
+
+        ysVector CalculateLocalVelocity(int bodyIndex, float timestep);
+
+    private:
+        void CalculateContactSpace();
     };
 
 } /* namespace dbasic */

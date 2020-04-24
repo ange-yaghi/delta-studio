@@ -49,6 +49,9 @@
 #include "yds_geometry_preprocessing.h"
 #include "yds_geometry_export_file.h"
 
+// Object
+#include "yds_transform.h"
+
 // Graphics API
 #include "yds_device.h"
 

@@ -31,39 +31,29 @@ namespace dphysics {
 
         // Interfaces
         CollisionGeometry CollisionGeometry;
+        ysTransform Transform;
 
         void Integrate(float timeStep);
         void UpdateDerivedData(bool force = false);
         void CheckAwake();
 
-        ysQuaternion GetOrientation() const { return m_orientation; }
-
-        void SetOrientation(const ysQuaternion &q) { m_orientation = q; m_derivedValid = false; }
-        ysVector GetPosition() const { return m_position; }
-        ysVector GetWorldPosition() const { return m_worldPosition; }
-        ysQuaternion GetWorldOrientation() const { return m_finalOrientation; }
+        void SetMaterial(int material) { m_material = material; }
+        int GetMaterial() const { return m_material; }
 
         void AddAngularVelocity(const ysVector &v) { m_angularVelocity = ysMath::Add(v, m_angularVelocity); }
+        void AddVelocity(const ysVector &v) { m_velocity = ysMath::Add(v, m_velocity); }
 
-        void SetPosition(const ysVector &v) { m_position = v; m_derivedValid = false; }
         void SetVelocity(const ysVector &v) { m_velocity = v; }
         ysVector GetVelocity() const { return m_velocity; }
 
         void SetAngularVelocity(const ysVector &v) { m_angularVelocity = v; }
         ysVector GetAngularVelocity() const { return m_angularVelocity; }
 
-        ysMatrix GetTransform() const { return m_transform; }
-        ysMatrix GetInverseTransform() const { return m_inverseTransform; }
-        ysMatrix GetOrientationMatrix() const { return m_orientationOnly; }
-
-        ysVector GetVelocityLocal(const ysVector &p) const;
-
-        ysVector GetWorldOrientation(const ysVector &v) const { return ysMath::MatMult(m_orientationOnly, v); }
-        ysVector GetGlobalSpace(const ysVector &v) const { return ysMath::MatMult(m_transform, v); }
-        ysVector GetLocalSpace(const ysVector &v) const { return ysMath::MatMult(m_inverseTransform, v); }
+        ysVector GetVelocityAtLocalPoint(const ysVector &localPoint);
+        ysVector GetVelocityAtWorldPoint(const ysVector &worldPoint);
 
         ysMatrix GetInverseInertiaTensor() const { return m_inverseInertiaTensor; }
-        ysMatrix GetInverseInertiaTensorWorld() const { return m_inverseInertiaTensorWorld; }
+        ysMatrix GetInverseInertiaTensorWorld();
 
         void SetInverseInertiaTensor(const ysMatrix &tensor);
         ysMatrix GetRectangleTensor(float dx, float dy);
@@ -131,9 +121,11 @@ namespace dphysics {
 
         void SetLinearDamping(float damping) { m_linearDamping = damping; }
 
+        void WriteInfo(std::fstream &target);
+
         template <typename T_ForceGenerator>
         T_ForceGenerator *NewForceGenerator() {
-            T_ForceGenerator *newForceGenerator = 
+            T_ForceGenerator *newForceGenerator =
                 m_forceGenerators.NewGeneric<T_ForceGenerator>();
             newForceGenerator->Initialize(this);
 
@@ -142,18 +134,23 @@ namespace dphysics {
 
         void GenerateForces(float dt);
 
+        void SetFixedPosition(bool fixed) { m_fixedPosition = fixed; }
+        bool GetFixedPosition() const { return m_fixedPosition; }
+
+        bool CheckState();
+
     protected:
         // Properties
         bool m_registered;
         bool m_awake;
         bool m_requestsInformation;
         bool m_alwaysAwake;
+        bool m_fixedPosition;
 
+        int m_material;
         float m_inverseMass;
         float m_linearDamping;
         float m_angularDamping;
-        ysVector m_position;
-        ysQuaternion m_orientation;
 
         ysVector m_torqueAccum;
         ysVector m_forceAccum;
@@ -169,13 +166,7 @@ namespace dphysics {
         bool m_derivedValid;
         bool m_ghost;
 
-        ysVector m_worldPosition;
         ysVector m_lastWorldPosition;
-        ysMatrix m_transform;
-        ysMatrix m_inverseTransform;
-        ysMatrix m_orientationOnly;
-        ysMatrix m_inverseInertiaTensorWorld;
-        ysQuaternion m_finalOrientation;
 
         ysExpandingArray<RigidBody *, 4> m_children;
         RigidBody *m_parent;

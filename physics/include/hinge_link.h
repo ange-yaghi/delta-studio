@@ -12,7 +12,7 @@ namespace dphysics {
 
         virtual int GenerateCollisions(Collision *collisionArray);
 
-        void SetConnectionPoints(ysVector &p1, ysVector &p2) {
+        void SetConnectionPoints(const ysVector &p1, const ysVector &p2) {
             m_relativePos1 = p1;
             m_relativePos2 = p2;
         }
