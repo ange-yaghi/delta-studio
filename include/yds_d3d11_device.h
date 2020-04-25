@@ -86,7 +86,7 @@ public:
     IDXGIFactory *GetDXGIFactory() { return m_DXGIFactory; }
     ID3D11Device *GetDevice() { return m_device; }
 
-    static DXGI_FORMAT ConvertInputLayoutFormat(ysRenderGeometryChannel::CHANNEL_FORMAT format);
+    static DXGI_FORMAT ConvertInputLayoutFormat(ysRenderGeometryChannel::ChannelFormat format);
 
     // TEMP
     struct ID3D11RasterizerState *m_rasterizerState;

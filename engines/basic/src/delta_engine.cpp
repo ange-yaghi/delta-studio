@@ -289,18 +289,18 @@ ysError dbasic::DeltaEngine::InitializeShaders(const char *shaderDirectory) {
         YDS_NESTED_ERROR_CALL(m_device->CreatePixelShader(&m_pixelShader, buffer, "PS"));
     }
 
-    m_skinnedFormat.AddChannel("POSITION", 0, ysRenderGeometryChannel::CHANNEL_FORMAT_R32G32B32A32_FLOAT);
-    m_skinnedFormat.AddChannel("TEXCOORD", sizeof(float) * 4, ysRenderGeometryChannel::CHANNEL_FORMAT_R32G32_FLOAT);
-    m_skinnedFormat.AddChannel("NORMAL", sizeof(float) * (4 + 2), ysRenderGeometryChannel::CHANNEL_FORMAT_R32G32B32A32_FLOAT);
-    m_skinnedFormat.AddChannel("BONE_INDICES", sizeof(float) * (4 + 2 + 4), ysRenderGeometryChannel::CHANNEL_FORMAT_R32G32B32A32_UINT);
-    m_skinnedFormat.AddChannel("BONE_WEIGHTS", sizeof(float) * (4 + 2 + 4) + sizeof(int) * 4, ysRenderGeometryChannel::CHANNEL_FORMAT_R32G32B32A32_FLOAT);
+    m_skinnedFormat.AddChannel("POSITION", 0, ysRenderGeometryChannel::ChannelFormat::R32G32B32A32_FLOAT);
+    m_skinnedFormat.AddChannel("TEXCOORD", sizeof(float) * 4, ysRenderGeometryChannel::ChannelFormat::R32G32_FLOAT);
+    m_skinnedFormat.AddChannel("NORMAL", sizeof(float) * (4 + 2), ysRenderGeometryChannel::ChannelFormat::R32G32B32A32_FLOAT);
+    m_skinnedFormat.AddChannel("BONE_INDICES", sizeof(float) * (4 + 2 + 4), ysRenderGeometryChannel::ChannelFormat::R32G32B32A32_UINT);
+    m_skinnedFormat.AddChannel("BONE_WEIGHTS", sizeof(float) * (4 + 2 + 4) + sizeof(int) * 4, ysRenderGeometryChannel::ChannelFormat::R32G32B32A32_FLOAT);
 
-    m_standardFormat.AddChannel("POSITION", 0, ysRenderGeometryChannel::CHANNEL_FORMAT_R32G32B32A32_FLOAT);
-    m_standardFormat.AddChannel("TEXCOORD", sizeof(float) * 4, ysRenderGeometryChannel::CHANNEL_FORMAT_R32G32_FLOAT);
-    m_standardFormat.AddChannel("NORMAL", sizeof(float) * (4 + 2), ysRenderGeometryChannel::CHANNEL_FORMAT_R32G32B32A32_FLOAT);
+    m_standardFormat.AddChannel("POSITION", 0, ysRenderGeometryChannel::ChannelFormat::R32G32B32A32_FLOAT);
+    m_standardFormat.AddChannel("TEXCOORD", sizeof(float) * 4, ysRenderGeometryChannel::ChannelFormat::R32G32_FLOAT);
+    m_standardFormat.AddChannel("NORMAL", sizeof(float) * (4 + 2), ysRenderGeometryChannel::ChannelFormat::R32G32B32A32_FLOAT);
 
-    m_consoleVertexFormat.AddChannel("POSITION", 0, ysRenderGeometryChannel::CHANNEL_FORMAT_R32G32_FLOAT);
-    m_consoleVertexFormat.AddChannel("TEXCOORD", sizeof(float) * 2, ysRenderGeometryChannel::CHANNEL_FORMAT_R32G32_FLOAT);
+    m_consoleVertexFormat.AddChannel("POSITION", 0, ysRenderGeometryChannel::ChannelFormat::R32G32_FLOAT);
+    m_consoleVertexFormat.AddChannel("TEXCOORD", sizeof(float) * 2, ysRenderGeometryChannel::ChannelFormat::R32G32_FLOAT);
 
     YDS_NESTED_ERROR_CALL(m_device->CreateInputLayout(&m_inputLayout, m_vertexShader, &m_standardFormat));
     YDS_NESTED_ERROR_CALL(m_device->CreateInputLayout(&m_skinnedInputLayout, m_vertexSkinnedShader, &m_skinnedFormat));
@@ -767,12 +767,12 @@ ysError dbasic::DeltaEngine::ExecuteDrawQueue(DrawTarget target) {
                 m_device->SetDepthTestEnabled(m_mainRenderTarget, true);
 
                 if (call->Model->GetBoneCount() <= 0) {
-                    m_device->UseInputLayout(m_inputLayout);
                     m_device->UseShaderProgram(m_shaderProgram);
+                    m_device->UseInputLayout(m_inputLayout);
                 }
                 else {
-                    m_device->UseInputLayout(m_skinnedInputLayout);
                     m_device->UseShaderProgram(m_skinnedShaderProgram);
+                    m_device->UseInputLayout(m_skinnedInputLayout);
                 }
 
                 m_device->UseConstantBuffer(m_shaderScreenVariablesBuffer, 0);

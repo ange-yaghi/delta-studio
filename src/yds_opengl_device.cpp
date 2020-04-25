@@ -946,7 +946,7 @@ ysError ysOpenGLDevice::UseRenderTargetAsTexture(ysRenderTarget *texture, int sl
     YDS_ERROR_DECLARE("UseTexture");
     YDS_NESTED_ERROR_CALL(ysDevice::UseRenderTargetAsTexture(texture, slot));
 
-    if (texture != NULL) {
+    if (texture != nullptr) {
         ysOpenGLRenderTarget *openglTexture = static_cast<ysOpenGLRenderTarget *>(texture);
 
         m_realContext->glActiveTexture(slot + GL_TEXTURE0);
@@ -954,7 +954,7 @@ ysError ysOpenGLDevice::UseRenderTargetAsTexture(ysRenderTarget *texture, int sl
     }
     else {
         m_realContext->glActiveTexture(slot + GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, NULL);
+        glBindTexture(GL_TEXTURE_2D, 0);
     }
 
     return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
@@ -963,13 +963,13 @@ ysError ysOpenGLDevice::UseRenderTargetAsTexture(ysRenderTarget *texture, int sl
 ysError ysOpenGLDevice::DestroyTexture(ysTexture *&texture) {
     YDS_ERROR_DECLARE("DestroyTexture");
 
-    if (texture == NULL) return YDS_ERROR_RETURN(ysError::YDS_INVALID_PARAMETER);
+    if (texture == nullptr) return YDS_ERROR_RETURN(ysError::YDS_INVALID_PARAMETER);
 
     ysOpenGLTexture *openglTexture = static_cast<ysOpenGLTexture *>(texture);
 
     for (int i = 0; i < m_maxTextureSlots; i++) {
         if (m_activeTextures[i].Texture == texture) {
-            UseTexture(NULL, i);
+            UseTexture(nullptr, i);
         }
     }
 
@@ -1021,15 +1021,15 @@ ysOpenGLVirtualContext *ysOpenGLDevice::GetTransferContext() {
     return NULL;
 }
 
-int ysOpenGLDevice::GetFormatGLType(ysRenderGeometryChannel::CHANNEL_FORMAT format) {
+int ysOpenGLDevice::GetFormatGLType(ysRenderGeometryChannel::ChannelFormat format) {
     switch (format) {
-    case ysRenderGeometryChannel::CHANNEL_FORMAT_R32G32B32_FLOAT:
-    case ysRenderGeometryChannel::CHANNEL_FORMAT_R32G32_FLOAT:
-    case ysRenderGeometryChannel::CHANNEL_FORMAT_R32G32B32A32_FLOAT:
+    case ysRenderGeometryChannel::ChannelFormat::R32G32B32_FLOAT:
+    case ysRenderGeometryChannel::ChannelFormat::R32G32_FLOAT:
+    case ysRenderGeometryChannel::ChannelFormat::R32G32B32A32_FLOAT:
         return GL_FLOAT;
-    case ysRenderGeometryChannel::CHANNEL_FORMAT_R32G32B32A32_UINT:
+    case ysRenderGeometryChannel::ChannelFormat::R32G32B32A32_UINT:
         return GL_UNSIGNED_INT;
-    case ysRenderGeometryChannel::CHANNEL_FORMAT_R32G32B32_UINT:
+    case ysRenderGeometryChannel::ChannelFormat::R32G32B32_UINT:
         return GL_UNSIGNED_INT;
     default:
         // No real option here

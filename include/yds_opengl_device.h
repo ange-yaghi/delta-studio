@@ -88,7 +88,7 @@ protected:
     static unsigned int GetPixel(SDL_Surface *surface, int x, int y);
 
     // Get a GL type from a geometry channel format
-    static int GetFormatGLType(ysRenderGeometryChannel::CHANNEL_FORMAT format);
+    static int GetFormatGLType(ysRenderGeometryChannel::ChannelFormat format);
 
 protected:
     ysOpenGLVirtualContext *m_realContext;

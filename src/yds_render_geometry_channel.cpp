@@ -3,7 +3,7 @@
 ysRenderGeometryChannel::ysRenderGeometryChannel() : ysObject("RENDER_GEOMETRY_CHANNEL") {
     m_name[0] = '\0';
     m_offset = 0;
-    m_format = CHANNEL_FORMAT_UNDEFINED;
+    m_format = ChannelFormat::Undefined;
 }
 
 ysRenderGeometryChannel::~ysRenderGeometryChannel() {
