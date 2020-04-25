@@ -27,7 +27,7 @@ namespace dbasic {
     public:
         static const int MAX_LAYERS = 256;
 
-        enum DrawTarget {
+        enum class DrawTarget {
             Gui,
             Main
         };
@@ -142,6 +142,9 @@ namespace dbasic {
         ShaderObjectVariables m_shaderObjectVariables;
         bool m_shaderObjectVariablesSync;
 
+        ysGPUBuffer *m_consoleShaderObjectVariablesBuffer;
+        ConsoleShaderObjectVariables m_consoleShaderObjectVariables;
+
         ysGPUBuffer *m_lightingControlBuffer;
         LightingControls m_lightingControls;
         int m_lightCount;
@@ -158,13 +161,18 @@ namespace dbasic {
         ysShader *m_vertexShader;
         ysShader *m_vertexSkinnedShader;
         ysShader *m_pixelShader;
+        ysShader *m_consoleVertexShader;
+        ysShader *m_consolePixelShader;
         ysShaderProgram *m_shaderProgram;
         ysShaderProgram *m_skinnedShaderProgram;
+        ysShaderProgram *m_consoleProgram;
 
         ysRenderGeometryFormat m_skinnedFormat;
         ysRenderGeometryFormat m_standardFormat;
+        ysRenderGeometryFormat m_consoleVertexFormat;
         ysInputLayout *m_skinnedInputLayout;
         ysInputLayout *m_inputLayout;
+        ysInputLayout *m_consoleInputLayout;
 
         // Text Support
         Console m_console;
