@@ -104,6 +104,9 @@ void dbasic_demo::DeltaBasicDemoApplication::Render() {
     //m_engine.DrawBox(color, 5.0f, 5.0f, 0);
     m_engine.DrawRenderSkeleton(m_renderSkeleton, 1.0f, 0);
 
+    m_engine.SetObjectTransform(ysMath::LoadIdentity());
+    m_engine.DrawBox(color, 1.0f, 1.0f, 0);
+
     ysAnimationChannel::ActionSettings normalSpeed;
     normalSpeed.Speed = 1.0f;
     normalSpeed.FadeIn = 20.0f;

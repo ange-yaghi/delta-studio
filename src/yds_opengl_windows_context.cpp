@@ -23,7 +23,7 @@ ysError ysOpenGLWindowsContext::CreateRenderingContext(ysOpenGLDevice *device, y
     HDC deviceHandle = GetDC(windowsWindow->GetWindowHandle());
 
     // Default
-    m_device = NULL;
+    m_device = nullptr;
     m_deviceHandle = NULL;
     m_targetWindow = NULL;
     m_contextHandle = NULL;
