@@ -51,10 +51,10 @@ namespace dphysics {
         void AddObject(int x, int y, RigidBody *body);
 
     protected:
-        int GetHash(int x, int y);
+        unsigned __int64 SzudzikHash(int x, int y);
         int CalculateLoad();
 
-        ysExpandingArray<GridCell, 4> m_gridCells;
+        std::map<unsigned __int64, GridCell *> m_gridCells;
 
         float m_gridCellSize;
         float m_maxObjectSize;

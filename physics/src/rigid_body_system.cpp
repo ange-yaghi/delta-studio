@@ -133,13 +133,13 @@ void dphysics::RigidBodySystem::CloseReplayFile() {
 }
 
 void dphysics::RigidBodySystem::GenerateCollisions(int start, int count) {
-    const int REQUEST_THRESHOLD = 1;
+    const int REQUEST_THRESHOLD = 0;
 
     int rigidBodyCount = m_rigidBodyRegistry.GetNumObjects();
     std::vector<std::vector<bool>> visited(rigidBodyCount, std::vector<bool>(rigidBodyCount, false));
 
-    for (int cell = start; cell < (start + count); cell++) {
-        GridCell *gridCell = &m_gridPartitionSystem.m_gridCells[cell];
+    for (auto cell: m_gridPartitionSystem.m_gridCells) {
+        GridCell *gridCell = cell.second;
 
         if (gridCell->m_valid && (gridCell->m_forceProcess || gridCell->GetRequestCount() >= REQUEST_THRESHOLD)) {
             int cellObjects = gridCell->m_objects.GetNumObjects();
@@ -388,7 +388,7 @@ void dphysics::RigidBodySystem::GenerateCollisions() {
     m_dynamicCollisions.Clear();
     m_collisionAccumulator.Clear();
 
-    GenerateCollisions(0, m_gridPartitionSystem.m_gridCells.GetNumObjects());
+    GenerateCollisions(0, 0);
 
     char buffer[1024];
     int load = m_loadMeasurement;

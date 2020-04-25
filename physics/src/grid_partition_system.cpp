@@ -36,7 +36,6 @@ dphysics::GridPartitionSystem::GridPartitionSystem() : ysObject("ysGridPartition
     m_maxCells = 8192;
     m_gridCellSize = 5.0f;
     m_maxObjectSize = 30.0f;
-    m_gridCells.Allocate(m_maxCells);
 }
 
 dphysics::GridPartitionSystem::~GridPartitionSystem() {
@@ -46,8 +45,8 @@ dphysics::GridPartitionSystem::~GridPartitionSystem() {
 void dphysics::GridPartitionSystem::Reset() {
     GridCell *gridCell;
 
-    for (int i = 0; i < m_maxCells; i++) {
-        gridCell = &m_gridCells[i];
+    for (auto cell: m_gridCells) {
+        gridCell = cell.second;
 
         if (gridCell->m_requestCount > 0 && gridCell->m_valid) {
             // Allow this block to persist
@@ -60,64 +59,59 @@ void dphysics::GridPartitionSystem::Reset() {
         }
 
         gridCell->m_forceProcess = false;
-        gridCell->m_valid = false;
+        gridCell->m_valid = true;
         gridCell->m_processed = false;
         gridCell->m_objects.Clear();
     }
 }
 
 dphysics::GridCell *dphysics::GridPartitionSystem::GetCell(int x, int y) {
-    int hashIndex = GetHash(x, y);
-    int originalIndex = hashIndex;
-    bool notFound = false;
+    unsigned __int64 hash = SzudzikHash(x, y);
+    
+    auto f = m_gridCells.find(hash);
+    if (f == m_gridCells.end()) {
+        GridCell *newCell = new GridCell;
+        m_gridCells[hash] = newCell;
 
-    GridCell *gridCell;
-    while (true) {
-        gridCell = &m_gridCells[hashIndex];
+        newCell->m_x = x;
+        newCell->m_y = y;
+        newCell->m_forceProcess = false;
+        newCell->m_valid = true;
+        newCell->m_processed = false;
+        newCell->m_objects.Clear();
 
-        if ((gridCell->m_active && (gridCell->m_x != x || gridCell->m_y != y))) {
-            hashIndex++;
-            hashIndex %= m_maxCells;
-            if (hashIndex == originalIndex) return NULL;
-            continue;
-        }
-        else if (gridCell->m_active) {
-            gridCell->m_valid = true;
-            return gridCell;
-        }
-        else if (!gridCell->m_active) {
-            gridCell->m_x = x;
-            gridCell->m_y = y;
-            gridCell->m_active = true;
-            gridCell->m_valid = true;
-            return gridCell;
-        }
+        return newCell;
     }
-
-    return NULL;
+    else return f->second;
 }
 
-int dphysics::GridPartitionSystem::GetHash(int x, int y) {
-    return (((unsigned int)x) * 0x50F1A + ((unsigned int)y) * 0x7651) % m_maxCells;
+unsigned __int64 dphysics::GridPartitionSystem::SzudzikHash(int x, int y) {
+    void *data0 = reinterpret_cast<void *>(&x);
+    void *data1 = reinterpret_cast<void *>(&y);
+
+    unsigned int *u0 = reinterpret_cast<unsigned int *>(data0);
+    unsigned int *u1 = reinterpret_cast<unsigned int *>(data1);
+
+    unsigned __int64 a = (unsigned __int64)(*u0);
+    unsigned __int64 b = (unsigned __int64)(*u1);
+
+    return (a >= b)
+        ? a * a + a + b
+        : b * b + a;
 }
 
 int dphysics::GridPartitionSystem::CalculateLoad() {
-    int load = 0;
-
-    for (int i = 0; i < m_maxCells; i++) {
-        if (m_gridCells[i].m_valid) {
-            int count = m_gridCells[i].m_objects.GetNumObjects();
-            load += count * count / 2;
-        }
-    }
-
-    return load;
+    return 0;
 }
 
 void dphysics::GridPartitionSystem::AddObject(int x, int y, RigidBody *body) {
     GridCell *gridCell = GetCell(x, y);
     gridCell->m_objects.New() = body;
-    gridCell->m_forceProcess = body->GetHint() == RigidBody::RigidBodyHint::Dynamic;
+
+    if (body->GetHint() == RigidBody::RigidBodyHint::Dynamic) {
+        gridCell->m_forceProcess = true;
+    }
+
     body->AddGridCell(x, y);
 }
 
@@ -129,8 +123,12 @@ void dphysics::GridPartitionSystem::ProcessRigidBody(RigidBody *object) {
     float actual_x = ysMath::GetX(pos);
     float actual_y = ysMath::GetY(pos);
 
-    int x = (int)(std::floor(actual_x / m_gridCellSize));
-    int y = (int)(std::floor(actual_y / m_gridCellSize));
+    int x = (actual_x >= 0)
+        ? actual_x / m_gridCellSize
+        : (actual_x - m_gridCellSize) / m_gridCellSize;
+    int y = (actual_y >= 0)
+        ? actual_y / m_gridCellSize
+        : (actual_y - m_gridCellSize) / m_gridCellSize;
 
     float nominal_x = m_gridCellSize * x;
     float nominal_y = m_gridCellSize * y;
