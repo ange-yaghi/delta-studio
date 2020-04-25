@@ -685,7 +685,7 @@ ysError ysOpenGLDevice::CreatePixelShader(ysShader **newShader, const char *shad
 ysError ysOpenGLDevice::DestroyShader(ysShader *&shader) {
     YDS_ERROR_DECLARE("DestroyShader");
 
-    if (shader == NULL) return YDS_ERROR_RETURN(ysError::YDS_INVALID_PARAMETER);
+    if (shader == nullptr) return YDS_ERROR_RETURN(ysError::YDS_INVALID_PARAMETER);
 
     ysOpenGLShader *openglShader = static_cast<ysOpenGLShader *>(shader);
     m_realContext->glDeleteShader(openglShader->m_handle);
@@ -698,7 +698,7 @@ ysError ysOpenGLDevice::DestroyShader(ysShader *&shader) {
 ysError ysOpenGLDevice::DestroyShaderProgram(ysShaderProgram *&program, bool destroyShaders) {
     YDS_ERROR_DECLARE("DestroyShaderProgram");
 
-    if (program == NULL) return YDS_ERROR_RETURN(ysError::YDS_INVALID_PARAMETER);
+    if (program == nullptr) return YDS_ERROR_RETURN(ysError::YDS_INVALID_PARAMETER);
 
     ysOpenGLShaderProgram *openglProgram = static_cast<ysOpenGLShaderProgram *>(program);
 
@@ -863,17 +863,18 @@ unsigned int ysOpenGLDevice::GetPixel(SDL_Surface *surface, int x, int y) {
 ysError ysOpenGLDevice::CreateTexture(ysTexture **texture, const char *fname) {
     YDS_ERROR_DECLARE("CreateTexture");
 
-    if (texture == NULL) return YDS_ERROR_RETURN(ysError::YDS_INVALID_PARAMETER);
-    *texture = NULL;
+    if (texture == nullptr) return YDS_ERROR_RETURN(ysError::YDS_INVALID_PARAMETER);
+    *texture = nullptr;
 
-    if (fname == NULL) return YDS_ERROR_RETURN(ysError::YDS_INVALID_PARAMETER);
+    if (fname == nullptr) return YDS_ERROR_RETURN(ysError::YDS_INVALID_PARAMETER);
 
     bool useAlpha = true;
 
     // Use SDL to load the image
-    SDL_Surface *pTexSurface = IMG_Load(fname);
+    SDL_Surface *pTexSurface = IMG_Load(fname); 
 
-    if (pTexSurface == NULL) {
+    if (pTexSurface == nullptr) {
+        const char *err = IMG_GetError();
         return YDS_ERROR_RETURN_MSG(ysError::YDS_COULD_NOT_OPEN_FILE, fname);
     }
 

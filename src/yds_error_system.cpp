@@ -8,11 +8,12 @@
 
 #include <assert.h>
 
-ysErrorSystem *ysErrorSystem::g_instance = NULL;
+ysErrorSystem *ysErrorSystem::g_instance = nullptr;
 
 ysErrorSystem::ysErrorSystem() {
-	if (g_instance != NULL) 
+	if (g_instance != nullptr) {
 		YDS_ERROR_RAISE(ysError::YDS_MULTIPLE_ERROR_SYSTEMS);
+	}
 
 	g_instance = this;
 
@@ -25,7 +26,7 @@ ysErrorSystem::~ysErrorSystem() {
 }
 
 ysErrorSystem *ysErrorSystem::GetInstance() {
-	if (g_instance == NULL) g_instance = new ysErrorSystem;
+	if (g_instance == nullptr) g_instance = new ysErrorSystem;
 	return g_instance;
 }
 
@@ -35,7 +36,7 @@ void ysErrorSystem::Destroy() {
 
 ysError ysErrorSystem::RaiseError(ysError error, unsigned int line, ysObject *object, const char *file, const char *msg, bool affectStack) {
 	if (error != ysError::YDS_NO_ERROR) {
-		for(int i = 0; i < m_errorHandlers.GetNumObjects(); i++) {
+		for (int i = 0; i < m_errorHandlers.GetNumObjects(); i++) {
 			m_errorHandlers.Get(i)->OnError(error, line, object, file);
 		}
 	}

@@ -24,6 +24,10 @@ dbasic::DeltaEngine::DeltaEngine() {
     m_pixelShader = nullptr;
     m_shaderProgram = nullptr;
 
+    m_consolePixelShader = nullptr;
+    m_consoleVertexShader = nullptr;
+    m_consoleProgram = nullptr;
+
     m_inputLayout = nullptr;
 
     m_initialized = false;
@@ -180,9 +184,6 @@ ysError dbasic::DeltaEngine::Destroy() {
 
     YDS_NESTED_ERROR_CALL(GetConsole()->Destroy());
 
-    YDS_NESTED_ERROR_CALL(m_device->DestroyRenderTarget(m_mainRenderTarget));
-    YDS_NESTED_ERROR_CALL(m_device->DestroyRenderingContext(m_renderingContext));
-
     YDS_NESTED_ERROR_CALL(m_device->DestroyGPUBuffer(m_mainIndexBuffer));
     YDS_NESTED_ERROR_CALL(m_device->DestroyGPUBuffer(m_mainVertexBuffer));
     YDS_NESTED_ERROR_CALL(m_device->DestroyGPUBuffer(m_shaderObjectVariablesBuffer));
@@ -193,16 +194,19 @@ ysError dbasic::DeltaEngine::Destroy() {
 
     YDS_NESTED_ERROR_CALL(m_device->DestroyShader(m_vertexShader));
     YDS_NESTED_ERROR_CALL(m_device->DestroyShader(m_vertexSkinnedShader));
-    YDS_NESTED_ERROR_CALL(m_device->DestroyShader(m_consoleVertexShader));
+    //YDS_NESTED_ERROR_CALL(m_device->DestroyShader(m_consoleVertexShader));
     YDS_NESTED_ERROR_CALL(m_device->DestroyShader(m_pixelShader));
-    YDS_NESTED_ERROR_CALL(m_device->DestroyShader(m_consolePixelShader));
+    //YDS_NESTED_ERROR_CALL(m_device->DestroyShader(m_consolePixelShader));
     YDS_NESTED_ERROR_CALL(m_device->DestroyShaderProgram(m_shaderProgram));
-    YDS_NESTED_ERROR_CALL(m_device->DestroyShaderProgram(m_consoleProgram));
+    //YDS_NESTED_ERROR_CALL(m_device->DestroyShaderProgram(m_consoleProgram));
     YDS_NESTED_ERROR_CALL(m_device->DestroyShaderProgram(m_skinnedShaderProgram));
 
     YDS_NESTED_ERROR_CALL(m_device->DestroyInputLayout(m_inputLayout));
     YDS_NESTED_ERROR_CALL(m_device->DestroyInputLayout(m_skinnedInputLayout));
     YDS_NESTED_ERROR_CALL(m_device->DestroyInputLayout(m_consoleInputLayout));
+
+    YDS_NESTED_ERROR_CALL(m_device->DestroyRenderTarget(m_mainRenderTarget));
+    YDS_NESTED_ERROR_CALL(m_device->DestroyRenderingContext(m_renderingContext));
 
     YDS_NESTED_ERROR_CALL(m_device->DestroyDevice());
     m_mainKeyboard = nullptr;
@@ -279,8 +283,9 @@ ysError dbasic::DeltaEngine::InitializeShaders(const char *shaderDirectory) {
     else if (m_device->GetAPI() == ysContextObject::OPENGL4_0) {
         sprintf_s(buffer, "%s%s", shaderDirectory, "delta_engine_shader.glvs");
         YDS_NESTED_ERROR_CALL(m_device->CreateVertexShader(&m_vertexShader, buffer, "VS"));
+        YDS_NESTED_ERROR_CALL(m_device->CreateVertexShader(&m_vertexSkinnedShader, buffer, "VS"));
 
-        sprintf_s(buffer, "%s%s", shaderDirectory, "delta_engine_shader.glvs");
+        sprintf_s(buffer, "%s%s", shaderDirectory, "delta_engine_shader.glfs");
         YDS_NESTED_ERROR_CALL(m_device->CreatePixelShader(&m_pixelShader, buffer, "PS"));
     }
 
@@ -311,10 +316,10 @@ ysError dbasic::DeltaEngine::InitializeShaders(const char *shaderDirectory) {
     YDS_NESTED_ERROR_CALL(m_device->AttachShader(m_skinnedShaderProgram, m_pixelShader));
     YDS_NESTED_ERROR_CALL(m_device->LinkProgram(m_skinnedShaderProgram));
 
-    YDS_NESTED_ERROR_CALL(m_device->CreateShaderProgram(&m_consoleProgram));
-    YDS_NESTED_ERROR_CALL(m_device->AttachShader(m_consoleProgram, m_consoleVertexShader));
-    YDS_NESTED_ERROR_CALL(m_device->AttachShader(m_consoleProgram, m_consolePixelShader));
-    YDS_NESTED_ERROR_CALL(m_device->LinkProgram(m_consoleProgram));
+    //YDS_NESTED_ERROR_CALL(m_device->CreateShaderProgram(&m_consoleProgram));
+    //YDS_NESTED_ERROR_CALL(m_device->AttachShader(m_consoleProgram, m_consoleVertexShader));
+    //YDS_NESTED_ERROR_CALL(m_device->AttachShader(m_consoleProgram, m_consolePixelShader));
+    //YDS_NESTED_ERROR_CALL(m_device->LinkProgram(m_consoleProgram));
 
     // Create shader controls
     YDS_NESTED_ERROR_CALL(m_device->CreateConstantBuffer(&m_shaderObjectVariablesBuffer, sizeof(ShaderObjectVariables), nullptr));
@@ -811,6 +816,7 @@ ysError dbasic::DeltaEngine::ExecuteDrawQueue(DrawTarget target) {
     }
 
     if (target == DrawTarget::Gui) {
+        /*
         ConsoleShaderObjectVariables objectSettings;
         objectSettings.MulCol = ysVector4(1.0f, 1.0f, 1.0f, 1.0f);
         objectSettings.TexOffset[0] = 0.0f;
@@ -827,6 +833,7 @@ ysError dbasic::DeltaEngine::ExecuteDrawQueue(DrawTarget target) {
         m_device->UseConstantBuffer(m_consoleShaderObjectVariablesBuffer, 1);
 
         YDS_NESTED_ERROR_CALL(m_console.UpdateDisplay());
+        */
     }
 
     return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
