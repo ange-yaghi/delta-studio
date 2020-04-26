@@ -613,7 +613,7 @@ ysError ysOpenGLDevice::CreateVertexShader(ysShader **newShader, const char *sha
 
     ysOpenGLShader *newOpenGLShader = m_shaders.NewGeneric<ysOpenGLShader>();
     strcpy_s(newOpenGLShader->m_shaderName, 64, shaderName);
-    strcpy_s(newOpenGLShader->m_filename, 64, shaderFilename);
+    strcpy_s(newOpenGLShader->m_filename, 256, shaderFilename);
     newOpenGLShader->m_shaderType = ysShader::SHADER_TYPE_VERTEX;
     newOpenGLShader->m_handle = handle;
 
@@ -668,7 +668,7 @@ ysError ysOpenGLDevice::CreatePixelShader(ysShader **newShader, const char *shad
 
     ysOpenGLShader *newOpenGLShader = m_shaders.NewGeneric<ysOpenGLShader>();
     strcpy_s(newOpenGLShader->m_shaderName, 64, shaderName);
-    strcpy_s(newOpenGLShader->m_filename, 64, shaderFilename);
+    strcpy_s(newOpenGLShader->m_filename, 256, shaderFilename);
     newOpenGLShader->m_shaderType = ysShader::SHADER_TYPE_PIXEL;
     newOpenGLShader->m_handle = shaderHandle;
 
