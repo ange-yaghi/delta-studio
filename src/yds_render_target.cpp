@@ -4,12 +4,14 @@ ysRenderTarget::ysRenderTarget() : ysContextObject("RENDER_TARGET", API_UNKNOWN)
     m_associatedContext = nullptr;
     m_depthBuffer = nullptr;
     m_parent = nullptr;
+    m_depthTestEnabled = false;
 }
 
 ysRenderTarget::ysRenderTarget(DEVICE_API API) : ysContextObject("RENDER_TARGET", API) {
     m_associatedContext = nullptr;
     m_depthBuffer = nullptr;
     m_parent = nullptr;
+    m_depthTestEnabled = false;
 }
 
 ysRenderTarget::~ysRenderTarget() {

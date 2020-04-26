@@ -31,6 +31,7 @@ public:
 
     // Set the windows instance to use
     void SetInstance(HINSTANCE instance) { m_instance = instance; }
+    HINSTANCE GetInstance() const { return m_instance; }
 
     // Get Win32 window handle
     HWND GetWindowHandle() const { return m_hwnd; }

@@ -87,10 +87,10 @@ ysError ysOpenGLDevice::UpdateRenderingContext(ysRenderingContext *context) {
 ysError ysOpenGLDevice::DestroyRenderingContext(ysRenderingContext *&context) {
     YDS_ERROR_DECLARE("DestroyRenderingTarget");
 
-    if (context == NULL) return YDS_ERROR_RETURN(ysError::YDS_INVALID_PARAMETER);
+    if (context == nullptr) return YDS_ERROR_RETURN(ysError::YDS_INVALID_PARAMETER);
 
     if (context == m_activeContext) {
-        SetRenderingContext(NULL);
+        SetRenderingContext(nullptr);
     }
 
     ysOpenGLVirtualContext *openglContext = static_cast<ysOpenGLVirtualContext *>(context);
@@ -250,13 +250,13 @@ ysError ysOpenGLDevice::ResizeRenderTarget(ysRenderTarget *target, int width, in
 ysError ysOpenGLDevice::SetRenderTarget(ysRenderTarget *target) {
     YDS_ERROR_DECLARE("SetRenderTarget");
 
-    if (target) {
+    if (target != nullptr) {
         ysOpenGLRenderTarget *openglTarget = static_cast<ysOpenGLRenderTarget *>(target);
         ysOpenGLRenderTarget *realTarget = (target->GetType() == ysRenderTarget::Type::Subdivision) ?
             static_cast<ysOpenGLRenderTarget *>(target->GetParent()) : openglTarget;
 
         if (realTarget != m_activeRenderTarget) {
-            if (target->GetAssociatedContext()) {
+            if (target->GetAssociatedContext() != nullptr) {
                 SetRenderingContext(target->GetAssociatedContext());
             }
         }
@@ -316,7 +316,7 @@ ysError ysOpenGLDevice::ClearBuffers(const float *clearColor) {
     if (m_activeRenderTarget != nullptr) {
         glClearColor(clearColor[0], clearColor[1], clearColor[2], clearColor[3]);
         glClearDepth(1.0f);
-        glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
+        glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
         return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
     }
@@ -459,7 +459,7 @@ ysError ysOpenGLDevice::UseVertexBuffer(ysGPUBuffer *buffer, int stride, int off
 
             // The input layout must be redone
             ResubmitInputLayout();
-            if (openglCurrentIndexBuffer) m_realContext->glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, openglCurrentIndexBuffer->m_bufferHandle);
+            if (openglCurrentIndexBuffer != nullptr) m_realContext->glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, openglCurrentIndexBuffer->m_bufferHandle);
         }
     }
 
@@ -499,7 +499,7 @@ ysError ysOpenGLDevice::UseConstantBuffer(ysGPUBuffer *buffer, int slot) {
     }
     else {
         ysOpenGLGPUBuffer *openglBuffer = static_cast<ysOpenGLGPUBuffer *>(buffer);
-        m_realContext->glBindBufferRange(GL_UNIFORM_BUFFER, slot, openglBuffer->m_bufferHandle, 0, 12);
+        m_realContext->glBindBufferRange(GL_UNIFORM_BUFFER, slot, openglBuffer->m_bufferHandle, 0, buffer->GetSize());
     }
 
     YDS_NESTED_ERROR_CALL(ysDevice::UseConstantBuffer(buffer, slot));

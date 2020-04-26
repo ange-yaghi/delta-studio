@@ -7,7 +7,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     (void)lpCmdLine;
     (void)hPrevInstance;
 
-    dbasic_demo::DeltaBasicDemoApplication app;
+    dbasic_demo::DeltaBasicDemoApplication app; 
     app.Initialize((void *)&hInstance, ysContextObject::OPENGL4_0);
     app.Run();
 

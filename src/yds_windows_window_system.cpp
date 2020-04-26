@@ -68,7 +68,7 @@ ysWindow *ysWindowsWindowSystem::FindWindowFromHandle(HWND handle) {
         if (windowsWindow->GetWindowHandle() == handle) return windowsWindow;
     }
 
-    return NULL;
+    return nullptr;
 }
 
 void ysWindowsWindowSystem::ConnectInstance(void *genericInstanceConnection) {
@@ -117,7 +117,7 @@ LRESULT WINAPI ysWindowsWindowSystem::WinProc(HWND hWnd, UINT msg, WPARAM wParam
             target->OnKeyDown(wParam);
             return 0;
         case WM_INPUT:
-            if (inputSystem) return inputSystem->ProcessInputMessage((HRAWINPUT)lParam);
+            if (inputSystem != nullptr) return inputSystem->ProcessInputMessage((HRAWINPUT)lParam);
             else return 0;
         }
     }

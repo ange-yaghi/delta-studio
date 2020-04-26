@@ -25,6 +25,4 @@ void main(void) {
 	else {
 		out_Color = MulCol;
 	}
-
-	out_Color = vec4((ex_Normal + vec3(1.0, 1.0, 1.0)) / 2.0, 1.0);
 }
