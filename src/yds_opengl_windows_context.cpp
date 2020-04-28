@@ -104,7 +104,7 @@ ysError ysOpenGLWindowsContext::CreateRenderingContext(ysOpenGLDevice *device, y
         UINT numFormats;
 
         wglChoosePixelFormatARB(deviceHandle, pixelFormatAttributes, NULL, 1, &msPixelFormat, &numFormats);
-        SetPixelFormat(deviceHandle, msPixelFormat, nullptr);
+        SetPixelFormat(deviceHandle, msPixelFormat, &pfd);
 
         HGLRC hRC = wglCreateContextAttribsARB(deviceHandle, 0, contextAttribs);
         wglMakeCurrent(0, 0);

@@ -840,7 +840,7 @@ unsigned int ysOpenGLDevice::GetPixel(SDL_Surface *surface, int x, int y) {
         break;
     case 4:
         return *(Uint32 *)p;
-        break;
+        break; 
     default:
         return 0;	// Avoid warnings
     }

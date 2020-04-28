@@ -123,7 +123,7 @@ ysError dbasic::Console::UpdateDisplay() {
 
     m_engine->GetDevice()->UseTexture(m_font, 0);
 
-    m_engine->GetDevice()->Draw(2 * 12000, 0, 0);
+    m_engine->GetDevice()->Draw(2 * BUFFER_SIZE, 0, 0);
 
     return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
 }

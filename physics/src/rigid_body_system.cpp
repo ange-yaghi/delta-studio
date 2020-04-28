@@ -13,8 +13,8 @@ dphysics::RigidBodySystem::RigidBodySystem() : ysObject("RigidBodySystem") {
     m_loadMeasurement = 0;
     m_replayEnabled = false;
 
-    m_defaultDynamicFriction = 1.0f;
-    m_defaultStaticFriction = 0.5f;
+    m_defaultDynamicFriction = 0.001f;
+    m_defaultStaticFriction = 0.001f;
 }
 
 dphysics::RigidBodySystem::~RigidBodySystem() {

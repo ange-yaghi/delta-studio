@@ -4,7 +4,7 @@
 #include "../include/force_generator.h"
 
 dphysics::RigidBody::RigidBody() {
-    m_linearDamping = 0.005f;
+    m_linearDamping = 0.99f;
     m_angularDamping = 0.005f;
 
     m_velocity = ysMath::Constants::Zero;

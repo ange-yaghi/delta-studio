@@ -77,7 +77,11 @@ ysError ysWindow::InitializeWindow(ysWindow *parent, const char *title, WindowSt
 ysError ysWindow::InitializeWindow(ysWindow *parent, const char *title, WindowStyle style, ysMonitor *monitor) {
     YDS_ERROR_DECLARE("InitializeWindow");
 
-    YDS_NESTED_ERROR_CALL(InitializeWindow(parent, title, style, monitor->GetOriginX(), monitor->GetOriginY(), monitor->GetWidth(), monitor->GetHeight(), monitor));
+    YDS_NESTED_ERROR_CALL(
+        InitializeWindow(
+            parent, title, style, 
+            monitor->GetOriginX(), monitor->GetOriginY(), 
+            monitor->GetWidth(), monitor->GetHeight(), monitor));
 
     return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
 }
