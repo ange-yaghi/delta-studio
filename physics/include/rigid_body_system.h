@@ -63,6 +63,7 @@ namespace dphysics {
 
     protected:
         void GenerateCollisions();
+        void InitializeCollisions();
         void GenerateCollisions(RigidBody *body1, RigidBody *body2);
 
         void ResolveCollisions(float dt);

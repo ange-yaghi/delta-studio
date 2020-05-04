@@ -40,10 +40,22 @@ dphysics::Collision::Collision(Collision &collision) : ysObject("Collision") {
     m_dynamicFriction = collision.m_dynamicFriction;
     m_staticFriction = collision.m_staticFriction;
     m_restitution = collision.m_restitution;
+
+    m_initialContactVelocity = collision.m_initialContactVelocity;
 }
 
 dphysics::Collision::~Collision() {
     /* void */
+}
+
+void dphysics::Collision::Initialize() {
+    CalculateContactSpace();
+
+    m_initialContactVelocity = CalculateLocalVelocity(0);
+
+    if (m_bodies[1] != nullptr) {
+        m_initialContactVelocity = ysMath::Sub(m_initialContactVelocity, CalculateLocalVelocity(1));
+    }
 }
 
 void dphysics::Collision::UpdateInternals(float timestep) {
@@ -55,10 +67,10 @@ void dphysics::Collision::UpdateInternals(float timestep) {
         }
     }
 
-    m_contactVelocity = CalculateLocalVelocity(0, timestep);
+    m_contactVelocity = CalculateLocalVelocity(0);
 
     if (m_bodies[1] != nullptr) {
-        m_contactVelocity = ysMath::Sub(m_contactVelocity, CalculateLocalVelocity(1, timestep));
+        m_contactVelocity = ysMath::Sub(m_contactVelocity, CalculateLocalVelocity(1));
     }
 
     CalculateDesiredDeltaVelocity(timestep);
@@ -79,6 +91,8 @@ dphysics::Collision &dphysics::Collision::operator=(dphysics::Collision &collisi
 
     m_relativePosition[0] = collision.m_relativePosition[0];
     m_relativePosition[1] = collision.m_relativePosition[1];
+
+    m_initialContactVelocity = collision.m_initialContactVelocity;
 
     return *this;
 }
@@ -114,7 +128,7 @@ void dphysics::Collision::CalculateDesiredDeltaVelocity(float timestep) {
         - thisRestitution * (ysMath::GetX(m_contactVelocity) - velocityFromAcc);
 }
 
-ysVector dphysics::Collision::CalculateLocalVelocity(int bodyIndex, float timestep) {
+ysVector dphysics::Collision::CalculateLocalVelocity(int bodyIndex) {
     RigidBody *body = m_bodies[bodyIndex];
     ysVector position = ysMath::Add(m_relativePosition[bodyIndex], body->Transform.GetWorldPosition());
 

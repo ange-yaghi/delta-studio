@@ -69,6 +69,8 @@ void dphysics::RigidBody::Integrate(float timeStep) {
     for (int i = 0; i < childCount; i++) {
         m_children[i]->Integrate(timeStep);
     }
+
+    m_impulseAccum = ysMath::Constants::Zero;
 }
 
 void dphysics::RigidBody::UpdateDerivedData(bool force) {
@@ -138,6 +140,7 @@ ysMatrix dphysics::RigidBody::GetRectangleTensor(float dx, float dy) {
 
 void dphysics::RigidBody::AddChild(RigidBody *body) {
     body->m_parent = this;
+    body->Transform.SetParent(&Transform);
     m_children.New() = body;
 }
 
@@ -146,6 +149,7 @@ void dphysics::RigidBody::RemoveChild(RigidBody *child) {
     if (index == -1) return;
 
     child->m_parent = nullptr;
+    child->Transform.SetParent(nullptr);
     m_children.Delete(index);
 }
 

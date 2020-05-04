@@ -419,6 +419,18 @@ void dphysics::RigidBodySystem::GenerateCollisions() {
     }
 }
 
+void dphysics::RigidBodySystem::InitializeCollisions() {
+    int numContacts = m_collisionAccumulator.GetNumObjects();
+    for (int i = 0; i < numContacts; ++i) {
+        Collision &collision = *m_collisionAccumulator[i];
+
+        if (collision.m_sensor) continue;
+        if (collision.IsGhost()) continue;
+
+        collision.Initialize();
+    }
+}
+
 void dphysics::RigidBodySystem::ResolveCollision(Collision *collision, ysVector *velocityChange, ysVector *rotationDirection, float rotationAmount[2], float penetration) {
     float angularLimit = 0.1f;
     float angularMove[2], linearMove[2];
@@ -830,6 +842,7 @@ void dphysics::RigidBodySystem::Update(float timestep) {
     Integrate(timestep);
 
     GenerateCollisions();
+    InitializeCollisions();
     ResolveCollisions(timestep);
     AdjustVelocities(timestep);
     CheckAwake();    

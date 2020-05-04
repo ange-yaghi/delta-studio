@@ -1,4 +1,5 @@
 #include "../include/hinge_link.h"
+
 #include "../include/rigid_body.h"
 
 dphysics::HingeLink::HingeLink() {
