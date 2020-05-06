@@ -17,7 +17,7 @@ namespace dphysics {
     class DeltaEngine;
     class RigidBodySystem : public ysObject {
     public:
-        static const int ResolutionIterationLimit = 1000000;
+        static const int ResolutionIterationLimit = 128;
         static float ResolutionPenetrationEpsilon;
 
         struct CollisionGenerationCallData {

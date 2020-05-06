@@ -123,8 +123,6 @@ VS_OUTPUT VS_STANDARD(VS_INPUT_STANDARD input) {
 	finalNormal = float4(output.Normal, 1.0);
 
 	inputPos = float4(final.xyz, 1.0);
-
-	//inputPos.z *= Size.x;
 	
 	inputPos.xyz *= Scale;
 	inputPos = mul(inputPos, Transform);

@@ -18,11 +18,61 @@ layout (binding = 1) uniform ObjectVariables {
 	int Lit;
 };
 
+struct Light {
+	vec4 Position;
+	vec4 Color;
+	vec4 Direction;
+	float Attenuation0;
+	float Attenuation1;
+	int FalloffEnabled;
+	int Active;
+};
+
+layout (binding = 3) uniform Lighting {
+	Light Lights[32];
+	vec4 AmbientLighting;
+};
+
 void main(void) {
+	vec3 totalLighting = vec3(1.0, 1.0, 1.0);
+
+	if (Lit == 1) {
+		totalLighting = AmbientLighting.rgb;
+		for (int i = 0; i < 32; ++i) {
+			if (Lights[i].Active == 0) continue;
+
+			vec3 d = Lights[i].Position.xyz - ex_Pos.xyz;
+			float inv_mag = 1.0 / length(d);
+			d *= inv_mag;
+
+			float d_dot_n = dot(d, ex_Normal);
+			if (d_dot_n < 0) continue;
+
+			vec3 contribution = d_dot_n * Lights[i].Color.rgb;
+
+			// Spotlight calculation
+			float spotCoherence = -dot(d, Lights[i].Direction.xyz);
+			float spotAttenuation = 1.0;
+			if (spotCoherence > Lights[i].Attenuation0) spotAttenuation = 1.0;
+			else if (spotCoherence < Lights[i].Attenuation1) spotAttenuation = 0.0;
+			else {
+				float t = Lights[i].Attenuation0 - Lights[i].Attenuation1;
+				if (t == 0) spotAttenuation = 1.0;
+				else spotAttenuation = (spotCoherence - Lights[i].Attenuation1) / t;
+			}
+
+			if (Lights[i].FalloffEnabled == 1) {
+				contribution *= (inv_mag * inv_mag);
+			}
+
+			totalLighting += contribution * spotAttenuation;
+		}
+	}
+
 	if (ColorReplace == 0) {
-		out_Color = texture(diffuseTex, ex_Tex).rgba * MulCol;
+		out_Color = texture(diffuseTex, ex_Tex).rgba * MulCol * vec4(totalLighting, 1.0);
 	}
 	else {
-		out_Color = MulCol;
+		out_Color = vec4(totalLighting.xyz, 1.0) * MulCol;
 	}
 }

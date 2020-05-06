@@ -187,15 +187,15 @@ ysError ysD3D11Device::CreateRenderingContext(ysRenderingContext **context, ysWi
         D3D11_RASTERIZER_DESC rasterizerDescription;
         ZeroMemory(&rasterizerDescription, sizeof(D3D11_RASTERIZER_DESC));
         rasterizerDescription.FillMode = D3D11_FILL_SOLID;
-        rasterizerDescription.CullMode = D3D11_CULL_FRONT;
-        rasterizerDescription.FrontCounterClockwise = FALSE;
+        rasterizerDescription.CullMode = D3D11_CULL_BACK;
+        rasterizerDescription.FrontCounterClockwise = TRUE;
         rasterizerDescription.DepthBias = FALSE;
         rasterizerDescription.DepthBiasClamp = 0;
         rasterizerDescription.SlopeScaledDepthBias = 0;
-        rasterizerDescription.DepthClipEnable = FALSE;
+        rasterizerDescription.DepthClipEnable = TRUE;
         rasterizerDescription.ScissorEnable = FALSE;
-        rasterizerDescription.MultisampleEnable = TRUE;
-        rasterizerDescription.AntialiasedLineEnable = TRUE;
+        rasterizerDescription.MultisampleEnable = FALSE;
+        rasterizerDescription.AntialiasedLineEnable = FALSE;
 
         m_device->CreateRasterizerState(&rasterizerDescription, &m_rasterizerState);
         GetImmediateContext()->RSSetState(m_rasterizerState);

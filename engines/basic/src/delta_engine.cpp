@@ -115,7 +115,7 @@ ysError dbasic::DeltaEngine::CreateGameWindow(const char *title, void *instance,
 
     // Create the game window
     YDS_NESTED_ERROR_CALL(m_windowSystem->NewWindow(&m_gameWindow));
-    YDS_NESTED_ERROR_CALL(m_gameWindow->InitializeWindow(nullptr, title, ysWindow::WindowStyle::WINDOWED, mainMonitor));
+    YDS_NESTED_ERROR_CALL(m_gameWindow->InitializeWindow(nullptr, title, ysWindow::WindowStyle::WINDOWED, 0, 0, 1920, 1080, mainMonitor));
     m_gameWindow->AttachEventHandler(&m_windowHandler);
 
     // Create the graphics device
@@ -156,6 +156,10 @@ ysError dbasic::DeltaEngine::StartFrame() {
 
     m_windowSystem->ProcessMessages();
     m_timingSystem->Update();
+
+    // TEMP
+    if (IsKeyDown(ysKeyboard::KEY_B)) m_device->SetDebugFlag(0, true);
+    else m_device->SetDebugFlag(0, false);
 
     if (IsOpen()) {
         m_device->SetRenderTarget(m_mainRenderTarget);
@@ -386,6 +390,16 @@ void dbasic::DeltaEngine::SetCameraPosition(float x, float y) {
 void dbasic::DeltaEngine::GetCameraPosition(float *x, float *y) const {
     *x = m_cameraX;
     *y = m_cameraY;
+}
+
+void dbasic::DeltaEngine::SetCameraTarget(const ysVector &target) {
+    m_cameraTarget = target;
+    m_shaderScreenVariablesSync = false;
+}
+
+void dbasic::DeltaEngine::SetCameraMode(CameraMode mode) {
+    m_cameraMode = mode;
+    m_shaderScreenVariablesSync = false;
 }
 
 void dbasic::DeltaEngine::SetCameraAngle(float angle) {
@@ -700,7 +714,7 @@ ysError dbasic::DeltaEngine::ExecuteDrawQueue(DrawTarget target) {
         float aspect = m_gameWindow->GetScreenWidth() / (float)m_gameWindow->GetScreenHeight();
 
         if (target == DrawTarget::Main) {
-            m_shaderScreenVariables.Projection = ysMath::Transpose(ysMath::FrustrumPerspective(m_cameraFov, aspect, 1.0f, 10000.0f));
+            m_shaderScreenVariables.Projection = ysMath::Transpose(ysMath::FrustrumPerspective(m_cameraFov, aspect, 1.0f, 100.0f));
         }
         else if (target == DrawTarget::Gui) {
             m_shaderScreenVariables.Projection = ysMath::Transpose(
@@ -727,7 +741,12 @@ ysError dbasic::DeltaEngine::ExecuteDrawQueue(DrawTarget target) {
         ysVector up = ysMath::LoadVector(-sinRot, cosRot);
 
         if (target == DrawTarget::Main) {
-            cameraTarget = ysMath::LoadVector(m_cameraX, m_cameraY, 0.0f, 1.0f);
+            if (m_cameraMode == CameraMode::Flat) {
+                cameraTarget = ysMath::LoadVector(m_cameraX, m_cameraY, 0.0f, 1.0f);
+            }
+            else {
+                cameraTarget = m_cameraTarget;
+            }
         }
         else if (target == DrawTarget::Gui) {
             cameraTarget = ysMath::LoadVector(0.0f, 0.0f, 0.0f, 1.0f);

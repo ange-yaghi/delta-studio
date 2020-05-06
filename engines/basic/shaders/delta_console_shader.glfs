@@ -16,4 +16,3 @@ layout (binding = 1) uniform ObjectVariables {
 void main(void) {
     out_Color = texture(diffuseTex, ex_Tex).rgba * MulCol;
 }
-

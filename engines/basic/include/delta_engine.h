@@ -32,6 +32,11 @@ namespace dbasic {
             Main
         };
 
+        enum class CameraMode {
+            Target,
+            Flat
+        };
+
     public:
         DeltaEngine();
         ~DeltaEngine();
@@ -68,6 +73,12 @@ namespace dbasic {
         // Shader Controls
         void SetCameraPosition(float x, float y);
         void GetCameraPosition(float *x, float *y) const;
+
+        void SetCameraTarget(const ysVector &target);
+        ysVector GetCameraTarget() const { return m_cameraTarget; }
+
+        void SetCameraMode(CameraMode mode);
+        CameraMode GetCameraMode() const { return m_cameraMode; }
 
         void SetCameraAngle(float angle);
 
@@ -111,6 +122,8 @@ namespace dbasic {
         float m_cameraAltitude;
         float m_cameraAngle;
         float m_cameraFov;
+
+        ysVector m_cameraTarget;
 
         ysMatrix m_perspectiveProjection;
         ysMatrix m_orthographicProjection;
@@ -180,6 +193,7 @@ namespace dbasic {
         bool m_initialized;
 
         DrawTarget m_currentTarget;
+        CameraMode m_cameraMode;
 
         // Timing
         ysTimingSystem *m_timingSystem;
