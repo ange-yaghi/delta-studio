@@ -59,7 +59,6 @@ void dbasic::RenderSkeleton::Update() {
     int nNodes = m_renderNodes.GetNumObjects();
     for (int i = 0; i < nNodes; i++) {
         RenderNode *node = m_renderNodes.Get(i);
-        //node->Transform.UpdateDerivedData();
     }
 }
 
@@ -80,10 +79,10 @@ void dbasic::RenderSkeleton::UpdateAnimation(float dt) {
         TransformTarget *rotTarget = node->GetRotationTarget();
 
         if (locTarget->IsAnimated()) {
-            node->Transform.SetPosition(
-                ysMath::Add(
-                    node->GetRestLocation(), locTarget->GetLocationResult())
-                );
+            ysVector movement = node->Transform.LocalToParentDirection(locTarget->GetLocationResult());
+            ysVector movementParentSpace = movement;
+
+            node->Transform.SetPosition(ysMath::Add(node->GetRestLocation(), movementParentSpace));
         }
 
         if (rotTarget->IsAnimated()) {

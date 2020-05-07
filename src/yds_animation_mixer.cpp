@@ -152,9 +152,7 @@ float ysAnimationChannel::GetPlayhead() const {
     if (last == -1) return 0.0f;
     else {
         const Segment &segment = m_segmentStack[last];
-        float s = ComputeSegmentPlayhead(segment);
-
-        return s;
+        return ComputeSegmentPlayhead(segment);
     }
 }
 
