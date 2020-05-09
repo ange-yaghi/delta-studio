@@ -47,9 +47,9 @@ ysError ysStreamingAudio::UpdateMetrics() {
 	if (m_file == nullptr) return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
 	if (m_source == nullptr) return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
 	if (m_file->GetBufferSize() > m_source->GetBufferSize()) return YDS_ERROR_RETURN(ysError::YDS_INCOMPATIBLE_BUFFER_AND_FILE);
-	if (m_buffer->GetBufferSize() % m_file->GetBufferSize() > 0) return YDS_ERROR_RETURN(ysError::YDS_INCOMPATIBLE_BUFFER_AND_FILE);
+	if (m_source->GetBufferSize() % m_file->GetBufferSize() > 0) return YDS_ERROR_RETURN(ysError::YDS_INCOMPATIBLE_BUFFER_AND_FILE);
 
-	m_subdivisions = m_buffer->GetBufferSize() / m_file->GetBufferSize();
+	m_subdivisions = m_source->GetBufferSize() / m_file->GetBufferSize();
 
 	return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
 }
@@ -58,17 +58,17 @@ ysError ysStreamingAudio::Seek(SampleOffset offset) {
 	YDS_ERROR_DECLARE("Seek");
 
 	if (m_file == nullptr) return YDS_ERROR_RETURN(ysError::YDS_NO_FILE);
-	if (m_buffer == nullptr) return YDS_ERROR_RETURN(ysError::YDS_NO_AUDIO_BUFFER);
+	if (m_source == nullptr) return YDS_ERROR_RETURN(ysError::YDS_NO_AUDIO_BUFFER);
 	if (m_file->GetBufferSize() == 0) return YDS_ERROR_RETURN(ysError::YDS_NO_FILE_BUFFER);
 
-	ysAudioBuffer::Mode mode = m_buffer->GetBufferMode();
-	m_buffer->SetMode(ysAudioBuffer::Mode::Stop);
-	m_buffer->Seek(0);
+	ysAudioSource::Mode mode = m_source->GetBufferMode();
+	m_source->SetMode(ysAudioSource::Mode::Stop);
+	m_source->Seek(0);
 
 	m_fileOffset = offset;
 	ysError error = InitializeBuffer();
 
-	m_buffer->SetMode(mode);
+	m_source->SetMode(mode);
 
 	return YDS_ERROR_RETURN(error);
 }
@@ -77,17 +77,17 @@ ysError ysStreamingAudio::InitializeBuffer() {
 	YDS_ERROR_DECLARE("InitializeBuffer");
 
 	if (m_file == nullptr) return YDS_ERROR_RETURN(ysError::YDS_NO_FILE);
-	if (m_buffer == nullptr) return YDS_ERROR_RETURN(ysError::YDS_NO_AUDIO_BUFFER);
+	if (m_source == nullptr) return YDS_ERROR_RETURN(ysError::YDS_NO_AUDIO_BUFFER);
 	if (m_file->GetBufferSize() == 0) return YDS_ERROR_RETURN(ysError::YDS_NO_FILE_BUFFER);
 
 	void *audioBuffer;
 	SampleOffset audioBufferSize;
-	m_buffer->LockEntireBuffer(&audioBuffer, &audioBufferSize);
+	m_source->LockEntireBuffer(&audioBuffer, &audioBufferSize);
 
 	unsigned int bufferOffset;
 
 	for(int i = 0; i < m_subdivisions; i++) {
-		bufferOffset = m_buffer->GetAudioParameters()->GetSizeFromSamples(i * m_file->GetBufferSize());
+		bufferOffset = m_source->GetAudioParameters()->GetSizeFromSamples(i * m_file->GetBufferSize());
 
 		m_file->FillBuffer(m_fileOffset);
 		const void *fileBuffer = m_file->GetBuffer();
@@ -97,7 +97,7 @@ ysError ysStreamingAudio::InitializeBuffer() {
 		m_fileOffset += m_file->GetBufferSize();
 	}
 
-	m_buffer->UnlockBufferSegments(audioBuffer, audioBufferSize, NULL, NULL);
+	m_source->UnlockBufferSegments(audioBuffer, audioBufferSize, NULL, NULL);
 
 	m_currentWriteSubdivision = 0;
 	m_currentReadSubdivision = 0;
@@ -118,20 +118,23 @@ void ysStreamingAudio::Transfer() {
 
 	const void *fileBuffer = m_file->GetBuffer();
 
-	ysError error = m_buffer->LockBufferSegment(writeOffset, m_file->GetBufferSize(), &segment1, &size1, &segment2, &size2);
+	ysError error = m_source->LockBufferSegment(
+		writeOffset, m_file->GetBufferSize(), &segment1, &size1, &segment2, &size2);
 
-	SampleOffset writeCursor = m_buffer->GetCurrentWritePosition();
+	SampleOffset writeCursor = m_source->GetCurrentWritePosition();
 
 	if (segment1 != nullptr) {
-		unsigned int size = m_buffer->GetAudioParameters()->GetSizeFromSamples(size1);
+		unsigned int size = m_source->GetAudioParameters()->GetSizeFromSamples(size1);
 		memcpy(segment1, fileBuffer, size);
 	}
 
 	if (segment2 != nullptr) {
-		memcpy(segment2, ((char *)fileBuffer) + m_buffer->GetAudioParameters()->GetSizeFromSamples(size1), m_buffer->GetAudioParameters()->GetSizeFromSamples(size2));
+		memcpy(segment2, 
+			((char *)fileBuffer) + m_source->GetAudioParameters()->GetSizeFromSamples(size1), 
+			m_source->GetAudioParameters()->GetSizeFromSamples(size2));
 	}
 
-	m_buffer->UnlockBufferSegments(segment1, size1, segment2, size2);
+	m_source->UnlockBufferSegments(segment1, size1, segment2, size2);
 }
 
 ysError ysStreamingAudio::Update() {
@@ -140,7 +143,7 @@ ysError ysStreamingAudio::Update() {
 	int readSubdivision;
 	SampleOffset readPosition;
 
-	readPosition = m_buffer->GetCurrentPosition();
+	readPosition = m_source->GetCurrentPosition();
 	readSubdivision = readPosition / m_file->GetBufferSize();
 
 	if (readSubdivision != m_currentReadSubdivision) {
