@@ -187,6 +187,9 @@ public:
 
     ysRenderTarget *GetActiveRenderTarget() const { return m_activeRenderTarget; }
 
+    void SetDebugFlag(int flag, bool state);
+    bool GetDebugFlag(int flag) const;
+
 protected:
     ysRenderTarget *GetActualRenderTarget();
 
@@ -214,8 +217,11 @@ protected:
 
     ysTextureSlot *m_activeTextures;
 
+    // Debug
+    unsigned int m_debugFlags;
+
     // Platform Dependant Constants
-    int										m_maxTextureSlots;
+    int	m_maxTextureSlots;
 };
 
 #endif /* YDS_DEVICE_H */

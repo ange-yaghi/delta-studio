@@ -9,6 +9,7 @@ namespace dbasic {
 
     class RenderSkeleton;
     class ModelAsset;
+    class SceneObjectAsset;
 
     class RenderNode : public ysObject {
     public:
@@ -48,6 +49,9 @@ namespace dbasic {
         void SetRestOrientation(const ysQuaternion &q) { m_restOrientation = q; }
         ysQuaternion GetRestOrientation() const { return m_restOrientation; }
 
+        void SetSceneAsset(SceneObjectAsset *asset) { m_sceneAsset = asset; }
+        SceneObjectAsset *GetSceneAsset() const { return m_sceneAsset; }
+
     protected:
         // Node name
         char m_name[64];
@@ -63,6 +67,9 @@ namespace dbasic {
 
         // Model asset
         ModelAsset *m_modelAsset;
+
+        // Scene object reference
+        SceneObjectAsset *m_sceneAsset;
 
         bool m_bone;
 

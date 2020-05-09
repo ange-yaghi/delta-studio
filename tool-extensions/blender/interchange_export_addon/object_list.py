@@ -114,7 +114,11 @@ class ObjectList(object):
         new_object = Object(obj)
         new_object.index = n
         new_object.instance_index = -1
-        new_object.object_type = ObjectType.GEOMETRY
+
+        if (obj.type == 'MESH'):
+            new_object.object_type = ObjectType.GEOMETRY
+        elif (obj.type == 'EMPTY'):
+            new_object.object_type = ObjectType.EMPTY
 
         self.object_list.append(new_object)
 
@@ -170,9 +174,7 @@ class ObjectList(object):
         if bone.global_matrix is not None:
             return bone.global_matrix
 
-        #bone.global_matrix = self.resolve_bone_transform(self.get(bone.parent_index)) @ bone.obj.matrix_local
         bone.global_matrix = armature_transform @ bone.obj.matrix_local
-        #bone.global_matrix = mathutils.Matrix.Translation(bone.obj.head_local)
         return bone.global_matrix
     
     def add_armature(self, obj):

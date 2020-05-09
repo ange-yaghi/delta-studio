@@ -6,8 +6,8 @@ import mathutils
 import math
 
 def write_id_header(f):
-    MAJOR_VERSION = 0x0
-    MINOR_VERSION = 0x0
+    MAJOR_VERSION = 0x00
+    MINOR_VERSION = 0x01
     MAGIC_NUMBER = 0xFEA4AA
     EDITOR_ID = 0x3
     COMPILATION_STATUS_RAW = int('0x1', base=16)
@@ -38,6 +38,11 @@ class Action(object):
 
         for curve in self.curves:
             curve.write(f)
+
+
+class InterpolationMode:
+    Bezier = 0x0
+    Linear = 0x1
 
 
 class CurveType:
@@ -80,9 +85,25 @@ class Keyframe(object):
         self.timestamp = timestamp
         self.value = value
 
+        self.interpolation_mode = 0x0
+
+        self.l_handle_x = 0.0
+        self.l_handle_y = 0.0
+
+        self.r_handle_x = 0.0
+        self.r_handle_y = 0.0
+
     def write(self, f):
         write_32_bit_float(self.timestamp, f)
         write_32_bit_float(self.value, f)
+
+        write_32_bit_unsigned(self.interpolation_mode, f)
+
+        write_32_bit_float(self.l_handle_x, f)
+        write_32_bit_float(self.l_handle_y, f)
+
+        write_32_bit_float(self.r_handle_x, f)
+        write_32_bit_float(self.r_handle_y, f)
 
 
 def write_animation_file(context, filepath):
@@ -137,10 +158,22 @@ def write_animation_file(context, filepath):
                 continue
 
             for keyframe in fcurve.keyframe_points:
-                if new_curve.curve_type == CurveType.RotationQuatW:
-                    new_curve.keyframes.append(Keyframe(keyframe.co.x, keyframe.co.y))
+                f_key = Keyframe(keyframe.co.x, keyframe.co.y)
+
+                if keyframe.interpolation == "LINEAR":
+                    f_key.interpolation_mode = InterpolationMode.Linear
+                elif keyframe.interpolation == "BEZIER":
+                    f_key.interpolation_mode = InterpolationMode.Bezier
                 else:
-                    new_curve.keyframes.append(Keyframe(keyframe.co.x, keyframe.co.y))
+                    f_key.interpolation_mode = InterpolationMode.Linear
+
+                f_key.l_handle_x = keyframe.handle_left.x
+                f_key.l_handle_y = keyframe.handle_left.y
+
+                f_key.r_handle_x = keyframe.handle_right.x
+                f_key.r_handle_y = keyframe.handle_right.y
+
+                new_curve.keyframes.append(f_key)
 
             new_curve.target = bone_name
             new_curve.keyframe_count = len(new_curve.keyframes)

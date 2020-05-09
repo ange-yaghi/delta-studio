@@ -27,9 +27,14 @@ namespace dbasic {
     public:
         static const int MAX_LAYERS = 256;
 
-        enum DrawTarget {
+        enum class DrawTarget {
             Gui,
             Main
+        };
+
+        enum class CameraMode {
+            Target,
+            Flat
         };
 
     public:
@@ -52,7 +57,7 @@ namespace dbasic {
         ysError SetAmbientLight(const ysVector4 &ambient);
         ysError DrawBox(const int color[3], float width, float height, int layer = 0);
         ysError DrawAxis(const int color[3], const ysVector &position, const ysVector &direction, float width, float length, int layer = 0);
-        ysError DrawModel(ModelAsset *model, const ysMatrix &transform, float scale, ysTexture *texture, int layer = 0);
+        ysError DrawModel(ModelAsset *model, const ysMatrix &transform, float scale, ysTexture *texture, int layer = 0, bool lit = true);
         ysError DrawRenderSkeleton(RenderSkeleton *skeleton, float scale, int layer);
         ysError LoadTexture(ysTexture **image, const char *fname);
         ysError LoadAnimation(Animation **animation, const char *path, int start, int end);
@@ -68,6 +73,12 @@ namespace dbasic {
         // Shader Controls
         void SetCameraPosition(float x, float y);
         void GetCameraPosition(float *x, float *y) const;
+
+        void SetCameraTarget(const ysVector &target);
+        ysVector GetCameraTarget() const { return m_cameraTarget; }
+
+        void SetCameraMode(CameraMode mode);
+        CameraMode GetCameraMode() const { return m_cameraMode; }
 
         void SetCameraAngle(float angle);
 
@@ -112,6 +123,8 @@ namespace dbasic {
         float m_cameraAngle;
         float m_cameraFov;
 
+        ysVector m_cameraTarget;
+
         ysMatrix m_perspectiveProjection;
         ysMatrix m_orthographicProjection;
 
@@ -142,6 +155,9 @@ namespace dbasic {
         ShaderObjectVariables m_shaderObjectVariables;
         bool m_shaderObjectVariablesSync;
 
+        ysGPUBuffer *m_consoleShaderObjectVariablesBuffer;
+        ConsoleShaderObjectVariables m_consoleShaderObjectVariables;
+
         ysGPUBuffer *m_lightingControlBuffer;
         LightingControls m_lightingControls;
         int m_lightCount;
@@ -158,13 +174,18 @@ namespace dbasic {
         ysShader *m_vertexShader;
         ysShader *m_vertexSkinnedShader;
         ysShader *m_pixelShader;
+        ysShader *m_consoleVertexShader;
+        ysShader *m_consolePixelShader;
         ysShaderProgram *m_shaderProgram;
         ysShaderProgram *m_skinnedShaderProgram;
+        ysShaderProgram *m_consoleProgram;
 
         ysRenderGeometryFormat m_skinnedFormat;
         ysRenderGeometryFormat m_standardFormat;
+        ysRenderGeometryFormat m_consoleVertexFormat;
         ysInputLayout *m_skinnedInputLayout;
         ysInputLayout *m_inputLayout;
+        ysInputLayout *m_consoleInputLayout;
 
         // Text Support
         Console m_console;
@@ -172,6 +193,7 @@ namespace dbasic {
         bool m_initialized;
 
         DrawTarget m_currentTarget;
+        CameraMode m_cameraMode;
 
         // Timing
         ysTimingSystem *m_timingSystem;

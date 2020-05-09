@@ -16,6 +16,7 @@
 #include "rigid_body_system.h"
 #include "force_generator.h"
 #include "spring_link.h"
+#include "ledge_link.h"
 
 #pragma comment(lib, "delta-physics.lib")
 

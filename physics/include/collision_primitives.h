@@ -68,23 +68,27 @@ namespace dphysics {
         float m_staticFriction;
         float m_dynamicFriction;
 
+        void Initialize();
         void UpdateInternals(float timestep);
 
         Collision &operator=(Collision &collision);
 
         bool IsGhost() const;
 
+        // Get velocity on impact
+        ysVector GetContactVelocity() const { return m_initialContactVelocity; }
+
     protected:
         ysVector m_relativePosition[2];
         ysMatrix m_contactSpace;
         ysVector m_contactVelocity;
+        ysVector m_initialContactVelocity;
 
         float m_desiredDeltaVelocity;
 
-
         void CalculateDesiredDeltaVelocity(float timestep);
 
-        ysVector CalculateLocalVelocity(int bodyIndex, float timestep);
+        ysVector CalculateLocalVelocity(int bodyIndex);
 
     private:
         void CalculateContactSpace();

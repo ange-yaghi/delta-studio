@@ -1111,22 +1111,21 @@ void ysD3D10Device::GetDXGIDevice(IDXGIDevice **device) {
 	if (FAILED(hr)) (*device) = nullptr;
 }
 
-DXGI_FORMAT ysD3D10Device::ConvertInputLayoutFormat(ysRenderGeometryChannel::CHANNEL_FORMAT format) {
+DXGI_FORMAT ysD3D10Device::ConvertInputLayoutFormat(ysRenderGeometryChannel::ChannelFormat format) {
     switch (format) {
-    case ysRenderGeometryChannel::CHANNEL_FORMAT_R32G32B32A32_FLOAT:
+	case ysRenderGeometryChannel::ChannelFormat::R32G32B32A32_FLOAT:
         return DXGI_FORMAT_R32G32B32A32_FLOAT;
-    case ysRenderGeometryChannel::CHANNEL_FORMAT_R32G32B32_FLOAT:
+    case ysRenderGeometryChannel::ChannelFormat::R32G32B32_FLOAT:
         return DXGI_FORMAT_R32G32B32_FLOAT;
-    case ysRenderGeometryChannel::CHANNEL_FORMAT_R32G32_FLOAT:
+    case ysRenderGeometryChannel::ChannelFormat::R32G32_FLOAT:
         return DXGI_FORMAT_R32G32_FLOAT;
-    case ysRenderGeometryChannel::CHANNEL_FORMAT_R32G32B32A32_UINT:
+    case ysRenderGeometryChannel::ChannelFormat::R32G32B32A32_UINT:
         return DXGI_FORMAT_R32G32B32A32_UINT;
-    case ysRenderGeometryChannel::CHANNEL_FORMAT_R32G32B32_UINT:
+    case ysRenderGeometryChannel::ChannelFormat::R32G32B32_UINT:
         return DXGI_FORMAT_R32G32B32_UINT;
-    case ysRenderGeometryChannel::CHANNEL_FORMAT_UNDEFINED:
+    case ysRenderGeometryChannel::ChannelFormat::Undefined:
     default:
         return DXGI_FORMAT_UNKNOWN;
-
     }
 }
 

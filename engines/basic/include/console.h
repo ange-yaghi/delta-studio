@@ -87,7 +87,7 @@ namespace dbasic {
         ysInputLayout *m_standardInputLayout;
 
         // Vertex buffer
-        Vertex *m_vertexData;
+        ConsoleVertex *m_vertexData;
 
     protected:
         // Settings

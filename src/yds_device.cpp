@@ -15,6 +15,7 @@ ysDevice::ysDevice() : ysContextObject("API_DEVICE", API_UNKNOWN) {
 	m_activeTextures = nullptr;
 
 	m_maxTextureSlots = 0;
+	m_debugFlags = 0x00000000;
 }
 
 ysDevice::ysDevice(DEVICE_API API) : ysContextObject("API_DEVICE", API) {
@@ -28,6 +29,7 @@ ysDevice::ysDevice(DEVICE_API API) : ysContextObject("API_DEVICE", API) {
 	m_activeTextures = nullptr;
 
 	m_maxTextureSlots = 0;
+	m_debugFlags = 0x00000000;
 }
 
 ysDevice::~ysDevice() {
@@ -83,6 +85,15 @@ ysError ysDevice::SetRenderTarget(ysRenderTarget *newTarget) {
 	m_activeRenderTarget = newTarget;
 
 	return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+}
+
+void ysDevice::SetDebugFlag(int flag, bool state) {
+	m_debugFlags &= ~(0x1 << flag);
+	if (state) m_debugFlags |= (0x1 << flag);
+}
+
+bool ysDevice::GetDebugFlag(int flag) const {
+    return (m_debugFlags & (0x1 << flag)) != 0;
 }
 
 ysRenderTarget *ysDevice::GetActualRenderTarget() {

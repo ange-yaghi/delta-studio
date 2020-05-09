@@ -121,6 +121,7 @@ public:
 
 	PFNWGLMAKECONTEXTCURRENTARBPROC		wglMakeContextCurrent;
 	PFNWGLCREATECONTEXTATTRIBSARBPROC	wglCreateContextAttribsARB;
+	PFNWGLCHOOSEPIXELFORMATARBPROC		wglChoosePixelFormatARB;
 
 	bool IsRealContext() { return m_isRealContext; }
 

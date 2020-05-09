@@ -78,7 +78,7 @@ ysError dbasic::Console::InitializeGeometry() {
     }
 
     // Populate the vertex data
-    m_vertexData = new Vertex[4 * BUFFER_SIZE];
+    m_vertexData = new ConsoleVertex[4 * BUFFER_SIZE];
 
     float scaleX = 22.0f / 2.0f;
     float scaleY = 32.0f / 2.0f;
@@ -93,10 +93,10 @@ ysError dbasic::Console::InitializeGeometry() {
             float offsetX = (-m_engine->GetScreenWidth() / 2.0f) + (scaleX * i);
             float offsetY = (m_engine->GetScreenHeight() / 2.0f) - (scaleY * j);
 
-            m_vertexData[offset * 4 + 0].Pos = ysVector4(0.0f * scaleX + offsetX, 0.0f * scaleY + offsetY, -1.0f, 1.0f);
-            m_vertexData[offset * 4 + 1].Pos = ysVector4(1.0f * scaleX + offsetX, 0.0f * scaleY + offsetY, -1.0f, 1.0f);
-            m_vertexData[offset * 4 + 2].Pos = ysVector4(1.0f * scaleX + offsetX, -1.0f * scaleY + offsetY, -1.0f, 1.0f);
-            m_vertexData[offset * 4 + 3].Pos = ysVector4(0.0f * scaleX + offsetX, -1.0f * scaleY + offsetY, -1.0f, 1.0f);
+            m_vertexData[offset * 4 + 0].Pos = ysVector2(0.0f * scaleX + offsetX, 0.0f * scaleY + offsetY);
+            m_vertexData[offset * 4 + 1].Pos = ysVector2(1.0f * scaleX + offsetX, 0.0f * scaleY + offsetY);
+            m_vertexData[offset * 4 + 2].Pos = ysVector2(1.0f * scaleX + offsetX, -1.0f * scaleY + offsetY);
+            m_vertexData[offset * 4 + 3].Pos = ysVector2(0.0f * scaleX + offsetX, -1.0f * scaleY + offsetY);
 
             m_vertexData[offset * 4 + 0].TexCoord = ysVector2(0.0f * texScaleX, 0.0f * texScaleY);
             m_vertexData[offset * 4 + 1].TexCoord = ysVector2(1.0f * texScaleX, 0.0f * texScaleY);
@@ -107,7 +107,7 @@ ysError dbasic::Console::InitializeGeometry() {
 
     ysDevice *device = m_engine->GetDevice();
 
-    YDS_NESTED_ERROR_CALL(device->CreateVertexBuffer(&m_mainVertexBuffer, sizeof(Vertex) * 4 * BUFFER_SIZE, (char *)m_vertexData));
+    YDS_NESTED_ERROR_CALL(device->CreateVertexBuffer(&m_mainVertexBuffer, sizeof(ConsoleVertex) * 4 * BUFFER_SIZE, (char *)m_vertexData));
     YDS_NESTED_ERROR_CALL(device->CreateIndexBuffer(&m_mainIndexBuffer, sizeof(unsigned short) * 6 * BUFFER_SIZE, (char *)indices));
 
     return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
@@ -119,11 +119,11 @@ ysError dbasic::Console::UpdateDisplay() {
     m_engine->GetDevice()->EditBufferData(m_mainVertexBuffer, (char *)m_vertexData);
 
     m_engine->GetDevice()->UseIndexBuffer(m_mainIndexBuffer, 0);
-    m_engine->GetDevice()->UseVertexBuffer(m_mainVertexBuffer, sizeof(Vertex), 0);
+    m_engine->GetDevice()->UseVertexBuffer(m_mainVertexBuffer, sizeof(ConsoleVertex), 0);
 
     m_engine->GetDevice()->UseTexture(m_font, 0);
 
-    m_engine->GetDevice()->Draw(2 * 12000, 0, 0);
+    m_engine->GetDevice()->Draw(2 * BUFFER_SIZE, 0, 0);
 
     return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
 }

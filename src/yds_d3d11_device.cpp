@@ -16,15 +16,15 @@
 #include <d3dx11async.h>
 #include <d3dx11tex.h>
 
-//#ifdef _DEBUG
-//#include <dxgi1_3.h>
-//#include <initguid.h>
-//#include <dxgidebug.h>
+#ifdef _DEBUG
+#include <dxgi1_3.h>
+#include <initguid.h>
+#include <dxgidebug.h>
 
-//#include <wrl.h>
+#include <wrl.h>
 
-//typedef HRESULT(WINAPI *DXGIGetDebugInterface_proc) (const IID &riid, void **ppDebug);
-//#endif /* _DEBUG */
+typedef HRESULT(WINAPI *DXGIGetDebugInterface_proc) (const IID &riid, void **ppDebug);
+#endif /* _DEBUG */
 
 #pragma warning(pop)
 
@@ -103,14 +103,14 @@ ysError ysD3D11Device::DestroyDevice() {
 
     if (m_rasterizerState != nullptr) m_rasterizerState->Release();
 
-//#ifdef _DEBUG
-//    Microsoft::WRL::ComPtr<IDXGIDebug> dxgiDebug;
-//
-//    DXGIGetDebugInterface_proc proc = (DXGIGetDebugInterface_proc)GetProcAddress(GetModuleHandle(TEXT("Dxgidebug.dll")), "DXGIGetDebugInterface");
-//    const IID &pD = DXGI_DEBUG_ALL;
-//    HRESULT r = proc(IID_PPV_ARGS(dxgiDebug.GetAddressOf()));
-//    dxgiDebug.Get()->ReportLiveObjects(pD, DXGI_DEBUG_RLO_ALL);
-//#endif /* _DEBUG */
+#ifdef _DEBUG
+    Microsoft::WRL::ComPtr<IDXGIDebug> dxgiDebug;
+
+    DXGIGetDebugInterface_proc proc = (DXGIGetDebugInterface_proc)GetProcAddress(GetModuleHandle(TEXT("Dxgidebug.dll")), "DXGIGetDebugInterface");
+    const IID &pD = DXGI_DEBUG_ALL;
+    HRESULT r = proc(IID_PPV_ARGS(dxgiDebug.GetAddressOf()));
+    dxgiDebug.Get()->ReportLiveObjects(pD, DXGI_DEBUG_RLO_ALL);
+#endif /* _DEBUG */
 
     return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
 }
@@ -187,15 +187,15 @@ ysError ysD3D11Device::CreateRenderingContext(ysRenderingContext **context, ysWi
         D3D11_RASTERIZER_DESC rasterizerDescription;
         ZeroMemory(&rasterizerDescription, sizeof(D3D11_RASTERIZER_DESC));
         rasterizerDescription.FillMode = D3D11_FILL_SOLID;
-        rasterizerDescription.CullMode = D3D11_CULL_FRONT;
-        rasterizerDescription.FrontCounterClockwise = FALSE;
+        rasterizerDescription.CullMode = D3D11_CULL_BACK;
+        rasterizerDescription.FrontCounterClockwise = TRUE;
         rasterizerDescription.DepthBias = FALSE;
         rasterizerDescription.DepthBiasClamp = 0;
         rasterizerDescription.SlopeScaledDepthBias = 0;
-        rasterizerDescription.DepthClipEnable = FALSE;
+        rasterizerDescription.DepthClipEnable = TRUE;
         rasterizerDescription.ScissorEnable = FALSE;
-        rasterizerDescription.MultisampleEnable = TRUE;
-        rasterizerDescription.AntialiasedLineEnable = TRUE;
+        rasterizerDescription.MultisampleEnable = FALSE;
+        rasterizerDescription.AntialiasedLineEnable = FALSE;
 
         m_device->CreateRasterizerState(&rasterizerDescription, &m_rasterizerState);
         GetImmediateContext()->RSSetState(m_rasterizerState);
@@ -920,20 +920,22 @@ ysError ysD3D11Device::CreatePixelShader(ysShader **newShader, const char *shade
 
     GetImmediateContext()->PSSetShader(pixelShader, 0, 0);
 
-    // Create a sampler state (testing purposes)
-    D3D11_SAMPLER_DESC desc;
-    ZeroMemory(&desc, sizeof(D3D11_SAMPLER_DESC));
-    desc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
-    desc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
-    desc.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
-    desc.Filter = D3D11_FILTER_ANISOTROPIC;
-    desc.MinLOD = 0.0f;
-    desc.MaxLOD = FLT_MAX;
-    desc.MaxAnisotropy = 16;
-    desc.ComparisonFunc = D3D11_COMPARISON_NEVER;
+    if (m_samplerState == nullptr) {
+        // Create a sampler state (testing purposes)
+        D3D11_SAMPLER_DESC desc;
+        ZeroMemory(&desc, sizeof(D3D11_SAMPLER_DESC));
+        desc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+        desc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+        desc.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
+        desc.Filter = D3D11_FILTER_ANISOTROPIC;
+        desc.MinLOD = 0.0f;
+        desc.MaxLOD = FLT_MAX;
+        desc.MaxAnisotropy = 16;
+        desc.ComparisonFunc = D3D11_COMPARISON_NEVER;
 
-    HRESULT err = m_device->CreateSamplerState(&desc, &m_samplerState);
-    GetImmediateContext()->PSSetSamplers(0, 1, &m_samplerState);
+        HRESULT err = m_device->CreateSamplerState(&desc, &m_samplerState);
+        GetImmediateContext()->PSSetSamplers(0, 1, &m_samplerState);
+    }
 
     // END TEMP ----------------------------------------------------
 
@@ -1239,19 +1241,19 @@ void ysD3D11Device::GetDXGIDevice(IDXGIDevice **device) {
     }
 }
 
-DXGI_FORMAT ysD3D11Device::ConvertInputLayoutFormat(ysRenderGeometryChannel::CHANNEL_FORMAT format) {
+DXGI_FORMAT ysD3D11Device::ConvertInputLayoutFormat(ysRenderGeometryChannel::ChannelFormat format) {
     switch (format) {
-    case ysRenderGeometryChannel::CHANNEL_FORMAT_R32G32B32A32_FLOAT:
+    case ysRenderGeometryChannel::ChannelFormat::R32G32B32A32_FLOAT:
         return DXGI_FORMAT_R32G32B32A32_FLOAT;
-    case ysRenderGeometryChannel::CHANNEL_FORMAT_R32G32B32_FLOAT:
+    case ysRenderGeometryChannel::ChannelFormat::R32G32B32_FLOAT:
         return DXGI_FORMAT_R32G32B32_FLOAT;
-    case ysRenderGeometryChannel::CHANNEL_FORMAT_R32G32_FLOAT:
+    case ysRenderGeometryChannel::ChannelFormat::R32G32_FLOAT:
         return DXGI_FORMAT_R32G32_FLOAT;
-    case ysRenderGeometryChannel::CHANNEL_FORMAT_R32G32B32A32_UINT:
+    case ysRenderGeometryChannel::ChannelFormat::R32G32B32A32_UINT:
         return DXGI_FORMAT_R32G32B32A32_UINT;
-    case ysRenderGeometryChannel::CHANNEL_FORMAT_R32G32B32_UINT:
+    case ysRenderGeometryChannel::ChannelFormat::R32G32B32_UINT:
         return DXGI_FORMAT_R32G32B32_UINT;
-    case ysRenderGeometryChannel::CHANNEL_FORMAT_UNDEFINED:
+    case ysRenderGeometryChannel::ChannelFormat::Undefined:
     default:
         return DXGI_FORMAT_UNKNOWN;
     }

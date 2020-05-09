@@ -84,7 +84,7 @@ public:
     IDXGIFactory *GetDXGIFactory() { return m_DXGIFactory; }
     ID3D10Device *GetDevice() { return m_device; }
 
-    static DXGI_FORMAT ConvertInputLayoutFormat(ysRenderGeometryChannel::CHANNEL_FORMAT format);
+    static DXGI_FORMAT ConvertInputLayoutFormat(ysRenderGeometryChannel::ChannelFormat format);
 
 protected:
     ID3D10Device *m_device;

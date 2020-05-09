@@ -21,7 +21,7 @@
 #include "yds_animation_curve.h"
 #include "yds_animation_mixer.h"
 #include "yds_animation_target.h"
-#include "yds_animation_interchange_file_0_0.h"
+#include "yds_animation_interchange_file.h"
 
 // Timing
 #include "yds_time_tag_data.h"

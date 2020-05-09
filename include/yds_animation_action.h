@@ -18,6 +18,7 @@ public:
     ~ysAnimationAction();
 
     ysAnimationCurve *NewCurve(const std::string &target);
+    ysAnimationCurve *GetCurve(const std::string &target, ysAnimationCurve::CurveType type);
     int GetCurveCount() const;
 
     float GetLength() const { return m_length; }

@@ -11,6 +11,11 @@ namespace dbasic {
         ysVector4 Normal = { 0.0f, 0.0f, 0.0f, 0.0f };
     };
 
+    struct ConsoleVertex {
+        ysVector2 Pos = { 0.0f, 0.0f };
+        ysVector2 TexCoord = { 0.0f, 0.0f };
+    };
+
     struct ShaderObjectVariables {
         ysMatrix Transform = ysMath::LoadIdentity();
 
@@ -22,6 +27,12 @@ namespace dbasic {
         int Lit = 1;
 
         int Pad[2] = { 0, 0 };
+    };
+
+    struct ConsoleShaderObjectVariables {
+        ysVector4 MulCol = { 1.0f, 1.0f, 1.0f, 1.0f };
+        float TexOffset[2] = { 0.0f, 0.0f };
+        float TexScale[2] = { 1.0f, 1.0f };
     };
 
     struct ShaderScreenVariables {

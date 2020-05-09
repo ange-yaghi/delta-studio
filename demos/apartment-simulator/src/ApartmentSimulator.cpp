@@ -354,17 +354,17 @@ void ApartmentSimulator::Initialize(ysDevice::DEVICE_API API, void *instance) {
     m_device->CreateOnScreenRenderTarget(&m_mainRenderTarget, m_mainContext, true);
     m_device->CreateOnScreenRenderTarget(&m_titleRenderTarget, m_titleContext, false);
 
-    m_format.AddChannel("POSITION", 0, ysRenderGeometryChannel::CHANNEL_FORMAT_R32G32B32A32_FLOAT);
-    m_format.AddChannel("TEXCOORD", sizeof(float) * 4, ysRenderGeometryChannel::CHANNEL_FORMAT_R32G32_FLOAT);
-    m_format.AddChannel("NORMAL", sizeof(float) * 6, ysRenderGeometryChannel::CHANNEL_FORMAT_R32G32B32A32_FLOAT);
+    m_format.AddChannel("POSITION", 0, ysRenderGeometryChannel::ChannelFormat::R32G32B32A32_FLOAT);
+    m_format.AddChannel("TEXCOORD", sizeof(float) * 4, ysRenderGeometryChannel::ChannelFormat::R32G32_FLOAT);
+    m_format.AddChannel("NORMAL", sizeof(float) * 6, ysRenderGeometryChannel::ChannelFormat::R32G32B32A32_FLOAT);
 
-    m_simpleFormat.AddChannel("POSITION", 0, ysRenderGeometryChannel::CHANNEL_FORMAT_R32G32B32_FLOAT);
-    m_simpleFormat.AddChannel("TEXCOORD", sizeof(float) * 3, ysRenderGeometryChannel::CHANNEL_FORMAT_R32G32_FLOAT);
+    m_simpleFormat.AddChannel("POSITION", 0, ysRenderGeometryChannel::ChannelFormat::R32G32B32_FLOAT);
+    m_simpleFormat.AddChannel("TEXCOORD", sizeof(float) * 3, ysRenderGeometryChannel::ChannelFormat::R32G32_FLOAT);
 
-    m_normalMappingFormat.AddChannel("POSITION", 0, ysRenderGeometryChannel::CHANNEL_FORMAT_R32G32B32A32_FLOAT);
-    m_normalMappingFormat.AddChannel("TEXCOORD", sizeof(float) * 4, ysRenderGeometryChannel::CHANNEL_FORMAT_R32G32_FLOAT);
-    m_normalMappingFormat.AddChannel("NORMAL", sizeof(float) * 6, ysRenderGeometryChannel::CHANNEL_FORMAT_R32G32B32A32_FLOAT);
-    m_normalMappingFormat.AddChannel("TANGENT", sizeof(float) * 10, ysRenderGeometryChannel::CHANNEL_FORMAT_R32G32B32A32_FLOAT);
+    m_normalMappingFormat.AddChannel("POSITION", 0, ysRenderGeometryChannel::ChannelFormat::R32G32B32A32_FLOAT);
+    m_normalMappingFormat.AddChannel("TEXCOORD", sizeof(float) * 4, ysRenderGeometryChannel::ChannelFormat::R32G32_FLOAT);
+    m_normalMappingFormat.AddChannel("NORMAL", sizeof(float) * 6, ysRenderGeometryChannel::ChannelFormat::R32G32B32A32_FLOAT);
+    m_normalMappingFormat.AddChannel("TANGENT", sizeof(float) * 10, ysRenderGeometryChannel::ChannelFormat::R32G32B32A32_FLOAT);
 
     m_device->CreateConstantBuffer(&m_constantBuffer, sizeof(ConstantBuffer), NULL, false);
     m_device->CreateConstantBuffer(&m_lightBuffer, sizeof(LightsList), NULL, false);

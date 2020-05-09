@@ -1,5 +1,7 @@
 #include "../include/delta_basic_demo_application.h"
 
+#include <sstream>
+
 dbasic_demo::DeltaBasicDemoApplication::DeltaBasicDemoApplication() {
     m_currentAngle = 0.0f;
     m_demoTexture = nullptr;
@@ -169,6 +171,16 @@ void dbasic_demo::DeltaBasicDemoApplication::Render() {
     light.Attenuation0 = 0.9f;
     light.Attenuation1 = 0.89f;
     m_engine.AddLight(light);
+
+    dbasic::Console *console = m_engine.GetConsole();
+    console->Clear();
+    console->MoveToLocation(dbasic::GuiPoint(1, 2));
+    console->SetFontForeColor(0, 0, 0, 1.0f);
+    console->SetFontBackColor(0, 0, 0, 0.0f);
+
+    std::stringstream msg;
+    msg << "FPS " << m_engine.GetAverageFramerate() << "\n";
+    console->DrawGeneralText(msg.str().c_str());
 }
 
 void dbasic_demo::DeltaBasicDemoApplication::Run() {

@@ -458,7 +458,7 @@ ysError dbasic::AssetManager::LoadAnimationFileLegacy(const char *fname) {
 ysError dbasic::AssetManager::LoadAnimationFile(const char *fname) {
     YDS_ERROR_DECLARE("LoadAnimationFile");
 
-    ysAnimationInterchangeFile0_0 animationFile;
+    ysAnimationInterchangeFile animationFile;
     animationFile.Open(fname);
 
     int actionCount = animationFile.GetActionCount();
@@ -580,6 +580,7 @@ dbasic::RenderSkeleton *dbasic::AssetManager::BuildRenderSkeleton(ysTransform *r
     newNode->Transform.SetOrientation(rootBone->GetLocalOrientation());
     newNode->Transform.SetPosition(rootBone->GetPosition());
     newNode->SetModelAsset(rootBone->m_geometry);
+    newNode->SetSceneAsset(rootBone);
     newNode->SetName(rootBone->m_name);
     newNode->SetBone(rootBone->GetType() == ysObjectData::ObjectType::Bone);
 
@@ -610,6 +611,7 @@ void dbasic::AssetManager::ProcessRenderNode(SceneObjectAsset *object, RenderSke
         newNode->SetModelAsset(object->m_geometry);
         newNode->SetName(object->m_name);
         newNode->SetBone(object->GetType() == ysObjectData::ObjectType::Bone);
+        newNode->SetSceneAsset(object);
 
         newNode->SetRestLocation(object->GetPosition());
         newNode->SetRestOrientation(object->GetLocalOrientation());

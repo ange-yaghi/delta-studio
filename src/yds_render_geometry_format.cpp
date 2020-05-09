@@ -1,7 +1,7 @@
 #include "../include/yds_render_geometry_format.h"
 
 ysRenderGeometryFormat::ysRenderGeometryFormat() : ysObject("RENDER_GEOMETRY_FORMAT") {
-    /* void */
+    m_formatSize = 0;
 }
 
 ysRenderGeometryFormat::~ysRenderGeometryFormat() {
@@ -16,7 +16,7 @@ int ysRenderGeometryFormat::GetFormatSize() const {
     return m_formatSize;
 }
 
-void ysRenderGeometryFormat::AddChannel(const char *name, int offset, ysRenderGeometryChannel::CHANNEL_FORMAT format) {
+void ysRenderGeometryFormat::AddChannel(const char *name, int offset, ysRenderGeometryChannel::ChannelFormat format) {
     ysRenderGeometryChannel *newChannel = m_channels.New();
     strcpy_s(newChannel->m_name, ysRenderGeometryChannel::MAX_NAME_LENGTH, name);
     newChannel->m_format = format;

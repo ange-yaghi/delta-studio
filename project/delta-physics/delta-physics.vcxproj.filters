@@ -40,12 +40,15 @@
     <Filter Include="interface">
       <UniqueIdentifier>{3685eccc-c68a-4c1d-b083-839dbb5c19a2}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\rigid-body\links">
+      <UniqueIdentifier>{34d599a7-0701-40c5-9635-5c164ae3d65d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\rigid-body\links">
+      <UniqueIdentifier>{c913d577-eb33-400d-92e8-a903235995c2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\physics\include\grid_partition_system.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\physics\include\hinge_link.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\physics\include\collision_detector.h">
@@ -93,6 +96,12 @@
     <ClInclude Include="..\..\physics\include\force_generator.h">
       <Filter>Header Files\rigid-body</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\physics\include\ledge_link.h">
+      <Filter>Header Files\rigid-body\links</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\physics\include\hinge_link.h">
+      <Filter>Header Files\rigid-body\links</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\physics\src\grid_partition_system.cpp">
@@ -138,7 +147,10 @@
       <Filter>Source Files\rigid-body</Filter>
     </ClCompile>
     <ClCompile Include="..\..\physics\src\hinge_link.cpp">
-      <Filter>Source Files\rigid-body</Filter>
+      <Filter>Source Files\rigid-body\links</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\physics\src\ledge_link.cpp">
+      <Filter>Source Files\rigid-body\links</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

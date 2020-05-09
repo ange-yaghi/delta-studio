@@ -13,8 +13,8 @@ dphysics::RigidBodySystem::RigidBodySystem() : ysObject("RigidBodySystem") {
     m_loadMeasurement = 0;
     m_replayEnabled = false;
 
-    m_defaultDynamicFriction = 1.0f;
-    m_defaultStaticFriction = 0.5f;
+    m_defaultDynamicFriction = 0.001f;
+    m_defaultStaticFriction = 0.001f;
 }
 
 dphysics::RigidBodySystem::~RigidBodySystem() {
@@ -133,13 +133,13 @@ void dphysics::RigidBodySystem::CloseReplayFile() {
 }
 
 void dphysics::RigidBodySystem::GenerateCollisions(int start, int count) {
-    const int REQUEST_THRESHOLD = 1;
+    const int REQUEST_THRESHOLD = 0;
 
     int rigidBodyCount = m_rigidBodyRegistry.GetNumObjects();
     std::vector<std::vector<bool>> visited(rigidBodyCount, std::vector<bool>(rigidBodyCount, false));
 
-    for (int cell = start; cell < (start + count); cell++) {
-        GridCell *gridCell = &m_gridPartitionSystem.m_gridCells[cell];
+    for (auto cell: m_gridPartitionSystem.m_gridCells) {
+        GridCell *gridCell = cell.second;
 
         if (gridCell->m_valid && (gridCell->m_forceProcess || gridCell->GetRequestCount() >= REQUEST_THRESHOLD)) {
             int cellObjects = gridCell->m_objects.GetNumObjects();
@@ -388,7 +388,7 @@ void dphysics::RigidBodySystem::GenerateCollisions() {
     m_dynamicCollisions.Clear();
     m_collisionAccumulator.Clear();
 
-    GenerateCollisions(0, m_gridPartitionSystem.m_gridCells.GetNumObjects());
+    GenerateCollisions(0, 0);
 
     char buffer[1024];
     int load = m_loadMeasurement;
@@ -416,6 +416,18 @@ void dphysics::RigidBodySystem::GenerateCollisions() {
             newCollisionEntry->m_body1->AddCollision(newCollisionEntry);
             newCollisionEntry->m_body2->AddCollision(newCollisionEntry);
         }
+    }
+}
+
+void dphysics::RigidBodySystem::InitializeCollisions() {
+    int numContacts = m_collisionAccumulator.GetNumObjects();
+    for (int i = 0; i < numContacts; ++i) {
+        Collision &collision = *m_collisionAccumulator[i];
+
+        if (collision.m_sensor) continue;
+        if (collision.IsGhost()) continue;
+
+        collision.Initialize();
     }
 }
 
@@ -830,6 +842,7 @@ void dphysics::RigidBodySystem::Update(float timestep) {
     Integrate(timestep);
 
     GenerateCollisions();
+    InitializeCollisions();
     ResolveCollisions(timestep);
     AdjustVelocities(timestep);
     CheckAwake();    
