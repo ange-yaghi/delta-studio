@@ -20,6 +20,8 @@ public:
 
     virtual ysError SetMode(ysAudioSource::Mode mode = Mode::Play);
 
+    virtual ysError SetDataBuffer(ysAudioBuffer *buffer);
+
     virtual ysError SetVolume(float volume);
     virtual ysError SetPan(float pan);
 
@@ -27,6 +29,8 @@ public:
     virtual SampleOffset GetCurrentWritePosition();
 
     virtual void Seek(SampleOffset offset);
+
+    virtual ysError Destroy();
 
 protected:
     IDirectSoundBuffer *m_buffer;

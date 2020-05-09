@@ -3,6 +3,7 @@
 
 #include "yds_audio_system_object.h"
 
+#include "yds_audio_buffer.h"
 #include "yds_audio_parameters.h"
 
 class ysAudioSource : public ysAudioSystemObject {
@@ -27,6 +28,8 @@ public:
     virtual ysError LockBufferSegment(SampleOffset offset, SampleOffset samples, void **segment1, SampleOffset *size1, void **segment2, SampleOffset *size2);
     virtual ysError UnlockBufferSegments(void *segment1, SampleOffset segment1Size, void *segment2, SampleOffset segment2Size);
 
+    virtual ysError SetDataBuffer(ysAudioBuffer *buffer);
+
     SampleOffset GetBufferSize() const { return m_bufferSize; }
 
     const ysAudioParameters *GetAudioParameters() const { return &m_audioParameters; }
@@ -43,10 +46,13 @@ public:
     virtual ysError SetVolume(float volume);
     virtual ysError SetPan(float pan);
 
+    virtual ysError Destroy();
+
 protected:
     void ResetLock();
 
     ysAudioParameters m_audioParameters;
+    ysAudioBuffer *m_dataBuffer;
 
     SampleOffset m_bufferSize;
 

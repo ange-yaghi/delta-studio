@@ -11,6 +11,7 @@
 #include "../../../physics/include/rigid_body_system.h"
 
 #include "model_asset.h"
+#include "audio_asset.h"
 #include "console.h"
 
 namespace dbasic {
@@ -63,6 +64,8 @@ namespace dbasic {
         ysError DrawRenderSkeleton(RenderSkeleton *skeleton, float scale, int layer);
         ysError LoadTexture(ysTexture **image, const char *fname);
         ysError LoadAnimation(Animation **animation, const char *path, int start, int end);
+
+        ysError PlayAudio(AudioAsset *audio);
 
         void SubmitSkeleton(Skeleton *skeleton);
 

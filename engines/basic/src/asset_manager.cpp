@@ -514,14 +514,12 @@ ysError dbasic::AssetManager::LoadAudioFile(const char *fname, const char *name)
     waveFile.OpenFile(fname);
 
     ysAudioBuffer *newBuffer = m_engine->GetAudioDevice()->CreateBuffer(
-        waveFile.GetAudioParameters(), 20000);
+        waveFile.GetAudioParameters(), waveFile.GetSampleCount());
 
     waveFile.AttachExternalBuffer(newBuffer);
     waveFile.FillBuffer(0);
 
     waveFile.CloseFile();
-
-    newBuffer->SetMode(ysAudioBuffer::Mode::Stop);
 
     AudioAsset *newAsset = m_audioAssets.New();
     newAsset->SetBuffer(newBuffer);

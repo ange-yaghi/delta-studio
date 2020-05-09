@@ -99,6 +99,14 @@ ysError ysAudioSource::UnlockBufferSegments(
     return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
 }
 
+ysError ysAudioSource::SetDataBuffer(ysAudioBuffer *buffer) {
+    YDS_ERROR_DECLARE("SetDataBuffer");
+
+    m_dataBuffer = buffer;
+
+    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+}
+
 ysError ysAudioSource::SetMode(Mode mode) {
     YDS_ERROR_DECLARE("SetMode");
 
@@ -122,6 +130,14 @@ ysError ysAudioSource::SetPan(float pan) {
         return YDS_ERROR_RETURN(ysError::YDS_OUT_OF_BOUNDS);
 
     m_pan = pan;
+
+    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+}
+
+ysError ysAudioSource::Destroy() {
+    YDS_ERROR_DECLARE("Destroy");
+
+    /* void */
 
     return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
 }

@@ -24,7 +24,10 @@ ysError ysAudioDevice::DestroyAudioBuffer(ysAudioBuffer *&buffer) {
 
 	if (buffer == nullptr) return YDS_ERROR_RETURN(ysError::YDS_INVALID_PARAMETER);
 
+	buffer->Destroy();
+
 	m_audioBuffers.Delete(buffer->GetIndex());
+	buffer = nullptr;
 
 	return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
 }
@@ -34,7 +37,10 @@ ysError ysAudioDevice::DestroyAudioSource(ysAudioSource *&source) {
 
 	if (source == nullptr) return YDS_ERROR_RETURN(ysError::YDS_INVALID_PARAMETER);
 
+	source->Destroy();
+
 	m_audioBuffers.Delete(source->GetIndex());
+	source = nullptr;
 
 	return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
 }

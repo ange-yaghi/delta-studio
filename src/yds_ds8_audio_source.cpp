@@ -1,5 +1,7 @@
 #include "../include/yds_ds8_audio_source.h"
 
+#include "../include/yds_ds8_audio_buffer.h"
+
 #define _USE_MATH_DEFINES
 #include <math.h>
 
@@ -95,6 +97,23 @@ ysError ysDS8AudioSource::SetMode(Mode mode) {
 	return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
 }
 
+ysError ysDS8AudioSource::SetDataBuffer(ysAudioBuffer *buffer) {
+	YDS_ERROR_DECLARE("SetDataBuffer");
+
+	YDS_NESTED_ERROR_CALL(ysAudioSource::SetDataBuffer(buffer));
+
+	ysDS8AudioBuffer *ds8Buffer = static_cast<ysDS8AudioBuffer *>(buffer);
+
+	void *target = nullptr;
+	SampleOffset samples;
+	YDS_NESTED_ERROR_CALL(LockEntireBuffer(&target, &samples));
+	memcpy(target, ds8Buffer->GetBuffer(), ds8Buffer->GetBufferSize());
+
+	YDS_NESTED_ERROR_CALL(UnlockBuffer(target, samples));
+
+	return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+}
+
 ysError ysDS8AudioSource::SetVolume(float volume) {
 	YDS_ERROR_DECLARE("SetVolume");
 
@@ -165,4 +184,15 @@ SampleOffset ysDS8AudioSource::GetCurrentWritePosition() {
 
 void ysDS8AudioSource::Seek(SampleOffset offset) {
 	m_buffer->SetCurrentPosition(m_audioParameters.GetSizeFromSamples(offset));
+}
+
+ysError ysDS8AudioSource::Destroy() {
+	YDS_ERROR_DECLARE("Destroy");
+
+	YDS_NESTED_ERROR_CALL(ysAudioSource::Destroy());
+
+	m_buffer->Release();
+	m_buffer = nullptr;
+
+	return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
 }

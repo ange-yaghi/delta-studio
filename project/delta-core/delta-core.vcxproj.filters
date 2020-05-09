@@ -719,5 +719,8 @@
     <ClCompile Include="..\..\src\yds_audio_buffer.cpp">
       <Filter>Source Files\audio</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\yds_ds8_audio_buffer.cpp">
+      <Filter>Source Files\audio\ds8</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

@@ -1,7 +1,7 @@
 #include "../include/yds_audio_buffer.h"
 
 ysAudioBuffer::ysAudioBuffer(ysAudioSystemObject::API api) : ysAudioSystemObject("ysAudioBuffer", api) {
-    m_size = 0;
+    m_samples = 0;
 }
 
 ysAudioBuffer::~ysAudioBuffer() {
@@ -12,7 +12,7 @@ ysError ysAudioBuffer::Initialize(SampleOffset samples, const ysAudioParameters 
     YDS_ERROR_DECLARE("Initialize");
 
     m_audioParameters = parameters;
-    m_size = samples;
+    m_samples = samples;
 
     return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
 }
@@ -20,11 +20,23 @@ ysError ysAudioBuffer::Initialize(SampleOffset samples, const ysAudioParameters 
 ysError ysAudioBuffer::EditBuffer(void *data) {
     YDS_ERROR_DECLARE("EditBuffer");
 
+    /* void */
+
     return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
 }
 
 ysError ysAudioBuffer::EditBufferSegment(void *data, SampleOffset samples, SampleOffset offset) {
     YDS_ERROR_DECLARE("EditBufferSegment");
+
+    /* void */
+
+    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+}
+
+ysError ysAudioBuffer::Destroy() {
+    YDS_ERROR_DECLARE("Destroy");
+
+    /* void */
 
     return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
 }

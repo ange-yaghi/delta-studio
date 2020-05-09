@@ -168,6 +168,7 @@
     <ClCompile Include="..\..\src\yds_d3d11_texture.cpp" />
     <ClCompile Include="..\..\src\yds_depth_buffer.cpp" />
     <ClCompile Include="..\..\src\yds_device.cpp" />
+    <ClCompile Include="..\..\src\yds_ds8_audio_buffer.cpp" />
     <ClCompile Include="..\..\src\yds_ds8_audio_source.cpp" />
     <ClCompile Include="..\..\src\yds_ds8_device.cpp" />
     <ClCompile Include="..\..\src\yds_ds8_system.cpp" />

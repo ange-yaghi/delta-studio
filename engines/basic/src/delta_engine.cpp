@@ -384,6 +384,17 @@ ysError dbasic::DeltaEngine::LoadAnimation(Animation **animation, const char *pa
     return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
 }
 
+ysError dbasic::DeltaEngine::PlayAudio(AudioAsset *audio) {
+    YDS_ERROR_DECLARE("PlayAudio");
+
+    ysAudioSource *newSource = m_audioDevice->CreateSource(audio->GetBuffer());
+    newSource->SetMode(ysAudioSource::Mode::PlayOnce);
+    newSource->SetPan(0.0f);
+    newSource->SetVolume(1.0f);
+
+    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+}
+
 void dbasic::DeltaEngine::SubmitSkeleton(Skeleton *skeleton) {
     int nBones = skeleton->GetBoneCount();
 
