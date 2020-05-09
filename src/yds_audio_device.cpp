@@ -2,12 +2,14 @@
 
 #include "../include/yds_audio_buffer.h"
 
-ysAudioDevice::ysAudioDevice() : ysAudioSystemObject("AUDIO_DEVICE", API_UNDEFINED) {
+ysAudioDevice::ysAudioDevice() : ysAudioSystemObject("AUDIO_DEVICE", API::Undefined) {
+	m_deviceName[0] = '\0';
 	m_connected = false;
 	m_windowAssociation = 0;
 }
 
-ysAudioDevice::ysAudioDevice(AUDIO_SYSTEM_API API) : ysAudioSystemObject("ysAudioDevice", API) {
+ysAudioDevice::ysAudioDevice(API api) : ysAudioSystemObject("ysAudioDevice", api) {
+	m_deviceName[0] = '\0';
 	m_connected = false;
 	m_windowAssociation = 0;
 }

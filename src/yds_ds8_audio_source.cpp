@@ -1,21 +1,21 @@
-#include "../include/yds_ds8_audio_buffer.h"
+#include "../include/yds_ds8_audio_source.h"
 
 #define _USE_MATH_DEFINES
 #include <math.h>
 
-ysDS8AudioBuffer::ysDS8AudioBuffer() : ysAudioBuffer(API_DIRECT_SOUND8) {
-	m_buffer = NULL;
+ysDS8AudioSource::ysDS8AudioSource() : ysAudioSource(API::DirectSound8) {
+	m_buffer = nullptr;
 }
 
-ysDS8AudioBuffer::~ysDS8AudioBuffer() {
+ysDS8AudioSource::~ysDS8AudioSource() {
     /* void */
 }
 
-ysError ysDS8AudioBuffer::LockEntireBuffer(void **buffer, SampleOffset *samples) {
+ysError ysDS8AudioSource::LockEntireBuffer(void **buffer, SampleOffset *samples) {
 	YDS_ERROR_DECLARE("LockEntireBuffer");
 
 	HRESULT result;
-	YDS_NESTED_ERROR_CALL( ysAudioBuffer::LockEntireBuffer(buffer, samples) );
+	YDS_NESTED_ERROR_CALL( ysAudioSource::LockEntireBuffer(buffer, samples) );
 
 	DWORD bytes;
 
@@ -28,11 +28,11 @@ ysError ysDS8AudioBuffer::LockEntireBuffer(void **buffer, SampleOffset *samples)
 	return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
 }
 
-ysError ysDS8AudioBuffer::LockBufferSegment(SampleOffset offset, SampleOffset samples, void** segment1, SampleOffset* size1, void** segment2, SampleOffset* size2) {
+ysError ysDS8AudioSource::LockBufferSegment(SampleOffset offset, SampleOffset samples, void **segment1, SampleOffset* size1, void **segment2, SampleOffset* size2) {
     YDS_ERROR_DECLARE("LockBufferSegment");
 
     HRESULT result;
-    YDS_NESTED_ERROR_CALL(ysAudioBuffer::LockBufferSegment(offset, samples, segment1, size1, segment2, size2));
+    YDS_NESTED_ERROR_CALL( ysAudioSource::LockBufferSegment(offset, samples, segment1, size1, segment2, size2));
 
     DWORD totalSize = m_audioParameters.GetSizeFromSamples(samples);
     DWORD byteOffset = m_audioParameters.GetSizeFromSamples(offset);
@@ -49,11 +49,11 @@ ysError ysDS8AudioBuffer::LockBufferSegment(SampleOffset offset, SampleOffset sa
     return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
 }
 
-ysError ysDS8AudioBuffer::UnlockBufferSegments(void *segment1, SampleOffset segment1Size, void *segment2, SampleOffset segment2Size) {
+ysError ysDS8AudioSource::UnlockBufferSegments(void *segment1, SampleOffset segment1Size, void *segment2, SampleOffset segment2Size) {
 	YDS_ERROR_DECLARE("UnlockBufferSegments");
 
 	HRESULT result;
-	YDS_NESTED_ERROR_CALL( ysAudioBuffer::UnlockBufferSegments(segment1, segment1Size, segment2, segment2Size) );
+	YDS_NESTED_ERROR_CALL( ysAudioSource::UnlockBufferSegments(segment1, segment1Size, segment2, segment2Size) );
 
 	result = m_buffer->Unlock(segment1, segment1Size, segment2, segment2Size);
 
@@ -64,23 +64,23 @@ ysError ysDS8AudioBuffer::UnlockBufferSegments(void *segment1, SampleOffset segm
 	return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
 }
 
-ysError ysDS8AudioBuffer::SetMode(AUDIO_BUFFER_MODE mode) {
+ysError ysDS8AudioSource::SetMode(Mode mode) {
 	YDS_ERROR_DECLARE("SetMode");
 
-	YDS_NESTED_ERROR_CALL( ysAudioBuffer::SetMode(mode) );
+	YDS_NESTED_ERROR_CALL( ysAudioSource::SetMode(mode) );
 
-	if (m_buffer == NULL) return YDS_ERROR_RETURN(ysError::YDS_INVALID_OPERATION);
+	if (m_buffer == nullptr) return YDS_ERROR_RETURN(ysError::YDS_INVALID_OPERATION);
 
     HRESULT result = 0;
 	switch (mode) {
-	case MODE_PLAY_ONCE:
-	case MODE_PLAY:
+	case Mode::PlayOnce:
+	case Mode::Play:
 		result = m_buffer->Play(0, 0, 0);
 		break;
-	case MODE_LOOP:
+	case Mode::Loop:
 		result = m_buffer->Play(0, 0, DSBPLAY_LOOPING);
 		break;
-	case MODE_STOP:
+	case Mode::Stop:
 		result = m_buffer->Stop();
 		break;
     default:
@@ -88,24 +88,22 @@ ysError ysDS8AudioBuffer::SetMode(AUDIO_BUFFER_MODE mode) {
 	}
 
 	if (FAILED(result)) {
-		m_bufferMode = MODE_UNDEFINED;
+		m_bufferMode = Mode::Undefined;
         return YDS_ERROR_RETURN(ysError::YDS_INVALID_OPERATION);
 	}
 
 	return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
 }
 
-ysError ysDS8AudioBuffer::SetVolume(float volume) {
+ysError ysDS8AudioSource::SetVolume(float volume) {
 	YDS_ERROR_DECLARE("SetVolume");
 
-	YDS_NESTED_ERROR_CALL(ysAudioBuffer::SetVolume(volume) );
-
-	HRESULT result;
+	YDS_NESTED_ERROR_CALL(ysAudioSource::SetVolume(volume) );
 
 	float ratio = m_volume * m_panVolume;
 	float db = 20 * log10f(ratio);
 
-	result = m_buffer->SetVolume(DSBVOLUME_MAX + max((LONG)(db * 100), DSBVOLUME_MIN));
+	HRESULT result = m_buffer->SetVolume(DSBVOLUME_MAX + max((LONG)(db * 100), DSBVOLUME_MIN));
 
 	if (FAILED(result)) {
 		return YDS_ERROR_RETURN(ysError::YDS_INVALID_OPERATION);
@@ -114,10 +112,10 @@ ysError ysDS8AudioBuffer::SetVolume(float volume) {
 	return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
 }
 
-ysError ysDS8AudioBuffer::SetPan(float pan) {
+ysError ysDS8AudioSource::SetPan(float pan) {
 	YDS_ERROR_DECLARE("SetPan");
 
-	YDS_NESTED_ERROR_CALL(ysAudioBuffer::SetPan(pan) );
+	YDS_NESTED_ERROR_CALL(ysAudioSource::SetPan(pan) );
 
 	HRESULT result;
 
@@ -141,11 +139,11 @@ ysError ysDS8AudioBuffer::SetPan(float pan) {
 	return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
 }
 
-SampleOffset ysDS8AudioBuffer::GetCurrentPosition() {
+SampleOffset ysDS8AudioSource::GetCurrentPosition() {
 	DWORD currentPosition;
 	HRESULT result;
 
-	if (m_buffer == NULL) return 0;
+	if (m_buffer == nullptr) return 0;
 
 	result = m_buffer->GetCurrentPosition(&currentPosition, NULL);
 	if (FAILED(result)) return 0;
@@ -153,11 +151,11 @@ SampleOffset ysDS8AudioBuffer::GetCurrentPosition() {
 	return m_audioParameters.GetSamplesFromSize((unsigned int)currentPosition);
 }
 
-SampleOffset ysDS8AudioBuffer::GetCurrentWritePosition() {
+SampleOffset ysDS8AudioSource::GetCurrentWritePosition() {
 	DWORD currentWrite;
 	HRESULT result;
 
-	if (m_buffer == NULL) return 0;
+	if (m_buffer == nullptr) return 0;
 
 	result = m_buffer->GetCurrentPosition(NULL, &currentWrite);
 	if (FAILED(result)) return 0;
@@ -165,6 +163,6 @@ SampleOffset ysDS8AudioBuffer::GetCurrentWritePosition() {
 	return m_audioParameters.GetSamplesFromSize((unsigned int)currentWrite);
 }
 
-void ysDS8AudioBuffer::Seek(SampleOffset offset) {
+void ysDS8AudioSource::Seek(SampleOffset offset) {
 	m_buffer->SetCurrentPosition(m_audioParameters.GetSizeFromSamples(offset));
 }

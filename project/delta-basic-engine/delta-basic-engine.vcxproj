@@ -20,6 +20,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\engines\basic\include\animation.h" />
+    <ClInclude Include="..\..\engines\basic\include\audio_asset.h" />
     <ClInclude Include="..\..\engines\basic\include\delta_basic_engine.h" />
     <ClInclude Include="..\..\engines\basic\include\delta_core.h" />
     <ClInclude Include="..\..\engines\basic\include\animation_export_data.h" />
@@ -55,6 +56,7 @@
     <ClCompile Include="..\..\engines\basic\src\animation_group.cpp" />
     <ClCompile Include="..\..\engines\basic\src\animation_object_controller.cpp" />
     <ClCompile Include="..\..\engines\basic\src\asset_manager.cpp" />
+    <ClCompile Include="..\..\engines\basic\src\audio_asset.cpp" />
     <ClCompile Include="..\..\engines\basic\src\bone.cpp" />
     <ClCompile Include="..\..\engines\basic\src\character.cpp" />
     <ClCompile Include="..\..\engines\basic\src\color_scale.cpp" />

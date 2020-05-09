@@ -2,9 +2,9 @@
 
 #include "../include/yds_ds8_audio_buffer.h"
 
-ysDS8Device::ysDS8Device() : ysAudioDevice(API_DIRECT_SOUND8) {
+ysDS8Device::ysDS8Device() : ysAudioDevice(API::DirectSound8) {
 	memset(&m_guid, 0, sizeof(GUID));
-	m_device = NULL;
+	m_device = nullptr;
 }
 
 ysDS8Device::~ysDS8Device() {
@@ -49,7 +49,7 @@ ysAudioBuffer *ysDS8Device::CreateBuffer(const ysAudioParameters *parameters, Sa
  
 	hr = m_device->CreateSoundBuffer(&dsbdesc, &newBuffer->m_buffer, NULL); 
 	if (SUCCEEDED(hr)) { 
-		hr = newBuffer->m_buffer->QueryInterface(IID_IDirectSoundBuffer8, (LPVOID*) &newBuffer->m_buffer);
+		hr = newBuffer->m_buffer->QueryInterface(IID_IDirectSoundBuffer8, (LPVOID *)&newBuffer->m_buffer);
 		newBuffer->m_buffer->Release();
 	} 
 	else {
@@ -90,7 +90,7 @@ void ysDS8Device::ProcessAudioBuffers() {
 	for(int i = bufferCount - 1; i >= 0; i--) {
 		ysDS8AudioBuffer *ds8Buffer = static_cast<ysDS8AudioBuffer *>(m_audioBuffers.Get(i));
 
-		if (ds8Buffer->GetBufferMode() == ysAudioBuffer::MODE_PLAY_ONCE) {
+		if (ds8Buffer->GetBufferMode() == ysAudioBuffer::Mode::PlayOnce) {
 			DWORD status;
 			if (ds8Buffer->m_buffer->GetStatus(&status)) {
 				if (!(status & DSBSTATUS_PLAYING)) {

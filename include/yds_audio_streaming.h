@@ -6,7 +6,7 @@
 #include "yds_audio_parameters.h"
 
 class ysAudioFile;
-class ysAudioBuffer;
+class ysAudioSource;
 
 class ysStreamingAudio : public ysObject {
 public:
@@ -17,7 +17,7 @@ public:
     ysError Update();
 
     ysError AttachAudioFile(ysAudioFile *file);
-    ysError AttachAudioBuffer(ysAudioBuffer *buffer);
+    ysError AttachAudioSource(ysAudioSource *source);
 
     ysError Seek(SampleOffset offset);
 
@@ -31,7 +31,7 @@ protected:
     int m_currentReadSubdivision;
 
     ysAudioFile *m_file;
-    ysAudioBuffer *m_buffer;
+    ysAudioSource *m_source;
 
     SampleOffset m_fileOffset;
 };

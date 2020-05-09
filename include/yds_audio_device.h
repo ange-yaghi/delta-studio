@@ -13,7 +13,7 @@ class ysAudioDevice : public ysAudioSystemObject {
 
 public:
     ysAudioDevice();
-    ysAudioDevice(AUDIO_SYSTEM_API API);
+    ysAudioDevice(API api);
     ~ysAudioDevice();
 
     bool IsConnected() const { return m_connected; }

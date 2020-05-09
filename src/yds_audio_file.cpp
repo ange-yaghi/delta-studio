@@ -50,7 +50,7 @@ ysAudioFile::Error ysAudioFile::FillBuffer(SampleOffset offset) {
     if (offset > m_sampleCount) return Error::ReadOutOfRange;
 
     // Use External Buffer
-    if (m_externalBuffer) {
+    if (m_externalBuffer != nullptr) {
         if (offset + m_externalBuffer->GetBufferSize() > m_sampleCount) {
             return Error::ReadOutOfRange;
         }

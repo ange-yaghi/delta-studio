@@ -67,8 +67,8 @@ bool dphysics::CollisionDetector::CircleBoxCollision(Collision &collision, Rigid
     ysVector relativePosition = ysMath::Sub(circle->Position, box->Position);
     relativePosition = ysMath::QuatTransformInverse(box->Orientation, relativePosition);
 
-    float closestX = std::min(std::max(ysMath::GetX(relativePosition), -box->HalfWidth), box->HalfWidth);
-    float closestY = std::min(std::max(ysMath::GetY(relativePosition), -box->HalfHeight), box->HalfHeight);
+    float closestX = min(max(ysMath::GetX(relativePosition), -box->HalfWidth), box->HalfWidth);
+    float closestY = min(max(ysMath::GetY(relativePosition), -box->HalfHeight), box->HalfHeight);
 
     ysVector closestPoint = ysMath::LoadVector(closestX, closestY, ysMath::GetZ(relativePosition));
     ysVector realPosition = ysMath::QuatTransform(box->Orientation, closestPoint);
@@ -163,7 +163,7 @@ bool dphysics::CollisionDetector::RayCircleCollision(Collision &collision, Rigid
     if (t1 < 0 && t2 < 0) return false;
     else if (t1 < 0) closest = t2;
     else if (t2 < 0) closest = t1;
-    else closest = std::min(t1, t2);
+    else closest = min(t1, t2);
 
     collision.m_body1 = body1;
     collision.m_body2 = body2;
@@ -342,8 +342,8 @@ bool dphysics::CollisionDetector::_BoxBoxEdgeDetect(Collision *collisions, BoxPr
         int *edge = edges[i];
 
         if ((abs(penetrationX[edge[0]]) <= body2->HalfWidth && abs(penetrationX[edge[1]]) <= body2->HalfWidth) &&
-            (std::min(penetrationY[edge[0]], penetrationY[edge[1]]) <= body2->HalfHeight) &&
-            (std::max(penetrationY[edge[0]], penetrationY[edge[1]]) >= -body2->HalfHeight)) {
+            (min(penetrationY[edge[0]], penetrationY[edge[1]]) <= body2->HalfHeight) &&
+            (max(penetrationY[edge[0]], penetrationY[edge[1]]) >= -body2->HalfHeight)) {
 
             float actualPenetrationX0 = body2->HalfWidth - abs(penetrationX[edge[0]]);
             float actualPenetrationX1 = body2->HalfWidth - abs(penetrationX[edge[1]]);
@@ -371,8 +371,8 @@ bool dphysics::CollisionDetector::_BoxBoxEdgeDetect(Collision *collisions, BoxPr
         }
 
         if ((abs(penetrationY[edge[0]]) <= body2->HalfHeight && abs(penetrationY[edge[1]]) <= body2->HalfHeight) &&
-            (std::min(penetrationX[edge[0]], penetrationX[edge[1]]) <= body2->HalfWidth) &&
-            (std::max(penetrationX[edge[0]], penetrationX[edge[1]]) >= -body2->HalfWidth)) {
+            (min(penetrationX[edge[0]], penetrationX[edge[1]]) <= body2->HalfWidth) &&
+            (max(penetrationX[edge[0]], penetrationX[edge[1]]) >= -body2->HalfWidth)) {
 
             float actualPenetrationY0 = body2->HalfHeight - abs(penetrationY[edge[0]]);
             float actualPenetrationY1 = body2->HalfHeight - abs(penetrationY[edge[1]]);

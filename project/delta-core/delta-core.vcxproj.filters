@@ -76,6 +76,24 @@
     <Filter Include="Header Files\assets\animation\interchange">
       <UniqueIdentifier>{a96a3f07-7737-479c-af67-97871f8fab9f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\audio">
+      <UniqueIdentifier>{5ebc860d-672a-4cf9-bab9-5d79b371d5e1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\audio\ds8">
+      <UniqueIdentifier>{421bc0ea-5284-42aa-adcc-f0b74c31363d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\audio\wave">
+      <UniqueIdentifier>{24a6c49e-7b7f-46dd-866c-d13cf2db22f2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\audio">
+      <UniqueIdentifier>{6bd0daa2-9320-4f30-aba3-6347fbcdf003}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\audio\ds8">
+      <UniqueIdentifier>{fa0f3523-0126-4fa3-8ec4-3d0631172d86}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\audio\wave">
+      <UniqueIdentifier>{184510f8-623e-4ed6-8260-53455e77b6b2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\include\yds_d3d10_context.h">
@@ -291,9 +309,6 @@
     <ClInclude Include="..\..\include\yds_window_system_object.h">
       <Filter>Header Files\Unsorted</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\yds_windows_audio_wave_file.h">
-      <Filter>Header Files\Unsorted</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\include\yds_windows_input_device.h">
       <Filter>Header Files\Unsorted</Filter>
     </ClInclude>
@@ -360,36 +375,6 @@
     <ClInclude Include="..\..\include\yds_transform.h">
       <Filter>Header Files\object</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\yds_audio_buffer.h">
-      <Filter>Header Files\sound</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\yds_audio_device.h">
-      <Filter>Header Files\sound</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\yds_audio_file.h">
-      <Filter>Header Files\sound</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\yds_audio_parameters.h">
-      <Filter>Header Files\sound</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\yds_audio_streaming.h">
-      <Filter>Header Files\sound</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\yds_audio_system.h">
-      <Filter>Header Files\sound</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\yds_audio_system_object.h">
-      <Filter>Header Files\sound</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\yds_ds8_audio_buffer.h">
-      <Filter>Header Files\sound</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\yds_ds8_device.h">
-      <Filter>Header Files\sound</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\yds_ds8_system.h">
-      <Filter>Header Files\sound</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\include\yds_animation_interchange_file.h">
       <Filter>Header Files\assets\animation\interchange</Filter>
     </ClInclude>
@@ -401,6 +386,45 @@
     </ClInclude>
     <ClInclude Include="..\..\include\yds_animation_interchange_file_reader_0_1.h">
       <Filter>Header Files\assets\animation\interchange</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\yds_audio_buffer.h">
+      <Filter>Header Files\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\yds_audio_device.h">
+      <Filter>Header Files\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\yds_audio_file.h">
+      <Filter>Header Files\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\yds_audio_parameters.h">
+      <Filter>Header Files\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\yds_audio_streaming.h">
+      <Filter>Header Files\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\yds_audio_system.h">
+      <Filter>Header Files\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\yds_audio_system_object.h">
+      <Filter>Header Files\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\yds_ds8_device.h">
+      <Filter>Header Files\audio\ds8</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\yds_ds8_system.h">
+      <Filter>Header Files\audio\ds8</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\yds_windows_audio_wave_file.h">
+      <Filter>Header Files\audio\wave</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\yds_ds8_audio_source.h">
+      <Filter>Header Files\audio\ds8</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\yds_audio_source.h">
+      <Filter>Header Files\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\yds_ds8_audio_buffer.h">
+      <Filter>Header Files\audio\ds8</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -503,27 +527,6 @@
     <ClCompile Include="..\..\src\yds_opengl_context.cpp">
       <Filter>Source Files\api\opengl</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\yds_audio_buffer.cpp">
-      <Filter>Source Files\Unsorted</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\yds_audio_device.cpp">
-      <Filter>Source Files\Unsorted</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\yds_audio_file.cpp">
-      <Filter>Source Files\Unsorted</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\yds_audio_parameters.cpp">
-      <Filter>Source Files\Unsorted</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\yds_audio_streaming.cpp">
-      <Filter>Source Files\Unsorted</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\yds_audio_system.cpp">
-      <Filter>Source Files\Unsorted</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\yds_audio_system_object.cpp">
-      <Filter>Source Files\Unsorted</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\yds_base.cpp">
       <Filter>Source Files\Unsorted</Filter>
     </ClCompile>
@@ -534,15 +537,6 @@
       <Filter>Source Files\Unsorted</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\yds_device.cpp">
-      <Filter>Source Files\Unsorted</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\yds_ds8_audio_buffer.cpp">
-      <Filter>Source Files\Unsorted</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\yds_ds8_device.cpp">
-      <Filter>Source Files\Unsorted</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\yds_ds8_system.cpp">
       <Filter>Source Files\Unsorted</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\yds_dynamic_allocator.cpp">
@@ -656,9 +650,6 @@
     <ClCompile Include="..\..\src\yds_window_system_object.cpp">
       <Filter>Source Files\Unsorted</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\yds_windows_audio_wave_file.cpp">
-      <Filter>Source Files\Unsorted</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\yds_windows_input_device.cpp">
       <Filter>Source Files\Unsorted</Filter>
     </ClCompile>
@@ -691,6 +682,42 @@
     </ClCompile>
     <ClCompile Include="..\..\src\yds_animation_interchange_file_reader.cpp">
       <Filter>Source Files\assets\animation\interchange</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\yds_audio_device.cpp">
+      <Filter>Source Files\audio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\yds_audio_parameters.cpp">
+      <Filter>Source Files\audio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\yds_audio_file.cpp">
+      <Filter>Source Files\audio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\yds_audio_streaming.cpp">
+      <Filter>Source Files\audio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\yds_audio_system.cpp">
+      <Filter>Source Files\audio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\yds_audio_system_object.cpp">
+      <Filter>Source Files\audio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\yds_ds8_device.cpp">
+      <Filter>Source Files\audio\ds8</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\yds_ds8_system.cpp">
+      <Filter>Source Files\audio\ds8</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\yds_windows_audio_wave_file.cpp">
+      <Filter>Source Files\audio\wave</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\yds_audio_source.cpp">
+      <Filter>Source Files\audio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\yds_ds8_audio_source.cpp">
+      <Filter>Source Files\audio\ds8</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\yds_audio_buffer.cpp">
+      <Filter>Source Files\audio</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

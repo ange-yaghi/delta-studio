@@ -69,6 +69,7 @@ dbasic::DeltaEngine::~DeltaEngine() {
     assert(m_windowSystem == nullptr);
     assert(m_gameWindow == nullptr);
     assert(m_audioSystem == nullptr);
+    assert(m_audioDevice == nullptr);
     assert(m_mainVertexBuffer == nullptr);
     assert(m_mainIndexBuffer == nullptr);
     assert(m_vertexShader == nullptr);
@@ -121,6 +122,12 @@ ysError dbasic::DeltaEngine::CreateGameWindow(const char *title, void *instance,
     // Create the graphics device
     YDS_NESTED_ERROR_CALL(ysDevice::CreateDevice(&m_device, API));
     YDS_NESTED_ERROR_CALL(m_device->InitializeDevice());
+
+    // Create the audio device
+    YDS_NESTED_ERROR_CALL(ysAudioSystem::CreateAudioSystem(&m_audioSystem, ysAudioSystem::API::DirectSound8));
+    m_audioSystem->EnumerateDevices();
+    m_audioDevice = m_audioSystem->GetPrimaryDevice();
+    m_audioSystem->ConnectDevice(m_audioDevice, m_gameWindow);
 
     // Create the rendering context
     YDS_NESTED_ERROR_CALL(m_device->CreateRenderingContext(&m_renderingContext, m_gameWindow));
@@ -213,6 +220,12 @@ ysError dbasic::DeltaEngine::Destroy() {
     YDS_NESTED_ERROR_CALL(m_device->DestroyRenderingContext(m_renderingContext));
 
     YDS_NESTED_ERROR_CALL(m_device->DestroyDevice());
+   
+    m_audioSystem->DisconnectDevice(m_audioDevice);
+    ysAudioSystem::DestroyAudioSystem(&m_audioSystem);
+
+    m_audioDevice = nullptr;
+
     m_mainKeyboard = nullptr;
     m_mainMouse = nullptr;
 

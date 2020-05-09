@@ -507,6 +507,40 @@ dbasic::TextureAsset *dbasic::AssetManager::GetTexture(const char *name) {
     return nullptr;
 }
 
+ysError dbasic::AssetManager::LoadAudioFile(const char *fname, const char *name) {
+    YDS_ERROR_DECLARE("LoadAudioFile");
+
+    ysWindowsAudioWaveFile waveFile;
+    waveFile.OpenFile(fname);
+
+    ysAudioBuffer *newBuffer = m_engine->GetAudioDevice()->CreateBuffer(
+        waveFile.GetAudioParameters(), 20000);
+
+    waveFile.AttachExternalBuffer(newBuffer);
+    waveFile.FillBuffer(0);
+
+    waveFile.CloseFile();
+
+    newBuffer->SetMode(ysAudioBuffer::Mode::Stop);
+
+    AudioAsset *newAsset = m_audioAssets.New();
+    newAsset->SetBuffer(newBuffer);
+    newAsset->SetName(name);
+
+    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+}
+
+dbasic::AudioAsset *dbasic::AssetManager::GetAudioAsset(const char *name) {
+    int assetCount = m_audioAssets.GetNumObjects();
+    for (int i = 0; i < assetCount; ++i) {
+        if (m_audioAssets.Get(i)->GetName() == name) {
+            return m_audioAssets.Get(i);
+        }
+    }
+
+    return nullptr;
+}
+
 dbasic::Skeleton *dbasic::AssetManager::BuildSkeleton(ModelAsset *model) {
     SceneObjectAsset *boneReference = nullptr;
     SceneObjectAsset *boneParentReference = nullptr;

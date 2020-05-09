@@ -15,12 +15,6 @@
 
 namespace dbasic {
 
-    struct DrawCall {
-        ysTexture *Texture;
-        ShaderObjectVariables ObjectVariables;
-        ModelAsset *Model;
-    };
-
     class RenderSkeleton;
 
     class DeltaEngine : public ysObject {
@@ -35,6 +29,12 @@ namespace dbasic {
         enum class CameraMode {
             Target,
             Flat
+        };
+
+        struct DrawCall {
+            ysTexture *Texture = nullptr;
+            ShaderObjectVariables ObjectVariables;
+            ModelAsset *Model = nullptr;
         };
 
     public:
@@ -52,9 +52,11 @@ namespace dbasic {
 
         ysError UseMaterial(Material *material);
 
-        ysError DrawImage(ysTexture *image, int layer = 0, float scaleX = 1.0f, float scaleY = 1.0f, float texOffsetU = 0.0f, float texOffsetV = 0.0f, float texScaleX = 1.0f, float texScaleY = 1.0f);
         ysError AddLight(const Light &light);
+        void ResetLights();
         ysError SetAmbientLight(const ysVector4 &ambient);
+
+        ysError DrawImage(ysTexture *image, int layer = 0, float scaleX = 1.0f, float scaleY = 1.0f, float texOffsetU = 0.0f, float texOffsetV = 0.0f, float texScaleX = 1.0f, float texScaleY = 1.0f);
         ysError DrawBox(const int color[3], float width, float height, int layer = 0);
         ysError DrawAxis(const int color[3], const ysVector &position, const ysVector &direction, float width, float length, int layer = 0);
         ysError DrawModel(ModelAsset *model, const ysMatrix &transform, float scale, ysTexture *texture, int layer = 0, bool lit = true);
@@ -116,6 +118,8 @@ namespace dbasic {
 
         Console *GetConsole() { return &m_console; }
 
+        ysAudioDevice *GetAudioDevice() const { return m_audioDevice; }
+
     protected:
         float m_cameraX;
         float m_cameraY;
@@ -128,8 +132,7 @@ namespace dbasic {
         ysMatrix m_perspectiveProjection;
         ysMatrix m_orthographicProjection;
 
-        //protected:
-    public:
+    protected:
         ysDevice *m_device;
 
         ysWindowSystem *m_windowSystem;
@@ -142,6 +145,7 @@ namespace dbasic {
         ysRenderTarget *m_mainRenderTarget;
 
         ysAudioSystem *m_audioSystem;
+        ysAudioDevice *m_audioDevice;
 
         ysGPUBuffer *m_mainVertexBuffer;
         ysGPUBuffer *m_mainIndexBuffer;
@@ -150,7 +154,6 @@ namespace dbasic {
         ysInputDevice *m_mainMouse;
 
         // Shader Controls
-
         ysGPUBuffer *m_shaderObjectVariablesBuffer;
         ShaderObjectVariables m_shaderObjectVariables;
         bool m_shaderObjectVariablesSync;
@@ -161,8 +164,6 @@ namespace dbasic {
         ysGPUBuffer *m_lightingControlBuffer;
         LightingControls m_lightingControls;
         int m_lightCount;
-
-        void ResetLights();
 
         ysGPUBuffer *m_shaderScreenVariablesBuffer;
         ShaderScreenVariables m_shaderScreenVariables;
@@ -206,7 +207,6 @@ namespace dbasic {
         // Initialization Routines
         ysError InitializeGeometry();
         ysError InitializeShaders(const char *shaderDirectory);
-        ysError InitializeRendering();
 
     protected:
         // Drawing queues

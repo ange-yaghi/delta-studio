@@ -4,7 +4,7 @@
 #include <algorithm>
 
 SoundSource::SoundSource() {
-    m_buffer = NULL;
+    m_buffer = nullptr;
     m_volume = 0.0f;
     m_falloffDistance = 0.0f;
     m_falloffStart = 0.0f;
