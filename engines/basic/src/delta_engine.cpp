@@ -777,6 +777,7 @@ ysError dbasic::DeltaEngine::ExecuteDrawQueue(DrawTarget target) {
         }
 
         m_shaderScreenVariables.CameraView = ysMath::Transpose(ysMath::CameraTarget(cameraEye, cameraTarget, up));
+        m_shaderScreenVariables.Eye = ysMath::GetVector4(cameraEye);
 
         ysMatrix proj = m_shaderScreenVariables.Projection;
         ysMatrix cam = m_shaderScreenVariables.CameraView;
@@ -785,10 +786,6 @@ ysError dbasic::DeltaEngine::ExecuteDrawQueue(DrawTarget target) {
         v = ysMath::MatMult(cam, v);
         v = ysMath::MatMult(proj, v);
         v = ysMath::Div(v, ysMath::LoadScalar(ysMath::GetW(v)));
-
-        m_shaderScreenVariables.Eye[0] = m_cameraX;
-        m_shaderScreenVariables.Eye[1] = m_cameraY;
-        m_shaderScreenVariables.Eye[2] = m_cameraAltitude;
 
         YDS_NESTED_ERROR_CALL(m_device->EditBufferData(m_shaderScreenVariablesBuffer, (char *)(&m_shaderScreenVariables)));
 

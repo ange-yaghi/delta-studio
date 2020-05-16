@@ -28,6 +28,7 @@ struct VS_INPUT_STANDARD {
 cbuffer ScreenVariables : register(b0) {
 	matrix CameraView;
 	matrix Projection;
+	float4 CameraEye;
 };
 
 cbuffer ObjectVariables : register(b1) {
@@ -143,26 +144,92 @@ VS_OUTPUT VS_STANDARD(VS_INPUT_STANDARD input) {
 	return output;
 }
 
+float pow5(float v) {
+	return (v * v) * (v * v) * v;
+}
+
+float f_diffuse(float3 i, float3 o, float3 h, float3 normal, float power, float roughness) {
+	float h_dot_i = dot(h, i);
+	float h_dot_i_2 = h_dot_i * h_dot_i;
+	float f_d90 = 0.5 + 2 * h_dot_i_2 * roughness;
+
+	float cos_theta_i = dot(i, normal);
+	float cos_theta_o = dot(o, normal);
+
+	float f_d = (1 + (f_d90 - 1) * pow5(1 - cos_theta_i)) * (1 + (f_d90 - 1) * pow5(1 - cos_theta_o));
+	return f_d * power * cos_theta_i;
+}
+
+float f_specular(float3 i, float3 o, float3 h, float3 normal, float power, float specularPower) {
+	float reflected = -reflect(i, normal);
+	float intensity = dot(reflected, o);
+
+	if (intensity < 0) return 0;
+
+	// Fresnel approximation
+	float F0 = 0.08;
+	float o_dot_h = dot(o, h);
+	float s = pow5(1 - o_dot_h);
+	float F = F0 + s * (1 - F0);
+
+	return pow(intensity, specularPower) * F * power;
+}
+
+float f_specular_ambient(float3 o, float3 normal, float F0) {
+	float reflected = reflect(-o, normal);
+
+	// Fresnel approximation
+	float F0_scaled = 0.08 * F0;
+	float o_dot_n = dot(o, normal);
+	float s = pow5(1 - o_dot_n);
+	float F = F0_scaled + s * (1 - F0_scaled);
+
+	return F;
+}
+
 float4 PS(VS_OUTPUT input) : SV_Target {
 	float3 totalLighting = float3(1.0, 1.0, 1.0);
 
+	float4 baseColor;
+	float roughness = 0.5;
+	float power = 1.0;
+
+	if (ColorReplace == 0) {
+		baseColor = txDiffuse.Sample(samLinear, input.TexCoord).rgba * MulCol;
+	}
+	else {
+		baseColor = MulCol;
+	}
+
+	totalLighting = baseColor.rgb;
+
 	if (Lit == 1) {
-		totalLighting = AmbientLighting.xyz;
-		for (int i = 0; i < 32; ++i) {
-			const Light light = Lights[i];
+		float3 o = normalize(CameraEye.xyz - input.VertexPosition.xyz);
+
+		float3 ambientSpecular = f_specular_ambient(o, input.Normal, 0.0) * AmbientLighting;
+		float3 ambientDiffuse = f_diffuse(o, o, o, input.Normal, 1.0, 0.5) * AmbientLighting * baseColor;
+
+		totalLighting = ambientSpecular + ambientDiffuse;
+		for (int li = 0; li < 32; ++li) {
+			const Light light = Lights[li];
 			if (light.Active == 0) continue;
 
-			float3 d = light.Position.xyz - input.VertexPosition.xyz;
-			float inv_mag = 1.0 / length(d);
-			d *= inv_mag;
+			float3 i = light.Position.xyz - input.VertexPosition.xyz;
+			float inv_mag = 1.0 / length(i);
+			i *= inv_mag;
 
-			float d_dot_n = dot(d, input.Normal);
-			if (d_dot_n < 0) continue;
+			float cos_theta_i = dot(i, input.Normal);
+			float cos_theta_o = dot(o, input.Normal);
 
-			float3 contribution = d_dot_n * light.Color;
+			if (cos_theta_i < 0) continue;
+			if (cos_theta_o < 0) continue;
+
+			float3 h = normalize(i + o);
+			float3 diffuse = f_diffuse(i, o, h, input.Normal, 1.0, 0.5) * baseColor.rgb * light.Color;
+			float3 specular = f_specular(i, o, h, input.Normal, 1.0, 4.0) * light.Color;
 
 			// Spotlight calculation
-			float spotCoherence = -dot(d, light.Direction.xyz);
+			float spotCoherence = -dot(i, light.Direction.xyz);
 			float spotAttenuation = 1.0f;
 			if (spotCoherence > light.Attenuation0) spotAttenuation = 1.0f;
 			else if (spotCoherence < light.Attenuation1) spotAttenuation = 0.0f;
@@ -171,19 +238,16 @@ float4 PS(VS_OUTPUT input) : SV_Target {
 				if (t == 0) spotAttenuation = 1.0f;
 				else spotAttenuation = (spotCoherence - light.Attenuation1) / t;
 			}
+			spotAttenuation = 1.0;
 
+			float falloff = 1.0;
 			if (light.FalloffEnabled == 1) {
-				contribution *= (inv_mag * inv_mag);
+				falloff = (inv_mag * inv_mag);
 			}
 
-			totalLighting += contribution * spotAttenuation * spotAttenuation * spotAttenuation;
+			totalLighting += falloff * (diffuse + specular) * spotAttenuation * spotAttenuation * spotAttenuation;
 		}
 	}
 	
-	if (ColorReplace == 0) {
-		return float4(txDiffuse.Sample( samLinear, input.TexCoord ).rgba * MulCol * float4(totalLighting, 1.0));
-	}
-	else {
-		return float4(totalLighting.xyz, 1.0) * MulCol;
-	}
+	return float4(totalLighting.rgb, 1.0);
 }
