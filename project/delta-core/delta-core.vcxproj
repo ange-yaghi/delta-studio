@@ -26,8 +26,9 @@
     <ClInclude Include="..\..\include\yds_animation_interchange_file_reader_0_0.h" />
     <ClInclude Include="..\..\include\yds_animation_interchange_file_reader_0_1.h" />
     <ClInclude Include="..\..\include\yds_animation_interchange_file_reader.h" />
-    <ClInclude Include="..\..\include\yds_core.h" />
     <ClInclude Include="..\..\include\yds_audio_buffer.h" />
+    <ClInclude Include="..\..\include\yds_core.h" />
+    <ClInclude Include="..\..\include\yds_audio_source.h" />
     <ClInclude Include="..\..\include\yds_audio_device.h" />
     <ClInclude Include="..\..\include\yds_audio_file.h" />
     <ClInclude Include="..\..\include\yds_audio_parameters.h" />
@@ -57,6 +58,7 @@
     <ClInclude Include="..\..\include\yds_depth_buffer.h" />
     <ClInclude Include="..\..\include\yds_device.h" />
     <ClInclude Include="..\..\include\yds_ds8_audio_buffer.h" />
+    <ClInclude Include="..\..\include\yds_ds8_audio_source.h" />
     <ClInclude Include="..\..\include\yds_ds8_device.h" />
     <ClInclude Include="..\..\include\yds_ds8_system.h" />
     <ClInclude Include="..\..\include\yds_dynamic_allocator.h" />
@@ -139,6 +141,7 @@
     <ClCompile Include="..\..\src\yds_animation_mixer.cpp" />
     <ClCompile Include="..\..\src\yds_animation_target.cpp" />
     <ClCompile Include="..\..\src\yds_audio_buffer.cpp" />
+    <ClCompile Include="..\..\src\yds_audio_source.cpp" />
     <ClCompile Include="..\..\src\yds_audio_device.cpp" />
     <ClCompile Include="..\..\src\yds_audio_file.cpp" />
     <ClCompile Include="..\..\src\yds_audio_parameters.cpp" />
@@ -166,6 +169,7 @@
     <ClCompile Include="..\..\src\yds_depth_buffer.cpp" />
     <ClCompile Include="..\..\src\yds_device.cpp" />
     <ClCompile Include="..\..\src\yds_ds8_audio_buffer.cpp" />
+    <ClCompile Include="..\..\src\yds_ds8_audio_source.cpp" />
     <ClCompile Include="..\..\src\yds_ds8_device.cpp" />
     <ClCompile Include="..\..\src\yds_ds8_system.cpp" />
     <ClCompile Include="..\..\src\yds_dynamic_allocator.cpp" />

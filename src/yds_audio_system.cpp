@@ -3,11 +3,11 @@
 #include "../include/yds_audio_device.h"
 #include "../include/yds_ds8_system.h"
 
-ysAudioSystem::ysAudioSystem() : ysAudioSystemObject("AUDIO_SYSTEM", API_UNDEFINED) {
+ysAudioSystem::ysAudioSystem() : ysAudioSystemObject("AUDIO_SYSTEM", API::Undefined) {
     /* void */
 }
 
-ysAudioSystem::ysAudioSystem(AUDIO_SYSTEM_API API) : ysAudioSystemObject("AUDIO_SYSTEM", API) {
+ysAudioSystem::ysAudioSystem(API api) : ysAudioSystemObject("AUDIO_SYSTEM", api) {
     /* void */
 }
 
@@ -15,22 +15,33 @@ ysAudioSystem::~ysAudioSystem() {
     /* void */
 }
 
-ysError ysAudioSystem::CreateAudioSystem(ysAudioSystem **newAudioSystem, AUDIO_SYSTEM_API API) {
+ysError ysAudioSystem::CreateAudioSystem(ysAudioSystem **newAudioSystem, API api) {
     YDS_ERROR_DECLARE("CreateAudioSystem");
 
-    if (newAudioSystem == NULL) return YDS_ERROR_RETURN_STATIC(ysError::YDS_INVALID_PARAMETER);
-    *newAudioSystem = NULL;
+    if (newAudioSystem == nullptr) return YDS_ERROR_RETURN_STATIC(ysError::YDS_INVALID_PARAMETER);
+    *newAudioSystem = nullptr;
 
-    if (API == API_UNDEFINED) return YDS_ERROR_RETURN_STATIC(ysError::YDS_INVALID_PARAMETER);
+    if (api == API::Undefined) return YDS_ERROR_RETURN_STATIC(ysError::YDS_INVALID_PARAMETER);
 
-    switch (API) {
-    case API_DIRECT_SOUND8:
+    switch (api) {
+    case API::DirectSound8:
         *newAudioSystem = new ysDS8System;
         break;
     default:
         *newAudioSystem = nullptr;
         break;
     }
+
+    return YDS_ERROR_RETURN_STATIC(ysError::YDS_NO_ERROR);
+}
+
+ysError ysAudioSystem::DestroyAudioSystem(ysAudioSystem **audioSystem) {
+    YDS_ERROR_DECLARE("DestroyAudioSystem");
+
+    if (audioSystem == nullptr) return YDS_ERROR_RETURN_STATIC(ysError::YDS_INVALID_PARAMETER);
+
+    delete *audioSystem;
+    *audioSystem = nullptr;
 
     return YDS_ERROR_RETURN_STATIC(ysError::YDS_NO_ERROR);
 }

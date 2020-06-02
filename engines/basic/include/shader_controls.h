@@ -39,7 +39,7 @@ namespace dbasic {
         ysMatrix CameraView = ysMath::LoadIdentity();
         ysMatrix Projection = ysMath::LoadIdentity();
 
-        float Eye[3] = { 0.0f, 0.0f, 0.0f };
+        ysVector4 Eye = { 0.0f, 0.0f, 0.0f };         
     };
 
     struct ShaderSkinningControls {

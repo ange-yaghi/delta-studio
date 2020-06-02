@@ -495,7 +495,7 @@ void ApartmentSimulator::CreateSounds() {
     m_ambientSoundStream.AttachAudioBuffer(m_ambientSoundBuffer);
     m_ambientSoundStream.AttachAudioFile(&m_ambientSoundFile);
     m_ambientSoundStream.InitializeBuffer();
-    m_ambientSoundBuffer->SetMode(ysAudioBuffer::MODE_STOP);
+    m_ambientSoundBuffer->SetMode(ysAudioBuffer::Mode::Stop);
 
     m_outsideSoundSource.SetBuffer(m_ambientSoundBuffer);
     m_outsideSoundSource.m_volume = 1.00;
@@ -585,7 +585,7 @@ void ApartmentSimulator::GameLoop() {
 
     UpdateSceneView();
     m_outsideSoundSource.Update(m_currentEye, m_eyeDir, m_eyeUp);
-    m_ambientSoundBuffer->SetMode(ysAudioBuffer::MODE_LOOP);
+    m_ambientSoundBuffer->SetMode(ysAudioBuffer::Mode::Loop);
 
     // Main Game Loop
     while (m_mainWindow->IsOpen()) {

@@ -15,11 +15,11 @@ public:
     virtual ~ysDS8Device();
 
     virtual ysAudioBuffer *CreateBuffer(const ysAudioParameters *parameters, SampleOffset size);
-    virtual ysAudioBuffer *CreateDuplicate(ysAudioBuffer *buffer);
 
-    virtual ysError DestroyAudioBuffer(ysAudioBuffer *&buffer);
+    virtual ysAudioSource *CreateSource(const ysAudioParameters *parameters, SampleOffset size);
+    virtual ysAudioSource *CreateSource(ysAudioBuffer *sourceBuffer);
 
-    virtual void ProcessAudioBuffers();
+    virtual void UpdateAudioSources();
 
 private:
     GUID m_guid;

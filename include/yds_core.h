@@ -7,7 +7,10 @@
 
 // Audio
 #include "yds_audio_buffer.h"
+#include "yds_audio_source.h"
 #include "yds_audio_system.h"
+#include "yds_windows_audio_wave_file.h"
+#include "yds_audio_device.h"
 
 // Input
 #include "yds_input_system.h"
@@ -76,6 +79,7 @@
 
 #pragma comment(lib, "OpenGL32.lib")
 
+#pragma comment(lib, "dsound.lib")
 #pragma comment(lib, "d3dx9.lib")
 #pragma comment(lib, "d3dx9d.lib")
 #pragma comment(lib, "d3dx10.lib")
@@ -87,7 +91,7 @@
 #pragma comment(lib, "d3d9.lib")
 #pragma comment(lib, "d3d11.lib")
 #pragma comment(lib, "dxgi.lib")
-#pragma comment(lib, "dsound.lib")
 #pragma comment(lib, "dxerr.lib")
+#pragma comment(lib, "dxguid.lib")
 
 #endif /* YDS_CORE_H */

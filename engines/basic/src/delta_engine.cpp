@@ -69,6 +69,7 @@ dbasic::DeltaEngine::~DeltaEngine() {
     assert(m_windowSystem == nullptr);
     assert(m_gameWindow == nullptr);
     assert(m_audioSystem == nullptr);
+    assert(m_audioDevice == nullptr);
     assert(m_mainVertexBuffer == nullptr);
     assert(m_mainIndexBuffer == nullptr);
     assert(m_vertexShader == nullptr);
@@ -121,6 +122,12 @@ ysError dbasic::DeltaEngine::CreateGameWindow(const char *title, void *instance,
     // Create the graphics device
     YDS_NESTED_ERROR_CALL(ysDevice::CreateDevice(&m_device, API));
     YDS_NESTED_ERROR_CALL(m_device->InitializeDevice());
+
+    // Create the audio device
+    YDS_NESTED_ERROR_CALL(ysAudioSystem::CreateAudioSystem(&m_audioSystem, ysAudioSystem::API::DirectSound8));
+    m_audioSystem->EnumerateDevices();
+    m_audioDevice = m_audioSystem->GetPrimaryDevice();
+    m_audioSystem->ConnectDevice(m_audioDevice, m_gameWindow);
 
     // Create the rendering context
     YDS_NESTED_ERROR_CALL(m_device->CreateRenderingContext(&m_renderingContext, m_gameWindow));
@@ -213,6 +220,12 @@ ysError dbasic::DeltaEngine::Destroy() {
     YDS_NESTED_ERROR_CALL(m_device->DestroyRenderingContext(m_renderingContext));
 
     YDS_NESTED_ERROR_CALL(m_device->DestroyDevice());
+   
+    m_audioSystem->DisconnectDevice(m_audioDevice);
+    ysAudioSystem::DestroyAudioSystem(&m_audioSystem);
+
+    m_audioDevice = nullptr;
+
     m_mainKeyboard = nullptr;
     m_mainMouse = nullptr;
 
@@ -367,6 +380,17 @@ ysError dbasic::DeltaEngine::LoadAnimation(Animation **animation, const char *pa
     newAnimation->m_textures = list;
 
     *animation = newAnimation;
+
+    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+}
+
+ysError dbasic::DeltaEngine::PlayAudio(AudioAsset *audio) {
+    YDS_ERROR_DECLARE("PlayAudio");
+
+    ysAudioSource *newSource = m_audioDevice->CreateSource(audio->GetBuffer());
+    newSource->SetMode(ysAudioSource::Mode::PlayOnce);
+    newSource->SetPan(0.0f);
+    newSource->SetVolume(1.0f);
 
     return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
 }
@@ -753,6 +777,7 @@ ysError dbasic::DeltaEngine::ExecuteDrawQueue(DrawTarget target) {
         }
 
         m_shaderScreenVariables.CameraView = ysMath::Transpose(ysMath::CameraTarget(cameraEye, cameraTarget, up));
+        m_shaderScreenVariables.Eye = ysMath::GetVector4(cameraEye);
 
         ysMatrix proj = m_shaderScreenVariables.Projection;
         ysMatrix cam = m_shaderScreenVariables.CameraView;
@@ -761,10 +786,6 @@ ysError dbasic::DeltaEngine::ExecuteDrawQueue(DrawTarget target) {
         v = ysMath::MatMult(cam, v);
         v = ysMath::MatMult(proj, v);
         v = ysMath::Div(v, ysMath::LoadScalar(ysMath::GetW(v)));
-
-        m_shaderScreenVariables.Eye[0] = m_cameraX;
-        m_shaderScreenVariables.Eye[1] = m_cameraY;
-        m_shaderScreenVariables.Eye[2] = m_cameraAltitude;
 
         YDS_NESTED_ERROR_CALL(m_device->EditBufferData(m_shaderScreenVariablesBuffer, (char *)(&m_shaderScreenVariables)));
 

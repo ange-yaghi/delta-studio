@@ -3,7 +3,7 @@
 #include "../include/yds_ds8_device.h"
 #include "../include/yds_windows_window.h"
 
-ysDS8System::ysDS8System() : ysAudioSystem(API_DIRECT_SOUND8) {
+ysDS8System::ysDS8System() : ysAudioSystem(API::DirectSound8) {
     /* void */
 }
 

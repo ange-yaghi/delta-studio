@@ -11,6 +11,7 @@
 #include "animation_export_data.h"
 #include "animation_object_controller.h"
 #include "texture_asset.h"
+#include "audio_asset.h"
 
 #include <vector>
 
@@ -40,6 +41,10 @@ namespace dbasic {
         ysError LoadTexture(const char *fname, const char *name);
         TextureAsset *GetTexture(const char *name);
         int GetTextureCount() const { return m_textures.GetNumObjects(); }
+
+        ysError LoadAudioFile(const char *fname, const char *name);
+        AudioAsset *GetAudioAsset(const char *name);
+        int GetAudioAssetCount() const { return m_audioAssets.GetNumObjects(); }
 
         ysError CompileAnimationFileLegacy(const char *fname);
         ysError LoadAnimationFileLegacy(const char *fname);
@@ -81,6 +86,7 @@ namespace dbasic {
         ysDynamicArray<AnimationExportData, 4> m_animationExportData;
         ysDynamicArray<ysAnimationAction, 4> m_actions;
         ysDynamicArray<TextureAsset, 4> m_textures;
+        ysDynamicArray<AudioAsset, 4> m_audioAssets;
 
         DeltaEngine *m_engine;
 

@@ -50,23 +50,20 @@ ysAudioFile::Error ysAudioFile::FillBuffer(SampleOffset offset) {
     if (offset > m_sampleCount) return Error::ReadOutOfRange;
 
     // Use External Buffer
-    if (m_externalBuffer) {
-        if (offset + m_externalBuffer->GetBufferSize() > m_sampleCount) {
+    if (m_externalBuffer != nullptr) {
+        if (offset + m_externalBuffer->GetSampleCount() > m_sampleCount) {
             return Error::ReadOutOfRange;
         }
 
-        void *target;
-        SampleOffset lockedSamples;
+        void *target = malloc(m_externalBuffer->GetBufferSize());
 
-        if (m_externalBuffer->LockEntireBuffer(&target, &lockedSamples) != ysError::YDS_NO_ERROR) {
-            return Error::CouldNotLockBuffer;
-        }
-
-        Error readError = GenericRead(offset, lockedSamples, target);
+        Error readError = GenericRead(offset, m_externalBuffer->GetSampleCount(), target);
         if (readError != Error::None) {
             return readError;
         }
 
+        m_externalBuffer->EditBuffer(target);
+        free(target);
     }
     // Use Internal Buffer
     else {
@@ -94,9 +91,9 @@ ysAudioFile::Error ysAudioFile::InitializeInternalBuffer(SampleOffset samples, b
 
     int newSize = m_audioParameters.GetSizeFromSamples(samples);
     char *newBuffer = new char[newSize];
-    if (!newBuffer) return Error::OutOfMemory;
+    if (newBuffer == nullptr) return Error::OutOfMemory;
 
-    if (saveData && m_buffer) {
+    if (saveData && m_buffer != nullptr) {
         int copySamples = (m_bufferDataSamples < samples) ? m_bufferDataSamples : samples;
         int copySize = m_audioParameters.GetSizeFromSamples(copySamples);
 

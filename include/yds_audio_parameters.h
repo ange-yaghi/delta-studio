@@ -3,11 +3,8 @@
 
 typedef unsigned int SampleOffset;
 
-class ysAudioParameters
-{
-
+class ysAudioParameters {
 public:
-
 	ysAudioParameters();
 	~ysAudioParameters();
 
@@ -17,7 +14,6 @@ public:
 	int m_channelCount;
 	int m_bitsPerSample;
 	int m_sampleRate;
-
 };
 
-#endif
+#endif /* YDS_AUDIO_PARAMETERS_H */

@@ -79,6 +79,12 @@
     <Filter Include="Source Files\animation\interchange">
       <UniqueIdentifier>{ff438a30-c5d3-45fc-891e-b049b0781bf4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\audio">
+      <UniqueIdentifier>{cfc0d77c-5a5c-4add-bcf3-a8ff36d945fb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\audio">
+      <UniqueIdentifier>{0107f92a-005c-44af-9c1a-9d209abe6878}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\engines\basic\include\animation.h">
@@ -165,6 +171,9 @@
     <ClInclude Include="..\..\engines\basic\include\texture_asset.h">
       <Filter>Header Files\assets</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\engines\basic\include\audio_asset.h">
+      <Filter>Header Files\audio</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\engines\basic\src\animation.cpp">
@@ -238,6 +247,9 @@
     </ClCompile>
     <ClCompile Include="..\..\engines\basic\src\texture_asset.cpp">
       <Filter>Source Files\assets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\engines\basic\src\audio_asset.cpp">
+      <Filter>Source Files\audio</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

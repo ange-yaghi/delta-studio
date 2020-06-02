@@ -1,10 +1,11 @@
 #include "../include/yds_ds8_device.h"
 
 #include "../include/yds_ds8_audio_buffer.h"
+#include "../include/yds_ds8_audio_source.h"
 
-ysDS8Device::ysDS8Device() : ysAudioDevice(API_DIRECT_SOUND8) {
+ysDS8Device::ysDS8Device() : ysAudioDevice(API::DirectSound8) {
 	memset(&m_guid, 0, sizeof(GUID));
-	m_device = NULL;
+	m_device = nullptr;
 }
 
 ysDS8Device::~ysDS8Device() {
@@ -13,6 +14,13 @@ ysDS8Device::~ysDS8Device() {
 
 ysAudioBuffer *ysDS8Device::CreateBuffer(const ysAudioParameters *parameters, SampleOffset size) {
 	ysDS8AudioBuffer *newBuffer = m_audioBuffers.NewGeneric<ysDS8AudioBuffer>();
+	newBuffer->Initialize(size, *parameters);
+
+	return newBuffer;
+}
+
+ysAudioSource *ysDS8Device::CreateSource(const ysAudioParameters *parameters, SampleOffset size) {
+	ysDS8AudioSource *newSource = m_audioSources.NewGeneric<ysDS8AudioSource>();
 
 	// --------------------------------------------------------
 	// TEMP
@@ -32,25 +40,27 @@ ysAudioBuffer *ysDS8Device::CreateBuffer(const ysAudioParameters *parameters, Sa
 	wfx.nAvgBytesPerSec = wfx.nSamplesPerSec * wfx.nBlockAlign; 
 	wfx.wBitsPerSample = parameters->m_bitsPerSample; 
 
-	newBuffer->m_bufferSize = size;
-	newBuffer->m_audioParameters = *parameters;
+	newSource->m_bufferSize = size;
+	newSource->m_audioParameters = *parameters;
  
 	// Set up DSBUFFERDESC structure. 
  
 	memset(&dsbdesc, 0, sizeof(DSBUFFERDESC)); 
 	dsbdesc.dwSize = sizeof(DSBUFFERDESC); 
 	dsbdesc.dwFlags = 
-	DSBCAPS_CTRLPAN | DSBCAPS_CTRLVOLUME | DSBCAPS_CTRLFREQUENCY
-	| DSBCAPS_GLOBALFOCUS; 
+		DSBCAPS_CTRLPAN | 
+		DSBCAPS_CTRLVOLUME | 
+		DSBCAPS_CTRLFREQUENCY | 
+		DSBCAPS_GLOBALFOCUS; 
 	dsbdesc.dwBufferBytes = parameters->GetSizeFromSamples(size); 
 	dsbdesc.lpwfxFormat = &wfx; 
  
 	// Create buffer. 
  
-	hr = m_device->CreateSoundBuffer(&dsbdesc, &newBuffer->m_buffer, NULL); 
+	hr = m_device->CreateSoundBuffer(&dsbdesc, &newSource->m_buffer, NULL); 
 	if (SUCCEEDED(hr)) { 
-		hr = newBuffer->m_buffer->QueryInterface(IID_IDirectSoundBuffer8, (LPVOID*) &newBuffer->m_buffer);
-		newBuffer->m_buffer->Release();
+		hr = newSource->m_buffer->QueryInterface(IID_IDirectSoundBuffer8, (LPVOID *)&newSource->m_buffer);
+		newSource->m_buffer->Release();
 	} 
 	else {
         /* void */
@@ -58,39 +68,22 @@ ysAudioBuffer *ysDS8Device::CreateBuffer(const ysAudioParameters *parameters, Sa
 
 	// --------------------------------------------------------
 
-	return newBuffer;
+	return newSource;
 }
 
-ysAudioBuffer *ysDS8Device::CreateDuplicate(ysAudioBuffer *buffer) {
-	ysDS8AudioBuffer *ds8Buffer = static_cast<ysDS8AudioBuffer *>(buffer);
-	ysDS8AudioBuffer *newBuffer = m_audioBuffers.NewGeneric<ysDS8AudioBuffer>();
+ysAudioSource *ysDS8Device::CreateSource(ysAudioBuffer *sourceBuffer) {
+	ysAudioSource *newSource = CreateSource(sourceBuffer->GetAudioParameters(), sourceBuffer->GetSampleCount());
+	newSource->SetDataBuffer(sourceBuffer);
 
-	m_device->DuplicateSoundBuffer(ds8Buffer->m_buffer, &newBuffer->m_buffer);
-
-	return newBuffer;
+	return newSource;
 }
 
-ysError ysDS8Device::DestroyAudioBuffer(ysAudioBuffer *&buffer) {
-	YDS_ERROR_DECLARE("DestroyAudioBuffer");
+void ysDS8Device::UpdateAudioSources() {
+	int sourceCount = m_audioSources.GetNumObjects();
+	for(int i = sourceCount - 1; i >= 0; --i) {
+		ysDS8AudioSource *ds8Buffer = static_cast<ysDS8AudioSource *>(m_audioSources.Get(i));
 
-	if (buffer == NULL) return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
-	if (!CheckCompatibility(buffer)) return YDS_ERROR_RETURN(ysError::YDS_INCOMPATIBLE_PLATFORMS);
-
-	ysDS8AudioBuffer *ds8Buffer = static_cast<ysDS8AudioBuffer *>(buffer);
-
-	ds8Buffer->m_buffer->Release();
-
-	YDS_NESTED_ERROR_CALL( ysAudioDevice::DestroyAudioBuffer(buffer) );
-
-	return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
-}
-
-void ysDS8Device::ProcessAudioBuffers() {
-	int bufferCount = m_audioBuffers.GetNumObjects();
-	for(int i = bufferCount - 1; i >= 0; i--) {
-		ysDS8AudioBuffer *ds8Buffer = static_cast<ysDS8AudioBuffer *>(m_audioBuffers.Get(i));
-
-		if (ds8Buffer->GetBufferMode() == ysAudioBuffer::MODE_PLAY_ONCE) {
+		if (ds8Buffer->GetBufferMode() == ysAudioSource::Mode::PlayOnce) {
 			DWORD status;
 			if (ds8Buffer->m_buffer->GetStatus(&status)) {
 				if (!(status & DSBSTATUS_PLAYING)) {
