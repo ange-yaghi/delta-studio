@@ -58,9 +58,9 @@ namespace dbasic {
         ysError SetAmbientLight(const ysVector4 &ambient);
 
         ysError DrawImage(ysTexture *image, int layer = 0, float scaleX = 1.0f, float scaleY = 1.0f, float texOffsetU = 0.0f, float texOffsetV = 0.0f, float texScaleX = 1.0f, float texScaleY = 1.0f);
-        ysError DrawBox(const int color[3], float width, float height, int layer = 0);
-        ysError DrawAxis(const int color[3], const ysVector &position, const ysVector &direction, float width, float length, int layer = 0);
-        ysError DrawModel(ModelAsset *model, const ysMatrix &transform, float scale, ysTexture *texture, int layer = 0, bool lit = true);
+        ysError DrawBox(float width, float height, int layer = 0, bool lit = true);
+        ysError DrawAxis(const ysVector &position, const ysVector &direction, float width, float length, int layer = 0, bool lit = false);
+        ysError DrawModel(ModelAsset *model, float scale, ysTexture *texture, int layer = 0, bool lit = true);
         ysError DrawRenderSkeleton(RenderSkeleton *skeleton, float scale, int layer);
         ysError LoadTexture(ysTexture **image, const char *fname);
         ysError LoadAnimation(Animation **animation, const char *path, int start, int end);
@@ -77,6 +77,8 @@ namespace dbasic {
 
         // Shader Controls
         void SetCameraPosition(float x, float y);
+        void SetCameraPosition(const ysVector &pos);
+        ysVector GetCameraPosition() const;
         void GetCameraPosition(float *x, float *y) const;
 
         void SetCameraTarget(const ysVector &target);
@@ -109,7 +111,7 @@ namespace dbasic {
         float GetFrameLength();
         float GetAverageFramerate();
 
-        void SetMultiplyColor(ysVector4 color);
+        void SetMultiplyColor(const ysVector &color);
         void ResetMultiplyColor();
 
         ysDevice *GetDevice() { return m_device; }
@@ -124,12 +126,10 @@ namespace dbasic {
         ysAudioDevice *GetAudioDevice() const { return m_audioDevice; }
 
     protected:
-        float m_cameraX;
-        float m_cameraY;
-        float m_cameraAltitude;
         float m_cameraAngle;
         float m_cameraFov;
 
+        ysVector m_cameraPosition;
         ysVector m_cameraTarget;
 
         ysMatrix m_perspectiveProjection;

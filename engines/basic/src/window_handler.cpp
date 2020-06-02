@@ -3,8 +3,9 @@
 #include "../include/delta_engine.h"
 
 dbasic::WindowHandler::WindowHandler() {
-    m_device = NULL;
-    m_context = NULL;
+    m_device = nullptr;
+    m_context = nullptr;
+    m_engine = nullptr;
 }
 
 dbasic::WindowHandler::~WindowHandler() {

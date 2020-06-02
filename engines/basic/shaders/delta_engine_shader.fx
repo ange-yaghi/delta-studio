@@ -187,6 +187,44 @@ float f_specular_ambient(float3 o, float3 normal, float F0) {
 	return F;
 }
 
+float linearToSrgb(float u) {
+	const float MinSrgbPower = 0.0031308;
+
+	if (u < MinSrgbPower) {
+		return 12.92 * u;
+	}
+	else {
+		return 1.055 * pow(u, 1 / 2.4) - 0.055;
+	}
+}
+
+float srgbToLinear(float u) {
+	const float MinSrgbPower = 0.04045;
+
+    if (u < MinSrgbPower) {
+        return u / 12.92;
+    }
+    else {
+        return pow((u + 0.055) / 1.055, 2.4);
+    }
+}
+
+float3 linearToSrgb(float3 v) {
+	return float3(
+		linearToSrgb(v.r),
+		linearToSrgb(v.g),
+		linearToSrgb(v.b)
+	);
+}
+
+float3 srgbToLinear(float3 v) {
+	return float3(
+		srgbToLinear(v.r),
+		srgbToLinear(v.g),
+		srgbToLinear(v.b)
+	);
+}
+
 float4 PS(VS_OUTPUT input) : SV_Target {
 	float3 totalLighting = float3(1.0, 1.0, 1.0);
 
@@ -195,7 +233,8 @@ float4 PS(VS_OUTPUT input) : SV_Target {
 	float power = 1.0;
 
 	if (ColorReplace == 0) {
-		baseColor = txDiffuse.Sample(samLinear, input.TexCoord).rgba * MulCol;
+		float4 diffuse = txDiffuse.Sample(samLinear, input.TexCoord).rgba;
+		baseColor = float4(srgbToLinear(diffuse.rgb), diffuse.a) * MulCol;
 	}
 	else {
 		baseColor = MulCol;
@@ -203,7 +242,7 @@ float4 PS(VS_OUTPUT input) : SV_Target {
 
 	totalLighting = baseColor.rgb;
 
-	if (Lit == 1) {
+	if (Lit == 0) {
 		float3 o = normalize(CameraEye.xyz - input.VertexPosition.xyz);
 
 		float3 ambientSpecular = f_specular_ambient(o, input.Normal, 0.0) * AmbientLighting;
@@ -249,5 +288,5 @@ float4 PS(VS_OUTPUT input) : SV_Target {
 		}
 	}
 	
-	return float4(totalLighting.rgb, 1.0);
+	return float4(linearToSrgb(totalLighting.rgb), 1.0);
 }

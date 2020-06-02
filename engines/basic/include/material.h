@@ -14,8 +14,8 @@ namespace dbasic {
         const char *GetName() { return m_name; }
 
         void SetDiffuseColor(int r, int g, int b, int a = 255);
-        void SetDiffuseColor(ysVector4 diffuse);
-        ysVector4 GetDiffuseColor() const { return m_diffuseColor; }
+        void SetDiffuseColor(const ysVector &diffuse);
+        ysVector GetDiffuseColor() const { return ysMath::LoadVector(m_diffuseColor); }
 
         void SetDiffuseMap(ysTexture *diffuseMap) { m_diffuseMap = diffuseMap; }
         ysTexture *GetDiffuseMap() { return m_diffuseMap; }
@@ -26,9 +26,9 @@ namespace dbasic {
         void SetNormalMap(ysTexture *normalMap) { m_normalMap = normalMap; }
         ysTexture *GetNormalMap() { return m_normalMap; }
 
-        bool UsesNormalMap() const { return m_normalMap != NULL; }
-        bool UsesSpecularMap() const { return m_specularMap != NULL; }
-        bool UsesDiffuseMap() const { return m_diffuseMap != NULL; }
+        bool UsesNormalMap() const { return m_normalMap != nullptr; }
+        bool UsesSpecularMap() const { return m_specularMap != nullptr; }
+        bool UsesDiffuseMap() const { return m_diffuseMap != nullptr; }
 
     protected:
         char m_name[64];
