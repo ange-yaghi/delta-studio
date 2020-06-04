@@ -68,7 +68,7 @@ VS_OUTPUT VS_SKINNED(VS_INPUT_SKINNED input) {
 	float4 final = float4(0.0f, 0.0f, 0.0f, 0.0f);
 	float4 finalNormal = float4(0.0f, 0.0f, 0.0f, 0.0f);
 
-	output.Normal = mul(input.Normal, Transform);
+	output.Normal = mul(input.Normal, Transform).xyz;
 	inputPos = mul(inputPos, Transform);
 
 	if (input.BoneIndices.x >= 0) {
@@ -105,7 +105,7 @@ VS_OUTPUT VS_SKINNED(VS_INPUT_SKINNED input) {
 	output.TexCoord = ( (input.TexCoord) * TexScale) + TexOffset;
 	output.TexCoord = float2(output.TexCoord.x, output.TexCoord.y);
 
-	output.Normal = finalNormal;
+	output.Normal = finalNormal.xyz;
 
 	return output;
 }
@@ -118,7 +118,7 @@ VS_OUTPUT VS_STANDARD(VS_INPUT_STANDARD input) {
 	float4 final = float4(0.0f, 0.0f, 0.0f, 0.0f);
 	float4 finalNormal = float4(0.0f, 0.0f, 0.0f, 0.0f);
 
-	output.Normal = mul(input.Normal, Transform);
+	output.Normal = mul(input.Normal, Transform).xyz;
 
 	final = inputPos;
 	finalNormal = float4(output.Normal, 1.0);
@@ -161,7 +161,7 @@ float f_diffuse(float3 i, float3 o, float3 h, float3 normal, float power, float 
 }
 
 float f_specular(float3 i, float3 o, float3 h, float3 normal, float power, float specularPower) {
-	float reflected = -reflect(i, normal);
+	float3 reflected = -reflect(i, normal);
 	float intensity = dot(reflected, o);
 
 	if (intensity < 0) return 0;
@@ -176,7 +176,7 @@ float f_specular(float3 i, float3 o, float3 h, float3 normal, float power, float
 }
 
 float f_specular_ambient(float3 o, float3 normal, float F0) {
-	float reflected = reflect(-o, normal);
+	float3 reflected = reflect(-o, normal);
 
 	// Fresnel approximation
 	float F0_scaled = 0.08 * F0;
@@ -242,7 +242,7 @@ float4 PS(VS_OUTPUT input) : SV_Target {
 
 	totalLighting = baseColor.rgb;
 
-	if (Lit == 0) {
+	if (Lit == 1) {
 		float3 o = normalize(CameraEye.xyz - input.VertexPosition.xyz);
 
 		float3 ambientSpecular = f_specular_ambient(o, input.Normal, 0.0) * AmbientLighting;

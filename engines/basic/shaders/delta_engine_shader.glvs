@@ -11,6 +11,7 @@ out vec3 ex_Normal;
 layout (binding = 0) uniform ScreenVariables {
 	mat4 CameraView;
 	mat4 Projection;
+	vec4 CameraEye;
 };
 
 layout (binding = 1) uniform ObjectVariables {
