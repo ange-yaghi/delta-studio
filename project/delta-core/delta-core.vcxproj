@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\include\yds_color.h" />
     <ClInclude Include="..\..\include\yds_animation_action.h" />
     <ClInclude Include="..\..\include\yds_animation_action_binding.h" />
     <ClInclude Include="..\..\include\yds_animation_curve.h" />
@@ -131,6 +132,7 @@
     <ClInclude Include="..\..\include\yds_window_system_object.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\src\yds_color.cpp" />
     <ClCompile Include="..\..\src\yds_animation_action.cpp" />
     <ClCompile Include="..\..\src\yds_animation_action_binding.cpp" />
     <ClCompile Include="..\..\src\yds_animation_curve.cpp" />

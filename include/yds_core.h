@@ -58,6 +58,9 @@
 // Graphics API
 #include "yds_device.h"
 
+// Color
+#include "yds_color.h"
+
 // OS
 #include "yds_window_event_handler.h"
 

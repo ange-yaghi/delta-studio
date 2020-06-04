@@ -43,7 +43,7 @@ dbasic::DeltaEngine::DeltaEngine() {
     m_mainMouse = nullptr;
 
     // Shader Controls
-    m_shaderObjectVariables.MulCol.Set(1.0f, 1.0f, 1.0f, 1.0f);
+    m_shaderObjectVariables.BaseColor.Set(1.0f, 1.0f, 1.0f, 1.0f);
     m_shaderObjectVariables.ColorReplace = 0;
     m_shaderObjectVariables.Scale[0] = 1.0f;
     m_shaderObjectVariables.Scale[1] = 1.0f;
@@ -53,9 +53,9 @@ dbasic::DeltaEngine::DeltaEngine() {
     m_shaderScreenVariablesSync = false;
 
     // Camera
-    m_cameraX = 0.0f;
-    m_cameraY = 0.0f;
-    m_cameraAltitude = 10.0f;
+    m_cameraPosition = ysMath::LoadVector(0.0f, 0.0f, 10.0f);
+    m_cameraTarget = ysMath::Constants::Zero3;
+    m_cameraMode = CameraMode::Flat;
     m_cameraAngle = 0.0f;
 
     m_currentTarget = DrawTarget::Main;
@@ -243,10 +243,10 @@ ysError dbasic::DeltaEngine::UseMaterial(Material *material) {
     YDS_ERROR_DECLARE("UseMaterial");
 
     if (material == nullptr) {
-        SetMultiplyColor(ysVector4(1.0f, 0.0f, 1.0f, 1.0f));
+        SetBaseColor(ysMath::LoadVector(1.0f, 0.0f, 1.0f, 1.0f));
     }
     else {
-        SetMultiplyColor(material->GetDiffuseColor());
+        SetBaseColor(material->GetDiffuseColor());
     }
 
     return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
@@ -405,15 +405,32 @@ void dbasic::DeltaEngine::SubmitSkeleton(Skeleton *skeleton) {
 }
 
 void dbasic::DeltaEngine::SetCameraPosition(float x, float y) {
-    m_cameraX = x;
-    m_cameraY = y;
+    ysVector3 p = ysMath::GetVector3(m_cameraPosition);
+    m_cameraPosition = ysMath::LoadVector(x, y, p.z, 1.0f);
 
     m_shaderScreenVariablesSync = false;
 }
 
+void dbasic::DeltaEngine::SetCameraPosition(const ysVector &pos) {
+    m_cameraPosition = pos;
+    m_shaderObjectVariablesSync = false;
+}
+
+ysVector dbasic::DeltaEngine::GetCameraPosition() const {
+    return m_cameraPosition;
+}
+
 void dbasic::DeltaEngine::GetCameraPosition(float *x, float *y) const {
-    *x = m_cameraX;
-    *y = m_cameraY;
+    *x = ysMath::GetX(m_cameraPosition);
+    *y = ysMath::GetY(m_cameraPosition);
+}
+
+void dbasic::DeltaEngine::SetCameraUp(const ysVector &up) {
+    m_cameraUp = up;
+}
+
+ysVector dbasic::DeltaEngine::GetCameraUp() const {
+    return m_cameraUp;
 }
 
 void dbasic::DeltaEngine::SetCameraTarget(const ysVector &target) {
@@ -444,12 +461,14 @@ float dbasic::DeltaEngine::GetCameraAspect() const {
 }
 
 void dbasic::DeltaEngine::SetCameraAltitude(float altitude) {
-    m_cameraAltitude = altitude;
+    ysVector3 p = ysMath::GetVector3(m_cameraPosition);
+    m_cameraPosition = ysMath::LoadVector(p.x, p.y, altitude, 1.0f);
+
     m_shaderScreenVariablesSync = false;
 }
 
 float dbasic::DeltaEngine::GetCameraAltitude() const {
-    return m_cameraAltitude;
+    return ysMath::GetZ(m_cameraPosition);
 }
 
 void dbasic::DeltaEngine::SetObjectTransform(const ysMatrix &mat) {
@@ -536,12 +555,48 @@ float dbasic::DeltaEngine::GetAverageFramerate() {
     return m_timingSystem->GetFPS();
 }
 
-void dbasic::DeltaEngine::SetMultiplyColor(ysVector4 color) {
-    m_shaderObjectVariables.MulCol = color;
+void dbasic::DeltaEngine::ResetBrdfParameters() {
+    m_shaderObjectVariables = ShaderObjectVariables();
 }
 
-void dbasic::DeltaEngine::ResetMultiplyColor() {
-    m_shaderObjectVariables.MulCol = ysVector4(1.0f, 1.0f, 1.0f, 1.0f);
+void dbasic::DeltaEngine::SetBaseColor(const ysVector &color) {
+    m_shaderObjectVariables.BaseColor = ysMath::GetVector4(color);
+}
+
+void dbasic::DeltaEngine::ResetBaseColor() {
+    m_shaderObjectVariables.BaseColor = ysVector4(1.0f, 1.0f, 1.0f, 1.0f);
+}
+
+void dbasic::DeltaEngine::SetEmission(const ysVector &emission) {
+    m_shaderObjectVariables.Emission = ysMath::GetVector4(emission);
+}
+
+void dbasic::DeltaEngine::SetSpecularMix(float specularMix) {
+    m_shaderObjectVariables.SpecularMix = specularMix;
+}
+
+void dbasic::DeltaEngine::SetDiffuseMix(float diffuseMix) {
+    m_shaderObjectVariables.DiffuseMix = diffuseMix;
+}
+
+void dbasic::DeltaEngine::SetMetallic(float metallic) {
+    m_shaderObjectVariables.Metallic = metallic;
+}
+
+void dbasic::DeltaEngine::SetDiffuseRoughness(float diffuseRoughness) {
+    m_shaderObjectVariables.DiffuseRoughness = diffuseRoughness;
+}
+
+void dbasic::DeltaEngine::SetSpecularRoughness(float specularRoughness) {
+    m_shaderObjectVariables.SpecularPower = ::pow(2.0f, 12.0f * (1.0f - specularRoughness));
+}
+
+void dbasic::DeltaEngine::SetSpecularPower(float power) {
+    m_shaderObjectVariables.SpecularPower = power;
+}
+
+void dbasic::DeltaEngine::SetIncidentSpecular(float incidentSpecular) {
+    m_shaderObjectVariables.IncidentSpecular = incidentSpecular;
 }
 
 int dbasic::DeltaEngine::GetScreenWidth() {
@@ -607,7 +662,7 @@ ysError dbasic::DeltaEngine::SetAmbientLight(const ysVector4 &ambient) {
     return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
 }
 
-ysError dbasic::DeltaEngine::DrawBox(const int color[3], float width, float height, int layer) {
+ysError dbasic::DeltaEngine::DrawBox(float width, float height, int layer, bool lit) {
     YDS_ERROR_DECLARE("DrawBox");
 
     if (!m_shaderObjectVariablesSync) {
@@ -622,12 +677,7 @@ ysError dbasic::DeltaEngine::DrawBox(const int color[3], float width, float heig
         m_shaderObjectVariables.TexScale[1] = 1.0f;
 
         m_shaderObjectVariables.ColorReplace = 1;
-        m_shaderObjectVariables.MulCol.x = color[0] / 255.0f;
-        m_shaderObjectVariables.MulCol.y = color[1] / 255.0f;
-        m_shaderObjectVariables.MulCol.z = color[2] / 255.0f;
-        m_shaderObjectVariables.MulCol.w = 1.0f;
-
-        m_shaderObjectVariables.Lit = 1;
+        m_shaderObjectVariables.Lit = (lit) ? 1 : 0;
     }
 
     DrawCall *newCall = nullptr;
@@ -647,7 +697,7 @@ ysError dbasic::DeltaEngine::DrawBox(const int color[3], float width, float heig
     return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
 }
 
-ysError dbasic::DeltaEngine::DrawAxis(const int color[3], const ysVector &position, const ysVector &direction, float width, float length, int layer) {
+ysError dbasic::DeltaEngine::DrawAxis(const ysVector &position, const ysVector &direction, float width, float length, int layer, bool lit) {
     YDS_ERROR_DECLARE("DrawAxis");
 
     ysMatrix trans = ysMath::TranslationTransform(position);
@@ -661,16 +711,15 @@ ysError dbasic::DeltaEngine::DrawAxis(const int color[3], const ysVector &positi
     transform = ysMath::MatMult(transform, offset);
     SetObjectTransform(transform);
 
-    YDS_NESTED_ERROR_CALL(DrawBox(color, width, length, layer));
+    YDS_NESTED_ERROR_CALL(DrawBox(width, length, layer, lit));
 
     return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
 }
 
-ysError dbasic::DeltaEngine::DrawModel(ModelAsset *model, const ysMatrix &transform, float scale, ysTexture *texture, int layer, bool lit) {
+ysError dbasic::DeltaEngine::DrawModel(ModelAsset *model, float scale, ysTexture *texture, int layer, bool lit) {
     YDS_ERROR_DECLARE("DrawModel");
 
     if (!m_shaderObjectVariablesSync) {
-        m_shaderObjectVariables.Transform = transform;
         m_shaderObjectVariables.Scale[0] = scale;
         m_shaderObjectVariables.Scale[1] = scale;
         m_shaderObjectVariables.Scale[2] = scale;
@@ -716,9 +765,9 @@ ysError dbasic::DeltaEngine::DrawRenderSkeleton(RenderSkeleton *skeleton, float 
                 ? nullptr
                 : material->GetDiffuseMap();
 
+            SetObjectTransform(node->Transform.GetWorldTransform());
             DrawModel(
                 node->GetModelAsset(),
-                node->Transform.GetWorldTransform(),
                 scale,
                 diffuseMap,
                 layer);
@@ -754,26 +803,30 @@ ysError dbasic::DeltaEngine::ExecuteDrawQueue(DrawTarget target) {
 
         ysVector cameraEye;
         ysVector cameraTarget;
+        ysVector up;
 
         if (target == DrawTarget::Main) {
-            cameraEye = ysMath::LoadVector(m_cameraX, m_cameraY, m_cameraAltitude, 1.0f);
+            cameraEye = m_cameraPosition;
         }
         else if (target == DrawTarget::Gui) {
-            cameraEye = ysMath::LoadVector(0.0f, 0.0f, m_cameraAltitude, 1.0f);
+            cameraEye = ysMath::LoadVector(0.0f, 0.0f, 10.0f, 1.0f);
         }
-
-        ysVector up = ysMath::LoadVector(-sinRot, cosRot);
 
         if (target == DrawTarget::Main) {
             if (m_cameraMode == CameraMode::Flat) {
-                cameraTarget = ysMath::LoadVector(m_cameraX, m_cameraY, 0.0f, 1.0f);
+                cameraTarget = ysMath::Mask(cameraEye, ysMath::Constants::MaskOffZ);
+                up = ysMath::LoadVector(-sinRot, cosRot);
             }
             else {
                 cameraTarget = m_cameraTarget;
+                ysVector cameraDir = ysMath::Sub(cameraTarget, cameraEye);
+                ysVector right = ysMath::Cross(cameraDir, m_cameraUp);
+                up = ysMath::Normalize(ysMath::Cross(right, cameraDir));
             }
         }
         else if (target == DrawTarget::Gui) {
             cameraTarget = ysMath::LoadVector(0.0f, 0.0f, 0.0f, 1.0f);
+            up = ysMath::LoadVector(-sinRot, cosRot);
         }
 
         m_shaderScreenVariables.CameraView = ysMath::Transpose(ysMath::CameraTarget(cameraEye, cameraTarget, up));
@@ -782,7 +835,7 @@ ysError dbasic::DeltaEngine::ExecuteDrawQueue(DrawTarget target) {
         ysMatrix proj = m_shaderScreenVariables.Projection;
         ysMatrix cam = m_shaderScreenVariables.CameraView;
 
-        ysVector v = ysMath::LoadVector(19.3632, 9.74805, 0.0f, 1.0f);
+        ysVector v = ysMath::LoadVector(19.3632f, 9.74805f, 0.0f, 1.0f);
         v = ysMath::MatMult(cam, v);
         v = ysMath::MatMult(proj, v);
         v = ysMath::Div(v, ysMath::LoadScalar(ysMath::GetW(v)));

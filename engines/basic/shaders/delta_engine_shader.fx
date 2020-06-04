@@ -33,10 +33,19 @@ cbuffer ScreenVariables : register(b0) {
 
 cbuffer ObjectVariables : register(b1) {
 	matrix Transform;
-	float4 MulCol;
 	float2 TexOffset;
 	float2 TexScale;
-	float3 Scale;
+	float4 Scale;
+
+	float4 BaseColor;
+	float4 Emission;
+	float SpecularMix;
+	float DiffuseMix;
+	float Metallic;
+	float DiffuseRoughness;
+	float SpecularPower;
+	float IncidentSpecular;
+
 	int ColorReplace;
 	int Lit;
 };
@@ -68,7 +77,7 @@ VS_OUTPUT VS_SKINNED(VS_INPUT_SKINNED input) {
 	float4 final = float4(0.0f, 0.0f, 0.0f, 0.0f);
 	float4 finalNormal = float4(0.0f, 0.0f, 0.0f, 0.0f);
 
-	output.Normal = mul(input.Normal, Transform);
+	output.Normal = mul(input.Normal, Transform).xyz;
 	inputPos = mul(inputPos, Transform);
 
 	if (input.BoneIndices.x >= 0) {
@@ -95,7 +104,7 @@ VS_OUTPUT VS_SKINNED(VS_INPUT_SKINNED input) {
 	inputPos = float4(final.xyz, 1.0);
 	
 	inputPos = mul(inputPos, Transform);
-	inputPos.xyz *= Scale;
+	inputPos.xyz *= Scale.xyz;
 	inputPos = mul(inputPos, CameraView);
 	inputPos = mul(inputPos, Projection);
 
@@ -105,7 +114,7 @@ VS_OUTPUT VS_SKINNED(VS_INPUT_SKINNED input) {
 	output.TexCoord = ( (input.TexCoord) * TexScale) + TexOffset;
 	output.TexCoord = float2(output.TexCoord.x, output.TexCoord.y);
 
-	output.Normal = finalNormal;
+	output.Normal = finalNormal.xyz;
 
 	return output;
 }
@@ -118,14 +127,14 @@ VS_OUTPUT VS_STANDARD(VS_INPUT_STANDARD input) {
 	float4 final = float4(0.0f, 0.0f, 0.0f, 0.0f);
 	float4 finalNormal = float4(0.0f, 0.0f, 0.0f, 0.0f);
 
-	output.Normal = mul(input.Normal, Transform);
+	output.Normal = mul(input.Normal, Transform).xyz;
 
 	final = inputPos;
 	finalNormal = float4(output.Normal, 1.0);
 
 	inputPos = float4(final.xyz, 1.0);
 	
-	inputPos.xyz *= Scale;
+	inputPos.xyz *= Scale.xyz;
 	inputPos = mul(inputPos, Transform);
 	output.VertexPosition = inputPos;
 
@@ -160,34 +169,72 @@ float f_diffuse(float3 i, float3 o, float3 h, float3 normal, float power, float 
 	return f_d * power * cos_theta_i;
 }
 
-float f_specular(float3 i, float3 o, float3 h, float3 normal, float power, float specularPower) {
-	float reflected = -reflect(i, normal);
+float f_specular(float3 i, float3 o, float3 h, float3 normal, float F0, float power, float specularPower) {
+	float3 reflected = -reflect(i, normal);
 	float intensity = dot(reflected, o);
 
 	if (intensity < 0) return 0;
 
 	// Fresnel approximation
-	float F0 = 0.08;
+	float F0_scaled = 0.08 * F0;
 	float o_dot_h = dot(o, h);
 	float s = pow5(1 - o_dot_h);
-	float F = F0 + s * (1 - F0);
+	float F = F0_scaled + s * (1 - F0_scaled);
 
 	return pow(intensity, specularPower) * F * power;
 }
 
-float f_specular_ambient(float3 o, float3 normal, float F0) {
-	float reflected = reflect(-o, normal);
-
+float f_specular_ambient(float3 o, float3 normal, float F0, float power) {
 	// Fresnel approximation
 	float F0_scaled = 0.08 * F0;
 	float o_dot_n = dot(o, normal);
 	float s = pow5(1 - o_dot_n);
 	float F = F0_scaled + s * (1 - F0_scaled);
 
-	return F;
+	return F * power;
+}
+
+float linearToSrgb(float u) {
+	const float MinSrgbPower = 0.0031308;
+
+	if (u < MinSrgbPower) {
+		return 12.92 * u;
+	}
+	else {
+		return 1.055 * pow(u, 1 / 2.4) - 0.055;
+	}
+}
+
+float srgbToLinear(float u) {
+	const float MinSrgbPower = 0.04045;
+
+    if (u < MinSrgbPower) {
+        return u / 12.92;
+    }
+    else {
+        return pow((u + 0.055) / 1.055, 2.4);
+    }
+}
+
+float3 linearToSrgb(float3 v) {
+	return float3(
+		linearToSrgb(v.r),
+		linearToSrgb(v.g),
+		linearToSrgb(v.b)
+	);
+}
+
+float3 srgbToLinear(float3 v) {
+	return float3(
+		srgbToLinear(v.r),
+		srgbToLinear(v.g),
+		srgbToLinear(v.b)
+	);
 }
 
 float4 PS(VS_OUTPUT input) : SV_Target {
+	const float FullSpecular = 1 / 0.08;
+
 	float3 totalLighting = float3(1.0, 1.0, 1.0);
 
 	float4 baseColor;
@@ -195,10 +242,11 @@ float4 PS(VS_OUTPUT input) : SV_Target {
 	float power = 1.0;
 
 	if (ColorReplace == 0) {
-		baseColor = txDiffuse.Sample(samLinear, input.TexCoord).rgba * MulCol;
+		float4 diffuse = txDiffuse.Sample(samLinear, input.TexCoord).rgba;
+		baseColor = float4(srgbToLinear(diffuse.rgb), diffuse.a) * BaseColor;
 	}
 	else {
-		baseColor = MulCol;
+		baseColor = BaseColor;
 	}
 
 	totalLighting = baseColor.rgb;
@@ -206,10 +254,16 @@ float4 PS(VS_OUTPUT input) : SV_Target {
 	if (Lit == 1) {
 		float3 o = normalize(CameraEye.xyz - input.VertexPosition.xyz);
 
-		float3 ambientSpecular = f_specular_ambient(o, input.Normal, 0.0) * AmbientLighting;
-		float3 ambientDiffuse = f_diffuse(o, o, o, input.Normal, 1.0, 0.5) * AmbientLighting * baseColor;
+		float3 ambientSpecular = f_specular_ambient(o, input.Normal, IncidentSpecular, SpecularMix) * AmbientLighting;
+		float3 ambientDiffuse = f_diffuse(o, o, o, input.Normal, DiffuseMix, DiffuseRoughness) * AmbientLighting * baseColor;
+		float3 ambientMetallic = f_specular_ambient(o, input.Normal, FullSpecular, 1.0) * AmbientLighting.rgb * baseColor.rgb;
 
-		totalLighting = ambientSpecular + ambientDiffuse;
+		totalLighting = lerp(
+			ambientSpecular + ambientDiffuse,
+			ambientMetallic,
+			Metallic);
+		totalLighting += Emission.rgb;
+
 		for (int li = 0; li < 32; ++li) {
 			const Light light = Lights[li];
 			if (light.Active == 0) continue;
@@ -225,8 +279,13 @@ float4 PS(VS_OUTPUT input) : SV_Target {
 			if (cos_theta_o < 0) continue;
 
 			float3 h = normalize(i + o);
-			float3 diffuse = f_diffuse(i, o, h, input.Normal, 1.0, 0.5) * baseColor.rgb * light.Color;
-			float3 specular = f_specular(i, o, h, input.Normal, 1.0, 4.0) * light.Color;
+			float3 diffuse = f_diffuse(i, o, h, input.Normal, DiffuseMix, DiffuseRoughness) * baseColor.rgb * light.Color;
+			float3 specular = f_specular(i, o, h, input.Normal, IncidentSpecular, SpecularMix, SpecularPower) * light.Color;
+			float3 metallic = 0;
+
+			if (Metallic > 0) {
+				metallic = f_specular(i, o, h, input.Normal, FullSpecular, 1, SpecularPower) * light.Color * baseColor.rgb;
+			}
 
 			// Spotlight calculation
 			float spotCoherence = -dot(i, light.Direction.xyz);
@@ -245,9 +304,14 @@ float4 PS(VS_OUTPUT input) : SV_Target {
 				falloff = (inv_mag * inv_mag);
 			}
 
-			totalLighting += falloff * (diffuse + specular) * spotAttenuation * spotAttenuation * spotAttenuation;
+			float3 bsdf = lerp(
+				diffuse + specular,
+				metallic, 
+				Metallic);
+
+			totalLighting += falloff * bsdf * spotAttenuation * spotAttenuation * spotAttenuation;
 		}
 	}
 	
-	return float4(totalLighting.rgb, 1.0);
+	return float4(linearToSrgb(totalLighting), 1.0);
 }

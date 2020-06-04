@@ -94,6 +94,12 @@
     <Filter Include="Header Files\audio\wave">
       <UniqueIdentifier>{184510f8-623e-4ed6-8260-53455e77b6b2}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\color">
+      <UniqueIdentifier>{a49bee32-9053-4be9-9e61-39727afa2fb9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\color">
+      <UniqueIdentifier>{f7364ee5-b1c6-4126-a9a4-dba4b225b852}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\include\yds_d3d10_context.h">
@@ -426,6 +432,9 @@
     <ClInclude Include="..\..\include\yds_ds8_audio_buffer.h">
       <Filter>Header Files\audio\ds8</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\include\yds_color.h">
+      <Filter>Header Files\color</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\yds_interchange_file_0_0.cpp">
@@ -721,6 +730,9 @@
     </ClCompile>
     <ClCompile Include="..\..\src\yds_ds8_audio_buffer.cpp">
       <Filter>Source Files\audio\ds8</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\yds_color.cpp">
+      <Filter>Source Files\color</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

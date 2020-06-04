@@ -11,14 +11,24 @@ out vec3 ex_Normal;
 layout (binding = 0) uniform ScreenVariables {
 	mat4 CameraView;
 	mat4 Projection;
+	vec4 CameraEye;
 };
 
 layout (binding = 1) uniform ObjectVariables {
 	mat4 Transform;
-	vec4 MulCol;
 	vec2 TexOffset;
 	vec2 TexScale;
-	vec3 Scale;
+	vec4 Scale;
+
+	vec4 BaseColor;
+	vec4 Emission;
+	float SpecularMix;
+	float DiffuseMix;
+	float Metallic;
+	float DiffuseRoughness;
+	float SpecularPower;
+	float IncidentSpecular;
+
 	int ColorReplace;
 	int Lit;
 };
@@ -30,7 +40,7 @@ layout (binding = 2) uniform SkinningVariables {
 void main(void) {
 	vec4 inputPos = vec4(in_Position.xyz, 1.0);
 
-	inputPos.xyz *= Scale;
+	inputPos.xyz *= Scale.xyz;
 
 	inputPos = inputPos * Transform;
 	ex_Pos = inputPos;

@@ -19,14 +19,21 @@ namespace dbasic {
     struct ShaderObjectVariables {
         ysMatrix Transform = ysMath::LoadIdentity();
 
-        ysVector4 MulCol = { 1.0f, 1.0f, 1.0f, 1.0f };
         float TexOffset[2] = { 0.0f, 0.0f };
         float TexScale[2] = { 1.0f, 1.0f };
-        float Scale[3] = { 1.0f, 1.0f, 1.0f };
+        float Scale[4] = { 1.0f, 1.0f, 1.0f };
+
+        ysVector4 BaseColor = { 1.0f, 1.0f, 1.0f, 1.0f };
+        ysVector4 Emission = { 0.0f, 0.0f, 0.0f, 0.0f };
+        float SpecularMix = 1.0f;
+        float DiffuseMix = 1.0f;
+        float Metallic = 0.0f;
+        float DiffuseRoughness = 0.5f;
+        float SpecularPower = 4.0f;
+        float IncidentSpecular = 1.0f;
+
         int ColorReplace = 0;
         int Lit = 1;
-
-        int Pad[2] = { 0, 0 };
     };
 
     struct ConsoleShaderObjectVariables {
