@@ -43,7 +43,7 @@ dbasic::DeltaEngine::DeltaEngine() {
     m_mainMouse = nullptr;
 
     // Shader Controls
-    m_shaderObjectVariables.MulCol.Set(1.0f, 1.0f, 1.0f, 1.0f);
+    m_shaderObjectVariables.BaseColor.Set(1.0f, 1.0f, 1.0f, 1.0f);
     m_shaderObjectVariables.ColorReplace = 0;
     m_shaderObjectVariables.Scale[0] = 1.0f;
     m_shaderObjectVariables.Scale[1] = 1.0f;
@@ -241,10 +241,10 @@ ysError dbasic::DeltaEngine::UseMaterial(Material *material) {
     YDS_ERROR_DECLARE("UseMaterial");
 
     if (material == nullptr) {
-        SetMultiplyColor(ysMath::LoadVector(1.0f, 0.0f, 1.0f, 1.0f));
+        SetBaseColor(ysMath::LoadVector(1.0f, 0.0f, 1.0f, 1.0f));
     }
     else {
-        SetMultiplyColor(material->GetDiffuseColor());
+        SetBaseColor(material->GetDiffuseColor());
     }
 
     return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
@@ -545,12 +545,52 @@ float dbasic::DeltaEngine::GetAverageFramerate() {
     return m_timingSystem->GetFPS();
 }
 
-void dbasic::DeltaEngine::SetMultiplyColor(const ysVector &color) {
-    m_shaderObjectVariables.MulCol = ysMath::GetVector4(color);
+void dbasic::DeltaEngine::ResetBrdfParameters() {
+    ShaderObjectVariables &brdf = m_shaderObjectVariables;
+
+    brdf.BaseColor = ysVector4(1.0f, 1.0f, 1.0f, 1.0f);
+    brdf.SpecularMix = 1.0f;
+    brdf.DiffuseMix = 1.0f;
+    brdf.Metallic = 0.0f;
+    brdf.DiffuseRoughness = 0.5f;
+    brdf.SpecularPower = 4.0f;
+    brdf.IncidentSpecular = 1.0f;
 }
 
-void dbasic::DeltaEngine::ResetMultiplyColor() {
-    m_shaderObjectVariables.MulCol = ysVector4(1.0f, 1.0f, 1.0f, 1.0f);
+void dbasic::DeltaEngine::SetBaseColor(const ysVector &color) {
+    m_shaderObjectVariables.BaseColor = ysMath::GetVector4(color);
+}
+
+void dbasic::DeltaEngine::ResetBaseColor() {
+    m_shaderObjectVariables.BaseColor = ysVector4(1.0f, 1.0f, 1.0f, 1.0f);
+}
+
+void dbasic::DeltaEngine::SetSpecularMix(float specularMix) {
+    m_shaderObjectVariables.SpecularMix = specularMix;
+}
+
+void dbasic::DeltaEngine::SetDiffuseMix(float diffuseMix) {
+    m_shaderObjectVariables.DiffuseMix = diffuseMix;
+}
+
+void dbasic::DeltaEngine::SetMetallic(float metallic) {
+    m_shaderObjectVariables.Metallic = metallic;
+}
+
+void dbasic::DeltaEngine::SetDiffuseRoughness(float diffuseRoughness) {
+    m_shaderObjectVariables.DiffuseRoughness = diffuseRoughness;
+}
+
+void dbasic::DeltaEngine::SetSpecularRoughness(float specularRoughness) {
+    m_shaderObjectVariables.SpecularPower = ::pow(2.0f, 12.0f * (1.0f - specularRoughness));
+}
+
+void dbasic::DeltaEngine::SetSpecularPower(float power) {
+    m_shaderObjectVariables.SpecularPower = power;
+}
+
+void dbasic::DeltaEngine::SetIncidentSpecular(float incidentSpecular) {
+    m_shaderObjectVariables.IncidentSpecular = incidentSpecular;
 }
 
 int dbasic::DeltaEngine::GetScreenWidth() {

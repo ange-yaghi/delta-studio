@@ -111,8 +111,17 @@ namespace dbasic {
         float GetFrameLength();
         float GetAverageFramerate();
 
-        void SetMultiplyColor(const ysVector &color);
-        void ResetMultiplyColor();
+        void ResetBrdfParameters();
+        void SetBaseColor(const ysVector &color);
+        void ResetBaseColor();
+
+        void SetSpecularMix(float specularMix);
+        void SetDiffuseMix(float diffuseMix);
+        void SetMetallic(float metallic);
+        void SetDiffuseRoughness(float diffuseRoughness);
+        void SetSpecularRoughness(float specularRoughness);
+        void SetSpecularPower(float power);
+        void SetIncidentSpecular(float incidentSpecular);
 
         ysDevice *GetDevice() { return m_device; }
 
