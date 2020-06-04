@@ -54,6 +54,8 @@ dbasic::DeltaEngine::DeltaEngine() {
 
     // Camera
     m_cameraPosition = ysMath::LoadVector(0.0f, 0.0f, 10.0f);
+    m_cameraTarget = ysMath::Constants::Zero3;
+    m_cameraMode = CameraMode::Flat;
     m_cameraAngle = 0.0f;
 
     m_currentTarget = DrawTarget::Main;
@@ -824,6 +826,7 @@ ysError dbasic::DeltaEngine::ExecuteDrawQueue(DrawTarget target) {
         }
         else if (target == DrawTarget::Gui) {
             cameraTarget = ysMath::LoadVector(0.0f, 0.0f, 0.0f, 1.0f);
+            up = ysMath::LoadVector(-sinRot, cosRot);
         }
 
         m_shaderScreenVariables.CameraView = ysMath::Transpose(ysMath::CameraTarget(cameraEye, cameraTarget, up));
