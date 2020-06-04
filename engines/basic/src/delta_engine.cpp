@@ -423,6 +423,14 @@ void dbasic::DeltaEngine::GetCameraPosition(float *x, float *y) const {
     *y = ysMath::GetY(m_cameraPosition);
 }
 
+void dbasic::DeltaEngine::SetCameraUp(const ysVector &up) {
+    m_cameraUp = up;
+}
+
+ysVector dbasic::DeltaEngine::GetCameraUp() const {
+    return m_cameraUp;
+}
+
 void dbasic::DeltaEngine::SetCameraTarget(const ysVector &target) {
     m_cameraTarget = target;
     m_shaderScreenVariablesSync = false;
@@ -793,6 +801,7 @@ ysError dbasic::DeltaEngine::ExecuteDrawQueue(DrawTarget target) {
 
         ysVector cameraEye;
         ysVector cameraTarget;
+        ysVector up;
 
         if (target == DrawTarget::Main) {
             cameraEye = m_cameraPosition;
@@ -801,14 +810,16 @@ ysError dbasic::DeltaEngine::ExecuteDrawQueue(DrawTarget target) {
             cameraEye = ysMath::LoadVector(0.0f, 0.0f, 10.0f, 1.0f);
         }
 
-        ysVector up = ysMath::LoadVector(-sinRot, cosRot);
-
         if (target == DrawTarget::Main) {
             if (m_cameraMode == CameraMode::Flat) {
                 cameraTarget = ysMath::Mask(cameraEye, ysMath::Constants::MaskOffZ);
+                up = ysMath::LoadVector(-sinRot, cosRot);
             }
             else {
                 cameraTarget = m_cameraTarget;
+                ysVector cameraDir = ysMath::Sub(cameraTarget, cameraEye);
+                ysVector right = ysMath::Cross(cameraDir, m_cameraUp);
+                up = ysMath::Normalize(ysMath::Cross(right, cameraDir));
             }
         }
         else if (target == DrawTarget::Gui) {

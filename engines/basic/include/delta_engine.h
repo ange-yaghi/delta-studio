@@ -81,6 +81,9 @@ namespace dbasic {
         ysVector GetCameraPosition() const;
         void GetCameraPosition(float *x, float *y) const;
 
+        void SetCameraUp(const ysVector &up);
+        ysVector GetCameraUp() const;
+
         void SetCameraTarget(const ysVector &target);
         ysVector GetCameraTarget() const { return m_cameraTarget; }
 
@@ -141,6 +144,7 @@ namespace dbasic {
 
         ysVector m_cameraPosition;
         ysVector m_cameraTarget;
+        ysVector m_cameraUp;
 
         ysMatrix m_perspectiveProjection;
         ysMatrix m_orthographicProjection;
