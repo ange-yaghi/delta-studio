@@ -372,7 +372,7 @@ ysError ysD3D11Device::CreateOnScreenRenderTarget(ysRenderTarget **newTarget, ys
     return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
 }
 
-ysError ysD3D11Device::CreateOffScreenRenderTarget(ysRenderTarget **newTarget, int width, int height, ysRenderTarget::Format format, int sampleCount, bool depthBuffer) {
+ysError ysD3D11Device::CreateOffScreenRenderTarget(ysRenderTarget **newTarget, int width, int height, ysRenderTarget::Format format, bool colorData, bool depthBuffer) {
     YDS_ERROR_DECLARE("CreateOffScreenRenderTarget");
 
     if (newTarget == nullptr) return YDS_ERROR_RETURN(ysError::YDS_INVALID_PARAMETER);
@@ -380,7 +380,7 @@ ysError ysD3D11Device::CreateOffScreenRenderTarget(ysRenderTarget **newTarget, i
 
     ysD3D11RenderTarget *d3d11Target = m_renderTargets.NewGeneric<ysD3D11RenderTarget>();
 
-    ysError result = CreateD3D11OffScreenRenderTarget(d3d11Target, width, height, format, sampleCount, depthBuffer);
+    ysError result = CreateD3D11OffScreenRenderTarget(d3d11Target, width, height, format, colorData, depthBuffer);
 
     if (result != ysError::YDS_NO_ERROR) {
         m_renderTargets.Delete(d3d11Target->GetIndex());
@@ -405,7 +405,7 @@ ysError ysD3D11Device::CreateSubRenderTarget(ysRenderTarget **newTarget, ysRende
     newRenderTarget->m_posY = y;
     newRenderTarget->m_width = width;
     newRenderTarget->m_height = height;
-    newRenderTarget->m_format = ysRenderTarget::Format::RTF_R8G8B8A8_UNORM;
+    newRenderTarget->m_format = ysRenderTarget::Format::R8G8B8A8_UNORM;
     newRenderTarget->m_hasDepthBuffer = parent->HasDepthBuffer();
     newRenderTarget->m_associatedContext = parent->GetAssociatedContext();
     newRenderTarget->m_parent = parent;
@@ -491,7 +491,7 @@ ysError ysD3D11Device::ResizeRenderTarget(ysRenderTarget *target, int width, int
         YDS_NESTED_ERROR_CALL(CreateD3D11OnScreenRenderTarget(target, target->GetAssociatedContext(), target->HasDepthBuffer()));
     }
     else if (target->GetType() == ysRenderTarget::Type::OffScreen) {
-        YDS_NESTED_ERROR_CALL(CreateD3D11OffScreenRenderTarget(target, width, height, target->GetFormat(), target->GetSampleCount(), target->HasDepthBuffer()));
+        YDS_NESTED_ERROR_CALL(CreateD3D11OffScreenRenderTarget(target, width, height, target->GetFormat(), target->HasColorData(), target->HasDepthBuffer()));
     }
     else if (target->GetType() == ysRenderTarget::Type::Subdivision) {
         // Nothing needs to be done
@@ -527,8 +527,8 @@ ysError ysD3D11Device::ClearBuffers(const float *clearColor) {
 
     if (m_activeRenderTarget != nullptr) {
         ysD3D11RenderTarget *renderTarget = static_cast<ysD3D11RenderTarget *>(m_activeRenderTarget);
-        GetImmediateContext()->ClearRenderTargetView(renderTarget->m_renderTargetView, clearColor);
-        if (renderTarget->m_hasDepthBuffer) GetImmediateContext()->ClearDepthStencilView(renderTarget->m_depthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
+        if (renderTarget->HasColorData()) GetImmediateContext()->ClearRenderTargetView(renderTarget->m_renderTargetView, clearColor);
+        if (renderTarget->HasDepthBuffer()) GetImmediateContext()->ClearDepthStencilView(renderTarget->m_depthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
 
         return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
     }
@@ -1259,7 +1259,7 @@ DXGI_FORMAT ysD3D11Device::ConvertInputLayoutFormat(ysRenderGeometryChannel::Cha
     }
 }
 
-ysError ysD3D11Device::CreateD3D11DepthStencilView(ID3D11DepthStencilView **newDepthStencil, int width, int height, int count, int quality) {
+ysError ysD3D11Device::CreateD3D11DepthStencilView(ID3D11DepthStencilView **newDepthStencil, ID3D11ShaderResourceView **shaderResourceView, int width, int height, int count, int quality, bool shaderResource) {
     YDS_ERROR_DECLARE("CreateD3D11DepthBuffer");
 
     if (newDepthStencil == nullptr) return YDS_ERROR_RETURN(ysError::YDS_INVALID_PARAMETER);
@@ -1275,11 +1275,19 @@ ysError ysD3D11Device::CreateD3D11DepthStencilView(ID3D11DepthStencilView **newD
     descDepth.Height = height;
     descDepth.MipLevels = 1;
     descDepth.ArraySize = 1;
-    descDepth.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+    if (shaderResource) {
+        descDepth.Format = DXGI_FORMAT_R32_TYPELESS;
+    }
+    else {
+        descDepth.Format = DXGI_FORMAT_D32_FLOAT;
+    }
+
     descDepth.SampleDesc.Count = count;
     descDepth.SampleDesc.Quality = quality;
     descDepth.Usage = D3D11_USAGE_DEFAULT;
     descDepth.BindFlags = D3D11_BIND_DEPTH_STENCIL;
+    if (shaderResource) descDepth.BindFlags |= D3D11_BIND_SHADER_RESOURCE;
+
     descDepth.CPUAccessFlags = 0;
     descDepth.MiscFlags = 0;
     result = m_device->CreateTexture2D(&descDepth, nullptr, &depthBuffer);
@@ -1289,17 +1297,23 @@ ysError ysD3D11Device::CreateD3D11DepthStencilView(ID3D11DepthStencilView **newD
     }
 
     D3D11_DEPTH_STENCIL_VIEW_DESC descDSV;
-    descDSV.Format = DXGI_FORMAT_D32_FLOAT_S8X24_UINT;
+    ZeroMemory(&descDSV, sizeof(descDSV));
+    descDSV.Format = DXGI_FORMAT_D32_FLOAT;
     descDSV.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
     descDSV.Texture2D.MipSlice = 0;
-    result = m_device->CreateDepthStencilView(depthBuffer, nullptr, newDepthStencil);
 
-    if (FAILED(result)) {
-        depthBuffer->Release();
-        return YDS_ERROR_RETURN(ysError::YDS_COULD_NOT_CREATE_DEPTH_BUFFER);
+    if (shaderResource) {
+        result = m_device->CreateDepthStencilView(depthBuffer, &descDSV, newDepthStencil);
+    }
+    else {
+        result = m_device->CreateDepthStencilView(depthBuffer, nullptr, newDepthStencil);
     }
 
     depthBuffer->Release();
+
+    if (FAILED(result)) {
+        return YDS_ERROR_RETURN(ysError::YDS_COULD_NOT_CREATE_DEPTH_BUFFER);
+    }
 
     return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
 }
@@ -1341,8 +1355,8 @@ ysError ysD3D11Device::CreateD3D11OnScreenRenderTarget(ysRenderTarget *newTarget
     if (depthBuffer) {
         ysError depthResult
             = CreateD3D11DepthStencilView(
-                &newDepthStencilView, context->GetWindow()->GetScreenWidth(), context->GetWindow()->GetScreenHeight(),
-                m_multisampleCount, m_multisampleQuality);
+                &newDepthStencilView, nullptr, context->GetWindow()->GetScreenWidth(), context->GetWindow()->GetScreenHeight(),
+                m_multisampleCount, m_multisampleQuality, false);
 
         if (depthResult != ysError::YDS_NO_ERROR) {
             newRenderTargetView->Release();
@@ -1358,7 +1372,7 @@ ysError ysD3D11Device::CreateD3D11OnScreenRenderTarget(ysRenderTarget *newTarget
     newRenderTarget->m_posY = 0;
     newRenderTarget->m_width = context->GetWindow()->GetScreenWidth();
     newRenderTarget->m_height = context->GetWindow()->GetScreenHeight();
-    newRenderTarget->m_format = ysRenderTarget::Format::RTF_R8G8B8A8_UNORM;
+    newRenderTarget->m_format = ysRenderTarget::Format::R8G8B8A8_UNORM;
     newRenderTarget->m_hasDepthBuffer = depthBuffer;
     newRenderTarget->m_associatedContext = context;
 
@@ -1370,7 +1384,7 @@ ysError ysD3D11Device::CreateD3D11OnScreenRenderTarget(ysRenderTarget *newTarget
 }
 
 ysError ysD3D11Device::CreateD3D11OffScreenRenderTarget(
-    ysRenderTarget *target, int width, int height, ysRenderTarget::Format format, int sampleCount, bool depthBuffer) 
+    ysRenderTarget *target, int width, int height, ysRenderTarget::Format format, bool colorData, bool depthBuffer)
 {
     YDS_ERROR_DECLARE("CreateD3D11OffScreenRenderTarget");
 
@@ -1381,66 +1395,81 @@ ysError ysD3D11Device::CreateD3D11OffScreenRenderTarget(
     ID3D11ShaderResourceView *shaderResourceView = nullptr;
     ID3D11DepthStencilView *newDepthStencil = nullptr;
 
-    // Create the texture
-    D3D11_TEXTURE2D_DESC descBuffer;
-    ZeroMemory(&descBuffer, sizeof(descBuffer));
-    descBuffer.Width = width;
-    descBuffer.Height = height;
-    descBuffer.MipLevels = 1;
-    descBuffer.ArraySize = 1;
+    if (colorData) {
+        // Create the texture
+        D3D11_TEXTURE2D_DESC descBuffer;
+        ZeroMemory(&descBuffer, sizeof(descBuffer));
+        descBuffer.Width = width;
+        descBuffer.Height = height;
+        descBuffer.MipLevels = 1;
+        descBuffer.ArraySize = 1;
 
-    if (format == ysRenderTarget::Format::RTF_R32G32B32_FLOAT)
-        descBuffer.Format = DXGI_FORMAT::DXGI_FORMAT_R32G32B32_FLOAT;
-    else if (format == ysRenderTarget::Format::RTF_R8G8B8A8_UNORM)
-        descBuffer.Format = DXGI_FORMAT::DXGI_FORMAT_R8G8B8A8_UNORM;
+        if (format == ysRenderTarget::Format::R32G32B32_FLOAT) {
+            descBuffer.Format = DXGI_FORMAT::DXGI_FORMAT_R32G32B32_FLOAT;
+        }
+        else if (format == ysRenderTarget::Format::R8G8B8A8_UNORM) {
+            descBuffer.Format = DXGI_FORMAT::DXGI_FORMAT_R8G8B8A8_UNORM;
+        }
+        else if (format == ysRenderTarget::Format::R32_FLOAT) {
+            descBuffer.Format = DXGI_FORMAT::DXGI_FORMAT_R32_FLOAT;
+        }
 
-    descBuffer.SampleDesc.Count = 1;
-    descBuffer.SampleDesc.Quality = 0;
-    descBuffer.Usage = D3D11_USAGE_DEFAULT;
-    descBuffer.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
-    descBuffer.CPUAccessFlags = 0;
-    descBuffer.MiscFlags = 0;
-    result = m_device->CreateTexture2D(&descBuffer, nullptr, &renderTarget);
+        descBuffer.SampleDesc.Count = 1;
+        descBuffer.SampleDesc.Quality = 0;
+        descBuffer.Usage = D3D11_USAGE_DEFAULT;
 
-    if (FAILED(result)) {
-        return YDS_ERROR_RETURN(ysError::YDS_COULD_NOT_CREATE_RENDER_TARGET);
+        descBuffer.BindFlags = 0;
+        if (colorData) descBuffer.BindFlags |= D3D11_BIND_RENDER_TARGET;
+        else if (depthBuffer) descBuffer.BindFlags |= D3D11_BIND_DEPTH_STENCIL;
+
+        descBuffer.BindFlags |= D3D11_BIND_SHADER_RESOURCE;
+        descBuffer.CPUAccessFlags = 0;
+        descBuffer.MiscFlags = 0;
+        result = m_device->CreateTexture2D(&descBuffer, nullptr, &renderTarget);
+
+        if (FAILED(result)) {
+            return YDS_ERROR_RETURN(ysError::YDS_COULD_NOT_CREATE_RENDER_TARGET);
+        }
+
+        // Create the render target view
+        D3D11_RENDER_TARGET_VIEW_DESC rtDesc;
+        ZeroMemory(&rtDesc, sizeof(rtDesc));
+        rtDesc.Format = descBuffer.Format;
+        rtDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
+        rtDesc.Texture2D.MipSlice = 0;
+
+        result = m_device->CreateRenderTargetView(renderTarget, &rtDesc, &newRenderTargetView);
+
+        if (FAILED(result)) {
+            return YDS_ERROR_RETURN(ysError::YDS_COULD_NOT_CREATE_RENDER_TARGET);
+        }
+
+        // Create the shader resource view
+        D3D11_SHADER_RESOURCE_VIEW_DESC srDesc;
+        ZeroMemory(&srDesc, sizeof(srDesc));
+        srDesc.Format = descBuffer.Format;
+        srDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+        srDesc.Texture2D.MostDetailedMip = 0;
+        srDesc.Texture2D.MipLevels = 1;
+
+        result = m_device->CreateShaderResourceView(renderTarget, &srDesc, &shaderResourceView);
+
+        if (FAILED(result)) {
+            return YDS_ERROR_RETURN(ysError::YDS_COULD_NOT_CREATE_RENDER_TARGET);
+        }
+
+        renderTarget->Release();
     }
-
-    // Create the render target view
-    D3D11_RENDER_TARGET_VIEW_DESC rtDesc;
-    ZeroMemory(&rtDesc, sizeof(rtDesc));
-    rtDesc.Format = descBuffer.Format;
-    rtDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
-    rtDesc.Texture2D.MipSlice = 0;
-
-    result = m_device->CreateRenderTargetView(renderTarget, &rtDesc, &newRenderTargetView);
-
-    if (FAILED(result)) {
-        return YDS_ERROR_RETURN(ysError::YDS_COULD_NOT_CREATE_RENDER_TARGET);
-    }
-
-    // Create the shader resource view
-    D3D11_SHADER_RESOURCE_VIEW_DESC srDesc;
-    ZeroMemory(&srDesc, sizeof(srDesc));
-    srDesc.Format = descBuffer.Format;
-    srDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
-    srDesc.Texture2D.MostDetailedMip = 0;
-    srDesc.Texture2D.MipLevels = 1;
-
-    result = m_device->CreateShaderResourceView(renderTarget, &srDesc, &shaderResourceView);
-
-    if (FAILED(result)) {
-        return YDS_ERROR_RETURN(ysError::YDS_COULD_NOT_CREATE_RENDER_TARGET);
-    }
-
-    renderTarget->Release();
 
     // Create Depth Buffer
     if (depthBuffer) {
-        ysError depthResult = CreateD3D11DepthStencilView(&newDepthStencil, width, height, 1, 0);
+        ysError depthResult;
+        
+        if (!colorData) depthResult = CreateD3D11DepthStencilView(&newDepthStencil, &shaderResourceView, width, height, 1, 0, true);
+        else depthResult = CreateD3D11DepthStencilView(&newDepthStencil, nullptr, width, height, 1, 0, false);
 
         if (depthResult != ysError::YDS_NO_ERROR) {
-            newRenderTargetView->Release();
+            if (newRenderTargetView != nullptr) newRenderTargetView->Release();
             return YDS_ERROR_RETURN(depthResult);
         }
     }
@@ -1454,9 +1483,11 @@ ysError ysD3D11Device::CreateD3D11OffScreenRenderTarget(
     newRenderTarget->m_posY = 0;
     newRenderTarget->m_width = width;
     newRenderTarget->m_height = height;
-    newRenderTarget->m_format = ysRenderTarget::Format::RTF_R8G8B8A8_UNORM;
+    newRenderTarget->m_format = format;
     newRenderTarget->m_hasDepthBuffer = depthBuffer;
+    newRenderTarget->m_hasColorData = colorData;
     newRenderTarget->m_associatedContext = nullptr;
+    newRenderTarget->m_depthTestEnabled = depthBuffer;
 
     newRenderTarget->m_renderTargetView = newRenderTargetView;
     newRenderTarget->m_depthStencilView = newDepthStencil;

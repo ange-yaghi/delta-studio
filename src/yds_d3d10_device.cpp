@@ -295,7 +295,7 @@ ysError ysD3D10Device::CreateOnScreenRenderTarget(ysRenderTarget **newTarget, ys
 	return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
 }
 
-ysError ysD3D10Device::CreateOffScreenRenderTarget(ysRenderTarget **newTarget, int width, int height, ysRenderTarget::Format format, int sampleCount, bool depthBuffer) {
+ysError ysD3D10Device::CreateOffScreenRenderTarget(ysRenderTarget **newTarget, int width, int height, ysRenderTarget::Format format, bool colorData, bool depthBuffer) {
 	YDS_ERROR_DECLARE("CreateOffScreenRenderTarget");
 
 	if (newTarget == nullptr) return YDS_ERROR_RETURN(ysError::YDS_INVALID_PARAMETER);
@@ -303,7 +303,7 @@ ysError ysD3D10Device::CreateOffScreenRenderTarget(ysRenderTarget **newTarget, i
 
 	ysD3D10RenderTarget *d3d10Target = m_renderTargets.NewGeneric<ysD3D10RenderTarget>();
 
-    ysError result = CreateD3D10OffScreenRenderTarget(d3d10Target, width, height, format, sampleCount, depthBuffer);
+    ysError result = CreateD3D10OffScreenRenderTarget(d3d10Target, width, height, format, colorData, depthBuffer);
 
 	if (result != ysError::YDS_NO_ERROR) {
 		m_renderTargets.Delete(d3d10Target->GetIndex());
@@ -328,7 +328,7 @@ ysError ysD3D10Device::CreateSubRenderTarget(ysRenderTarget **newTarget, ysRende
 	newRenderTarget->m_posY = y;
 	newRenderTarget->m_width = width;
 	newRenderTarget->m_height = height;
-	newRenderTarget->m_format = ysRenderTarget::Format::RTF_R8G8B8A8_UNORM;
+	newRenderTarget->m_format = ysRenderTarget::Format::R8G8B8A8_UNORM;
 	newRenderTarget->m_hasDepthBuffer = parent->HasDepthBuffer();
 	newRenderTarget->m_associatedContext = parent->GetAssociatedContext();
 	newRenderTarget->m_parent = parent;
@@ -353,7 +353,7 @@ ysError ysD3D10Device::ResizeRenderTarget(ysRenderTarget *target, int width, int
         return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
 	}
 	else if (target->GetType() == ysRenderTarget::Type::OffScreen) {
-		YDS_NESTED_ERROR_CALL( CreateD3D10OffScreenRenderTarget(target, width, height, target->GetFormat(), target->GetSampleCount(), target->HasDepthBuffer()) );
+		YDS_NESTED_ERROR_CALL( CreateD3D10OffScreenRenderTarget(target, width, height, target->GetFormat(), target->HasColorData(), target->HasDepthBuffer()) );
 		return YDS_ERROR_RETURN(ysError::YDS_NOT_IMPLEMENTED);
 	}
 	else if (target->GetType() == ysRenderTarget::Type::Subdivision) {
@@ -1227,7 +1227,7 @@ ysError ysD3D10Device::CreateD3D10OnScreenRenderTarget(ysRenderTarget *newTarget
 	newRenderTarget->m_posY = 0;
 	newRenderTarget->m_width = context->GetWindow()->GetScreenWidth();
 	newRenderTarget->m_height = context->GetWindow()->GetScreenHeight();
-	newRenderTarget->m_format = ysRenderTarget::Format::RTF_R8G8B8A8_UNORM;
+	newRenderTarget->m_format = ysRenderTarget::Format::R8G8B8A8_UNORM;
 	newRenderTarget->m_hasDepthBuffer = depthBuffer;
 	newRenderTarget->m_associatedContext = context;
 
@@ -1238,7 +1238,7 @@ ysError ysD3D10Device::CreateD3D10OnScreenRenderTarget(ysRenderTarget *newTarget
 	return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
 }
 
-ysError ysD3D10Device::CreateD3D10OffScreenRenderTarget(ysRenderTarget *target, int width, int height, ysRenderTarget::Format format, int sampleCount, bool depthBuffer) {
+ysError ysD3D10Device::CreateD3D10OffScreenRenderTarget(ysRenderTarget *target, int width, int height, ysRenderTarget::Format format, bool colorData, bool depthBuffer) {
 	YDS_ERROR_DECLARE("CreateD3D10OffScreenRenderTarget");
 
 	HRESULT result;
@@ -1256,9 +1256,9 @@ ysError ysD3D10Device::CreateD3D10OffScreenRenderTarget(ysRenderTarget *target, 
 	descBuffer.MipLevels = 1;
 	descBuffer.ArraySize = 1;
 
-	if (format == ysRenderTarget::Format::RTF_R32G32B32_FLOAT)
+	if (format == ysRenderTarget::Format::R32G32B32_FLOAT)
 		descBuffer.Format = DXGI_FORMAT::DXGI_FORMAT_R32G32B32_FLOAT;
-	else if (format == ysRenderTarget::Format::RTF_R8G8B8A8_UNORM)
+	else if (format == ysRenderTarget::Format::R8G8B8A8_UNORM)
 		descBuffer.Format = DXGI_FORMAT::DXGI_FORMAT_R8G8B8A8_UNORM;
 
 	descBuffer.SampleDesc.Count = 1;
@@ -1324,7 +1324,7 @@ ysError ysD3D10Device::CreateD3D10OffScreenRenderTarget(ysRenderTarget *target, 
 	newRenderTarget->m_posY = 0;
 	newRenderTarget->m_width = width;
 	newRenderTarget->m_height = height;
-	newRenderTarget->m_format = ysRenderTarget::Format::RTF_R8G8B8A8_UNORM;
+	newRenderTarget->m_format = ysRenderTarget::Format::R8G8B8A8_UNORM;
 	newRenderTarget->m_hasDepthBuffer = depthBuffer;
 	newRenderTarget->m_associatedContext = nullptr;
 

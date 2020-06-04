@@ -119,7 +119,6 @@ ysError ysDevice::CreateOffScreenRenderTarget(ysRenderTarget **newTarget, const 
 		reference->GetWidth(),
 		reference->GetHeight(),
 		reference->GetFormat(),
-		reference->GetSampleCount(),
 		reference->HasDepthBuffer()) );
 
 	return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);

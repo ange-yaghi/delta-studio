@@ -167,7 +167,7 @@ ysError ysOpenGLDevice::CreateOnScreenRenderTarget(ysRenderTarget **newTarget, y
     newRenderTarget->m_posY = 0;
     newRenderTarget->m_width = context->GetWindow()->GetScreenWidth();
     newRenderTarget->m_height = context->GetWindow()->GetScreenHeight();
-    newRenderTarget->m_format = ysRenderTarget::Format::RTF_R8G8B8A8_UNORM;
+    newRenderTarget->m_format = ysRenderTarget::Format::R8G8B8A8_UNORM;
     newRenderTarget->m_hasDepthBuffer = depthBuffer;
     newRenderTarget->m_associatedContext = context;
 
@@ -176,14 +176,16 @@ ysError ysOpenGLDevice::CreateOnScreenRenderTarget(ysRenderTarget **newTarget, y
     return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
 }
 
-ysError ysOpenGLDevice::CreateOffScreenRenderTarget(ysRenderTarget **newTarget, int width, int height, ysRenderTarget::Format format, int sampleCount, bool depthBuffer) {
+ysError ysOpenGLDevice::CreateOffScreenRenderTarget(ysRenderTarget **newTarget, int width, int height, 
+    ysRenderTarget::Format format, bool colorData, bool depthBuffer) 
+{
     YDS_ERROR_DECLARE("CreateOffScreenRenderTarget");
 
     if (newTarget == nullptr) return YDS_ERROR_RETURN(ysError::YDS_INVALID_PARAMETER);
 
     ysOpenGLRenderTarget *newRenderTarget = m_renderTargets.NewGeneric<ysOpenGLRenderTarget>();
 
-    ysError result = CreateOpenGLOffScreenRenderTarget(newRenderTarget, width, height, format, sampleCount, depthBuffer);
+    ysError result = CreateOpenGLOffScreenRenderTarget(newRenderTarget, width, height, format, colorData, depthBuffer);
     if (result != ysError::YDS_NO_ERROR) {
         m_renderTargets.Delete(newRenderTarget->GetIndex());
         return result;
@@ -207,7 +209,7 @@ ysError ysOpenGLDevice::CreateSubRenderTarget(ysRenderTarget **newTarget, ysRend
     newRenderTarget->m_posY = y;
     newRenderTarget->m_width = width;
     newRenderTarget->m_height = height;
-    newRenderTarget->m_format = ysRenderTarget::Format::RTF_R8G8B8A8_UNORM;
+    newRenderTarget->m_format = ysRenderTarget::Format::R8G8B8A8_UNORM;
     newRenderTarget->m_hasDepthBuffer = parent->HasDepthBuffer();
     newRenderTarget->m_associatedContext = parent->GetAssociatedContext();
     newRenderTarget->m_parent = parent;
@@ -234,7 +236,7 @@ ysError ysOpenGLDevice::ResizeRenderTarget(ysRenderTarget *target, int width, in
     }
     else if (target->GetType() == ysRenderTarget::Type::OffScreen) {
         YDS_NESTED_ERROR_CALL(CreateOpenGLOffScreenRenderTarget(
-            target, width, height, target->GetFormat(), target->GetSampleCount(), target->HasDepthBuffer()));
+            target, width, height, target->GetFormat(), target->HasColorData(), target->HasDepthBuffer()));
     }
     else if (target->GetType() == ysRenderTarget::Type::Subdivision) {
         // Nothing needs to be done
@@ -1044,7 +1046,9 @@ void ysOpenGLDevice::Draw(int numFaces, int indexOffset, int vertexOffset) {
     }
 }
 
-ysError ysOpenGLDevice::CreateOpenGLOffScreenRenderTarget(ysRenderTarget *target, int width, int height, ysRenderTarget::Format format, int sampleCount, bool depthBuffer) {
+ysError ysOpenGLDevice::CreateOpenGLOffScreenRenderTarget(ysRenderTarget *target, int width, int height, 
+    ysRenderTarget::Format format, bool colorData, bool depthBuffer) 
+{
     YDS_ERROR_DECLARE("CreateOpenGLOffScreenRenderTarget");
 
     // Generate the empty texture
@@ -1061,11 +1065,11 @@ ysError ysOpenGLDevice::CreateOpenGLOffScreenRenderTarget(ysRenderTarget *target
     int glType;
 
     switch (format) {
-    case ysRenderTarget::Format::RTF_R8G8B8A8_UNORM:
+    case ysRenderTarget::Format::R8G8B8A8_UNORM:
         glFormat = GL_RGBA8;
         glType = GL_UNSIGNED_BYTE;
         break;
-    case ysRenderTarget::Format::RTF_R32G32B32_FLOAT:
+    case ysRenderTarget::Format::R32G32B32_FLOAT:
         glFormat = GL_RGBA32F_ARB;
         glType = GL_FLOAT;
         break;

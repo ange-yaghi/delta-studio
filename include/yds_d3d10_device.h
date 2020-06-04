@@ -29,7 +29,7 @@ public:
     virtual ysError SetContextMode(ysRenderingContext *context, ysRenderingContext::ContextMode mode);
 
     virtual ysError CreateOnScreenRenderTarget(ysRenderTarget **newTarget, ysRenderingContext *context, bool depthBuffer);
-    virtual ysError CreateOffScreenRenderTarget(ysRenderTarget **newTarget, int width, int height, ysRenderTarget::Format format, int sampleCount, bool depthBuffer);
+    virtual ysError CreateOffScreenRenderTarget(ysRenderTarget **newTarget, int width, int height, ysRenderTarget::Format format, bool colorData, bool depthBuffer);
     virtual ysError CreateSubRenderTarget(ysRenderTarget **newTarget, ysRenderTarget *parent, int x, int y, int width, int height);
     virtual ysError ResizeRenderTarget(ysRenderTarget *target, int width, int height);
     virtual ysError DestroyRenderTarget(ysRenderTarget *&target);
@@ -96,7 +96,7 @@ protected:
     ysError DestroyD3D10DepthBuffer(ID3D10DepthStencilView *&depthStencil);
 
     ysError CreateD3D10OnScreenRenderTarget(ysRenderTarget *target, ysRenderingContext *context, bool depthBuffer);
-    ysError CreateD3D10OffScreenRenderTarget(ysRenderTarget *target, int width, int height, ysRenderTarget::Format format, int sampleCount, bool depthBuffer);
+    ysError CreateD3D10OffScreenRenderTarget(ysRenderTarget *target, int width, int height, ysRenderTarget::Format format, bool colorData, bool depthBuffer);
 
     ysError DestroyD3D10RenderTarget(ysRenderTarget *target);
 };

@@ -10,6 +10,7 @@ struct IDXGIFactory;
 struct ID3D11Device;
 struct ID3D11RasterizerState;
 struct ID3D11DepthStencilView;
+struct ID3D11ShaderResourceView;
 enum DXGI_FORMAT;
 
 class ysD3D11Device : public ysDevice {
@@ -32,7 +33,7 @@ public:
     virtual ysError SetContextMode(ysRenderingContext *context, ysRenderingContext::ContextMode mode);
 
     virtual ysError CreateOnScreenRenderTarget(ysRenderTarget **newTarget, ysRenderingContext *context, bool depthBuffer);
-    virtual ysError CreateOffScreenRenderTarget(ysRenderTarget **newTarget, int width, int height, ysRenderTarget::Format format, int sampleCount, bool depthBuffer);
+    virtual ysError CreateOffScreenRenderTarget(ysRenderTarget **newTarget, int width, int height, ysRenderTarget::Format format, bool colorData, bool depthBuffer);
     virtual ysError CreateSubRenderTarget(ysRenderTarget **newTarget, ysRenderTarget *parent, int x, int y, int width, int height);
     virtual ysError ResizeRenderTarget(ysRenderTarget *target, int width, int height);
     virtual ysError DestroyRenderTarget(ysRenderTarget *&target);
@@ -108,11 +109,11 @@ protected:
 
 protected:
     // Platform specific functionality
-    ysError CreateD3D11DepthStencilView(ID3D11DepthStencilView **newDepthStencil, int width, int height, int count, int quality);
+    ysError CreateD3D11DepthStencilView(ID3D11DepthStencilView **newDepthStencil, ID3D11ShaderResourceView **shaderResourceView, int width, int height, int count, int quality, bool shaderResource);
     ysError DestroyD3D11DepthStencilView(ID3D11DepthStencilView *&depthStencil);
 
     ysError CreateD3D11OnScreenRenderTarget(ysRenderTarget *target, ysRenderingContext *context, bool depthBuffer);
-    ysError CreateD3D11OffScreenRenderTarget(ysRenderTarget *target, int width, int height, ysRenderTarget::Format format, int sampleCount, bool depthBuffer);
+    ysError CreateD3D11OffScreenRenderTarget(ysRenderTarget *target, int width, int height, ysRenderTarget::Format format, bool colorData, bool depthBuffer);
 
     ysError DestroyD3D11RenderTarget(ysRenderTarget *target);
 };

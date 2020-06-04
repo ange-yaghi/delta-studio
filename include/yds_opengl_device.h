@@ -25,7 +25,7 @@ public:
     virtual ysError SetContextMode(ysRenderingContext *context, ysRenderingContext::ContextMode mode);
 
     virtual ysError CreateOnScreenRenderTarget(ysRenderTarget **newTarget, ysRenderingContext *context, bool depthBuffer);
-    virtual ysError CreateOffScreenRenderTarget(ysRenderTarget **newTarget, int width, int height, ysRenderTarget::Format format, int sampleCount, bool depthBuffer);
+    virtual ysError CreateOffScreenRenderTarget(ysRenderTarget **newTarget, int width, int height, ysRenderTarget::Format format, bool colorData, bool depthBuffer);
     virtual ysError CreateSubRenderTarget(ysRenderTarget **newTarget, ysRenderTarget *parent, int x, int y, int width, int height);
     virtual ysError ResizeRenderTarget(ysRenderTarget *target, int width, int height);
     virtual ysError DestroyRenderTarget(ysRenderTarget *&target);
@@ -97,7 +97,7 @@ protected:
 
 protected:
     // Hidden functionality
-    ysError CreateOpenGLOffScreenRenderTarget(ysRenderTarget *target, int width, int height, ysRenderTarget::Format format, int sampleCount, bool depthBuffer);
+    ysError CreateOpenGLOffScreenRenderTarget(ysRenderTarget *target, int width, int height, ysRenderTarget::Format format, bool colorData, bool depthBuffer);
     ysError DestroyOpenGLRenderTarget(ysRenderTarget *target);
 
 };
