@@ -38,6 +38,7 @@ cbuffer ObjectVariables : register(b1) {
 	float4 Scale;
 
 	float4 BaseColor;
+	float4 Emission;
 	float SpecularMix;
 	float DiffuseMix;
 	float Metallic;
@@ -184,8 +185,6 @@ float f_specular(float3 i, float3 o, float3 h, float3 normal, float F0, float po
 }
 
 float f_specular_ambient(float3 o, float3 normal, float F0, float power) {
-	float3 reflected = reflect(-o, normal);
-
 	// Fresnel approximation
 	float F0_scaled = 0.08 * F0;
 	float o_dot_n = dot(o, normal);
@@ -234,6 +233,8 @@ float3 srgbToLinear(float3 v) {
 }
 
 float4 PS(VS_OUTPUT input) : SV_Target {
+	const float FullSpecular = 1 / 0.08;
+
 	float3 totalLighting = float3(1.0, 1.0, 1.0);
 
 	float4 baseColor;
@@ -255,8 +256,14 @@ float4 PS(VS_OUTPUT input) : SV_Target {
 
 		float3 ambientSpecular = f_specular_ambient(o, input.Normal, IncidentSpecular, SpecularMix) * AmbientLighting;
 		float3 ambientDiffuse = f_diffuse(o, o, o, input.Normal, DiffuseMix, DiffuseRoughness) * AmbientLighting * baseColor;
+		float3 ambientMetallic = f_specular_ambient(o, input.Normal, FullSpecular, 1.0) * AmbientLighting.rgb * baseColor.rgb;
 
-		totalLighting = ambientSpecular + ambientDiffuse;
+		totalLighting = lerp(
+			ambientSpecular + ambientDiffuse,
+			ambientMetallic,
+			Metallic);
+		totalLighting += Emission.rgb;
+
 		for (int li = 0; li < 32; ++li) {
 			const Light light = Lights[li];
 			if (light.Active == 0) continue;
@@ -277,7 +284,7 @@ float4 PS(VS_OUTPUT input) : SV_Target {
 			float3 metallic = 0;
 
 			if (Metallic > 0) {
-				metallic = f_specular(i, o, h, input.Normal, 1, 1, SpecularPower) * light.Color * baseColor.rgb;
+				metallic = f_specular(i, o, h, input.Normal, FullSpecular, 1, SpecularPower) * light.Color * baseColor.rgb;
 			}
 
 			// Spotlight calculation
@@ -297,7 +304,10 @@ float4 PS(VS_OUTPUT input) : SV_Target {
 				falloff = (inv_mag * inv_mag);
 			}
 
-			float3 bsdf = Metallic * metallic + (1 - Metallic) * (diffuse + specular);
+			float3 bsdf = lerp(
+				diffuse + specular,
+				metallic, 
+				Metallic);
 
 			totalLighting += falloff * bsdf * spotAttenuation * spotAttenuation * spotAttenuation;
 		}

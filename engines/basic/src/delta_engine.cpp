@@ -546,15 +546,7 @@ float dbasic::DeltaEngine::GetAverageFramerate() {
 }
 
 void dbasic::DeltaEngine::ResetBrdfParameters() {
-    ShaderObjectVariables &brdf = m_shaderObjectVariables;
-
-    brdf.BaseColor = ysVector4(1.0f, 1.0f, 1.0f, 1.0f);
-    brdf.SpecularMix = 1.0f;
-    brdf.DiffuseMix = 1.0f;
-    brdf.Metallic = 0.0f;
-    brdf.DiffuseRoughness = 0.5f;
-    brdf.SpecularPower = 4.0f;
-    brdf.IncidentSpecular = 1.0f;
+    m_shaderObjectVariables = ShaderObjectVariables();
 }
 
 void dbasic::DeltaEngine::SetBaseColor(const ysVector &color) {
@@ -563,6 +555,10 @@ void dbasic::DeltaEngine::SetBaseColor(const ysVector &color) {
 
 void dbasic::DeltaEngine::ResetBaseColor() {
     m_shaderObjectVariables.BaseColor = ysVector4(1.0f, 1.0f, 1.0f, 1.0f);
+}
+
+void dbasic::DeltaEngine::SetEmission(const ysVector &emission) {
+    m_shaderObjectVariables.Emission = ysMath::GetVector4(emission);
 }
 
 void dbasic::DeltaEngine::SetSpecularMix(float specularMix) {
@@ -825,7 +821,7 @@ ysError dbasic::DeltaEngine::ExecuteDrawQueue(DrawTarget target) {
         ysMatrix proj = m_shaderScreenVariables.Projection;
         ysMatrix cam = m_shaderScreenVariables.CameraView;
 
-        ysVector v = ysMath::LoadVector(19.3632, 9.74805, 0.0f, 1.0f);
+        ysVector v = ysMath::LoadVector(19.3632f, 9.74805f, 0.0f, 1.0f);
         v = ysMath::MatMult(cam, v);
         v = ysMath::MatMult(proj, v);
         v = ysMath::Div(v, ysMath::LoadScalar(ysMath::GetW(v)));

@@ -21,6 +21,7 @@ layout (binding = 1) uniform ObjectVariables {
 	vec4 Scale;
 
 	vec4 BaseColor;
+	vec4 Emission;
 	float SpecularMix;
 	float DiffuseMix;
 	float Metallic;

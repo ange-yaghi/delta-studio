@@ -24,6 +24,7 @@ namespace dbasic {
         float Scale[4] = { 1.0f, 1.0f, 1.0f };
 
         ysVector4 BaseColor = { 1.0f, 1.0f, 1.0f, 1.0f };
+        ysVector4 Emission = { 0.0f, 0.0f, 0.0f, 0.0f };
         float SpecularMix = 1.0f;
         float DiffuseMix = 1.0f;
         float Metallic = 0.0f;

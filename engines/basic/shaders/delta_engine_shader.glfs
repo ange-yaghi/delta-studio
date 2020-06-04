@@ -21,6 +21,7 @@ layout (binding = 1) uniform ObjectVariables {
 	vec4 Scale;
 
 	vec4 BaseColor;
+	vec4 Emission;
 	float SpecularMix;
 	float DiffuseMix;
 	float Metallic;
@@ -79,8 +80,6 @@ float f_specular(vec3 i, vec3 o, vec3 h, vec3 normal, float F0, float power, flo
 }
 
 float f_specular_ambient(vec3 o, vec3 normal, float F0, float power) {
-	vec3 reflected = reflect(-o, normal);
-
 	// Fresnel approximation
 	float F0_scaled = 0.08 * F0;
 	float o_dot_n = dot(o, normal);
@@ -129,6 +128,8 @@ vec3 srgbToLinear(vec3 v) {
 }
 
 void main(void) {
+	const float FullSpecular = 1 / 0.08;
+
 	vec3 totalLighting = vec3(1.0, 1.0, 1.0);
 
 	vec4 baseColor;
@@ -148,10 +149,16 @@ void main(void) {
 	if (Lit == 1) {
 		vec3 o = normalize(CameraEye.xyz - ex_Pos.xyz);
 
-		vec3 ambientSpecular = f_specular_ambient(o, ex_Normal, DiffuseMix, DiffuseRoughness) * AmbientLighting.rgb;
-		vec3 ambientDiffuse = f_diffuse(o, o, o, ex_Normal, IncidentSpecular, SpecularMix) * AmbientLighting.rgb * baseColor.rgb;
+		vec3 ambientSpecular = f_specular_ambient(o, ex_Normal, IncidentSpecular, SpecularMix) * AmbientLighting.rgb;
+		vec3 ambientDiffuse = f_diffuse(o, o, o, ex_Normal, DiffuseMix, DiffuseRoughness) * AmbientLighting.rgb * baseColor.rgb;
+		vec3 ambientMetallic = f_specular_ambient(o, ex_Normal, FullSpecular, 1.0) * AmbientLighting.rgb * baseColor.rgb;
 
-		totalLighting = ambientSpecular + ambientDiffuse;
+		totalLighting = mix(
+			ambientSpecular + ambientDiffuse,
+			ambientMetallic,
+			Metallic);
+		totalLighting += Emission.rgb;
+
 		for (int li = 0; li < 32; ++li) {
 			if (Lights[li].Active == 0) continue;
 
@@ -171,7 +178,7 @@ void main(void) {
 			vec3 metallic = vec3(0.0, 0.0, 0.0);
 
 			if (Metallic > 0) {
-				metallic = f_specular(i, o, h, ex_Normal, 1, 1, SpecularPower) * Lights[li].Color.rgb * baseColor.rgb;
+				metallic = f_specular(i, o, h, ex_Normal, FullSpecular, 1, SpecularPower) * Lights[li].Color.rgb * baseColor.rgb;
 			}
 
 			// Spotlight calculation
@@ -190,7 +197,10 @@ void main(void) {
 				falloff = (inv_dist * inv_dist);
 			}
 
-			vec3 bsdf = Metallic * metallic + (1 - Metallic) * (diffuse + specular);
+			vec3 bsdf = mix(
+				diffuse + specular,
+				metallic,
+				Metallic);
 
 			totalLighting += falloff * bsdf * spotAttenuation * spotAttenuation * spotAttenuation;
 		}

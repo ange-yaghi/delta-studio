@@ -115,6 +115,7 @@ namespace dbasic {
         void SetBaseColor(const ysVector &color);
         void ResetBaseColor();
 
+        void SetEmission(const ysVector &emission);
         void SetSpecularMix(float specularMix);
         void SetDiffuseMix(float diffuseMix);
         void SetMetallic(float metallic);
