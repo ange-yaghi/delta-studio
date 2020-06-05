@@ -56,7 +56,7 @@ ysError ysInputSystem::AssignWindowSystem(ysWindowSystem *system) {
 ysError ysInputSystem::CreateDevices(bool supportMultiple) {
 	YDS_ERROR_DECLARE("CreateDevices");
 
-	if (m_windowSystem == NULL) return YDS_ERROR_RETURN(ysError::YDS_NO_WINDOW_SYSTEM);
+	if (m_windowSystem == nullptr) return YDS_ERROR_RETURN(ysError::YDS_NO_WINDOW_SYSTEM);
 	m_supportMultiple = supportMultiple;
 
 	return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);

@@ -1374,6 +1374,7 @@ ysError ysD3D11Device::CreateD3D11OnScreenRenderTarget(ysRenderTarget *newTarget
     newRenderTarget->m_height = context->GetWindow()->GetScreenHeight();
     newRenderTarget->m_format = ysRenderTarget::Format::R8G8B8A8_UNORM;
     newRenderTarget->m_hasDepthBuffer = depthBuffer;
+    newRenderTarget->m_hasColorData = true;
     newRenderTarget->m_associatedContext = context;
 
     newRenderTarget->m_renderTargetView = newRenderTargetView;
