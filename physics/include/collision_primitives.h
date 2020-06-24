@@ -74,6 +74,7 @@ namespace dphysics {
         Collision &operator=(Collision &collision);
 
         bool IsGhost() const;
+        bool IsResolvable() const;
 
         // Get velocity on impact
         ysVector GetContactVelocity() const { return m_initialContactVelocity; }

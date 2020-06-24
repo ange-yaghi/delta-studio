@@ -573,6 +573,7 @@ void dphysics::RigidBodySystem::AdjustVelocities(float timestep) {
 
             if (c->m_sensor) continue;
             if (c->IsGhost()) continue;
+            if (!c->IsResolvable()) continue;
 
             if (c->m_bodies[0] != nullptr) {
                 if (c->m_bodies[0] == biggestCollision->m_bodies[0]) {
@@ -691,12 +692,9 @@ void dphysics::RigidBodySystem::AdjustVelocity(Collision *collision, ysVector ve
 
         impulseContact = ysMath::Add(ic, icx);
     }
-    ///<UpdateVelWithFriction
 
-    ///>ImpulseToWorld
-        // Convert impulse to world coordinates
+    // Convert impulse to world coordinates
     ysVector impulse = ysMath::MatMult(collision->m_contactSpace, impulseContact);
-    ///<ImpulseToWorld
 
     // Split in the impulse into linear and rotational components
     ysVector impulsiveTorque = ysMath::Cross(collision->m_relativePosition[0], impulse);
@@ -744,6 +742,7 @@ void dphysics::RigidBodySystem::ResolveCollisions(float dt) {
 
             if (collision.m_sensor) continue;
             if (collision.IsGhost()) continue;
+            if (!collision.IsResolvable()) continue;
 
             collision.UpdateInternals(dt);
 
@@ -769,6 +768,7 @@ void dphysics::RigidBodySystem::ResolveCollisions(float dt) {
 
             if (collision.m_sensor) continue;
             if (collision.IsGhost()) continue;
+            if (!collision.IsResolvable()) continue;
 
             if (collision.m_body1 == biggestCollision->m_body1) {
                 cp = ysMath::Cross(rotationChange[0], collision.m_relativePosition[0]);

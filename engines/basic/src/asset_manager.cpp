@@ -257,6 +257,8 @@ ysError dbasic::AssetManager::LoadSceneFile(const char *fname, bool placeInVram)
         m_engine->GetDevice()->CreateVertexBuffer(&vertexBuffer, 4 * 1024 * 1024, nullptr, false);
     }
 
+    std::map<int, int> modelIndexMap;
+
     for (int i = 0; i < fileHeader.ObjectCount; i++) {
         ysGeometryExportFile::ObjectOutputHeader header;
         file.read((char *)&header, sizeof(ysGeometryExportFile::ObjectOutputHeader));
@@ -308,10 +310,12 @@ ysError dbasic::AssetManager::LoadSceneFile(const char *fname, bool placeInVram)
             }
 
             if (objectType == ysObjectData::ObjectType::Instance) {
-                newObject->m_geometry = GetModelAsset(header.ParentInstanceIndex + initialIndex);
+                newObject->m_geometry = GetModelAsset(modelIndexMap[header.ParentInstanceIndex]);
             }
         }
         else if (objectType == ysObjectData::ObjectType::Geometry) {
+            modelIndexMap[i] = m_modelAssets.GetNumObjects();
+
             // New model asset
             ModelAsset *newModelAsset = NewModelAsset();
 

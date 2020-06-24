@@ -103,6 +103,16 @@ bool dphysics::Collision::IsGhost() const {
     return false;
 }
 
+bool dphysics::Collision::IsResolvable() const {
+    if (m_bodies[0] == nullptr || m_bodies[0]->GetInverseMass() == 0) {
+        if (m_bodies[1] == nullptr || m_bodies[1]->GetInverseMass() == 0) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
 void dphysics::Collision::CalculateDesiredDeltaVelocity(float timestep) {
     const static float VelocityLimit = 0.25f;
 
