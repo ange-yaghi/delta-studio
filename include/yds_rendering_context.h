@@ -13,10 +13,10 @@ class ysRenderingContext : public ysContextObject {
     friend ysDevice;
 
 public:
-    enum ContextMode {
-        WINDOWED,
-        FULLSCREEN,
-        UNDEFINED
+    enum class ContextMode {
+        Windowed,
+        Fullscreen,
+        Undefined
     };
 
 public:

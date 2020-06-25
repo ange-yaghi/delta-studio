@@ -4,24 +4,19 @@
 #include "yds_context_object.h"
 #include "yds_shader.h"
 
-class ysShaderProgram : public ysContextObject
-{
-
+class ysShaderProgram : public ysContextObject {
 	friend class ysDevice;
 
 public:
-
 	ysShaderProgram();
 	ysShaderProgram(DEVICE_API API);
 	virtual ~ysShaderProgram();
 
-	const ysShader *GetShader(ysShader::SHADER_TYPE type) const { return m_shaderSlots[type]; }
+	const ysShader *GetShader(ysShader::ShaderType type) const { return m_shaderSlots[(int)type]; }
 
 protected:
-
-	ysShader *m_shaderSlots[ysShader::SHADER_TYPE_NUM_TYPES];
+	ysShader *m_shaderSlots[(int)ysShader::ShaderType::NumShaderTypes];
 	bool m_isLinked;
-
 };
 
-#endif
+#endif /* YDS_SHADER_PROGRAM_H */

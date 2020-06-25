@@ -4,7 +4,7 @@
 #include "../include/yds_windows_window.h"
 #include "../include/yds_windows_window_system.h"
 
-ysOpenGLWindowsContext::ysOpenGLWindowsContext() : ysOpenGLVirtualContext(ysWindowSystem::Platform::WINDOWS) {
+ysOpenGLWindowsContext::ysOpenGLWindowsContext() : ysOpenGLVirtualContext(ysWindowSystem::Platform::Windows) {
     m_contextHandle = nullptr;
     m_device = nullptr;
     m_deviceHandle = nullptr;
@@ -17,7 +17,7 @@ ysOpenGLWindowsContext::~ysOpenGLWindowsContext() {
 ysError ysOpenGLWindowsContext::CreateRenderingContext(ysOpenGLDevice *device, ysWindow *window, int major, int minor) {
     YDS_ERROR_DECLARE("CreateRenderingContext");
 
-    if (window->GetPlatform() != ysWindowSystemObject::Platform::WINDOWS) {
+    if (window->GetPlatform() != ysWindowSystemObject::Platform::Windows) {
         return YDS_ERROR_RETURN(ysError::YDS_INCOMPATIBLE_PLATFORMS);
     }
 
@@ -149,7 +149,7 @@ ysError ysOpenGLWindowsContext::DestroyContext() {
 ysError ysOpenGLWindowsContext::TransferContext(ysOpenGLVirtualContext *context) {
     YDS_ERROR_DECLARE("TransferContext");
 
-    if (context->GetPlatform() != ysWindowSystemObject::Platform::WINDOWS) return YDS_ERROR_RETURN(ysError::YDS_INCOMPATIBLE_PLATFORMS);
+    if (context->GetPlatform() != ysWindowSystemObject::Platform::Windows) return YDS_ERROR_RETURN(ysError::YDS_INCOMPATIBLE_PLATFORMS);
 
     ysOpenGLWindowsContext *windowsContext = static_cast<ysOpenGLWindowsContext *>(context);
     windowsContext->m_contextHandle = m_contextHandle;
@@ -168,14 +168,14 @@ ysError ysOpenGLWindowsContext::SetContextMode(ContextMode mode) {
     ysMonitor *monitor = window->GetMonitor();
     int result;
 
-    if (mode == ysRenderingContext::ContextMode::FULLSCREEN) {
+    if (mode == ysRenderingContext::ContextMode::Fullscreen) {
         window->SetWindowStyle(ysWindow::WindowStyle::FULLSCREEN);
 
         DEVMODE dmScreenSettings;
         memset(&dmScreenSettings, 0, sizeof(dmScreenSettings));
         dmScreenSettings.dmSize = sizeof(dmScreenSettings);
-        dmScreenSettings.dmPelsWidth = monitor->GetWidth(); //window->GetWidth();
-        dmScreenSettings.dmPelsHeight = monitor->GetHeight(); //window->GetHeight();
+        dmScreenSettings.dmPelsWidth = monitor->GetWidth();
+        dmScreenSettings.dmPelsHeight = monitor->GetHeight();
         dmScreenSettings.dmBitsPerPel = 32;
         dmScreenSettings.dmFields = DM_BITSPERPEL | DM_PELSWIDTH | DM_PELSHEIGHT;
 
@@ -183,21 +183,14 @@ ysError ysOpenGLWindowsContext::SetContextMode(ContextMode mode) {
         if (result != DISP_CHANGE_SUCCESSFUL) {
             return YDS_ERROR_RETURN(ysError::YDS_COULD_NOT_ENTER_FULLSCREEN);
         }
-
-        //ChangeDisplaySettingsEx (NULL, NULL, NULL, 0, NULL);
-
-        // TEMP
-        ShowCursor(TRUE);
     }
-    else if (mode == ysRenderingContext::ContextMode::WINDOWED) {
+    else if (mode == ysRenderingContext::ContextMode::Windowed) {
         window->SetWindowStyle(ysWindow::WindowStyle::WINDOWED);
 
         result = ChangeDisplaySettingsEx(NULL, NULL, NULL, 0, NULL);
         if (result != DISP_CHANGE_SUCCESSFUL) {
             return YDS_ERROR_RETURN(ysError::YDS_COULD_NOT_EXIT_FULLSCREEN);
         }
-
-        ShowCursor(TRUE);
     }
 
     return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);

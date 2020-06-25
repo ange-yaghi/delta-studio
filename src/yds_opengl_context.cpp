@@ -1,6 +1,6 @@
 #include "../include/yds_opengl_context.h"
 
-ysOpenGLVirtualContext::ysOpenGLVirtualContext() : ysRenderingContext(OPENGL4_0, ysWindowSystemObject::Platform::UNKNOWN) {
+ysOpenGLVirtualContext::ysOpenGLVirtualContext() : ysRenderingContext(OPENGL4_0, ysWindowSystemObject::Platform::Unknown) {
     m_isRealContext = false;
 }
 

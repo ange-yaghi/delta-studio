@@ -48,6 +48,9 @@ public:
     WindowStyle GetStyle() const { return m_windowStyle; }
     ysMonitor *GetMonitor() const { return m_monitor; }
 
+    int GetPositionX() const { return m_locationx; }
+    int GetPositionY() const { return m_locationy; }
+
     bool IsOpen();
     virtual bool IsActive();
     virtual bool IsVisible();

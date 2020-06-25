@@ -11,7 +11,7 @@ ysMouse::~ysMouse() {
 }
 
 void ysMouse::Reset() {
-    for (int i = 0; i < BUTTON_COUNT; i++) m_buttons[i].Reset();
+    for (int i = 0; i < (int)Button::Count; i++) m_buttons[i].Reset();
 
     m_x = 0;
     m_y = 0;
@@ -33,15 +33,15 @@ void ysMouse::UpdateWheel(int dwheel) {
     m_wheel += dwheel;
 }
 
-void ysMouse::UpdateButton(BUTTON_CODE button, ysKey::KEY_STATE state) {
-    m_buttons[button].m_state = state;
+void ysMouse::UpdateButton(Button button, ysKey::KEY_STATE state) {
+    m_buttons[(int)button].m_state = state;
 }
 
-bool ysMouse::ProcessMouseButton(BUTTON_CODE button, ysKey::KEY_STATE state) {
-    if (m_buttons[button].m_state != state) return false;
+bool ysMouse::ProcessMouseButton(Button button, ysKey::KEY_STATE state) {
+    if (m_buttons[(int)button].m_state != state) return false;
 
-    if (m_buttons[button].m_state == ysKey::KEY_UP_TRANS) m_buttons[button].m_state = ysKey::KEY_UP;
-    if (m_buttons[button].m_state == ysKey::KEY_DOWN_TRANS) m_buttons[button].m_state = ysKey::KEY_DOWN;
+    if (m_buttons[(int)button].m_state == ysKey::KEY_UP_TRANS) m_buttons[(int)button].m_state = ysKey::KEY_UP;
+    if (m_buttons[(int)button].m_state == ysKey::KEY_DOWN_TRANS) m_buttons[(int)button].m_state = ysKey::KEY_DOWN;
 
     return true;
 }

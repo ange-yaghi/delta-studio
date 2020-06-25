@@ -1,6 +1,6 @@
 #include "../include/yds_input_device.h"
 
-ysInputDevice::ysInputDevice() : ysWindowSystemObject("INPUT DEVICE", Platform::UNKNOWN) {
+ysInputDevice::ysInputDevice() : ysWindowSystemObject("INPUT DEVICE", Platform::Unknown) {
     SetName("");
 
 	m_type = InputDeviceType::UNKNOWN;

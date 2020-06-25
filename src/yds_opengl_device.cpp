@@ -54,7 +54,7 @@ ysError ysOpenGLDevice::CreateRenderingContext(ysRenderingContext **context, ysW
     if (context == NULL) return YDS_ERROR_RETURN(ysError::YDS_INVALID_PARAMETER);
     *context = NULL;
 
-    if (window->GetPlatform() == ysWindowSystemObject::Platform::WINDOWS) {
+    if (window->GetPlatform() == ysWindowSystemObject::Platform::Windows) {
         ysOpenGLWindowsContext *newContext;
         newContext = m_renderingContexts.NewGeneric<ysOpenGLWindowsContext>();
         YDS_NESTED_ERROR_CALL(newContext->CreateRenderingContext(this, window, 4, 3));
@@ -618,7 +618,7 @@ ysError ysOpenGLDevice::CreateVertexShader(ysShader **newShader, const char *sha
     ysOpenGLShader *newOpenGLShader = m_shaders.NewGeneric<ysOpenGLShader>();
     strcpy_s(newOpenGLShader->m_shaderName, 64, shaderName);
     strcpy_s(newOpenGLShader->m_filename, 256, shaderFilename);
-    newOpenGLShader->m_shaderType = ysShader::SHADER_TYPE_VERTEX;
+    newOpenGLShader->m_shaderType = ysShader::ShaderType::Vertex;
     newOpenGLShader->m_handle = handle;
 
     *newShader = static_cast<ysShader *>(newOpenGLShader);
@@ -673,7 +673,7 @@ ysError ysOpenGLDevice::CreatePixelShader(ysShader **newShader, const char *shad
     ysOpenGLShader *newOpenGLShader = m_shaders.NewGeneric<ysOpenGLShader>();
     strcpy_s(newOpenGLShader->m_shaderName, 64, shaderName);
     strcpy_s(newOpenGLShader->m_filename, 256, shaderFilename);
-    newOpenGLShader->m_shaderType = ysShader::SHADER_TYPE_PIXEL;
+    newOpenGLShader->m_shaderType = ysShader::ShaderType::Pixel;
     newOpenGLShader->m_handle = shaderHandle;
 
     *newShader = static_cast<ysShader *>(newOpenGLShader);
@@ -701,7 +701,7 @@ ysError ysOpenGLDevice::DestroyShaderProgram(ysShaderProgram *&program, bool des
 
     ysOpenGLShaderProgram *openglProgram = static_cast<ysOpenGLShaderProgram *>(program);
 
-    for (int i = 0; i < ysShader::SHADER_TYPE_NUM_TYPES; i++) {
+    for (int i = 0; i < (int)ysShader::ShaderType::NumShaderTypes; i++) {
         ysOpenGLShader *openglShader = static_cast<ysOpenGLShader *>(openglProgram->m_shaderSlots[i]);
         m_realContext->glDetachShader(openglProgram->m_handle, openglShader->m_handle);
     }

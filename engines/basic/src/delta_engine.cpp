@@ -97,14 +97,14 @@ ysError dbasic::DeltaEngine::CreateGameWindow(const char *title, void *instance,
     YDS_ERROR_DECLARE("CreateGameWindow");
 
     // Create the window system
-    YDS_NESTED_ERROR_CALL(ysWindowSystem::CreateWindowSystem(&m_windowSystem, ysWindowSystemObject::Platform::WINDOWS));
+    YDS_NESTED_ERROR_CALL(ysWindowSystem::CreateWindowSystem(&m_windowSystem, ysWindowSystemObject::Platform::Windows));
     m_windowSystem->ConnectInstance(instance);
 
     // Find the monitor setup
     m_windowSystem->SurveyMonitors();
     ysMonitor *mainMonitor = m_windowSystem->GetMonitor(0);
 
-    YDS_NESTED_ERROR_CALL(ysInputSystem::CreateInputSystem(&m_inputSystem, ysWindowSystemObject::Platform::WINDOWS));
+    YDS_NESTED_ERROR_CALL(ysInputSystem::CreateInputSystem(&m_inputSystem, ysWindowSystemObject::Platform::Windows));
     m_windowSystem->AssignInputSystem(m_inputSystem);
     m_inputSystem->CreateDevices(false);
 
@@ -167,6 +167,18 @@ ysError dbasic::DeltaEngine::StartFrame() {
     // TEMP
     if (IsKeyDown(ysKeyboard::KEY_B)) m_device->SetDebugFlag(0, true);
     else m_device->SetDebugFlag(0, false);
+
+    if (m_gameWindow->IsActive()) {
+        m_windowSystem->SetCursorVisible(!m_cursorHidden);
+        if (m_cursorPositionLocked) {
+            m_windowSystem->ReleaseCursor();
+            m_windowSystem->ConfineCursor(m_gameWindow);
+        }
+    }
+    else {
+        m_windowSystem->SetCursorVisible(true);
+        m_windowSystem->ReleaseCursor();
+    }
 
     if (IsOpen()) {
         m_device->SetRenderTarget(m_mainRenderTarget);
@@ -515,7 +527,7 @@ bool dbasic::DeltaEngine::ProcessKeyDown(ysKeyboard::KEY_CODE key) {
     return false;
 }
 
-bool dbasic::DeltaEngine::IsMouseKeyDown(ysMouse::BUTTON_CODE key) {
+bool dbasic::DeltaEngine::IsMouseKeyDown(ysMouse::Button key) {
     if (m_mainMouse != nullptr) {
         ysMouse *mouse = m_mainMouse->GetAsMouse();
         return mouse->GetButton(key)->IsDown();

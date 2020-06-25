@@ -33,7 +33,6 @@ ysD3D10Device::~ysD3D10Device() {
 ysError ysD3D10Device::InitializeDevice() {
     YDS_ERROR_DECLARE("InitializeDevice");
 
-    D3D_FEATURE_LEVEL highestFeatureLevel;
     HRESULT result = D3D10CreateDevice(nullptr,
         D3D10_DRIVER_TYPE_HARDWARE,
         nullptr,
@@ -79,7 +78,7 @@ bool ysD3D10Device::CheckSupport() {
 ysError ysD3D10Device::CreateRenderingContext(ysRenderingContext **context, ysWindow *window) {
 	YDS_ERROR_DECLARE("CreateRenderingContext");
 
-	if (window->GetPlatform() != ysWindowSystem::Platform::WINDOWS) return YDS_ERROR_RETURN(ysError::YDS_INCOMPATIBLE_PLATFORMS);
+	if (window->GetPlatform() != ysWindowSystem::Platform::Windows) return YDS_ERROR_RETURN(ysError::YDS_INCOMPATIBLE_PLATFORMS);
 	if (context == nullptr) return YDS_ERROR_RETURN(ysError::YDS_INVALID_PARAMETER);
 	if (m_device == nullptr) return YDS_ERROR_RETURN(ysError::YDS_NO_DEVICE);
 	*context = nullptr;
@@ -225,7 +224,7 @@ ysError ysD3D10Device::DestroyRenderingContext(ysRenderingContext *&context) {
 	// END TEMP
 
 	if (context) {
-		YDS_NESTED_ERROR_CALL( SetContextMode(context, ysRenderingContext::ContextMode::WINDOWED) );
+		YDS_NESTED_ERROR_CALL( SetContextMode(context, ysRenderingContext::ContextMode::Windowed) );
 
 		ysD3D10Context *d3d10Context = static_cast<ysD3D10Context *>(context);
 		ULONG result;
@@ -251,7 +250,7 @@ ysError ysD3D10Device::SetContextMode(ysRenderingContext *context, ysRenderingCo
 
 	HRESULT result;
 
-	if (mode == ysRenderingContext::ContextMode::FULLSCREEN) {
+	if (mode == ysRenderingContext::ContextMode::Fullscreen) {
 		window->SetWindowStyle(ysWindow::WindowStyle::FULLSCREEN);
 		//d3d10Context->m_swapChain->ResizeBuffers
 		result = d3d10Context->m_swapChain->SetFullscreenState(TRUE, nullptr);
@@ -259,7 +258,7 @@ ysError ysD3D10Device::SetContextMode(ysRenderingContext *context, ysRenderingCo
 		if (FAILED(result))
 			return YDS_ERROR_RETURN(ysError::YDS_COULD_NOT_ENTER_FULLSCREEN);
 	}
-	else if (mode == ysRenderingContext::ContextMode::WINDOWED) {
+	else if (mode == ysRenderingContext::ContextMode::Windowed) {
 		window->SetWindowStyle(ysWindow::WindowStyle::WINDOWED);
 		result = d3d10Context->m_swapChain->SetFullscreenState(FALSE, nullptr);
 
@@ -772,7 +771,7 @@ ysError ysD3D10Device::CreateVertexShader(ysShader **newShader, const char *shad
 
 	strcpy_s(newD3D10Shader->m_filename, 256, shaderFilename);
 	strcpy_s(newD3D10Shader->m_shaderName, 64, shaderName);
-	newD3D10Shader->m_shaderType = ysShader::SHADER_TYPE_VERTEX;
+	newD3D10Shader->m_shaderType = ysShader::ShaderType::Vertex;
 
 	*newShader = static_cast<ysShader *>(newD3D10Shader);
 
@@ -812,7 +811,7 @@ ysError ysD3D10Device::CreatePixelShader(ysShader **newShader, const char *shade
 
 	strcpy_s(newD3D10Shader->m_filename, 256, shaderFilename);
 	strcpy_s(newD3D10Shader->m_shaderName, 64, shaderName);
-	newD3D10Shader->m_shaderType = ysShader::SHADER_TYPE_PIXEL;
+	newD3D10Shader->m_shaderType = ysShader::ShaderType::Pixel;
 
 	*newShader = static_cast<ysShader *>(newD3D10Shader);
 
@@ -831,13 +830,13 @@ ysError ysD3D10Device::DestroyShader(ysShader *&shader) {
 	d3d10Shader->m_shaderBlob->Release();
 	
 	switch(shader->GetShaderType()) {
-	case ysShader::SHADER_TYPE_VERTEX:
+	case ysShader::ShaderType::Vertex:
 		{
 			if (active) GetDevice()->VSSetShader(nullptr);
 			d3d10Shader->m_vertexShader->Release();
 			break;
 		}
-	case ysShader::SHADER_TYPE_PIXEL:
+	case ysShader::ShaderType::Pixel:
 		{
 			if (active) GetDevice()->PSSetShader(nullptr);
 			d3d10Shader->m_pixelShader->Release();
@@ -893,13 +892,13 @@ ysError ysD3D10Device::UseShaderProgram(ysShaderProgram *program) {
 
 	ysD3D10ShaderProgram *d3d10Program = static_cast<ysD3D10ShaderProgram *>(program);
 	ysD3D10ShaderProgram *currentProgram = static_cast<ysD3D10ShaderProgram *>(m_activeShaderProgram);
-	ysD3D10Shader *vertexShader = (program) ? d3d10Program->GetShader(ysShader::SHADER_TYPE_VERTEX) : nullptr;
-	ysD3D10Shader *fragmentShader = (program) ? d3d10Program->GetShader(ysShader::SHADER_TYPE_PIXEL) : nullptr;
+	ysD3D10Shader *vertexShader = (program) ? d3d10Program->GetShader(ysShader::ShaderType::Vertex) : nullptr;
+	ysD3D10Shader *fragmentShader = (program) ? d3d10Program->GetShader(ysShader::ShaderType::Pixel) : nullptr;
 
 	if (d3d10Program == currentProgram) return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
 
-	ysD3D10Shader *currentVertexShader = (currentProgram) ? currentProgram->GetShader(ysShader::SHADER_TYPE_VERTEX) : nullptr;
-	ysD3D10Shader *currentPixelShader = (currentProgram) ? currentProgram->GetShader(ysShader::SHADER_TYPE_PIXEL) : nullptr;
+	ysD3D10Shader *currentVertexShader = (currentProgram) ? currentProgram->GetShader(ysShader::ShaderType::Vertex) : nullptr;
+	ysD3D10Shader *currentPixelShader = (currentProgram) ? currentProgram->GetShader(ysShader::ShaderType::Pixel) : nullptr;
 
 	if (vertexShader != currentVertexShader) {
 		GetDevice()->VSSetShader((vertexShader) ? vertexShader->m_vertexShader : nullptr);

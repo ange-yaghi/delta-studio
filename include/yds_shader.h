@@ -3,28 +3,21 @@
 
 #include "yds_context_object.h"
 
-class ysShader : public ysContextObject
-{
-
+class ysShader : public ysContextObject {
 	friend class ysDevice;
 
 public:
+	static const int MaxShaderFilenameLength = 256;
+	static const int MaxShaderNameLength = 64;
 
-	static const int MAX_SHADER_FILENAME_LENGTH = 256;
-	static const int MAX_SHADER_NAME = 64;
+	enum class ShaderType {
+		Pixel,
+		Vertex,
 
-	enum SHADER_TYPE
-	{
-	
-		SHADER_TYPE_PIXEL,
-		SHADER_TYPE_VERTEX,
-
-		SHADER_TYPE_NUM_TYPES
-
+		NumShaderTypes
 	};
 
 public:
-
 	ysShader();
 	ysShader(DEVICE_API API);
 	virtual ~ysShader();
@@ -32,15 +25,13 @@ public:
 	const char *GetFilename() const { return m_filename; }
 	const char *GetShaderName() const { return m_shaderName; }
 
-	SHADER_TYPE GetShaderType() const { return m_shaderType; }
+	ShaderType GetShaderType() const { return m_shaderType; }
 
 protected:
+	char m_filename[MaxShaderFilenameLength];
+	char m_shaderName[MaxShaderNameLength];
 
-	char m_filename[MAX_SHADER_FILENAME_LENGTH];
-	char m_shaderName[MAX_SHADER_NAME];
-
-	SHADER_TYPE m_shaderType;
-
+	ShaderType m_shaderType;
 };
 
-#endif
+#endif /* YDS_SHADER_H */

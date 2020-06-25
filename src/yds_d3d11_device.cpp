@@ -123,7 +123,7 @@ bool ysD3D11Device::CheckSupport() {
 ysError ysD3D11Device::CreateRenderingContext(ysRenderingContext **context, ysWindow *window) {
     YDS_ERROR_DECLARE("CreateRenderingContext");
 
-    if (window->GetPlatform() != ysWindowSystem::Platform::WINDOWS) return YDS_ERROR_RETURN(ysError::YDS_INCOMPATIBLE_PLATFORMS);
+    if (window->GetPlatform() != ysWindowSystem::Platform::Windows) return YDS_ERROR_RETURN(ysError::YDS_INCOMPATIBLE_PLATFORMS);
     if (context == nullptr) return YDS_ERROR_RETURN(ysError::YDS_INVALID_PARAMETER);
     if (m_device == nullptr) return YDS_ERROR_RETURN(ysError::YDS_NO_DEVICE);
     *context = nullptr;
@@ -303,7 +303,7 @@ ysError ysD3D11Device::DestroyRenderingContext(ysRenderingContext *&context) {
     YDS_ERROR_DECLARE("DestroyRenderingContext");
 
     if (context != nullptr) {
-        YDS_NESTED_ERROR_CALL(SetContextMode(context, ysRenderingContext::ContextMode::WINDOWED));
+        YDS_NESTED_ERROR_CALL(SetContextMode(context, ysRenderingContext::ContextMode::Windowed));
 
         ysD3D11Context *d3d11Context = static_cast<ysD3D11Context *>(context);
         if (d3d11Context->m_swapChain) d3d11Context->m_swapChain->Release();
@@ -326,7 +326,7 @@ ysError ysD3D11Device::SetContextMode(ysRenderingContext *context, ysRenderingCo
 
     HRESULT result;
 
-    if (mode == ysRenderingContext::ContextMode::FULLSCREEN) {
+    if (mode == ysRenderingContext::ContextMode::Fullscreen) {
         window->SetWindowStyle(ysWindow::WindowStyle::FULLSCREEN);
         result = d3d11Context->m_swapChain->SetFullscreenState(TRUE, nullptr);
 
@@ -335,7 +335,7 @@ ysError ysD3D11Device::SetContextMode(ysRenderingContext *context, ysRenderingCo
         }
     }
 
-    else if (mode == ysRenderingContext::ContextMode::WINDOWED) {
+    else if (mode == ysRenderingContext::ContextMode::Windowed) {
         window->SetWindowStyle(ysWindow::WindowStyle::WINDOWED);
         result = d3d11Context->m_swapChain->SetFullscreenState(FALSE, nullptr);
 
@@ -873,7 +873,7 @@ ysError ysD3D11Device::CreateVertexShader(ysShader **newShader, const char *shad
 
     strcpy_s(newD3D11Shader->m_filename, 256, shaderFilename);
     strcpy_s(newD3D11Shader->m_shaderName, 64, shaderName);
-    newD3D11Shader->m_shaderType = ysShader::SHADER_TYPE_VERTEX;
+    newD3D11Shader->m_shaderType = ysShader::ShaderType::Vertex;
 
     *newShader = static_cast<ysShader *>(newD3D11Shader);
 
@@ -912,7 +912,7 @@ ysError ysD3D11Device::CreatePixelShader(ysShader **newShader, const char *shade
 
     strcpy_s(newD3D11Shader->m_filename, 256, shaderFilename);
     strcpy_s(newD3D11Shader->m_shaderName, 64, shaderName);
-    newD3D11Shader->m_shaderType = ysShader::SHADER_TYPE_PIXEL;
+    newD3D11Shader->m_shaderType = ysShader::ShaderType::Vertex;
 
     *newShader = newD3D11Shader;
 
@@ -954,13 +954,13 @@ ysError ysD3D11Device::DestroyShader(ysShader *&shader) {
     d3d11Shader->m_shaderBlob->Release();
 
     switch (shader->GetShaderType()) {
-        case ysShader::SHADER_TYPE_VERTEX:
+    case ysShader::ShaderType::Vertex:
         {
             if (active) GetImmediateContext()->VSSetShader(nullptr, nullptr, 0);
             d3d11Shader->m_vertexShader->Release();
             break;
         }
-        case ysShader::SHADER_TYPE_PIXEL:
+    case ysShader::ShaderType::Pixel:
         {
             if (active) GetImmediateContext()->PSSetShader(nullptr, nullptr, 0);
             d3d11Shader->m_pixelShader->Release();
@@ -1016,13 +1016,13 @@ ysError ysD3D11Device::UseShaderProgram(ysShaderProgram *program) {
 
     ysD3D11ShaderProgram *d3d11Program = static_cast<ysD3D11ShaderProgram *>(program);
     ysD3D11ShaderProgram *currentProgram = static_cast<ysD3D11ShaderProgram *>(m_activeShaderProgram);
-    ysD3D11Shader *vertexShader = (d3d11Program) ? d3d11Program->GetShader(ysShader::SHADER_TYPE_VERTEX) : nullptr;
-    ysD3D11Shader *fragmentShader = (d3d11Program) ? d3d11Program->GetShader(ysShader::SHADER_TYPE_PIXEL) : nullptr;
+    ysD3D11Shader *vertexShader = (d3d11Program) ? d3d11Program->GetShader(ysShader::ShaderType::Vertex) : nullptr;
+    ysD3D11Shader *fragmentShader = (d3d11Program) ? d3d11Program->GetShader(ysShader::ShaderType::Pixel) : nullptr;
 
     if (d3d11Program == currentProgram) return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
 
-    ysD3D11Shader *currentVertexShader = (currentProgram) ? currentProgram->GetShader(ysShader::SHADER_TYPE_VERTEX) : nullptr;
-    ysD3D11Shader *currentPixelShader = (currentProgram) ? currentProgram->GetShader(ysShader::SHADER_TYPE_PIXEL) : nullptr;
+    ysD3D11Shader *currentVertexShader = (currentProgram) ? currentProgram->GetShader(ysShader::ShaderType::Vertex) : nullptr;
+    ysD3D11Shader *currentPixelShader = (currentProgram) ? currentProgram->GetShader(ysShader::ShaderType::Pixel) : nullptr;
 
     if (vertexShader != currentVertexShader) {
         GetImmediateContext()->VSSetShader((vertexShader) ? vertexShader->m_vertexShader : nullptr, nullptr, 0);

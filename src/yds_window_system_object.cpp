@@ -3,7 +3,7 @@
 ysWindowSystemObject::ysWindowSystemObject() : ysObject("WINDOW_SYSTEM_OBJECT") {
     YDS_ERROR_DECLARE("ysWindowSystemObject");
 
-    m_platform = Platform::UNKNOWN;
+    m_platform = Platform::Unknown;
 
     YDS_ERROR_RETURN(ysError::YDS_NO_PLATFORM);
 }

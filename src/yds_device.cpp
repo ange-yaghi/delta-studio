@@ -290,7 +290,7 @@ ysError ysDevice::DestroyShaderProgram(ysShaderProgram *&program, bool destroySh
 	if (program == m_activeShaderProgram) UseShaderProgram(nullptr);
 
 	if (destroyShaders) {
-		for(int i = 0; i < ysShader::SHADER_TYPE_NUM_TYPES; i++) {
+		for(int i = 0; i < (int)ysShader::ShaderType::NumShaderTypes; i++) {
 			YDS_NESTED_ERROR_CALL( DestroyShader(program->m_shaderSlots[i]) );
 		}
 	}
@@ -309,7 +309,7 @@ ysError ysDevice::AttachShader(ysShaderProgram *program, ysShader *shader) {
 	if (!CheckCompatibility(shader))	return YDS_ERROR_RETURN_MSG(ysError::YDS_INCOMPATIBLE_PLATFORMS, "SHADER");
 	if (program->m_isLinked)			return YDS_ERROR_RETURN(ysError::YDS_PROGRAM_ALREADY_LINKED);
 
-	program->m_shaderSlots[shader->m_shaderType] = shader;
+	program->m_shaderSlots[(int)shader->m_shaderType] = shader;
 
 	return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
 }

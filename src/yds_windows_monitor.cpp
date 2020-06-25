@@ -2,7 +2,7 @@
 
 #include <Windows.h>
 
-ysWindowsMonitor::ysWindowsMonitor() : ysMonitor(Platform::WINDOWS) {
+ysWindowsMonitor::ysWindowsMonitor() : ysMonitor(Platform::Windows) {
     InitializeDeviceName(CCHDEVICENAME);
 }
 

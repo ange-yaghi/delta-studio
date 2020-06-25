@@ -6,7 +6,7 @@
 #include <Windows.h>
 //#include <strsafe.h>
 
-ysWindowsInputSystem::ysWindowsInputSystem() : ysInputSystem(Platform::WINDOWS) {
+ysWindowsInputSystem::ysWindowsInputSystem() : ysInputSystem(Platform::Windows) {
     /* void */
 }
 
@@ -272,29 +272,29 @@ int ysWindowsInputSystem::ProcessInputMessage(HRAWINPUT lparam) {
 
             if (raw->data.mouse.usButtonFlags & RI_MOUSE_WHEEL) mouse->UpdateWheel((int)((short)raw->data.mouse.usButtonData));
 
-            if (raw->data.mouse.usButtonFlags & RI_MOUSE_LEFT_BUTTON_DOWN) mouse->UpdateButton(ysMouse::BUTTON_LEFT, ysKey::KEY_DOWN_TRANS);
-            if (raw->data.mouse.usButtonFlags & RI_MOUSE_LEFT_BUTTON_UP) mouse->UpdateButton(ysMouse::BUTTON_LEFT, ysKey::KEY_UP_TRANS);
+            if (raw->data.mouse.usButtonFlags & RI_MOUSE_LEFT_BUTTON_DOWN) mouse->UpdateButton(ysMouse::Button::Left, ysKey::KEY_DOWN_TRANS);
+            if (raw->data.mouse.usButtonFlags & RI_MOUSE_LEFT_BUTTON_UP) mouse->UpdateButton(ysMouse::Button::Left, ysKey::KEY_UP_TRANS);
 
-            if (raw->data.mouse.usButtonFlags & RI_MOUSE_RIGHT_BUTTON_DOWN) mouse->UpdateButton(ysMouse::BUTTON_RIGHT, ysKey::KEY_DOWN_TRANS);
-            if (raw->data.mouse.usButtonFlags & RI_MOUSE_RIGHT_BUTTON_UP) mouse->UpdateButton(ysMouse::BUTTON_RIGHT, ysKey::KEY_UP_TRANS);
+            if (raw->data.mouse.usButtonFlags & RI_MOUSE_RIGHT_BUTTON_DOWN) mouse->UpdateButton(ysMouse::Button::Right, ysKey::KEY_DOWN_TRANS);
+            if (raw->data.mouse.usButtonFlags & RI_MOUSE_RIGHT_BUTTON_UP) mouse->UpdateButton(ysMouse::Button::Right, ysKey::KEY_UP_TRANS);
 
-            if (raw->data.mouse.usButtonFlags & RI_MOUSE_MIDDLE_BUTTON_DOWN) mouse->UpdateButton(ysMouse::BUTTON_MIDDLE, ysKey::KEY_DOWN_TRANS);
-            if (raw->data.mouse.usButtonFlags & RI_MOUSE_MIDDLE_BUTTON_UP) mouse->UpdateButton(ysMouse::BUTTON_MIDDLE, ysKey::KEY_UP_TRANS);
+            if (raw->data.mouse.usButtonFlags & RI_MOUSE_MIDDLE_BUTTON_DOWN) mouse->UpdateButton(ysMouse::Button::Middle, ysKey::KEY_DOWN_TRANS);
+            if (raw->data.mouse.usButtonFlags & RI_MOUSE_MIDDLE_BUTTON_UP) mouse->UpdateButton(ysMouse::Button::Middle, ysKey::KEY_UP_TRANS);
 
-            if (raw->data.mouse.usButtonFlags & RI_MOUSE_BUTTON_1_DOWN) mouse->UpdateButton(ysMouse::BUTTON_1, ysKey::KEY_DOWN_TRANS);
-            if (raw->data.mouse.usButtonFlags & RI_MOUSE_BUTTON_1_UP) mouse->UpdateButton(ysMouse::BUTTON_1, ysKey::KEY_UP_TRANS);
+            if (raw->data.mouse.usButtonFlags & RI_MOUSE_BUTTON_1_DOWN) mouse->UpdateButton(ysMouse::Button::Aux_1, ysKey::KEY_DOWN_TRANS);
+            if (raw->data.mouse.usButtonFlags & RI_MOUSE_BUTTON_1_UP) mouse->UpdateButton(ysMouse::Button::Aux_1, ysKey::KEY_UP_TRANS);
 
-            if (raw->data.mouse.usButtonFlags & RI_MOUSE_BUTTON_2_DOWN) mouse->UpdateButton(ysMouse::BUTTON_2, ysKey::KEY_DOWN_TRANS);
-            if (raw->data.mouse.usButtonFlags & RI_MOUSE_BUTTON_2_UP) mouse->UpdateButton(ysMouse::BUTTON_2, ysKey::KEY_UP_TRANS);
+            if (raw->data.mouse.usButtonFlags & RI_MOUSE_BUTTON_2_DOWN) mouse->UpdateButton(ysMouse::Button::Aux_2, ysKey::KEY_DOWN_TRANS);
+            if (raw->data.mouse.usButtonFlags & RI_MOUSE_BUTTON_2_UP) mouse->UpdateButton(ysMouse::Button::Aux_2, ysKey::KEY_UP_TRANS);
 
-            if (raw->data.mouse.usButtonFlags & RI_MOUSE_BUTTON_3_DOWN) mouse->UpdateButton(ysMouse::BUTTON_3, ysKey::KEY_DOWN_TRANS);
-            if (raw->data.mouse.usButtonFlags & RI_MOUSE_BUTTON_3_UP) mouse->UpdateButton(ysMouse::BUTTON_3, ysKey::KEY_UP_TRANS);
+            if (raw->data.mouse.usButtonFlags & RI_MOUSE_BUTTON_3_DOWN) mouse->UpdateButton(ysMouse::Button::Aux_3, ysKey::KEY_DOWN_TRANS);
+            if (raw->data.mouse.usButtonFlags & RI_MOUSE_BUTTON_3_UP) mouse->UpdateButton(ysMouse::Button::Aux_3, ysKey::KEY_UP_TRANS);
 
-            if (raw->data.mouse.usButtonFlags & RI_MOUSE_BUTTON_4_DOWN) mouse->UpdateButton(ysMouse::BUTTON_4, ysKey::KEY_DOWN_TRANS);
-            if (raw->data.mouse.usButtonFlags & RI_MOUSE_BUTTON_4_UP) mouse->UpdateButton(ysMouse::BUTTON_4, ysKey::KEY_UP_TRANS);
+            if (raw->data.mouse.usButtonFlags & RI_MOUSE_BUTTON_4_DOWN) mouse->UpdateButton(ysMouse::Button::Aux_4, ysKey::KEY_DOWN_TRANS);
+            if (raw->data.mouse.usButtonFlags & RI_MOUSE_BUTTON_4_UP) mouse->UpdateButton(ysMouse::Button::Aux_4, ysKey::KEY_UP_TRANS);
 
-            if (raw->data.mouse.usButtonFlags & RI_MOUSE_BUTTON_5_DOWN) mouse->UpdateButton(ysMouse::BUTTON_5, ysKey::KEY_DOWN_TRANS);
-            if (raw->data.mouse.usButtonFlags & RI_MOUSE_BUTTON_5_UP) mouse->UpdateButton(ysMouse::BUTTON_5, ysKey::KEY_UP_TRANS);
+            if (raw->data.mouse.usButtonFlags & RI_MOUSE_BUTTON_5_DOWN) mouse->UpdateButton(ysMouse::Button::Aux_5, ysKey::KEY_DOWN_TRANS);
+            if (raw->data.mouse.usButtonFlags & RI_MOUSE_BUTTON_5_UP) mouse->UpdateButton(ysMouse::Button::Aux_5, ysKey::KEY_UP_TRANS);
         }
     }
 

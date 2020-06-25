@@ -107,9 +107,15 @@ namespace dbasic {
         bool IsKeyDown(ysKeyboard::KEY_CODE key);
         bool ProcessKeyDown(ysKeyboard::KEY_CODE key);
 
-        bool IsMouseKeyDown(ysMouse::BUTTON_CODE key);
+        bool IsMouseKeyDown(ysMouse::Button key);
         int GetMouseWheel();
         void GetMousePos(int *x, int *y);
+
+        void SetCursorPositionLock(bool lock) { m_cursorPositionLocked = lock; }
+        bool GetCursorPositionLock() { return m_cursorPositionLocked; }
+
+        void SetCursorHidden(bool hidden) { m_cursorHidden = hidden; }
+        bool GetCursorHidden() const { return m_cursorHidden; }
 
         float GetFrameLength();
         float GetAverageFramerate();
@@ -220,6 +226,10 @@ namespace dbasic {
     protected:
         // Settings
         float m_clearColor[4];
+
+        // Cursor
+        bool m_cursorPositionLocked;
+        bool m_cursorHidden;
 
     protected:
         // Initialization Routines

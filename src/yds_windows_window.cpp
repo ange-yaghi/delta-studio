@@ -1,7 +1,7 @@
 #include "../include/yds_windows_window.h"
 #include "../include/yds_windows_window_system.h"
 
-ysWindowsWindow::ysWindowsWindow() : ysWindow(Platform::WINDOWS) {
+ysWindowsWindow::ysWindowsWindow() : ysWindow(Platform::Windows) {
     m_instance = 0;
     m_hwnd = 0;
 }
@@ -204,7 +204,7 @@ void ysWindowsWindow::AL_SetSize(int width, int height) {
 }
 
 void ysWindowsWindow::AL_SetLocation(int x, int y) {
-    ysWindow::AL_SetSize(x, y);
+    ysWindow::AL_SetLocation(x, y);
 
     SetWindowPos(m_hwnd, NULL, x, y, 0, 0, SWP_NOSIZE | SWP_NOZORDER);
 }

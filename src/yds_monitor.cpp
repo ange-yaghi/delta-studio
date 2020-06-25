@@ -1,6 +1,6 @@
 #include "../include/yds_monitor.h"
 
-ysMonitor::ysMonitor() : ysWindowSystemObject("DISPLAY_MONITOR", Platform::WINDOWS) {
+ysMonitor::ysMonitor() : ysWindowSystemObject("DISPLAY_MONITOR", Platform::Windows) {
     m_maxDeviceNameLength = 0;
     m_deviceName = 0;
 
