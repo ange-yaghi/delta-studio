@@ -567,6 +567,10 @@ void dbasic::DeltaEngine::ResetBaseColor() {
     m_shaderObjectVariables.BaseColor = ysVector4(1.0f, 1.0f, 1.0f, 1.0f);
 }
 
+void dbasic::DeltaEngine::SetLit(bool lit) {
+    m_shaderObjectVariables.Lit = (lit) ? 1 : 0;
+}
+
 void dbasic::DeltaEngine::SetEmission(const ysVector &emission) {
     m_shaderObjectVariables.Emission = ysMath::GetVector4(emission);
 }
@@ -662,7 +666,7 @@ ysError dbasic::DeltaEngine::SetAmbientLight(const ysVector4 &ambient) {
     return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
 }
 
-ysError dbasic::DeltaEngine::DrawBox(float width, float height, int layer, bool lit) {
+ysError dbasic::DeltaEngine::DrawBox(float width, float height, int layer) {
     YDS_ERROR_DECLARE("DrawBox");
 
     if (!m_shaderObjectVariablesSync) {
@@ -677,7 +681,6 @@ ysError dbasic::DeltaEngine::DrawBox(float width, float height, int layer, bool 
         m_shaderObjectVariables.TexScale[1] = 1.0f;
 
         m_shaderObjectVariables.ColorReplace = 1;
-        m_shaderObjectVariables.Lit = (lit) ? 1 : 0;
     }
 
     DrawCall *newCall = nullptr;
@@ -697,7 +700,7 @@ ysError dbasic::DeltaEngine::DrawBox(float width, float height, int layer, bool 
     return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
 }
 
-ysError dbasic::DeltaEngine::DrawAxis(const ysVector &position, const ysVector &direction, float width, float length, int layer, bool lit) {
+ysError dbasic::DeltaEngine::DrawAxis(const ysVector &position, const ysVector &direction, float width, float length, int layer) {
     YDS_ERROR_DECLARE("DrawAxis");
 
     ysMatrix trans = ysMath::TranslationTransform(position);
@@ -711,7 +714,7 @@ ysError dbasic::DeltaEngine::DrawAxis(const ysVector &position, const ysVector &
     transform = ysMath::MatMult(transform, offset);
     SetObjectTransform(transform);
 
-    YDS_NESTED_ERROR_CALL(DrawBox(width, length, layer, lit));
+    YDS_NESTED_ERROR_CALL(DrawBox(width, length, layer));
 
     return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
 }
@@ -787,7 +790,7 @@ ysError dbasic::DeltaEngine::ExecuteDrawQueue(DrawTarget target) {
         float aspect = m_gameWindow->GetScreenWidth() / (float)m_gameWindow->GetScreenHeight();
 
         if (target == DrawTarget::Main) {
-            m_shaderScreenVariables.Projection = ysMath::Transpose(ysMath::FrustrumPerspective(m_cameraFov, aspect, 1.0f, 100.0f));
+            m_shaderScreenVariables.Projection = ysMath::Transpose(ysMath::FrustrumPerspective(m_cameraFov, aspect, 2.0f, 100.0f));
         }
         else if (target == DrawTarget::Gui) {
             m_shaderScreenVariables.Projection = ysMath::Transpose(

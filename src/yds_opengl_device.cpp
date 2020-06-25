@@ -60,7 +60,9 @@ ysError ysOpenGLDevice::CreateRenderingContext(ysRenderingContext **context, ysW
         YDS_NESTED_ERROR_CALL(newContext->CreateRenderingContext(this, window, 4, 3));
 
         // TEMP
-        glFrontFace(GL_CW);
+        glFrontFace(GL_CCW);
+        glEnable(GL_CULL_FACE);
+        glCullFace(GL_BACK);
 
         *context = static_cast<ysRenderingContext *>(newContext);
 

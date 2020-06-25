@@ -512,7 +512,6 @@ void dphysics::RigidBodySystem::ResolveCollision(Collision *collision, ysVector 
                 ysMatrix inverseInertiaTensor;
                 inverseInertiaTensor = body->GetInverseInertiaTensorWorld();
                 rotationDirection[b] = ysMath::MatMult(inverseInertiaTensor, t);
-
                 rotationAmount[b] = angularMove[b] / angularInertia[b];
             }
             else {
@@ -550,6 +549,7 @@ void dphysics::RigidBodySystem::AdjustVelocities(float timestep) {
             if (collision.m_desiredDeltaVelocity > max) {
                 if (collision.m_sensor) continue;
                 if (collision.IsGhost()) continue;
+                if (!collision.IsResolvable()) continue;
 
                 max = collision.m_desiredDeltaVelocity;
                 index = i;
@@ -573,7 +573,8 @@ void dphysics::RigidBodySystem::AdjustVelocities(float timestep) {
 
             if (c->m_sensor) continue;
             if (c->IsGhost()) continue;
-            if (!c->IsResolvable()) continue;
+            if (!c->IsResolvable()) 
+                continue;
 
             if (c->m_bodies[0] != nullptr) {
                 if (c->m_bodies[0] == biggestCollision->m_bodies[0]) {
@@ -648,18 +649,15 @@ void dphysics::RigidBodySystem::AdjustVelocity(Collision *collision, ysVector ve
 
         // Add to the total delta velocity.
         deltaVelWorld = ysMath::MatAdd(deltaVelWorld2, deltaVelWorld);
-        ///<AngularVelocityFriction
 
         // Add to the inverse mass
         inverseMass += collision->m_bodies[1]->GetInverseMass();
-        ///>AngularVelocityFriction
     }
 
     // Do a change of basis to convert into contact coordinates.
     ysMatrix deltaVelocity = ysMath::OrthogonalInverse(collision->m_contactSpace);
     deltaVelocity = ysMath::MatMult(deltaVelocity, deltaVelWorld);
     deltaVelocity = ysMath::MatMult(deltaVelocity, collision->m_contactSpace);
-    ///<AngularVelocityFriction
 
     // Add in the linear velocity change
     deltaVelocity = ysMath::MatAdd(deltaVelocity, ysMath::ScaleTransform(ysMath::LoadScalar(inverseMass)));
@@ -768,7 +766,8 @@ void dphysics::RigidBodySystem::ResolveCollisions(float dt) {
 
             if (collision.m_sensor) continue;
             if (collision.IsGhost()) continue;
-            if (!collision.IsResolvable()) continue;
+            if (!collision.IsResolvable()) 
+                continue;
 
             if (collision.m_body1 == biggestCollision->m_body1) {
                 cp = ysMath::Cross(rotationChange[0], collision.m_relativePosition[0]);

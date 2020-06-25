@@ -61,7 +61,7 @@ float f_diffuse(vec3 i, vec3 o, vec3 h, vec3 normal, float power, float roughnes
 	float cos_theta_o = dot(o, normal);
 
 	float f_d = (1 + (f_d90 - 1) * pow5(1 - cos_theta_i)) * (1 + (f_d90 - 1) * pow5(1 - cos_theta_o));
-	return f_d * power * cos_theta_i;
+	return clamp(f_d * power * cos_theta_i, 0.0, 1.0);
 }
 
 float f_specular(vec3 i, vec3 o, vec3 h, vec3 normal, float F0, float power, float specularPower) {
@@ -76,7 +76,7 @@ float f_specular(vec3 i, vec3 o, vec3 h, vec3 normal, float F0, float power, flo
 	float s = pow5(1 - o_dot_h);
 	float F = F0_scaled + s * (1 - F0_scaled);
 
-	return pow(intensity, specularPower) * F * power;
+	return clamp(pow(intensity, specularPower) * F * power, 0.0, 1.0);
 }
 
 float f_specular_ambient(vec3 o, vec3 normal, float F0, float power) {
@@ -86,7 +86,7 @@ float f_specular_ambient(vec3 o, vec3 normal, float F0, float power) {
 	float s = pow5(1 - o_dot_n);
 	float F = F0_scaled + s * (1 - F0_scaled);
 
-	return F * power;
+	return clamp(F * power, 0.0, 1.0);
 }
 
 float linearToSrgb(float u) {

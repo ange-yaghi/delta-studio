@@ -181,7 +181,7 @@ float f_specular(float3 i, float3 o, float3 h, float3 normal, float F0, float po
 	float s = pow5(1 - o_dot_h);
 	float F = F0_scaled + s * (1 - F0_scaled);
 
-	return min(1.0, pow(intensity, specularPower) * F * power);
+	return clamp(pow(intensity, specularPower) * F * power, 0.0, 1.0);
 }
 
 float f_specular_ambient(float3 o, float3 normal, float F0, float power) {
@@ -191,7 +191,7 @@ float f_specular_ambient(float3 o, float3 normal, float F0, float power) {
 	float s = pow5(1 - o_dot_n);
 	float F = F0_scaled + s * (1 - F0_scaled);
 
-	return min(1.0, F * power);
+	return clamp(F * power, 0.0, 1.0);
 }
 
 float linearToSrgb(float u) {

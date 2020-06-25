@@ -116,8 +116,7 @@ bool dphysics::Collision::IsResolvable() const {
 void dphysics::Collision::CalculateDesiredDeltaVelocity(float timestep) {
     const static float VelocityLimit = 0.25f;
 
-    ///>NewVelocityCalculation
-        // Calculate the acceleration induced velocity accumulated this frame
+    // Calculate the acceleration induced velocity accumulated this frame
     //real velocityFromAcc = body[0]->getLastFrameAcceleration() * duration * contactNormal;
     float velocityFromAcc = ysMath::GetScalar(ysMath::Dot(m_bodies[0]->GetAcceleration(), m_normal)) * timestep;
 
