@@ -498,15 +498,17 @@ void dbasic::DeltaEngine::SetWindowSize(int width, int height) {
     m_shaderScreenVariablesSync = false;
 }
 
-void dbasic::DeltaEngine::SetClearColor(int r, int g, int b) {
-    float fr = r / 255.0f;
-    float fg = g / 255.0f;
-    float fb = b / 255.0f;
+void dbasic::DeltaEngine::SetConsoleColor(const ysVector &v) {
+    m_consoleShaderObjectVariables.MulCol = ysMath::GetVector4(v);
+}
 
-    m_clearColor[0] = fr;
-    m_clearColor[1] = fg;
-    m_clearColor[2] = fb;
-    m_clearColor[3] = 1.0f;
+void dbasic::DeltaEngine::SetClearColor(const ysVector &v) {
+    ysVector4 v4 = ysMath::GetVector4(v);
+
+    m_clearColor[0] = v4.x;
+    m_clearColor[1] = v4.y;
+    m_clearColor[2] = v4.z;
+    m_clearColor[3] = v4.w;
 }
 
 bool dbasic::DeltaEngine::IsKeyDown(ysKeyboard::KEY_CODE key) {
@@ -616,11 +618,11 @@ void dbasic::DeltaEngine::SetIncidentSpecular(float incidentSpecular) {
 }
 
 int dbasic::DeltaEngine::GetScreenWidth() {
-    return m_gameWindow->GetWidth();
+    return m_gameWindow->GetScreenWidth();
 }
 
 int dbasic::DeltaEngine::GetScreenHeight() {
-    return m_gameWindow->GetHeight();
+    return m_gameWindow->GetScreenHeight();
 }
 
 ysError dbasic::DeltaEngine::DrawImage(ysTexture *image, int layer, float scaleX, float scaleY, float texOffsetU, float texOffsetV, float texScaleU, float texScaleV) {
@@ -931,7 +933,6 @@ ysError dbasic::DeltaEngine::ExecuteDrawQueue(DrawTarget target) {
 
     if (target == DrawTarget::Gui) {
         ConsoleShaderObjectVariables objectSettings;
-        objectSettings.MulCol = ysVector4(1.0f, 1.0f, 1.0f, 1.0f);
         objectSettings.TexOffset[0] = 0.0f;
         objectSettings.TexOffset[1] = 0.0f;
         objectSettings.TexScale[0] = 1.0f;

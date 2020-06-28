@@ -833,3 +833,7 @@ bool ysMath::IsValid(const ysVector &v) {
 
     return true;
 }
+
+ysVector4::ysVector4(const ysVector &v) {
+    *this = ysMath::GetVector4(v);
+}

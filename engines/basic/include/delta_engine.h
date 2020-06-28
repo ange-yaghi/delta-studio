@@ -73,7 +73,8 @@ namespace dbasic {
 
         void SetWindowSize(int width, int height);
 
-        void SetClearColor(int r, int g, int b);
+        void SetConsoleColor(const ysVector &v);
+        void SetClearColor(const ysVector &v);
 
         // Shader Controls
         void SetCameraPosition(float x, float y);

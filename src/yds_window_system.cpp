@@ -13,6 +13,7 @@ ysWindowSystem::ysWindowSystem() : ysWindowSystemObject("WINDOW_SYSTEM", Platfor
 
     m_inputSystem = nullptr;
     m_cursorVisible = true;
+    m_cursorConfined = false;
 
     YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
 }
@@ -24,6 +25,7 @@ ysWindowSystem::ysWindowSystem(Platform platform) : ysWindowSystemObject("WINDOW
     g_instance = this;
 
     m_cursorVisible = true;
+    m_cursorConfined = false;
     m_inputSystem = nullptr;
 
     YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);

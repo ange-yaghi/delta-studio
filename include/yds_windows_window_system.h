@@ -33,6 +33,7 @@ protected:
     HINSTANCE m_instance;
 
     RECT m_oldCursorClip;
+    HCURSOR m_oldCursor;
 };
 
 #endif /* YDS_WINDOWS_WINDOW_SYSTEM_H */

@@ -84,10 +84,6 @@ public:
 	PFNGLUNIFORMMATRIX4FVPROC			glUniformMatrix4fv = nullptr;
 	PFNGLUNIFORMMATRIX3FVPROC			glUniformMatrix3fv = nullptr;
 
-	PFNGLMAPBUFFERPROC					glMapBuffer = nullptr;
-	PFNGLMAPBUFFERRANGEPROC				glMapBufferRange = nullptr;
-	PFNGLUNMAPBUFFERPROC				glUnmapBuffer = nullptr;
-
 	PFNGLGETPROGRAMIVPROC				glGetProgramiv = nullptr;
 	PFNGLGETACTIVEUNIFORMNAMEPROC		glGetActiveUniformName = nullptr;
 	PFNGLGETACTIVEUNIFORMSIVPROC		glGetActiveUniformsiv = nullptr;
@@ -101,6 +97,10 @@ public:
 	PFNGLGENERATEMIPMAPPROC				glGenerateMipmap = nullptr;
 
 	// Buffers
+
+	PFNGLMAPBUFFERPROC					glMapBuffer = nullptr;
+	PFNGLMAPBUFFERRANGEPROC				glMapBufferRange = nullptr;
+	PFNGLUNMAPBUFFERPROC				glUnmapBuffer = nullptr;
 
 	PFNGLGENRENDERBUFFERSPROC			glGenRenderbuffers = nullptr;
 	PFNGLBINDRENDERBUFFERPROC			glBindRenderbuffer = nullptr;

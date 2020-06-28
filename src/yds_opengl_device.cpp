@@ -552,22 +552,15 @@ ysError ysOpenGLDevice::EditBufferData(ysGPUBuffer *buffer, char *data) {
 
     ysOpenGLGPUBuffer *openglBuffer = static_cast<ysOpenGLGPUBuffer *>(buffer);
     int target = openglBuffer->GetTarget();
-
+    
     m_realContext->glBindBuffer(target, openglBuffer->m_bufferHandle);
-
-    char *mappedBuffer = (char *)m_realContext->glMapBuffer(target, GL_WRITE_ONLY);
-
-    memcpy(mappedBuffer, data, buffer->GetSize());
-
-    m_realContext->glUnmapBuffer(target);
+    m_realContext->glBufferSubData(target, 0, openglBuffer->GetSize(), data);
 
     // Restore Previous State
     if (previous != buffer) {
         openglBuffer = static_cast<ysOpenGLGPUBuffer *>(previous);
         m_realContext->glBindBuffer(target, (openglBuffer) ? openglBuffer->m_bufferHandle : 0);
     }
-
-    ysDevice::EditBufferData(buffer, data);
 
     YDS_NESTED_ERROR_CALL(ysDevice::EditBufferData(buffer, data));
 
@@ -592,7 +585,7 @@ ysError ysOpenGLDevice::CreateVertexShader(ysShader **newShader, const char *sha
 
     YDS_NESTED_ERROR_CALL(file.OpenFile(shaderFilename, ysFile::FILE_BINARY | ysFile::FILE_READ));
     fileLength = file.GetFileLength();
-    fileBuffer = new char[fileLength + 1];
+    fileBuffer = new char[(unsigned long long)fileLength + 1];
     file.ReadFileToBuffer(fileBuffer);
     fileBuffer[fileLength] = 0;
 
@@ -648,7 +641,7 @@ ysError ysOpenGLDevice::CreatePixelShader(ysShader **newShader, const char *shad
 
     YDS_NESTED_ERROR_CALL(file.OpenFile(shaderFilename, ysFile::FILE_BINARY | ysFile::FILE_READ));
     fileLength = file.GetFileLength();
-    fileBuffer = new char[fileLength + 1];
+    fileBuffer = new char[(unsigned long long)fileLength + 1];
     file.ReadFileToBuffer(fileBuffer);
     fileBuffer[fileLength] = 0;
 
@@ -901,9 +894,9 @@ ysError ysOpenGLDevice::CreateTexture(ysTexture **texture, const char *fname) {
                 SDL_GetRGBA(colour, pTexSurface->format, &r, &g, &b, &a);
             }
 
-            imageData[index] = r; index++;
-            imageData[index] = g; index++;
-            imageData[index] = b; index++;
+            imageData[index] = r; ++index;
+            imageData[index] = g; ++index;
+            imageData[index] = b; ++index;
 
             if (useAlpha) {
                 imageData[index] = a; index++;
