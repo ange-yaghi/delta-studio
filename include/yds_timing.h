@@ -1,41 +1,30 @@
-#ifndef YS_TIMING_MODULE_H
-#define YS_TIMING_MODULE_H
+#ifndef YS_TIMING_H
+#define YS_TIMING_H
 
 #include <intrin.h>
 #include <stdint.h>
 
 uint64_t SystemTime();
 
-class ysTimingSystem
-{
-
+class ysTimingSystem {
 public:
-
-	enum PRECISION_MODE
-	{
-
-		MICROSECOND_MODE,
-		MILLISECOND_MODE
-
+	enum class Precision {
+		Microsecond,
+		Millisecond
 	};
 
 protected:
-
 	static ysTimingSystem *g_instance;
 
 public:
-
 	ysTimingSystem();
 	~ysTimingSystem();
 
-	static ysTimingSystem *Get() 
-	{ 
-
-		if (g_instance == NULL) 
+	static ysTimingSystem *Get() { 
+		if (g_instance == nullptr) 
 			g_instance = new ysTimingSystem; 
 
 		return g_instance;
-	
 	}
 
 	void Update();
@@ -47,13 +36,12 @@ public:
     uint64_t GetTime();
     unsigned __int64 GetClock();
 
-	void SetPrecisionMode(PRECISION_MODE mode);
+	void SetPrecisionMode(Precision mode);
 
 	float GetFPS() const { return m_fps; }
 
 protected:
-
-	PRECISION_MODE m_precisionMode;
+	Precision m_precisionMode;
 	double m_div;
 
     unsigned m_frameNumber;
@@ -68,7 +56,6 @@ protected:
 
     double m_averageFrameDuration;
     float m_fps;
-
 };
 
-#endif
+#endif /* YS_TIMING_H */

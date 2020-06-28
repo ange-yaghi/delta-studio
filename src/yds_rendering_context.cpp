@@ -1,7 +1,7 @@
 #include "../include/yds_rendering_context.h"
 #include "../include/yds_device.h"
 
-ysRenderingContext::ysRenderingContext() : ysContextObject("RENDERING_CONTEXT", API_UNKNOWN) {
+ysRenderingContext::ysRenderingContext() : ysContextObject("RENDERING_CONTEXT", DeviceAPI::Unknown) {
     m_targetWindow = nullptr;
     m_attachedRenderTarget = nullptr;
 
@@ -10,7 +10,7 @@ ysRenderingContext::ysRenderingContext() : ysContextObject("RENDERING_CONTEXT", 
     m_platform = ysWindowSystem::Platform::Unknown;
 }
 
-ysRenderingContext::ysRenderingContext(DEVICE_API API, ysWindowSystem::Platform platform) : ysContextObject("RENDERING_CONTEXT", API) {
+ysRenderingContext::ysRenderingContext(DeviceAPI API, ysWindowSystem::Platform platform) : ysContextObject("RENDERING_CONTEXT", API) {
     m_targetWindow = nullptr;
     m_attachedRenderTarget = nullptr;
 

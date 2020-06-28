@@ -1,10 +1,10 @@
 #include "../include/yds_depth_buffer.h"
 
-ysDepthBuffer::ysDepthBuffer() : ysContextObject("DEPTH_BUFFER", API_UNKNOWN) {
+ysDepthBuffer::ysDepthBuffer() : ysContextObject("DEPTH_BUFFER", DeviceAPI::Unknown) {
     /* void */
 }
 
-ysDepthBuffer::ysDepthBuffer(DEVICE_API API) : ysContextObject("DEPTH_BUFFER", API) {
+ysDepthBuffer::ysDepthBuffer(DeviceAPI API) : ysContextObject("DEPTH_BUFFER", API) {
     /* void */
 }
 

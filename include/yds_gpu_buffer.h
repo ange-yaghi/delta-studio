@@ -18,7 +18,7 @@ public:
 
 public:
     ysGPUBuffer();
-    ysGPUBuffer(DEVICE_API API);
+    ysGPUBuffer(DeviceAPI API);
     virtual ~ysGPUBuffer();
 
     int GetSize() const { return m_size; }

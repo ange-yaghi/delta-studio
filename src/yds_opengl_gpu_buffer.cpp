@@ -2,7 +2,7 @@
 
 #include <OpenGL.h>
 
-ysOpenGLGPUBuffer::ysOpenGLGPUBuffer() : ysGPUBuffer(OPENGL4_0) {
+ysOpenGLGPUBuffer::ysOpenGLGPUBuffer() : ysGPUBuffer(DeviceAPI::OpenGL4_0) {
     m_bufferHandle = 0;
     m_vertexArrayHandle = 0;
 }

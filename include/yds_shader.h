@@ -19,7 +19,7 @@ public:
 
 public:
 	ysShader();
-	ysShader(DEVICE_API API);
+	ysShader(DeviceAPI API);
 	virtual ~ysShader();
 
 	const char *GetFilename() const { return m_filename; }

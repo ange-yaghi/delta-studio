@@ -3,95 +3,65 @@
 
 #include "yds_memory_base.h"
 
-class ysLinkedList;
-class ysLink
-{
-
-friend ysLinkedList;
-
+class ysLink {
+friend class ysLinkedList;
 public:
-
 	ysLink();
 	~ysLink();
 
-	union
-	{
-
+	union {
 		void *Data;
 		int *IntData;
-
 	};
 
 	ysLink *GetNext() { return Next; }
 	ysLink *GetPrevious() { return Previous; }
 
 protected:
-
 	ysLink *Next;
 	ysLink *Previous;
-
 };
 
-class ysLinkedListIterator
-{
-
+class ysLinkedListIterator {
 public:
-
 	ysLinkedListIterator(ysLink *start);
 	ysLinkedListIterator();
 	~ysLinkedListIterator();
 
-	void SetStart(ysLink *start) 
-	{ 
-
+	void SetStart(ysLink *start) { 
 		m_start = start; 
-	
 	}
 
 	void Reset(ysLink *start) { SetStart(start); Reset(); }
 	void Reset() { m_location = m_start; m_reachedStart = false; }
 
-	void Increment()
-	{
-
+	void Increment() {
 		m_location = m_location->GetNext();
 		if (m_location == m_start) m_reachedStart = true;
 		else m_reachedStart = false;
-
 	}
 
-	void Decrement()
-	{
-
+	void Decrement() {
 		m_location = m_location->GetNext();
 		if (m_location == m_start) m_reachedStart = true;
 		else m_reachedStart = false;
-
 	}
 
-	bool AtEnd()
-	{
-
+	bool AtEnd() {
 		return m_reachedStart;
-
 	}
 
 	ysLink *GetLink() { return m_location; }
 
 protected:
-
 	ysLink *m_start;
 	ysLink *m_location;
 
 	bool m_reachedStart;
-
 };
 
-class ysLinkedList
-{
-
+class ysLinkedList {
 public:
-
 	ysLinkedList();
 	~ysLinkedList();
 
@@ -103,9 +73,7 @@ public:
 	ysLink *GetTail();
 
 protected:
-
 	ysLink *m_head;
-
 };
 
-#endif
+#endif /* YDS_LINKED_LIST_H */

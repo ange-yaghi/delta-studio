@@ -1,7 +1,7 @@
 #include "../include/yds_d3d11_shader_program.h"
 #include "../include/yds_d3d11_shader.h"
 
-ysD3D11ShaderProgram::ysD3D11ShaderProgram() : ysShaderProgram(DIRECTX11) {
+ysD3D11ShaderProgram::ysD3D11ShaderProgram() : ysShaderProgram(DeviceAPI::DirectX11) {
     /* void */
 }
 

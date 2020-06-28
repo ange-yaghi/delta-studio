@@ -21,7 +21,7 @@ public:
 
 public:
     ysRenderingContext();
-    ysRenderingContext(DEVICE_API API, ysWindowSystem::Platform platform);
+    ysRenderingContext(DeviceAPI API, ysWindowSystem::Platform platform);
     virtual ~ysRenderingContext();
 
     ysWindow *GetWindow()						const { return m_targetWindow; }

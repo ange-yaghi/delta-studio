@@ -2,7 +2,7 @@
 
 #include <assert.h>
 
-ysD3D11RenderTarget::ysD3D11RenderTarget() : ysRenderTarget(DIRECTX11) {
+ysD3D11RenderTarget::ysD3D11RenderTarget() : ysRenderTarget(DeviceAPI::DirectX11) {
 	m_resourceView = nullptr;
 	m_renderTargetView = nullptr;
 

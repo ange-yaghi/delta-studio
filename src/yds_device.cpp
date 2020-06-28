@@ -4,7 +4,7 @@
 #include "../include/yds_d3d11_device.h"
 #include "../include/yds_d3d10_device.h"
 
-ysDevice::ysDevice() : ysContextObject("API_DEVICE", API_UNKNOWN) {
+ysDevice::ysDevice() : ysContextObject("API_DEVICE", DeviceAPI::Unknown) {
 	m_activeRenderTarget = nullptr;
 	m_activeContext = nullptr;
 	m_activeVertexBuffer = nullptr;
@@ -18,7 +18,7 @@ ysDevice::ysDevice() : ysContextObject("API_DEVICE", API_UNKNOWN) {
 	m_debugFlags = 0x00000000;
 }
 
-ysDevice::ysDevice(DEVICE_API API) : ysContextObject("API_DEVICE", API) {
+ysDevice::ysDevice(DeviceAPI API) : ysContextObject("API_DEVICE", API) {
 	m_activeRenderTarget = nullptr;
 	m_activeContext = nullptr;
 	m_activeVertexBuffer = nullptr;
@@ -36,22 +36,22 @@ ysDevice::~ysDevice() {
     /* void */
 }
 
-ysError ysDevice::CreateDevice(ysDevice **newDevice, DEVICE_API API) {
+ysError ysDevice::CreateDevice(ysDevice **newDevice, DeviceAPI API) {
 	YDS_ERROR_DECLARE("CreateDevice");
 
 	if (newDevice == nullptr) return YDS_ERROR_RETURN_STATIC(ysError::YDS_INVALID_PARAMETER);
 	*newDevice = nullptr;
 
-	if (API == API_UNKNOWN) return YDS_ERROR_RETURN_STATIC(ysError::YDS_INVALID_PARAMETER);
+	if (API == DeviceAPI::Unknown) return YDS_ERROR_RETURN_STATIC(ysError::YDS_INVALID_PARAMETER);
 
 	switch(API) {
-	case DIRECTX10:
+	case DeviceAPI::DirectX10:
 		*newDevice = new ysD3D10Device;
 		break;
-	case DIRECTX11:
+	case DeviceAPI::DirectX11:
 		*newDevice = new ysD3D11Device;
 		break;
-	case OPENGL4_0:
+	case DeviceAPI::OpenGL4_0:
 		*newDevice = new ysOpenGLDevice;
 		break;
 	}

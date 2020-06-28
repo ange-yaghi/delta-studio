@@ -11,7 +11,7 @@ public:
 
 public:
 	ysTexture();
-	ysTexture(DEVICE_API API);
+	ysTexture(DeviceAPI API);
 	virtual ~ysTexture();
 
 	const char *GetFilename() { return m_filename; }

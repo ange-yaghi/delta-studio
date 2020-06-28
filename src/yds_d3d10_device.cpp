@@ -18,7 +18,7 @@
 #include <d3dx10tex.h>
 #pragma warning(pop)
 
-ysD3D10Device::ysD3D10Device() : ysDevice(DIRECTX10) {
+ysD3D10Device::ysD3D10Device() : ysDevice(DeviceAPI::DirectX10) {
 	m_device = nullptr;
 	m_DXGIFactory = nullptr;
 

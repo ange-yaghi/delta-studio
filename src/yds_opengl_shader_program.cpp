@@ -2,7 +2,7 @@
 
 #include "../include/yds_opengl_shader.h"
 
-ysOpenGLShaderProgram::ysOpenGLShaderProgram() : ysShaderProgram(OPENGL4_0) {
+ysOpenGLShaderProgram::ysOpenGLShaderProgram() : ysShaderProgram(DeviceAPI::OpenGL4_0) {
     m_handle = 0;
 }
 

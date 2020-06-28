@@ -26,7 +26,7 @@ public:
 
 public:
     ysRenderTarget();
-    ysRenderTarget(DEVICE_API API);
+    ysRenderTarget(DeviceAPI API);
     virtual ~ysRenderTarget();
 
     int GetWidth() const { return m_width; }

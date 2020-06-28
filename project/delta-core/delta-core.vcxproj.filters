@@ -13,21 +13,6 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="Header Files\Base">
-      <UniqueIdentifier>{787d1d0b-6e44-4158-893c-9c50e3a3906e}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\D3D10">
-      <UniqueIdentifier>{3c535213-874b-4e0b-b68f-c1ea32f97da5}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\D3D11">
-      <UniqueIdentifier>{1bc7fdb2-bfbb-4db6-b97f-97f3cdf0bcaf}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\Unsorted">
-      <UniqueIdentifier>{f88d36c4-e8b8-4aa1-b7e1-386f329a08ce}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\OpenGL">
-      <UniqueIdentifier>{16ffeeb0-431c-4c96-bd70-9dcb06906067}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\memory-management">
       <UniqueIdentifier>{a1280f0e-dc3d-4fb1-bd69-e6b3cfa16f8d}</UniqueIdentifier>
     </Filter>
@@ -136,236 +121,53 @@
     <Filter Include="Source Files\file">
       <UniqueIdentifier>{b34a11c3-fb56-40b3-956c-43cb491246fa}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\api">
+      <UniqueIdentifier>{2bc39aea-c7c4-40a6-8f18-3e0ef984e91b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\base">
+      <UniqueIdentifier>{787d1d0b-6e44-4158-893c-9c50e3a3906e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\debugging">
+      <UniqueIdentifier>{65b9c7a9-f6b0-4d05-82e1-12bbf1be505f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\error-handling">
+      <UniqueIdentifier>{7ef5c4f4-72da-4c59-951c-ae31ea080858}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\file">
+      <UniqueIdentifier>{d3fe9768-03b0-4c31-b422-72d07a597b4e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\input">
+      <UniqueIdentifier>{1818b90e-1640-4470-b23f-aaa0cc77c211}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\timing">
+      <UniqueIdentifier>{9d5863f4-fee9-46c1-92f1-594786a4b690}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\window-system">
+      <UniqueIdentifier>{bd80a5d7-e348-4a5f-824b-4cfaad2a819d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\window-system\windows">
+      <UniqueIdentifier>{2ea550aa-f119-4cba-8116-a40e864cb659}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\input\windows">
+      <UniqueIdentifier>{ff730f26-7ab6-4389-a870-18ae7adb1024}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\math">
+      <UniqueIdentifier>{1998f80d-1c7c-43e6-906a-f74cc84a14c2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\assets\legacy">
+      <UniqueIdentifier>{ad8b7a03-4b51-4644-9805-1dd4f7adfc05}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\api\opengl">
+      <UniqueIdentifier>{607fba55-6e13-4559-a660-de6f53c8daac}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\api\directx11">
+      <UniqueIdentifier>{0c30c88b-69ef-4ce1-a91a-2b3adc2df844}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\api\directx10">
+      <UniqueIdentifier>{c5519309-5f66-4f30-b1b7-501af7412375}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\include\yds_d3d10_context.h">
-      <Filter>Header Files\D3D10</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\yds_d3d10_device.h">
-      <Filter>Header Files\D3D10</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\yds_d3d10_gpu_buffer.h">
-      <Filter>Header Files\D3D10</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\yds_d3d10_input_layout.h">
-      <Filter>Header Files\D3D10</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\yds_d3d10_render_target.h">
-      <Filter>Header Files\D3D10</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\yds_d3d10_shader.h">
-      <Filter>Header Files\D3D10</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\yds_d3d10_shader_program.h">
-      <Filter>Header Files\D3D10</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\yds_d3d10_texture.h">
-      <Filter>Header Files\D3D10</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\yds_d3d11_context.h">
-      <Filter>Header Files\D3D11</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\yds_d3d11_device.h">
-      <Filter>Header Files\D3D11</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\yds_d3d11_gpu_buffer.h">
-      <Filter>Header Files\D3D11</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\yds_d3d11_input_layout.h">
-      <Filter>Header Files\D3D11</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\yds_d3d11_render_target.h">
-      <Filter>Header Files\D3D11</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\yds_d3d11_shader.h">
-      <Filter>Header Files\D3D11</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\yds_d3d11_shader_program.h">
-      <Filter>Header Files\D3D11</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\yds_d3d11_texture.h">
-      <Filter>Header Files\D3D11</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\yds_opengl_context.h">
-      <Filter>Header Files\OpenGL</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\yds_opengl_device.h">
-      <Filter>Header Files\OpenGL</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\yds_opengl_gpu_buffer.h">
-      <Filter>Header Files\OpenGL</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\yds_opengl_input_layout.h">
-      <Filter>Header Files\OpenGL</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\yds_opengl_render_target.h">
-      <Filter>Header Files\OpenGL</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\yds_opengl_shader.h">
-      <Filter>Header Files\OpenGL</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\yds_opengl_shader_program.h">
-      <Filter>Header Files\OpenGL</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\yds_opengl_texture.h">
-      <Filter>Header Files\OpenGL</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\yds_opengl_windows_context.h">
-      <Filter>Header Files\OpenGL</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\yds_base.h">
-      <Filter>Header Files\Unsorted</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\yds_context_object.h">
-      <Filter>Header Files\Unsorted</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\yds_depth_buffer.h">
-      <Filter>Header Files\Unsorted</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\yds_device.h">
-      <Filter>Header Files\Unsorted</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\yds_error_codes.h">
-      <Filter>Header Files\Unsorted</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\yds_error_handler.h">
-      <Filter>Header Files\Unsorted</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\yds_error_system.h">
-      <Filter>Header Files\Unsorted</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\yds_file.h">
-      <Filter>Header Files\Unsorted</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\yds_file_logger.h">
-      <Filter>Header Files\Unsorted</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\yds_geometry_export_file.h">
-      <Filter>Header Files\Unsorted</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\yds_geometry_preprocessing.h">
-      <Filter>Header Files\Unsorted</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\yds_gpu_buffer.h">
-      <Filter>Header Files\Unsorted</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\yds_handle_array.h">
-      <Filter>Header Files\Unsorted</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\yds_input_device.h">
-      <Filter>Header Files\Unsorted</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\yds_input_layout.h">
-      <Filter>Header Files\Unsorted</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\yds_input_system.h">
-      <Filter>Header Files\Unsorted</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\yds_key_maps.h">
-      <Filter>Header Files\Unsorted</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\yds_keyboard.h">
-      <Filter>Header Files\Unsorted</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\yds_linked_list.h">
-      <Filter>Header Files\Unsorted</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\yds_logger.h">
-      <Filter>Header Files\Unsorted</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\yds_logger_output.h">
-      <Filter>Header Files\Unsorted</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\yds_math.h">
-      <Filter>Header Files\Unsorted</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\yds_memory_base.h">
-      <Filter>Header Files\Unsorted</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\yds_monitor.h">
-      <Filter>Header Files\Unsorted</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\yds_mouse.h">
-      <Filter>Header Files\Unsorted</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\yds_object_animation_data.h">
-      <Filter>Header Files\Unsorted</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\yds_queue.h">
-      <Filter>Header Files\Unsorted</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\yds_registry.h">
-      <Filter>Header Files\Unsorted</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\yds_render_geometry_channel.h">
-      <Filter>Header Files\Unsorted</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\yds_render_geometry_format.h">
-      <Filter>Header Files\Unsorted</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\yds_render_target.h">
-      <Filter>Header Files\Unsorted</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\yds_rendering_context.h">
-      <Filter>Header Files\Unsorted</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\yds_shader.h">
-      <Filter>Header Files\Unsorted</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\yds_shader_constant_block.h">
-      <Filter>Header Files\Unsorted</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\yds_shader_program.h">
-      <Filter>Header Files\Unsorted</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\yds_stat.h">
-      <Filter>Header Files\Unsorted</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\yds_syntax.h">
-      <Filter>Header Files\Unsorted</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\yds_texture.h">
-      <Filter>Header Files\Unsorted</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\yds_time_tag_data.h">
-      <Filter>Header Files\Unsorted</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\yds_timing.h">
-      <Filter>Header Files\Unsorted</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\yds_tool_animation_file.h">
-      <Filter>Header Files\Unsorted</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\yds_tool_geometry_file.h">
-      <Filter>Header Files\Unsorted</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\yds_window.h">
-      <Filter>Header Files\Unsorted</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\yds_window_event_handler.h">
-      <Filter>Header Files\Unsorted</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\yds_window_system.h">
-      <Filter>Header Files\Unsorted</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\yds_window_system_object.h">
-      <Filter>Header Files\Unsorted</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\yds_windows_input_device.h">
-      <Filter>Header Files\Unsorted</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\yds_windows_input_system.h">
-      <Filter>Header Files\Unsorted</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\yds_windows_monitor.h">
-      <Filter>Header Files\Unsorted</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\yds_windows_window.h">
-      <Filter>Header Files\Unsorted</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\yds_windows_window_system.h">
-      <Filter>Header Files\Unsorted</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\include\yds_core.h">
       <Filter>Header Files\interface</Filter>
     </ClInclude>
@@ -384,16 +186,10 @@
     <ClInclude Include="..\..\include\yds_allocator.h">
       <Filter>Header Files\memory-management</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\yds_file_utilities.h">
-      <Filter>Header Files\assets</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\include\yds_interchange_file_0_0.h">
       <Filter>Header Files\assets</Filter>
     </ClInclude>
     <ClInclude Include="..\..\include\yds_interchange_object.h">
-      <Filter>Header Files\assets</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\yds_object_data.h">
       <Filter>Header Files\assets</Filter>
     </ClInclude>
     <ClInclude Include="..\..\include\yds_interchange_file_0_1.h">
@@ -470,6 +266,234 @@
     </ClInclude>
     <ClInclude Include="..\..\include\yds_color.h">
       <Filter>Header Files\color</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\yds_window.h">
+      <Filter>Header Files\window-system</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\yds_window_event_handler.h">
+      <Filter>Header Files\window-system</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\yds_window_system.h">
+      <Filter>Header Files\window-system</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\yds_window_system_object.h">
+      <Filter>Header Files\window-system</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\yds_timing.h">
+      <Filter>Header Files\timing</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\yds_time_tag_data.h">
+      <Filter>Header Files\timing</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\yds_windows_monitor.h">
+      <Filter>Header Files\window-system\windows</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\yds_windows_window.h">
+      <Filter>Header Files\window-system\windows</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\yds_windows_window_system.h">
+      <Filter>Header Files\window-system\windows</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\yds_linked_list.h">
+      <Filter>Header Files\memory-management</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\yds_error_handler.h">
+      <Filter>Header Files\error-handling</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\yds_error_codes.h">
+      <Filter>Header Files\error-handling</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\yds_error_system.h">
+      <Filter>Header Files\error-handling</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\yds_input_device.h">
+      <Filter>Header Files\input</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\yds_input_layout.h">
+      <Filter>Header Files\input</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\yds_input_system.h">
+      <Filter>Header Files\input</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\yds_windows_input_device.h">
+      <Filter>Header Files\input\windows</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\yds_windows_input_system.h">
+      <Filter>Header Files\input\windows</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\yds_mouse.h">
+      <Filter>Header Files\input</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\yds_queue.h">
+      <Filter>Header Files\memory-management</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\yds_keyboard.h">
+      <Filter>Header Files\input</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\yds_memory_base.h">
+      <Filter>Header Files\memory-management</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\yds_base.h">
+      <Filter>Header Files\base</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\yds_context_object.h">
+      <Filter>Header Files\api</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\yds_depth_buffer.h">
+      <Filter>Header Files\api</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\yds_device.h">
+      <Filter>Header Files\api</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\yds_file.h">
+      <Filter>Header Files\file</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\yds_file_logger.h">
+      <Filter>Header Files\debugging</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\yds_geometry_export_file.h">
+      <Filter>Header Files\assets</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\yds_file_utilities.h">
+      <Filter>Header Files\file</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\yds_tool_animation_file.h">
+      <Filter>Header Files\assets\legacy</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\yds_tool_geometry_file.h">
+      <Filter>Header Files\assets\legacy</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\yds_geometry_preprocessing.h">
+      <Filter>Header Files\assets\legacy</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\yds_object_data.h">
+      <Filter>Header Files\assets\legacy</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\yds_gpu_buffer.h">
+      <Filter>Header Files\api</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\yds_key_maps.h">
+      <Filter>Header Files\input</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\yds_logger.h">
+      <Filter>Header Files\debugging</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\yds_logger_output.h">
+      <Filter>Header Files\debugging</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\yds_registry.h">
+      <Filter>Header Files\memory-management</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\yds_object_animation_data.h">
+      <Filter>Header Files\assets\legacy</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\yds_handle_array.h">
+      <Filter>Header Files\memory-management</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\yds_math.h">
+      <Filter>Header Files\math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\yds_render_geometry_channel.h">
+      <Filter>Header Files\api</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\yds_render_geometry_format.h">
+      <Filter>Header Files\api</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\yds_d3d10_context.h">
+      <Filter>Header Files\api\directx10</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\yds_d3d10_device.h">
+      <Filter>Header Files\api\directx10</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\yds_d3d10_gpu_buffer.h">
+      <Filter>Header Files\api\directx10</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\yds_d3d10_input_layout.h">
+      <Filter>Header Files\api\directx10</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\yds_d3d10_render_target.h">
+      <Filter>Header Files\api\directx10</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\yds_d3d10_shader.h">
+      <Filter>Header Files\api\directx10</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\yds_d3d10_shader_program.h">
+      <Filter>Header Files\api\directx10</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\yds_d3d10_texture.h">
+      <Filter>Header Files\api\directx10</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\yds_d3d11_context.h">
+      <Filter>Header Files\api\directx11</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\yds_d3d11_device.h">
+      <Filter>Header Files\api\directx11</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\yds_d3d11_gpu_buffer.h">
+      <Filter>Header Files\api\directx11</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\yds_d3d11_input_layout.h">
+      <Filter>Header Files\api\directx11</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\yds_d3d11_render_target.h">
+      <Filter>Header Files\api\directx11</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\yds_d3d11_shader.h">
+      <Filter>Header Files\api\directx11</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\yds_d3d11_shader_program.h">
+      <Filter>Header Files\api\directx11</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\yds_d3d11_texture.h">
+      <Filter>Header Files\api\directx11</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\yds_opengl_context.h">
+      <Filter>Header Files\api\opengl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\yds_opengl_device.h">
+      <Filter>Header Files\api\opengl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\yds_opengl_gpu_buffer.h">
+      <Filter>Header Files\api\opengl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\yds_opengl_input_layout.h">
+      <Filter>Header Files\api\opengl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\yds_opengl_render_target.h">
+      <Filter>Header Files\api\opengl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\yds_opengl_shader.h">
+      <Filter>Header Files\api\opengl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\yds_opengl_shader_program.h">
+      <Filter>Header Files\api\opengl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\yds_opengl_texture.h">
+      <Filter>Header Files\api\opengl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\yds_opengl_windows_context.h">
+      <Filter>Header Files\api\opengl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\yds_render_target.h">
+      <Filter>Header Files\api</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\yds_rendering_context.h">
+      <Filter>Header Files\api</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\yds_stat.h">
+      <Filter>Header Files\math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\yds_texture.h">
+      <Filter>Header Files\api</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\yds_shader.h">
+      <Filter>Header Files\api</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\yds_monitor.h">
+      <Filter>Header Files\window-system</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\yds_shader_program.h">
+      <Filter>Header Files\api</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -641,18 +665,6 @@
     <ClCompile Include="..\..\src\yds_window_system_object.cpp">
       <Filter>Source Files\window-system</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\yds_windows_key_maps.cpp">
-      <Filter>Source Files\window-system\windows</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\yds_windows_monitor.cpp">
-      <Filter>Source Files\window-system\windows</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\yds_windows_window.cpp">
-      <Filter>Source Files\window-system\windows</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\yds_windows_window_system.cpp">
-      <Filter>Source Files\window-system\windows</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\yds_windows_input_device.cpp">
       <Filter>Source Files\input\windows</Filter>
     </ClCompile>
@@ -769,6 +781,18 @@
     </ClCompile>
     <ClCompile Include="..\..\src\yds_file.cpp">
       <Filter>Source Files\file</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\yds_windows_window.cpp">
+      <Filter>Source Files\window-system\windows</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\yds_windows_window_system.cpp">
+      <Filter>Source Files\window-system\windows</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\yds_windows_key_maps.cpp">
+      <Filter>Source Files\window-system\windows</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\yds_windows_monitor.cpp">
+      <Filter>Source Files\window-system\windows</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

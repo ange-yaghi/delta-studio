@@ -11,7 +11,7 @@ class ysInputLayout : public ysContextObject {
 
 public:
 	ysInputLayout();
-	ysInputLayout(DEVICE_API API);
+	ysInputLayout(DeviceAPI API);
 	virtual ~ysInputLayout();
 
 protected:

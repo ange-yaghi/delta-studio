@@ -93,7 +93,7 @@ dbasic::DeltaEngine::~DeltaEngine() {
     assert(m_lightingControlBuffer == nullptr);
 }
 
-ysError dbasic::DeltaEngine::CreateGameWindow(const char *title, void *instance, ysContextObject::DEVICE_API API, const char *shaderDirectory, bool depthBuffer) {
+ysError dbasic::DeltaEngine::CreateGameWindow(const char *title, void *instance, ysContextObject::DeviceAPI API, const char *shaderDirectory, bool depthBuffer) {
     YDS_ERROR_DECLARE("CreateGameWindow");
 
     // Create the window system
@@ -297,8 +297,8 @@ ysError dbasic::DeltaEngine::InitializeShaders(const char *shaderDirectory) {
 
     char buffer[256];
 
-    if (m_device->GetAPI() == ysContextObject::DIRECTX11 || 
-        m_device->GetAPI() == ysContextObject::DIRECTX10) 
+    if (m_device->GetAPI() == ysContextObject::DeviceAPI::DirectX11 || 
+        m_device->GetAPI() == ysContextObject::DeviceAPI::DirectX10) 
     {
         sprintf_s(buffer, "%s%s", shaderDirectory, "delta_engine_shader.fx");
         YDS_NESTED_ERROR_CALL(m_device->CreateVertexShader(&m_vertexShader, buffer, "VS_STANDARD"));
@@ -309,7 +309,7 @@ ysError dbasic::DeltaEngine::InitializeShaders(const char *shaderDirectory) {
         YDS_NESTED_ERROR_CALL(m_device->CreateVertexShader(&m_consoleVertexShader, buffer, "VS_CONSOLE"));
         YDS_NESTED_ERROR_CALL(m_device->CreatePixelShader(&m_consolePixelShader, buffer, "PS_CONSOLE"));
     }
-    else if (m_device->GetAPI() == ysContextObject::OPENGL4_0) {
+    else if (m_device->GetAPI() == ysContextObject::DeviceAPI::OpenGL4_0) {
         sprintf_s(buffer, "%s%s", shaderDirectory, "delta_engine_shader.glvs");
         YDS_NESTED_ERROR_CALL(m_device->CreateVertexShader(&m_vertexShader, buffer, "VS"));
         YDS_NESTED_ERROR_CALL(m_device->CreateVertexShader(&m_vertexSkinnedShader, buffer, "VS"));

@@ -6,7 +6,7 @@
 static bool qpcFlag;
 static LARGE_INTEGER qpcFrequency;
 
-ysTimingSystem *ysTimingSystem::g_instance = NULL;
+ysTimingSystem *ysTimingSystem::g_instance = nullptr;
 
 uint64_t SystemTime() {
     if (qpcFlag) {
@@ -25,7 +25,7 @@ uint64_t SystemTime() {
 }
 
 ysTimingSystem::ysTimingSystem() {
-    SetPrecisionMode(MICROSECOND_MODE);
+    SetPrecisionMode(Precision::Microsecond);
     Initialize();
 }
 
@@ -45,13 +45,13 @@ unsigned __int64 ysTimingSystem::GetClock() {
     return (unsigned long long) SystemClock();
 }
 
-void ysTimingSystem::SetPrecisionMode(PRECISION_MODE mode) {
+void ysTimingSystem::SetPrecisionMode(Precision mode) {
     m_precisionMode = mode;
 
-    if (mode == MILLISECOND_MODE) {
+    if (mode == Precision::Millisecond) {
         m_div = 1000.0;
     }
-    else if (mode == MICROSECOND_MODE) {
+    else if (mode == Precision::Microsecond) {
         m_div = 1000000.0;
     }
 }

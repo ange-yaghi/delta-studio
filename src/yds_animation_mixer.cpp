@@ -66,10 +66,6 @@ void ysAnimationChannel::Sample() {
             }
             else if (d > 0) {
                 float s = 1.0f - d / t;
-                if (t == 0) {
-                    int a = 0;
-                }
-
                 m_segmentStack[i].Amplitude = m_segmentStack[i].FadeStartAmplitude * s;
             }
         }
