@@ -2,7 +2,7 @@
 
 #include <string>
 
-ysWindowsAudioWaveFile::ysWindowsAudioWaveFile() : ysAudioFile(Platform::WINDOWS, AudioFormat::Wave) {
+ysWindowsAudioWaveFile::ysWindowsAudioWaveFile() : ysAudioFile(Platform::Windows, AudioFormat::Wave) {
     m_fileHandle = NULL;
     m_dataSegmentOffset = 0;
 }

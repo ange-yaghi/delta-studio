@@ -12,6 +12,8 @@ namespace ysColor {
     ysVector srgbiToLinear(int r, int g, int b, int a = 255);
     ysVector linearToSrgb(const ysVector &srgb);
 
+    ysVector srgbiToLinear(unsigned int rgb, float a = 1.0f);
+
 } /* namespace ysColor */
 
 #endif /* YDS_COLOR_H */

@@ -5,18 +5,18 @@
 
 class ysMouse {
 public:
-    enum BUTTON_CODE {
-        BUTTON_LEFT,
-        BUTTON_RIGHT,
-        BUTTON_MIDDLE,
+    enum class Button {
+        Left,
+        Right,
+        Middle,
 
-        BUTTON_1,
-        BUTTON_2,
-        BUTTON_3,
-        BUTTON_4,
-        BUTTON_5,
+        Aux_1,
+        Aux_2,
+        Aux_3,
+        Aux_4,
+        Aux_5,
 
-        BUTTON_COUNT
+        Count
     };
 
 public:
@@ -26,14 +26,14 @@ public:
     void Reset();
     void UpdatePosition(int x, int y, bool delta = true);
     void UpdateWheel(int dwheel);
-    void UpdateButton(BUTTON_CODE button, ysKey::KEY_STATE state);
+    void UpdateButton(Button button, ysKey::KEY_STATE state);
 
     int GetX() const { return m_x; }
     int GetY() const { return m_y; }
     int GetWheel() const { return m_wheel; }
-    const ysKey *GetButton(BUTTON_CODE button) const { return &m_buttons[button]; }
+    const ysKey *GetButton(Button button) const { return &m_buttons[(int)button]; }
 
-    bool ProcessMouseButton(BUTTON_CODE button, ysKey::KEY_STATE state);
+    bool ProcessMouseButton(Button button, ysKey::KEY_STATE state);
 
 protected:
     int m_x;
@@ -41,7 +41,7 @@ protected:
     int m_wheel;
 
 protected:
-    ysKey m_buttons[BUTTON_COUNT];
+    ysKey m_buttons[(int)Button::Count];
 };
 
 #endif /* YDS_MOUSE_H */

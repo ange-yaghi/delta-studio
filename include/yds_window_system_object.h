@@ -5,9 +5,9 @@
 
 class ysWindowSystemObject : public ysObject {
 public:
-    enum Platform {
-        WINDOWS,
-        UNKNOWN,
+    enum class Platform {
+        Windows,
+        Unknown,
     };
 
 public:

@@ -58,14 +58,14 @@ namespace dbasic {
         Console();
         ~Console();
 
+        ysError Initialize();
+        ysError ResetScreenPosition();
         ysError Destroy();
 
         ysError UpdateDisplay();
 
         void SetEngine(DeltaEngine *engine) { m_engine = engine; }
         DeltaEngine *GetEngine() { return m_engine; }
-
-        ysError Initialize();
 
         void SetDefaultFontDirectory(const std::string &s) { m_defaultFontDirectory = s; }
         std::string GetDefaultFontDirectory() const { return m_defaultFontDirectory; }
@@ -91,8 +91,6 @@ namespace dbasic {
 
     protected:
         // Settings
-        float m_clearColor[4];
-
         std::string m_defaultFontDirectory;
 
     protected:
@@ -116,9 +114,6 @@ namespace dbasic {
         GuiPoint m_nominalLocation;
         GuiPoint m_actualLocation;
 
-        ysVector4 m_fontForeColor;
-        ysVector4 m_fontBackColor;
-
         bool m_fontBold;
 
     public:
@@ -131,12 +126,6 @@ namespace dbasic {
 
         // Drawing Text
         ysError SetCharacter(char character);
-
-        void SetFontForeColor(float r, float g, float b, float a) { m_fontForeColor = ysVector4(r, g, b, a); }
-        void SetFontForeColor(ysVector4 &color) { m_fontForeColor = color; }
-
-        void SetFontBackColor(float r, float g, float b, float a) { m_fontBackColor = ysVector4(r, g, b, a); }
-        void SetFontBackColor(ysVector4 &color) { m_fontBackColor = color; }
 
         void SetFontBold(bool fontBold) { m_fontBold = fontBold; }
 
@@ -159,6 +148,7 @@ namespace dbasic {
         // Navigation
         void MoveDownLine(int n = 1);
         void MoveToLocation(const GuiPoint &location);
+        void MoveToOrigin();
     };
 
 } /* namespace dbasic */

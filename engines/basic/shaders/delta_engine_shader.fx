@@ -166,7 +166,7 @@ float f_diffuse(float3 i, float3 o, float3 h, float3 normal, float power, float 
 	float cos_theta_o = dot(o, normal);
 
 	float f_d = (1 + (f_d90 - 1) * pow5(1 - cos_theta_i)) * (1 + (f_d90 - 1) * pow5(1 - cos_theta_o));
-	return f_d * power * cos_theta_i;
+	return clamp(f_d * power * cos_theta_i, 0.0, 1.0);
 }
 
 float f_specular(float3 i, float3 o, float3 h, float3 normal, float F0, float power, float specularPower) {
@@ -181,7 +181,7 @@ float f_specular(float3 i, float3 o, float3 h, float3 normal, float F0, float po
 	float s = pow5(1 - o_dot_h);
 	float F = F0_scaled + s * (1 - F0_scaled);
 
-	return pow(intensity, specularPower) * F * power;
+	return clamp(pow(intensity, specularPower) * F * power, 0.0, 1.0);
 }
 
 float f_specular_ambient(float3 o, float3 normal, float F0, float power) {
@@ -191,7 +191,7 @@ float f_specular_ambient(float3 o, float3 normal, float F0, float power) {
 	float s = pow5(1 - o_dot_n);
 	float F = F0_scaled + s * (1 - F0_scaled);
 
-	return F * power;
+	return clamp(F * power, 0.0, 1.0);
 }
 
 float linearToSrgb(float u) {
@@ -236,6 +236,7 @@ float4 PS(VS_OUTPUT input) : SV_Target {
 	const float FullSpecular = 1 / 0.08;
 
 	float3 totalLighting = float3(1.0, 1.0, 1.0);
+	float3 normal = normalize(input.Normal);
 
 	float4 baseColor;
 	float roughness = 0.5;
@@ -253,10 +254,11 @@ float4 PS(VS_OUTPUT input) : SV_Target {
 
 	if (Lit == 1) {
 		float3 o = normalize(CameraEye.xyz - input.VertexPosition.xyz);
+		float cos_theta_o = dot(o, normal);
 
-		float3 ambientSpecular = f_specular_ambient(o, input.Normal, IncidentSpecular, SpecularMix) * AmbientLighting;
-		float3 ambientDiffuse = f_diffuse(o, o, o, input.Normal, DiffuseMix, DiffuseRoughness) * AmbientLighting * baseColor;
-		float3 ambientMetallic = f_specular_ambient(o, input.Normal, FullSpecular, 1.0) * AmbientLighting.rgb * baseColor.rgb;
+		float3 ambientSpecular = f_specular_ambient(o, normal, IncidentSpecular, SpecularMix) * AmbientLighting;
+		float3 ambientDiffuse = f_diffuse(o, o, o, normal, DiffuseMix, DiffuseRoughness) * AmbientLighting * baseColor;
+		float3 ambientMetallic = f_specular_ambient(o, normal, FullSpecular, 1.0) * AmbientLighting.rgb * baseColor.rgb;
 
 		totalLighting = lerp(
 			ambientSpecular + ambientDiffuse,
@@ -272,32 +274,29 @@ float4 PS(VS_OUTPUT input) : SV_Target {
 			float inv_mag = 1.0 / length(i);
 			i *= inv_mag;
 
-			float cos_theta_i = dot(i, input.Normal);
-			float cos_theta_o = dot(o, input.Normal);
+			float cos_theta_i = dot(i, normal);
 
 			if (cos_theta_i < 0) continue;
-			if (cos_theta_o < 0) continue;
 
 			float3 h = normalize(i + o);
-			float3 diffuse = f_diffuse(i, o, h, input.Normal, DiffuseMix, DiffuseRoughness) * baseColor.rgb * light.Color;
-			float3 specular = f_specular(i, o, h, input.Normal, IncidentSpecular, SpecularMix, SpecularPower) * light.Color;
+			float3 diffuse = f_diffuse(i, o, h, normal, DiffuseMix, DiffuseRoughness) * baseColor.rgb * light.Color;
+			float3 specular = f_specular(i, o, h, normal, IncidentSpecular, SpecularMix, SpecularPower) * light.Color;
 			float3 metallic = 0;
 
 			if (Metallic > 0) {
-				metallic = f_specular(i, o, h, input.Normal, FullSpecular, 1, SpecularPower) * light.Color * baseColor.rgb;
+				metallic = f_specular(i, o, h, normal, FullSpecular, 1, SpecularPower) * light.Color * baseColor.rgb;
 			}
 
 			// Spotlight calculation
 			float spotCoherence = -dot(i, light.Direction.xyz);
 			float spotAttenuation = 1.0f;
-			if (spotCoherence > light.Attenuation0) spotAttenuation = 1.0f;
+			if (spotCoherence >= light.Attenuation0) spotAttenuation = 1.0f;
 			else if (spotCoherence < light.Attenuation1) spotAttenuation = 0.0f;
 			else {
 				float t = light.Attenuation0 - light.Attenuation1;
 				if (t == 0) spotAttenuation = 1.0f;
 				else spotAttenuation = (spotCoherence - light.Attenuation1) / t;
 			}
-			spotAttenuation = 1.0;
 
 			float falloff = 1.0;
 			if (light.FalloffEnabled == 1) {

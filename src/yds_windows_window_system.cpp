@@ -4,7 +4,7 @@
 #include "../include/yds_windows_monitor.h"
 #include "../include/yds_windows_input_system.h"
 
-ysWindowsWindowSystem::ysWindowsWindowSystem() : ysWindowSystem(Platform::WINDOWS) {
+ysWindowsWindowSystem::ysWindowsWindowSystem() : ysWindowSystem(Platform::Windows) {
     m_instance = NULL;
 }
 
@@ -123,4 +123,69 @@ LRESULT WINAPI ysWindowsWindowSystem::WinProc(HWND hWnd, UINT msg, WPARAM wParam
     }
 
     return DefWindowProc(hWnd, msg, wParam, lParam);
+}
+
+void ysWindowsWindowSystem::ConfineCursor(ysWindow *window) {
+    if (IsCursorConfined()) return;
+    ysWindowSystem::ConfineCursor(window);
+
+    GetClipCursor(&m_oldCursorClip);
+    ysWindowsWindow *windowsWindow = static_cast<ysWindowsWindow *>(window);
+
+    RECT clientRect;
+    GetClientRect(windowsWindow->GetWindowHandle(), &clientRect);
+
+    POINT ul, lr;
+    ul.x = clientRect.left;
+    ul.y = clientRect.top;
+    lr.x = clientRect.right;
+    lr.y = clientRect.bottom;
+
+    MapWindowPoints(windowsWindow->GetWindowHandle(), nullptr, &ul, 1);
+    MapWindowPoints(windowsWindow->GetWindowHandle(), nullptr, &lr, 1);
+
+    clientRect.left = ul.x;
+    clientRect.top = ul.y;
+
+    clientRect.right = lr.x;
+    clientRect.bottom = lr.y;
+
+    ClipCursor(&clientRect);
+}
+
+void ysWindowsWindowSystem::ReleaseCursor() {
+    if (!IsCursorConfined()) return;
+    ysWindowSystem::ReleaseCursor();
+
+    ClipCursor(&m_oldCursorClip);
+}
+
+void ysWindowsWindowSystem::SetCursorPosition(int x, int y) {
+    SetCursorPos(x, y);
+}
+
+void ysWindowsWindowSystem::SetCursorVisible(bool visible) {
+    ysWindowSystem::SetCursorVisible(visible);
+
+    m_oldCursor = GetCursor();
+
+    int displayCount = ShowCursor(visible ? TRUE : FALSE);
+
+    // ShowCursor() increments and returns a "display counter" which
+    // must be greater than or equal to 0 in order for the cursor
+    // to be displayed. The code below ensures that the cursor will be
+    // displayed or hidden by forcing the final value of the counter
+    if (visible) {
+        while (displayCount < 0) {
+            displayCount = ShowCursor(TRUE);
+        }
+    }
+    else {
+        while (displayCount >= 0) {
+            displayCount = ShowCursor(FALSE);
+        }
+    }
+
+    // This step may not be necessary but doesn't hurt anything
+    if (visible) SetCursor(m_oldCursor);
 }

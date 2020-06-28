@@ -61,9 +61,6 @@
     <Filter Include="Header Files\object">
       <UniqueIdentifier>{18b1e4f7-e3f6-4744-817a-74a7b3f7e862}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\Unsorted">
-      <UniqueIdentifier>{fecda108-c3c0-464e-b6e6-fa90496c9a74}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\object">
       <UniqueIdentifier>{25de78db-f5fa-45c8-8f20-1080fcb41348}</UniqueIdentifier>
     </Filter>
@@ -99,6 +96,45 @@
     </Filter>
     <Filter Include="Source Files\color">
       <UniqueIdentifier>{f7364ee5-b1c6-4126-a9a4-dba4b225b852}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\window-system">
+      <UniqueIdentifier>{33a48428-875c-4469-9e00-d381f3699a7c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\window-system\windows">
+      <UniqueIdentifier>{9c24c283-d38f-443e-a986-54812672896a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\input">
+      <UniqueIdentifier>{881cc602-f3ce-47d8-9727-23632e08eb14}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\input\windows">
+      <UniqueIdentifier>{76e2c80d-15f8-401e-b989-e885b9607181}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\error-handling">
+      <UniqueIdentifier>{e1a29b99-c1ae-4324-b5db-5df976331a88}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\memory-management">
+      <UniqueIdentifier>{1d55c780-55c5-4b3c-97c3-d550feac597a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\debugging">
+      <UniqueIdentifier>{a045bfce-4213-4c1e-b8d1-119543a000d7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\debugging\logging">
+      <UniqueIdentifier>{ed248d0a-4171-4a27-af45-21e748bdf8cd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\base">
+      <UniqueIdentifier>{c0fa04da-3c5c-4e72-9175-0505337fc154}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\assets\legacy">
+      <UniqueIdentifier>{5ab3f8bb-6c4f-4932-a157-64a4ca4cb27e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\timing">
+      <UniqueIdentifier>{db6d240a-dd2b-438f-a507-17511fe57c6d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\math">
+      <UniqueIdentifier>{83029188-0ed8-4b65-8c6d-8bb03789d590}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\file">
+      <UniqueIdentifier>{b34a11c3-fb56-40b3-956c-43cb491246fa}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -536,147 +572,6 @@
     <ClCompile Include="..\..\src\yds_opengl_context.cpp">
       <Filter>Source Files\api\opengl</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\yds_base.cpp">
-      <Filter>Source Files\Unsorted</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\yds_context_object.cpp">
-      <Filter>Source Files\Unsorted</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\yds_depth_buffer.cpp">
-      <Filter>Source Files\Unsorted</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\yds_device.cpp">
-      <Filter>Source Files\Unsorted</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\yds_dynamic_allocator.cpp">
-      <Filter>Source Files\Unsorted</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\yds_error_handler.cpp">
-      <Filter>Source Files\Unsorted</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\yds_error_system.cpp">
-      <Filter>Source Files\Unsorted</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\yds_file.cpp">
-      <Filter>Source Files\Unsorted</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\yds_file_logger.cpp">
-      <Filter>Source Files\Unsorted</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\yds_geometry_export_file.cpp">
-      <Filter>Source Files\Unsorted</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\yds_geometry_preprocessing.cpp">
-      <Filter>Source Files\Unsorted</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\yds_gpu_buffer.cpp">
-      <Filter>Source Files\Unsorted</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\yds_input_device.cpp">
-      <Filter>Source Files\Unsorted</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\yds_input_layout.cpp">
-      <Filter>Source Files\Unsorted</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\yds_input_system.cpp">
-      <Filter>Source Files\Unsorted</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\yds_keyboard.cpp">
-      <Filter>Source Files\Unsorted</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\yds_linked_list.cpp">
-      <Filter>Source Files\Unsorted</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\yds_logger.cpp">
-      <Filter>Source Files\Unsorted</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\yds_logger_output.cpp">
-      <Filter>Source Files\Unsorted</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\yds_math.cpp">
-      <Filter>Source Files\Unsorted</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\yds_memory_base.cpp">
-      <Filter>Source Files\Unsorted</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\yds_monitor.cpp">
-      <Filter>Source Files\Unsorted</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\yds_mouse.cpp">
-      <Filter>Source Files\Unsorted</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\yds_object_animation_data.cpp">
-      <Filter>Source Files\Unsorted</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\yds_object_data.cpp">
-      <Filter>Source Files\Unsorted</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\yds_render_geometry_channel.cpp">
-      <Filter>Source Files\Unsorted</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\yds_render_geometry_format.cpp">
-      <Filter>Source Files\Unsorted</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\yds_render_target.cpp">
-      <Filter>Source Files\Unsorted</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\yds_rendering_context.cpp">
-      <Filter>Source Files\Unsorted</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\yds_shader.cpp">
-      <Filter>Source Files\Unsorted</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\yds_shader_program.cpp">
-      <Filter>Source Files\Unsorted</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\yds_stat.cpp">
-      <Filter>Source Files\Unsorted</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\yds_texture.cpp">
-      <Filter>Source Files\Unsorted</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\yds_time_tag_data.cpp">
-      <Filter>Source Files\Unsorted</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\yds_timing.cpp">
-      <Filter>Source Files\Unsorted</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\yds_tool_animation_file.cpp">
-      <Filter>Source Files\Unsorted</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\yds_tool_geometry_file.cpp">
-      <Filter>Source Files\Unsorted</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\yds_window.cpp">
-      <Filter>Source Files\Unsorted</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\yds_window_event_handler.cpp">
-      <Filter>Source Files\Unsorted</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\yds_window_system.cpp">
-      <Filter>Source Files\Unsorted</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\yds_window_system_object.cpp">
-      <Filter>Source Files\Unsorted</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\yds_windows_input_device.cpp">
-      <Filter>Source Files\Unsorted</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\yds_windows_input_system.cpp">
-      <Filter>Source Files\Unsorted</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\yds_windows_key_maps.cpp">
-      <Filter>Source Files\Unsorted</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\yds_windows_monitor.cpp">
-      <Filter>Source Files\Unsorted</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\yds_windows_window.cpp">
-      <Filter>Source Files\Unsorted</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\yds_windows_window_system.cpp">
-      <Filter>Source Files\Unsorted</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\yds_transform.cpp">
       <Filter>Source Files\object</Filter>
     </ClCompile>
@@ -733,6 +628,147 @@
     </ClCompile>
     <ClCompile Include="..\..\src\yds_color.cpp">
       <Filter>Source Files\color</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\yds_window.cpp">
+      <Filter>Source Files\window-system</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\yds_window_event_handler.cpp">
+      <Filter>Source Files\window-system</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\yds_window_system.cpp">
+      <Filter>Source Files\window-system</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\yds_window_system_object.cpp">
+      <Filter>Source Files\window-system</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\yds_windows_key_maps.cpp">
+      <Filter>Source Files\window-system\windows</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\yds_windows_monitor.cpp">
+      <Filter>Source Files\window-system\windows</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\yds_windows_window.cpp">
+      <Filter>Source Files\window-system\windows</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\yds_windows_window_system.cpp">
+      <Filter>Source Files\window-system\windows</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\yds_windows_input_device.cpp">
+      <Filter>Source Files\input\windows</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\yds_windows_input_system.cpp">
+      <Filter>Source Files\input\windows</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\yds_input_device.cpp">
+      <Filter>Source Files\input</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\yds_input_layout.cpp">
+      <Filter>Source Files\input</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\yds_input_system.cpp">
+      <Filter>Source Files\input</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\yds_error_handler.cpp">
+      <Filter>Source Files\error-handling</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\yds_error_system.cpp">
+      <Filter>Source Files\error-handling</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\yds_dynamic_allocator.cpp">
+      <Filter>Source Files\memory-management</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\yds_logger.cpp">
+      <Filter>Source Files\debugging\logging</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\yds_logger_output.cpp">
+      <Filter>Source Files\debugging\logging</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\yds_context_object.cpp">
+      <Filter>Source Files\api</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\yds_device.cpp">
+      <Filter>Source Files\api</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\yds_depth_buffer.cpp">
+      <Filter>Source Files\api</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\yds_gpu_buffer.cpp">
+      <Filter>Source Files\api</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\yds_render_geometry_channel.cpp">
+      <Filter>Source Files\api</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\yds_render_geometry_format.cpp">
+      <Filter>Source Files\api</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\yds_render_target.cpp">
+      <Filter>Source Files\api</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\yds_rendering_context.cpp">
+      <Filter>Source Files\api</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\yds_shader.cpp">
+      <Filter>Source Files\api</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\yds_shader_program.cpp">
+      <Filter>Source Files\api</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\yds_texture.cpp">
+      <Filter>Source Files\api</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\yds_file_logger.cpp">
+      <Filter>Source Files\debugging\logging</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\yds_keyboard.cpp">
+      <Filter>Source Files\input</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\yds_mouse.cpp">
+      <Filter>Source Files\input</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\yds_linked_list.cpp">
+      <Filter>Source Files\memory-management</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\yds_base.cpp">
+      <Filter>Source Files\base</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\yds_geometry_preprocessing.cpp">
+      <Filter>Source Files\assets\legacy</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\yds_memory_base.cpp">
+      <Filter>Source Files\memory-management</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\yds_geometry_export_file.cpp">
+      <Filter>Source Files\assets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\yds_timing.cpp">
+      <Filter>Source Files\timing</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\yds_time_tag_data.cpp">
+      <Filter>Source Files\timing</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\yds_tool_animation_file.cpp">
+      <Filter>Source Files\assets\legacy</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\yds_tool_geometry_file.cpp">
+      <Filter>Source Files\assets\legacy</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\yds_math.cpp">
+      <Filter>Source Files\math</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\yds_monitor.cpp">
+      <Filter>Source Files\window-system</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\yds_stat.cpp">
+      <Filter>Source Files\math</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\yds_object_data.cpp">
+      <Filter>Source Files\assets\legacy</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\yds_object_animation_data.cpp">
+      <Filter>Source Files\assets\legacy</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\yds_file.cpp">
+      <Filter>Source Files\file</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

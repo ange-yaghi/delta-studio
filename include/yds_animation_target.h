@@ -4,6 +4,8 @@
 #include "yds_math.h"
 
 #include <algorithm>
+#include <assert.h>
+#include <cmath>
 
 class ysAnimationCurve;
 
@@ -35,6 +37,8 @@ struct TransformTarget {
     }
 
     void Accumulate(float t, int index) {
+        assert(!std::isnan(t) && !std::isinf(t));
+
         unsigned int bit = 0x1 << index;
         if ((Animated & bit) == 0) {
             Data[index] = t;
@@ -47,6 +51,8 @@ struct TransformTarget {
     }
 
     void AccumulateQuaternion(ysQuaternion &q, float weight) {
+        assert(ysMath::IsValid(q));
+
         if (Animated == 0) {
             Data[0] = ysMath::GetQuatW(q) * weight;
             Data[1] = ysMath::GetQuatX(q) * weight;

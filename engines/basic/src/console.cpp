@@ -16,12 +16,6 @@ dbasic::Console::Console() {
     m_standardInputLayout = nullptr;
     m_font = nullptr;
 
-    // Initialize clear color to black
-    m_clearColor[0] = 40.0f / 255.0f;
-    m_clearColor[1] = 40.0f / 255.0f;
-    m_clearColor[2] = 40.0f / 255.0f;
-    m_clearColor[3] = 1.0F;
-
     m_bufferWidth = 0;
     m_bufferHeight = 0;
 
@@ -36,17 +30,6 @@ dbasic::Console::~Console() {
     /* void */
 }
 
-ysError dbasic::Console::Destroy() {
-    YDS_ERROR_DECLARE("Destroy");
-
-    m_engine->GetDevice()->DestroyGPUBuffer(m_mainIndexBuffer);
-    m_engine->GetDevice()->DestroyGPUBuffer(m_mainVertexBuffer);
-
-    m_engine->GetDevice()->DestroyTexture(m_font);
-
-    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
-}
-
 ysError dbasic::Console::Initialize() {
     YDS_ERROR_DECLARE("Initialize");
 
@@ -56,6 +39,43 @@ ysError dbasic::Console::Initialize() {
     YDS_NESTED_ERROR_CALL(InitializeGeometry());
 
     InitializeFontMap();
+
+    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+}
+
+ysError dbasic::Console::ResetScreenPosition() {
+    YDS_ERROR_DECLARE("Reset");
+
+    // TODO: remove magic numbers
+    float scaleX = 22.0f / 2.0f;
+    float scaleY = 32.0f / 2.0f;
+
+    for (int i = 0; i < BUFFER_WIDTH; i++) {
+        for (int j = 0; j < BUFFER_HEIGHT; j++) {
+            int offset = j * BUFFER_WIDTH + i;
+
+            float offsetX = (-m_engine->GetScreenWidth() / 2.0f) + (scaleX * i);
+            float offsetY = (m_engine->GetScreenHeight() / 2.0f) - (scaleY * j);
+
+            m_vertexData[offset * 4 + 0].Pos = ysVector2(0.0f * scaleX + offsetX, 0.0f * scaleY + offsetY);
+            m_vertexData[offset * 4 + 1].Pos = ysVector2(1.0f * scaleX + offsetX, 0.0f * scaleY + offsetY);
+            m_vertexData[offset * 4 + 2].Pos = ysVector2(1.0f * scaleX + offsetX, -1.0f * scaleY + offsetY);
+            m_vertexData[offset * 4 + 3].Pos = ysVector2(0.0f * scaleX + offsetX, -1.0f * scaleY + offsetY);
+        }
+    }
+
+    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+}
+
+ysError dbasic::Console::Destroy() {
+    YDS_ERROR_DECLARE("Destroy");
+
+    m_engine->GetDevice()->DestroyGPUBuffer(m_mainIndexBuffer);
+    m_engine->GetDevice()->DestroyGPUBuffer(m_mainVertexBuffer);
+
+    m_engine->GetDevice()->DestroyTexture(m_font);
+
+    delete[] m_vertexData;
 
     return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
 }
@@ -131,6 +151,10 @@ ysError dbasic::Console::UpdateDisplay() {
 void dbasic::Console::MoveToLocation(const GuiPoint &location) {
     m_nominalLocation = location;
     m_actualLocation = location;
+}
+
+void dbasic::Console::MoveToOrigin() {
+    MoveToLocation({ 0, 0 });
 }
 
 void dbasic::Console::MoveDownLine(int n) {

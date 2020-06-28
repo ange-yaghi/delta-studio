@@ -19,8 +19,9 @@ public:
     };
 
     enum class Format {
-        RTF_R8G8B8A8_UNORM,
-        RTF_R32G32B32_FLOAT
+        R8G8B8A8_UNORM,
+        R32G32B32_FLOAT,
+        R32_FLOAT
     };
 
 public:
@@ -40,6 +41,8 @@ public:
     int GetSampleCount() const { return m_sampleCount; }
     bool HasDepthBuffer() const { return m_hasDepthBuffer; }
 
+    bool HasColorData() const { return m_hasColorData; }
+
     ysRenderingContext *GetAssociatedContext() { return m_associatedContext; }
     ysRenderTarget *GetParent() { return m_parent; }
 
@@ -57,6 +60,7 @@ protected:
     Format m_format;
 
     int m_sampleCount;
+    bool m_hasColorData;
     bool m_hasDepthBuffer;
     bool m_depthTestEnabled;
 

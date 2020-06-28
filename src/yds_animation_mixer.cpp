@@ -5,6 +5,7 @@
 
 #include <assert.h>
 #include <algorithm>
+#include <cmath>
 
 ysAnimationChannel::ActionSettings ysAnimationChannel::DefaultSettings;
 
@@ -43,7 +44,7 @@ void ysAnimationChannel::Sample() {
 
             if (d < 0) continue;
 
-            if (d < t) {
+            if (d < t && t != 0) {
                 m_segmentStack[i].Amplitude = (d / t);
             }
             else {
@@ -65,6 +66,10 @@ void ysAnimationChannel::Sample() {
             }
             else if (d > 0) {
                 float s = 1.0f - d / t;
+                if (t == 0) {
+                    int a = 0;
+                }
+
                 m_segmentStack[i].Amplitude = m_segmentStack[i].FadeStartAmplitude * s;
             }
         }
@@ -207,9 +212,10 @@ void ysAnimationChannel::AddSegmentAtOffset(ysAnimationActionBinding *action, fl
 void ysAnimationChannel::Balance() {
     int activeSegments = 0;
     float totalAmplitude = GetTotalAmplitude(&activeSegments);
-    if (activeSegments <= 1) return;
+    if (activeSegments <= 1 || totalAmplitude == 0) return;
 
     float inv = 1 / totalAmplitude;
+
     for (int i = 0; i < SegmentStackSize; ++i) {
         if (m_segmentStack[i].IsActive() && m_segmentStack[i].CurrentOffset <= 0) {
             m_segmentStack[i].Amplitude *= inv;

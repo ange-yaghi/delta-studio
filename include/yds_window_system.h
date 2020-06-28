@@ -27,6 +27,15 @@ public:
     void CloseWindow(ysWindow *window);
     void DeleteWindow(ysWindow *window);
 
+    virtual void SetCursorPosition(int x, int y) { /* void */ }
+
+    virtual void ConfineCursor(ysWindow *window) { m_cursorConfined = true; }
+    virtual void ReleaseCursor() { m_cursorConfined = false; }
+    bool IsCursorConfined() const { return m_cursorConfined; }
+
+    virtual void SetCursorVisible(bool visible) { m_cursorVisible = visible; }
+    bool IsMouseVisible() const { return m_cursorVisible; };
+
     // Monitor Interface
     virtual ysMonitor *NewMonitor() = 0;
     virtual void SurveyMonitors();
@@ -53,6 +62,9 @@ protected:
     ysDynamicArray<ysWindow, 4> m_windowArray;
 
     ysInputSystem *m_inputSystem;
+
+    bool m_cursorVisible;
+    bool m_cursorConfined;
 };
 
 #endif /* YDS_WINDOW_SYSTEM_H */

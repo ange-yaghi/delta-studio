@@ -10,6 +10,6 @@ ysOpenGLShaderProgram::~ysOpenGLShaderProgram() {
     /* void */
 }
 
-ysOpenGLShader *ysOpenGLShaderProgram::GetShader(ysShader::SHADER_TYPE type) {
-    return static_cast<ysOpenGLShader *>(m_shaderSlots[type]);
+ysOpenGLShader *ysOpenGLShaderProgram::GetShader(ysShader::ShaderType type) {
+    return static_cast<ysOpenGLShader *>(m_shaderSlots[(int)type]);
 }

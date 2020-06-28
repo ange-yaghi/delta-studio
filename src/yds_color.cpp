@@ -45,3 +45,15 @@ ysVector ysColor::linearToSrgb(const ysVector &srgb) {
         srgbGamma(ysMath::GetW(srgb))
     );
 }
+
+ysVector ysColor::srgbiToLinear(unsigned int rgb, float a) {
+    int b = rgb & 0xFF; rgb >>= 1;
+    int g = rgb & 0xFF; rgb >>= 1;
+    int r = rgb & 0xFF; rgb >>= 1;
+
+    return srgbToLinear(
+        r / 255.0f, 
+        g / 255.0f, 
+        b / 255.0f, 
+        a);
+}

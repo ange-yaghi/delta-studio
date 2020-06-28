@@ -5,16 +5,16 @@ ysRenderingContext::ysRenderingContext() : ysContextObject("RENDERING_CONTEXT", 
     m_targetWindow = nullptr;
     m_attachedRenderTarget = nullptr;
 
-    m_currentMode = ContextMode::UNDEFINED;
+    m_currentMode = ContextMode::Undefined;
 
-    m_platform = ysWindowSystem::Platform::UNKNOWN;
+    m_platform = ysWindowSystem::Platform::Unknown;
 }
 
 ysRenderingContext::ysRenderingContext(DEVICE_API API, ysWindowSystem::Platform platform) : ysContextObject("RENDERING_CONTEXT", API) {
     m_targetWindow = nullptr;
     m_attachedRenderTarget = nullptr;
 
-    m_currentMode = ContextMode::UNDEFINED;
+    m_currentMode = ContextMode::Undefined;
 
     m_platform = platform;
 }

@@ -7,6 +7,8 @@
 
 dphysics::Collision::Collision() : ysObject("Collision") {
     m_penetration = 0.0f;
+    m_position = ysMath::Constants::Zero;
+    m_relativePosition[0] = m_relativePosition[1] = ysMath::Constants::Zero;
     m_normal = ysMath::Constants::Zero;
     m_body1 = nullptr;
     m_body2 = nullptr;
@@ -19,10 +21,14 @@ dphysics::Collision::Collision() : ysObject("Collision") {
     m_dynamicFriction = 0.0f;
     m_staticFriction = 0.0f;
     m_restitution = 0.0f;
+    m_contactVelocity = ysMath::Constants::Zero;
+    m_contactSpace = ysMath::LoadIdentity();
 }
 
 dphysics::Collision::Collision(Collision &collision) : ysObject("Collision") {
     m_penetration = collision.m_penetration;
+    m_relativePosition[0] = collision.m_relativePosition[0];
+    m_relativePosition[1] = collision.m_relativePosition[1];
     m_normal = collision.m_normal;
     m_position = collision.m_position;
 
@@ -42,6 +48,8 @@ dphysics::Collision::Collision(Collision &collision) : ysObject("Collision") {
     m_restitution = collision.m_restitution;
 
     m_initialContactVelocity = collision.m_initialContactVelocity;
+    m_contactVelocity = collision.m_contactVelocity;
+    m_contactSpace = ysMath::LoadIdentity();
 }
 
 dphysics::Collision::~Collision() {
@@ -103,11 +111,20 @@ bool dphysics::Collision::IsGhost() const {
     return false;
 }
 
+bool dphysics::Collision::IsResolvable() const {
+    if (m_bodies[0] == nullptr || m_bodies[0]->GetInverseMass() == 0) {
+        if (m_bodies[1] == nullptr || m_bodies[1]->GetInverseMass() == 0) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
 void dphysics::Collision::CalculateDesiredDeltaVelocity(float timestep) {
     const static float VelocityLimit = 0.25f;
 
-    ///>NewVelocityCalculation
-        // Calculate the acceleration induced velocity accumulated this frame
+    // Calculate the acceleration induced velocity accumulated this frame
     //real velocityFromAcc = body[0]->getLastFrameAcceleration() * duration * contactNormal;
     float velocityFromAcc = ysMath::GetScalar(ysMath::Dot(m_bodies[0]->GetAcceleration(), m_normal)) * timestep;
 

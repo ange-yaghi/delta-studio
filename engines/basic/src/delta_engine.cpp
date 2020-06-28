@@ -97,14 +97,14 @@ ysError dbasic::DeltaEngine::CreateGameWindow(const char *title, void *instance,
     YDS_ERROR_DECLARE("CreateGameWindow");
 
     // Create the window system
-    YDS_NESTED_ERROR_CALL(ysWindowSystem::CreateWindowSystem(&m_windowSystem, ysWindowSystemObject::Platform::WINDOWS));
+    YDS_NESTED_ERROR_CALL(ysWindowSystem::CreateWindowSystem(&m_windowSystem, ysWindowSystemObject::Platform::Windows));
     m_windowSystem->ConnectInstance(instance);
 
     // Find the monitor setup
     m_windowSystem->SurveyMonitors();
     ysMonitor *mainMonitor = m_windowSystem->GetMonitor(0);
 
-    YDS_NESTED_ERROR_CALL(ysInputSystem::CreateInputSystem(&m_inputSystem, ysWindowSystemObject::Platform::WINDOWS));
+    YDS_NESTED_ERROR_CALL(ysInputSystem::CreateInputSystem(&m_inputSystem, ysWindowSystemObject::Platform::Windows));
     m_windowSystem->AssignInputSystem(m_inputSystem);
     m_inputSystem->CreateDevices(false);
 
@@ -167,6 +167,18 @@ ysError dbasic::DeltaEngine::StartFrame() {
     // TEMP
     if (IsKeyDown(ysKeyboard::KEY_B)) m_device->SetDebugFlag(0, true);
     else m_device->SetDebugFlag(0, false);
+
+    if (m_gameWindow->IsActive()) {
+        m_windowSystem->SetCursorVisible(!m_cursorHidden);
+        if (m_cursorPositionLocked) {
+            m_windowSystem->ReleaseCursor();
+            m_windowSystem->ConfineCursor(m_gameWindow);
+        }
+    }
+    else {
+        m_windowSystem->SetCursorVisible(true);
+        m_windowSystem->ReleaseCursor();
+    }
 
     if (IsOpen()) {
         m_device->SetRenderTarget(m_mainRenderTarget);
@@ -486,15 +498,17 @@ void dbasic::DeltaEngine::SetWindowSize(int width, int height) {
     m_shaderScreenVariablesSync = false;
 }
 
-void dbasic::DeltaEngine::SetClearColor(int r, int g, int b) {
-    float fr = r / 255.0f;
-    float fg = g / 255.0f;
-    float fb = b / 255.0f;
+void dbasic::DeltaEngine::SetConsoleColor(const ysVector &v) {
+    m_consoleShaderObjectVariables.MulCol = ysMath::GetVector4(v);
+}
 
-    m_clearColor[0] = fr;
-    m_clearColor[1] = fg;
-    m_clearColor[2] = fb;
-    m_clearColor[3] = 1.0f;
+void dbasic::DeltaEngine::SetClearColor(const ysVector &v) {
+    ysVector4 v4 = ysMath::GetVector4(v);
+
+    m_clearColor[0] = v4.x;
+    m_clearColor[1] = v4.y;
+    m_clearColor[2] = v4.z;
+    m_clearColor[3] = v4.w;
 }
 
 bool dbasic::DeltaEngine::IsKeyDown(ysKeyboard::KEY_CODE key) {
@@ -515,7 +529,7 @@ bool dbasic::DeltaEngine::ProcessKeyDown(ysKeyboard::KEY_CODE key) {
     return false;
 }
 
-bool dbasic::DeltaEngine::IsMouseKeyDown(ysMouse::BUTTON_CODE key) {
+bool dbasic::DeltaEngine::IsMouseKeyDown(ysMouse::Button key) {
     if (m_mainMouse != nullptr) {
         ysMouse *mouse = m_mainMouse->GetAsMouse();
         return mouse->GetButton(key)->IsDown();
@@ -567,6 +581,10 @@ void dbasic::DeltaEngine::ResetBaseColor() {
     m_shaderObjectVariables.BaseColor = ysVector4(1.0f, 1.0f, 1.0f, 1.0f);
 }
 
+void dbasic::DeltaEngine::SetLit(bool lit) {
+    m_shaderObjectVariables.Lit = (lit) ? 1 : 0;
+}
+
 void dbasic::DeltaEngine::SetEmission(const ysVector &emission) {
     m_shaderObjectVariables.Emission = ysMath::GetVector4(emission);
 }
@@ -600,11 +618,11 @@ void dbasic::DeltaEngine::SetIncidentSpecular(float incidentSpecular) {
 }
 
 int dbasic::DeltaEngine::GetScreenWidth() {
-    return m_gameWindow->GetWidth();
+    return m_gameWindow->GetScreenWidth();
 }
 
 int dbasic::DeltaEngine::GetScreenHeight() {
-    return m_gameWindow->GetHeight();
+    return m_gameWindow->GetScreenHeight();
 }
 
 ysError dbasic::DeltaEngine::DrawImage(ysTexture *image, int layer, float scaleX, float scaleY, float texOffsetU, float texOffsetV, float texScaleU, float texScaleV) {
@@ -662,7 +680,7 @@ ysError dbasic::DeltaEngine::SetAmbientLight(const ysVector4 &ambient) {
     return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
 }
 
-ysError dbasic::DeltaEngine::DrawBox(float width, float height, int layer, bool lit) {
+ysError dbasic::DeltaEngine::DrawBox(float width, float height, int layer) {
     YDS_ERROR_DECLARE("DrawBox");
 
     if (!m_shaderObjectVariablesSync) {
@@ -677,7 +695,6 @@ ysError dbasic::DeltaEngine::DrawBox(float width, float height, int layer, bool 
         m_shaderObjectVariables.TexScale[1] = 1.0f;
 
         m_shaderObjectVariables.ColorReplace = 1;
-        m_shaderObjectVariables.Lit = (lit) ? 1 : 0;
     }
 
     DrawCall *newCall = nullptr;
@@ -697,7 +714,7 @@ ysError dbasic::DeltaEngine::DrawBox(float width, float height, int layer, bool 
     return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
 }
 
-ysError dbasic::DeltaEngine::DrawAxis(const ysVector &position, const ysVector &direction, float width, float length, int layer, bool lit) {
+ysError dbasic::DeltaEngine::DrawAxis(const ysVector &position, const ysVector &direction, float width, float length, int layer) {
     YDS_ERROR_DECLARE("DrawAxis");
 
     ysMatrix trans = ysMath::TranslationTransform(position);
@@ -711,7 +728,7 @@ ysError dbasic::DeltaEngine::DrawAxis(const ysVector &position, const ysVector &
     transform = ysMath::MatMult(transform, offset);
     SetObjectTransform(transform);
 
-    YDS_NESTED_ERROR_CALL(DrawBox(width, length, layer, lit));
+    YDS_NESTED_ERROR_CALL(DrawBox(width, length, layer));
 
     return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
 }
@@ -787,7 +804,7 @@ ysError dbasic::DeltaEngine::ExecuteDrawQueue(DrawTarget target) {
         float aspect = m_gameWindow->GetScreenWidth() / (float)m_gameWindow->GetScreenHeight();
 
         if (target == DrawTarget::Main) {
-            m_shaderScreenVariables.Projection = ysMath::Transpose(ysMath::FrustrumPerspective(m_cameraFov, aspect, 1.0f, 100.0f));
+            m_shaderScreenVariables.Projection = ysMath::Transpose(ysMath::FrustrumPerspective(m_cameraFov, aspect, 2.0f, 100.0f));
         }
         else if (target == DrawTarget::Gui) {
             m_shaderScreenVariables.Projection = ysMath::Transpose(
@@ -916,7 +933,6 @@ ysError dbasic::DeltaEngine::ExecuteDrawQueue(DrawTarget target) {
 
     if (target == DrawTarget::Gui) {
         ConsoleShaderObjectVariables objectSettings;
-        objectSettings.MulCol = ysVector4(1.0f, 1.0f, 1.0f, 1.0f);
         objectSettings.TexOffset[0] = 0.0f;
         objectSettings.TexOffset[1] = 0.0f;
         objectSettings.TexScale[0] = 1.0f;

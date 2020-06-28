@@ -3,15 +3,17 @@
 #include "../include/yds_input_system.h"
 #include "../include/yds_windows_window_system.h"
 
-ysWindowSystem *ysWindowSystem::g_instance = NULL;
+ysWindowSystem *ysWindowSystem::g_instance = nullptr;
 
-ysWindowSystem::ysWindowSystem() : ysWindowSystemObject("WINDOW_SYSTEM", Platform::UNKNOWN) {
+ysWindowSystem::ysWindowSystem() : ysWindowSystemObject("WINDOW_SYSTEM", Platform::Unknown) {
     YDS_ERROR_DECLARE("ysWindowSystem");
 
-    if (g_instance) YDS_ERROR_RETURN(ysError::YDS_MULTIPLE_SYSTEMS);
+    if (g_instance != nullptr) YDS_ERROR_RETURN(ysError::YDS_MULTIPLE_SYSTEMS);
     g_instance = this;
 
     m_inputSystem = nullptr;
+    m_cursorVisible = true;
+    m_cursorConfined = false;
 
     YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
 }
@@ -19,9 +21,11 @@ ysWindowSystem::ysWindowSystem() : ysWindowSystemObject("WINDOW_SYSTEM", Platfor
 ysWindowSystem::ysWindowSystem(Platform platform) : ysWindowSystemObject("WINDOW_SYSTEM", platform) {
     YDS_ERROR_DECLARE("ysWindowSystem");
 
-    if (g_instance) YDS_ERROR_RETURN(ysError::YDS_MULTIPLE_SYSTEMS);
+    if (g_instance != nullptr) YDS_ERROR_RETURN(ysError::YDS_MULTIPLE_SYSTEMS);
     g_instance = this;
 
+    m_cursorVisible = true;
+    m_cursorConfined = false;
     m_inputSystem = nullptr;
 
     YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
@@ -34,14 +38,14 @@ ysWindowSystem::~ysWindowSystem() {
 ysError ysWindowSystem::CreateWindowSystem(ysWindowSystem **newSystem, Platform platform) {
     YDS_ERROR_DECLARE("CreateWindowSystem");
 
-    if (newSystem == NULL) return YDS_ERROR_RETURN_STATIC(ysError::YDS_INVALID_PARAMETER);
-    *newSystem = NULL;
+    if (newSystem == nullptr) return YDS_ERROR_RETURN_STATIC(ysError::YDS_INVALID_PARAMETER);
+    *newSystem = nullptr;
 
-    if (platform == Platform::UNKNOWN) return YDS_ERROR_RETURN_STATIC(ysError::YDS_INVALID_PARAMETER);
+    if (platform == Platform::Unknown) return YDS_ERROR_RETURN_STATIC(ysError::YDS_INVALID_PARAMETER);
     if (g_instance) return YDS_ERROR_RETURN_STATIC(ysError::YDS_MULTIPLE_ERROR_SYSTEMS);
 
     switch (platform) {
-    case Platform::WINDOWS:
+    case Platform::Windows:
         *newSystem = new ysWindowsWindowSystem();
         break;
     default:

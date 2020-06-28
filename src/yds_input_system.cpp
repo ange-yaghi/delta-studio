@@ -3,7 +3,7 @@
 #include "../include/yds_window_system.h"
 #include "../include/yds_windows_input_system.h"
 
-ysInputSystem::ysInputSystem() : ysWindowSystemObject("INPUT_SYSTEM", Platform::UNKNOWN) {
+ysInputSystem::ysInputSystem() : ysWindowSystemObject("INPUT_SYSTEM", Platform::Unknown) {
 	m_windowSystem = nullptr;
     m_supportMultiple = false;
 }
@@ -17,16 +17,16 @@ ysInputSystem::~ysInputSystem() {
     /* void */
 }
 
-ysError ysInputSystem::CreateInputSystem(ysInputSystem** newInputSystem, Platform platform) {
+ysError ysInputSystem::CreateInputSystem(ysInputSystem **newInputSystem, Platform platform) {
     YDS_ERROR_DECLARE("CreateInputSystem");
 
     if (newInputSystem == nullptr) return YDS_ERROR_RETURN_STATIC(ysError::YDS_INVALID_PARAMETER);
     *newInputSystem = nullptr;
 
-    if (platform == Platform::UNKNOWN) return YDS_ERROR_RETURN_STATIC(ysError::YDS_INVALID_PARAMETER);
+    if (platform == Platform::Unknown) return YDS_ERROR_RETURN_STATIC(ysError::YDS_INVALID_PARAMETER);
 
     switch (platform) {
-    case Platform::WINDOWS:
+    case Platform::Windows:
         *newInputSystem = new ysWindowsInputSystem();
         break;
     }
@@ -56,7 +56,7 @@ ysError ysInputSystem::AssignWindowSystem(ysWindowSystem *system) {
 ysError ysInputSystem::CreateDevices(bool supportMultiple) {
 	YDS_ERROR_DECLARE("CreateDevices");
 
-	if (m_windowSystem == NULL) return YDS_ERROR_RETURN(ysError::YDS_NO_WINDOW_SYSTEM);
+	if (m_windowSystem == nullptr) return YDS_ERROR_RETURN(ysError::YDS_NO_WINDOW_SYSTEM);
 	m_supportMultiple = supportMultiple;
 
 	return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);

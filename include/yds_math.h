@@ -48,8 +48,8 @@ struct ysMatrix {
 // Storage Data Types
 
 struct ysVector2 {
-    ysVector2() : x(0.0f), y(0.0f) {}
-    ysVector2(float x, float y) : x(x), y(y) {}
+    ysVector2() : x(0.0f), y(0.0f) { /* void */ }
+    ysVector2(float x, float y) : x(x), y(y) { /* void */ }
 
     union {
         struct {
@@ -61,9 +61,9 @@ struct ysVector2 {
 };
 
 struct ysVector3 {
-    ysVector3() : x(0), y(0), z(0) {}
-    ysVector3(float x, float y, float z) : x(x), y(y), z(z) {}
-    ysVector3(const ysVector2 &v) : x(v.x), y(v.y), z(0) {}
+    ysVector3() : x(0), y(0), z(0) { /* void */ }
+    ysVector3(float x, float y, float z) : x(x), y(y), z(z) { /* void */ }
+    ysVector3(const ysVector2 &v) : x(v.x), y(v.y), z(0) { /* void */ }
 
     union {
         struct {
@@ -75,10 +75,10 @@ struct ysVector3 {
 };
 
 struct ysVector4 {
-    ysVector4() : x(0.0f), y(0.0f), z(0.0f), w(0.0f) {}
-    ysVector4(float x, float y, float z, float w = 0.0f) : x(x), y(y), z(z), w(w) {}
-
-    ysVector4(const ysVector3 &v) : x(v.x), y(v.y), z(v.z), w(0.0f) {}
+    ysVector4() : x(0.0f), y(0.0f), z(0.0f), w(0.0f) { /* void */ }
+    ysVector4(float x, float y, float z, float w = 0.0f) : x(x), y(y), z(z), w(w) { /* void */ }
+    ysVector4(const ysVector3 &v) : x(v.x), y(v.y), z(v.z), w(0.0f) { /* void */ }
+    ysVector4(const ysVector &v);
 
     void Set(float x, float y, float z, float w) { this->x = x; this->y = y; this->z = z; this->w = w; }
     void Scale(float s) { this->x *= s; this->y *= s; this->z *= s; this->w *= s; }

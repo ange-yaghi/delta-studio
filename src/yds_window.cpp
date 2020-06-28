@@ -3,7 +3,7 @@
 #include "../include/yds_window_event_handler.h"
 #include "../include/yds_window_system.h"
 
-ysWindow::ysWindow() : ysWindowSystemObject("WINDOW", Platform::UNKNOWN) {
+ysWindow::ysWindow() : ysWindowSystemObject("WINDOW", Platform::Unknown) {
     m_title[0] = '\0';
 
     m_monitor = nullptr;
@@ -46,7 +46,7 @@ ysWindow::ysWindow(Platform platform) : ysWindowSystemObject("WINDOW", platform)
     m_windowState = WindowState::HIDDEN;
     m_parent = nullptr;
 
-    m_active = false;
+    m_active = true;
 
     m_eventHandler = nullptr;
 }

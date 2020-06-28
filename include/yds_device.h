@@ -61,7 +61,7 @@ public:
     virtual ysError CreateOnScreenRenderTarget(ysRenderTarget **newTarget, ysRenderingContext *context, bool depthBuffer) = 0;
 
     // Create an off-screen render target
-    virtual ysError CreateOffScreenRenderTarget(ysRenderTarget **newTarget, int width, int height, ysRenderTarget::Format format, int sampleCount, bool depthBuffer) = 0;
+    virtual ysError CreateOffScreenRenderTarget(ysRenderTarget **newTarget, int width, int height, ysRenderTarget::Format format, bool colorData = true, bool depthBuffer = true) = 0;
 
     // Create a off-screen copy
     virtual ysError CreateOffScreenRenderTarget(ysRenderTarget **newTarget, const ysRenderTarget *reference);

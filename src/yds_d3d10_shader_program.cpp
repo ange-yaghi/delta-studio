@@ -9,6 +9,6 @@ ysD3D10ShaderProgram::~ysD3D10ShaderProgram() {
     /* void */
 }
 
-ysD3D10Shader *ysD3D10ShaderProgram::GetShader(ysShader::SHADER_TYPE type) {
-	return static_cast<ysD3D10Shader *>(m_shaderSlots[type]);
+ysD3D10Shader *ysD3D10ShaderProgram::GetShader(ysShader::ShaderType type) {
+	return static_cast<ysD3D10Shader *>(m_shaderSlots[(int)type]);
 }

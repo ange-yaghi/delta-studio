@@ -5,7 +5,7 @@
 
 dphysics::RigidBody::RigidBody() {
     m_linearDamping = 0.99f;
-    m_angularDamping = 0.005f;
+    m_angularDamping = 0.5f;
 
     m_velocity = ysMath::Constants::Zero;
     m_angularVelocity = ysMath::Constants::Zero;
