@@ -1,12 +1,12 @@
 #include "../include/yds_shader.h"
 
-ysShader::ysShader() : ysContextObject("SHADER", API_UNKNOWN) {
+ysShader::ysShader() : ysContextObject("SHADER", DeviceAPI::Unknown) {
     m_filename[0] = '\0';
     m_shaderName[0] = '\0';
     m_shaderType = ShaderType::Vertex;
 }
 
-ysShader::ysShader(DEVICE_API API) : ysContextObject("SHADER", API) {
+ysShader::ysShader(DeviceAPI API) : ysContextObject("SHADER", API) {
     m_filename[0] = '\0';
     m_shaderName[0] = '\0';
     m_shaderType = ShaderType::Vertex;

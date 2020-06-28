@@ -15,7 +15,7 @@
 
 #include "../include/yds_file.h"
 
-ysOpenGLDevice::ysOpenGLDevice() : ysDevice(OPENGL4_0) {
+ysOpenGLDevice::ysOpenGLDevice() : ysDevice(DeviceAPI::OpenGL4_0) {
     m_deviceCreated = false;
     m_realContext = nullptr;
     m_activeContext = nullptr;

@@ -28,7 +28,7 @@ typedef HRESULT(WINAPI *DXGIGetDebugInterface_proc) (const IID &riid, void **ppD
 
 #pragma warning(pop)
 
-ysD3D11Device::ysD3D11Device() : ysDevice(DIRECTX11) {
+ysD3D11Device::ysD3D11Device() : ysDevice(DeviceAPI::DirectX11) {
     m_device = nullptr;
     m_deviceContext = nullptr;
     m_DXGIFactory = nullptr;

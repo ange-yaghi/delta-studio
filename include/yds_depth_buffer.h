@@ -3,15 +3,11 @@
 
 #include "yds_context_object.h"
 
-class ysDepthBuffer : public ysContextObject
-{
-
+class ysDepthBuffer : public ysContextObject {
 public:
-
 	ysDepthBuffer();
-	ysDepthBuffer(DEVICE_API API);
+	ysDepthBuffer(DeviceAPI API);
 	virtual ~ysDepthBuffer();
-
 };
 
-#endif
+#endif /* YDS_DEPTH_BUFFER_H */

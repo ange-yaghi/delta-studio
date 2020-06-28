@@ -1,6 +1,6 @@
 #include "../include/yds_opengl_render_target.h"
 
-ysOpenGLRenderTarget::ysOpenGLRenderTarget() : ysRenderTarget(OPENGL4_0) {
+ysOpenGLRenderTarget::ysOpenGLRenderTarget() : ysRenderTarget(DeviceAPI::OpenGL4_0) {
     /* void */
 }
 

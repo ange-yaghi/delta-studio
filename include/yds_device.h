@@ -19,11 +19,11 @@ struct ysTextureSlot {
 class ysDevice : public ysContextObject {
 protected:
     ysDevice();
-    ysDevice(ysContextObject::DEVICE_API API);
+    ysDevice(ysContextObject::DeviceAPI API);
     virtual ~ysDevice();
 
 public:
-    static ysError CreateDevice(ysDevice **device, DEVICE_API API);
+    static ysError CreateDevice(ysDevice **device, DeviceAPI API);
 
     /* Main Device Interface */
 

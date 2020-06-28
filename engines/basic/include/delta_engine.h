@@ -46,7 +46,7 @@ namespace dbasic {
         dphysics::MassSpringSystem PhysicsSystem;
         dphysics::RigidBodySystem RBSystem;
 
-        ysError CreateGameWindow(const char *title, void *instance, ysContextObject::DEVICE_API API, const char *shaderDirectory = "../DeltaEngineTullahoma/Shaders/", bool depthBuffer = true);
+        ysError CreateGameWindow(const char *title, void *instance, ysContextObject::DeviceAPI API, const char *shaderDirectory = "../DeltaEngineTullahoma/Shaders/", bool depthBuffer = true);
         ysError StartFrame();
         ysError EndFrame();
         ysError Destroy();

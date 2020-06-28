@@ -1,6 +1,6 @@
 #include "../include/yds_opengl_shader.h"
 
-ysOpenGLShader::ysOpenGLShader() : ysShader(OPENGL4_0) {
+ysOpenGLShader::ysOpenGLShader() : ysShader(DeviceAPI::OpenGL4_0) {
 	m_handle = 0;
 }
 

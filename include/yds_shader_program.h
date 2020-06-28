@@ -9,7 +9,7 @@ class ysShaderProgram : public ysContextObject {
 
 public:
 	ysShaderProgram();
-	ysShaderProgram(DEVICE_API API);
+	ysShaderProgram(DeviceAPI API);
 	virtual ~ysShaderProgram();
 
 	const ysShader *GetShader(ysShader::ShaderType type) const { return m_shaderSlots[(int)type]; }

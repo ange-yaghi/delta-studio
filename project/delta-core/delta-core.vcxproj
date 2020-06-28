@@ -110,10 +110,8 @@
     <ClInclude Include="..\..\include\yds_render_geometry_format.h" />
     <ClInclude Include="..\..\include\yds_render_target.h" />
     <ClInclude Include="..\..\include\yds_shader.h" />
-    <ClInclude Include="..\..\include\yds_shader_constant_block.h" />
     <ClInclude Include="..\..\include\yds_shader_program.h" />
     <ClInclude Include="..\..\include\yds_stat.h" />
-    <ClInclude Include="..\..\include\yds_syntax.h" />
     <ClInclude Include="..\..\include\yds_texture.h" />
     <ClInclude Include="..\..\include\yds_time_tag_data.h" />
     <ClInclude Include="..\..\include\yds_timing.h" />

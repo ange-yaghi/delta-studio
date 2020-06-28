@@ -2,7 +2,6 @@
 #define YDS_BASE_H
 
 #include "yds_dynamic_array.h"
-#include "yds_syntax.h"
 
 class ysObject : public ysDynamicArrayElement {
 public:
