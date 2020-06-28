@@ -78,6 +78,7 @@ namespace dphysics {
 
         // Get velocity on impact
         ysVector GetContactVelocity() const { return m_initialContactVelocity; }
+        ysVector GetContactVelocityWorld() const;
 
     protected:
         ysVector m_relativePosition[2];

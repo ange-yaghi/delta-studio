@@ -185,6 +185,7 @@ namespace ysMath {
     ysGeneric LoadVector(const ysVector3 &v, float w = 0.0f);
     ysGeneric LoadVector(const ysVector2 &v1);
     ysGeneric LoadVector(const ysVector2 &v1, const ysVector2 &v2);
+    ysGeneric Lerp(const ysGeneric &a, const ysGeneric &b, float s);
     ysQuaternion LoadQuaternion(float angle, const ysVector &axis);
 
     ysVector4 GetVector4(const ysVector &v);

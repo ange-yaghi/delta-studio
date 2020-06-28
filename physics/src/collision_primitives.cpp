@@ -121,6 +121,10 @@ bool dphysics::Collision::IsResolvable() const {
     return true;
 }
 
+ysVector dphysics::Collision::GetContactVelocityWorld() const {
+    return ysMath::MatMult(m_contactSpace, m_initialContactVelocity);
+}
+
 void dphysics::Collision::CalculateDesiredDeltaVelocity(float timestep) {
     const static float VelocityLimit = 0.25f;
 
