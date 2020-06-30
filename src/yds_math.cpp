@@ -49,6 +49,16 @@ ysGeneric ysMath::LoadVector(const ysVector2 &v1, const ysVector2 &v2) {
     return _mm_set_ps(v2.y, v2.x, v1.y, v1.x);
 }
 
+ysGeneric ysMath::Lerp(const ysGeneric &a, const ysGeneric &b, float s) {
+    ysVector s_v = ysMath::LoadScalar(s);
+    ysVector s_comp = ysMath::Sub(ysMath::Constants::One, s_v);
+
+    return ysMath::Add(
+        ysMath::Mul(a, s_comp),
+        ysMath::Mul(b, s_v)
+    );
+}
+
 ysQuaternion ysMath::LoadQuaternion(float angle, const ysVector &axis) {
     float sinAngle = (float)sin(angle / 2.0f);
     float cosAngle = (float)cos(angle / 2.0f);
