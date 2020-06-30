@@ -733,7 +733,7 @@ ysError dbasic::DeltaEngine::DrawAxis(const ysVector &position, const ysVector &
     return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
 }
 
-ysError dbasic::DeltaEngine::DrawModel(ModelAsset *model, float scale, ysTexture *texture, int layer, bool lit) {
+ysError dbasic::DeltaEngine::DrawModel(ModelAsset *model, float scale, ysTexture *texture, int layer) {
     YDS_ERROR_DECLARE("DrawModel");
 
     if (!m_shaderObjectVariablesSync) {
@@ -748,7 +748,6 @@ ysError dbasic::DeltaEngine::DrawModel(ModelAsset *model, float scale, ysTexture
         m_shaderObjectVariables.TexScale[1] = 1.0f;
 
         m_shaderObjectVariables.ColorReplace = 1;
-        m_shaderObjectVariables.Lit = lit ? 1 : 0;
     }
 
     DrawCall *newCall = nullptr;

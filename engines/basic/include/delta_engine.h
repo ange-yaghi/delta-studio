@@ -60,7 +60,7 @@ namespace dbasic {
         ysError DrawImage(ysTexture *image, int layer = 0, float scaleX = 1.0f, float scaleY = 1.0f, float texOffsetU = 0.0f, float texOffsetV = 0.0f, float texScaleX = 1.0f, float texScaleY = 1.0f);
         ysError DrawBox(float width, float height, int layer = 0);
         ysError DrawAxis(const ysVector &position, const ysVector &direction, float width, float length, int layer = 0);
-        ysError DrawModel(ModelAsset *model, float scale, ysTexture *texture, int layer = 0, bool lit = true);
+        ysError DrawModel(ModelAsset *model, float scale, ysTexture *texture, int layer = 0);
         ysError DrawRenderSkeleton(RenderSkeleton *skeleton, float scale, int layer);
         ysError LoadTexture(ysTexture **image, const char *fname);
         ysError LoadAnimation(Animation **animation, const char *path, int start, int end);
