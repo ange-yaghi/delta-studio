@@ -912,7 +912,7 @@ ysError ysD3D11Device::CreatePixelShader(ysShader **newShader, const char *shade
 
     strcpy_s(newD3D11Shader->m_filename, 256, shaderFilename);
     strcpy_s(newD3D11Shader->m_shaderName, 64, shaderName);
-    newD3D11Shader->m_shaderType = ysShader::ShaderType::Vertex;
+    newD3D11Shader->m_shaderType = ysShader::ShaderType::Pixel;
 
     *newShader = newD3D11Shader;
 
