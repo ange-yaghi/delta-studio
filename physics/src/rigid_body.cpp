@@ -40,19 +40,7 @@ void dphysics::RigidBody::Integrate(float timeStep) {
     if (m_hint == RigidBodyHint::Static) return;
     else m_derivedValid = false;
 
-    ysVector acceleration = m_acceleration;
-    acceleration = ysMath::Add(acceleration, ysMath::Mul(m_forceAccum, ysMath::LoadScalar(m_inverseMass)));
-    ysVector angularAcceleration = ysMath::MatMult(m_inverseInertiaTensor, m_torqueAccum);
-
     ysVector vTimeStep = ysMath::LoadScalar(timeStep);
-
-    m_velocity = 
-        ysMath::Add(m_velocity, ysMath::Mul(m_impulseAccum, ysMath::LoadScalar(m_inverseMass)));
-    m_angularVelocity = 
-        ysMath::Add(m_angularVelocity, ysMath::Mul(m_angularImpulseAccum, ysMath::LoadScalar(m_inverseMass)));
-
-    m_velocity = ysMath::Add(m_velocity, ysMath::Mul(acceleration, vTimeStep));
-    m_angularVelocity = ysMath::Add(m_angularVelocity, ysMath::Mul(angularAcceleration, vTimeStep));
 
     ysQuaternion orientation = Transform.GetLocalOrientation();
     ysVector position = Transform.GetLocalPosition();
@@ -61,6 +49,18 @@ void dphysics::RigidBody::Integrate(float timeStep) {
 
     Transform.SetOrientation(orientation);
     Transform.SetPosition(position);
+
+    ysVector acceleration = m_acceleration;
+    acceleration = ysMath::Add(acceleration, ysMath::Mul(m_forceAccum, ysMath::LoadScalar(m_inverseMass)));
+    ysVector angularAcceleration = ysMath::MatMult(m_inverseInertiaTensor, m_torqueAccum);
+
+    m_velocity = 
+        ysMath::Add(m_velocity, ysMath::Mul(m_impulseAccum, ysMath::LoadScalar(m_inverseMass)));
+    m_angularVelocity = 
+        ysMath::Add(m_angularVelocity, ysMath::Mul(m_angularImpulseAccum, ysMath::LoadScalar(m_inverseMass)));
+
+    m_velocity = ysMath::Add(m_velocity, ysMath::Mul(acceleration, vTimeStep));
+    m_angularVelocity = ysMath::Add(m_angularVelocity, ysMath::Mul(angularAcceleration, vTimeStep));
 
     m_angularVelocity = ysMath::Mul(m_angularVelocity, ysMath::LoadScalar(pow(m_angularDamping, timeStep)));
     m_velocity = ysMath::Mul(m_velocity, ysMath::LoadScalar(pow(m_linearDamping, timeStep)));
@@ -233,6 +233,15 @@ bool dphysics::RigidBody::CheckState() {
     if (!ysMath::IsValid(m_torqueAccum)) return false;
     if (!ysMath::IsValid(m_velocity)) return false;
     return true;
+}
+
+dphysics::Collision *dphysics::RigidBody::FindMatchingCollision(Collision *collision) {
+    int collisionCount = m_collisions.GetNumObjects();
+    for (int i = 0; i < collisionCount; ++i) {
+        if (m_collisions[i]->IsSameAs(collision)) return m_collisions[i];
+    }
+    
+    return nullptr;
 }
 
 void dphysics::RigidBody::ClearAccumulators() {

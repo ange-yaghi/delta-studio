@@ -22,10 +22,14 @@ dphysics::Collision::Collision() : ysObject("Collision") {
     m_staticFriction = 0.0f;
     m_restitution = 0.0f;
     m_contactVelocity = ysMath::Constants::Zero;
-    m_contactSpace = ysMath::LoadIdentity();
+    m_contactSpace = ysMath::Constants::Identity;
+
+    m_collisionType = CollisionType::Unknown;
+    m_feature1 = -1;
+    m_feature2 = -1;
 }
 
-dphysics::Collision::Collision(Collision &collision) : ysObject("Collision") {
+dphysics::Collision::Collision(const Collision &collision) : ysObject("Collision") {
     m_penetration = collision.m_penetration;
     m_relativePosition[0] = collision.m_relativePosition[0];
     m_relativePosition[1] = collision.m_relativePosition[1];
@@ -49,7 +53,11 @@ dphysics::Collision::Collision(Collision &collision) : ysObject("Collision") {
 
     m_initialContactVelocity = collision.m_initialContactVelocity;
     m_contactVelocity = collision.m_contactVelocity;
-    m_contactSpace = ysMath::LoadIdentity();
+    m_contactSpace = collision.m_contactSpace;
+
+    m_collisionType = collision.m_collisionType;
+    m_feature1 = collision.m_feature1;
+    m_feature2 = collision.m_feature2;
 }
 
 dphysics::Collision::~Collision() {
@@ -86,6 +94,8 @@ void dphysics::Collision::UpdateInternals(float timestep) {
 
 dphysics::Collision &dphysics::Collision::operator=(dphysics::Collision &collision) {
     m_penetration = collision.m_penetration;
+    m_relativePosition[0] = collision.m_relativePosition[0];
+    m_relativePosition[1] = collision.m_relativePosition[1];
     m_normal = collision.m_normal;
     m_position = collision.m_position;
 
@@ -100,7 +110,17 @@ dphysics::Collision &dphysics::Collision::operator=(dphysics::Collision &collisi
     m_relativePosition[0] = collision.m_relativePosition[0];
     m_relativePosition[1] = collision.m_relativePosition[1];
 
+    m_dynamicFriction = collision.m_dynamicFriction;
+    m_staticFriction = collision.m_staticFriction;
+    m_restitution = collision.m_restitution;
+
     m_initialContactVelocity = collision.m_initialContactVelocity;
+    m_contactVelocity = collision.m_contactVelocity;
+    m_contactSpace = collision.m_contactSpace;
+
+    m_collisionType = collision.m_collisionType;
+    m_feature1 = collision.m_feature1;
+    m_feature2 = collision.m_feature2;
 
     return *this;
 }
@@ -123,6 +143,20 @@ bool dphysics::Collision::IsResolvable() const {
 
 ysVector dphysics::Collision::GetContactVelocityWorld() const {
     return ysMath::MatMult(m_contactSpace, m_initialContactVelocity);
+}
+
+bool dphysics::Collision::IsSameAs(Collision *other) const {
+    if (m_sensor != other->m_sensor) return false;
+    if (IsGhost() != other->IsGhost()) return false;
+    if (m_body1 != other->m_body1 && m_body1 != other->m_body2) return false;
+    if (m_body2 != other->m_body1 && m_body2 != other->m_body2) return false;
+    if (m_collisionObject1 != other->m_collisionObject1 && m_collisionObject1 != other->m_collisionObject2) return false;
+    if (m_collisionObject2 != other->m_collisionObject1 && m_collisionObject2 != other->m_collisionObject2) return false;
+    if (m_collisionType != other->m_collisionType) return false;
+    if (m_feature1 != other->m_feature1 && m_feature1 != other->m_feature2) return false;
+    if (m_feature2 != other->m_feature1 && m_feature2 != other->m_feature2) return false;
+
+    return true;
 }
 
 void dphysics::Collision::CalculateDesiredDeltaVelocity(float timestep) {

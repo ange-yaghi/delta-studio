@@ -12,7 +12,7 @@ public:
     ysExpandingArray() {
         m_maxSize = START_SIZE;
         m_nObjects = 0;
-        m_array = NULL;
+        m_array = nullptr;
 
         Preallocate(m_maxSize);
     }
@@ -140,7 +140,7 @@ public:
     }
 
     bool IsActive() const {
-        return (m_array != NULL);
+        return (m_array != nullptr);
     }
 
     void Delete(int index, bool maintainOrder = false) {
@@ -149,7 +149,7 @@ public:
                 m_array[i] = m_array[i + 1];
             }
 
-            m_array[m_nObjects - 1] = NULL;
+            m_array[m_nObjects - 1] = nullptr;
         }
         else {
             m_array[index] = m_array[m_nObjects - 1];

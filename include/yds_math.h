@@ -159,6 +159,12 @@ namespace ysMath {
         YS_MATH_CONST ysVector Half = { 0.5f, 0.5f, 0.5f, 0.5f };
         YS_MATH_CONST ysVector Double = { 2.0f, 2.0f, 2.0f, 2.0f };
 
+        YS_MATH_CONST ysMatrix Identity = { 
+            IdentityRow1, 
+            IdentityRow2, 
+            IdentityRow3, 
+            IdentityRow4 };
+
         // Numeral Constants
         YS_MATH_CONST float PI = 3.141592654f;
         YS_MATH_CONST float TWO_PI = 6.2831853071795864769252866f;

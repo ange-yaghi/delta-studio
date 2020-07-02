@@ -37,9 +37,21 @@ namespace dphysics {
         friend RigidBodySystem;
 
     public:
+        enum class CollisionType {
+            PointFace,
+            EdgeEdge,
+            Generic,
+            Unknown
+        };
+
+    public:
         Collision();
-        Collision(Collision &collision);
+        Collision(const Collision &collision);
         ~Collision();
+
+        CollisionType m_collisionType;
+        int m_feature1;
+        int m_feature2;
 
         float m_penetration;
         ysVector m_normal;
@@ -79,6 +91,8 @@ namespace dphysics {
         // Get velocity on impact
         ysVector GetContactVelocity() const { return m_initialContactVelocity; }
         ysVector GetContactVelocityWorld() const;
+
+        bool IsSameAs(Collision *other) const;
 
     protected:
         ysVector m_relativePosition[2];

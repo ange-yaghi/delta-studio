@@ -19,13 +19,13 @@ TEST(CollisionTests, CircleCircleSanityCheck) {
     c2.Radius = 1.0f;
 
     dphysics::CollisionDetector detector;
-    dphysics::Collision collision;
-    bool colliding = detector.CircleCircleCollision(collision, nullptr, nullptr, &c1, &c2);
+    dphysics::Collision collisions[2];
+    int n = detector.CircleCircleCollision(collisions, nullptr, nullptr, &c1, &c2);
 
-    EXPECT_TRUE(colliding);
-    EXPECT_NEAR(collision.m_penetration, 1.5f, 1E-4);
+    EXPECT_TRUE(n == 1);
+    EXPECT_NEAR(collisions[0].m_penetration, 1.5f, 1E-4);
 
-    VecEq(collision.m_position, ysMath::LoadVector(2.0f, 0.0f, 0.0f, 0.0f));
+    VecEq(collisions[0].m_position, ysMath::LoadVector(2.0f, 0.0f, 0.0f, 0.0f));
 }
 
 TEST(CollisionTests, CircleCircleNotColliding) {
@@ -39,10 +39,10 @@ TEST(CollisionTests, CircleCircleNotColliding) {
     c2.Radius = 1.0f;
 
     dphysics::CollisionDetector detector;
-    dphysics::Collision collision;
-    bool colliding = detector.CircleCircleCollision(collision, nullptr, nullptr, &c1, &c2);
+    dphysics::Collision collisions[2];
+    int n = detector.CircleCircleCollision(collisions, nullptr, nullptr, &c1, &c2);
 
-    EXPECT_FALSE(colliding);
+    EXPECT_TRUE(n == 0);
 }
 
 TEST(CollisionTests, BoxBoxSanityCheck) {
@@ -60,12 +60,12 @@ TEST(CollisionTests, BoxBoxSanityCheck) {
     b2.Orientation = ysMath::Constants::QuatIdentity;
 
     dphysics::CollisionDetector detector;
-    dphysics::Collision collision;
-    bool colliding = detector.BoxBoxCollision(collision, nullptr, nullptr, &b1, &b2);
+    dphysics::Collision collisions[2];
+    int n = detector.BoxBoxCollision(collisions, nullptr, nullptr, &b1, &b2);
 
-    EXPECT_TRUE(colliding);
-    EXPECT_GE(collision.m_penetration, 0);
-    EXPECT_LE(collision.m_penetration, 0.001f);
+    EXPECT_TRUE(n > 0);
+    EXPECT_GE(collisions[0].m_penetration, 0);
+    EXPECT_LE(collisions[0].m_penetration, 0.001f);
 }
 
 TEST(CollisionTests, BoxBoxOffCenter) {
@@ -83,12 +83,12 @@ TEST(CollisionTests, BoxBoxOffCenter) {
     b2.Orientation = ysMath::Constants::QuatIdentity;
 
     dphysics::CollisionDetector detector;
-    dphysics::Collision collision;
-    bool colliding = detector.BoxBoxCollision(collision, nullptr, nullptr, &b1, &b2);
+    dphysics::Collision collisions[2];
+    int n = detector.BoxBoxCollision(collisions, nullptr, nullptr, &b1, &b2);
 
-    EXPECT_TRUE(colliding);
-    EXPECT_GE(collision.m_penetration, 0);
-    EXPECT_LE(collision.m_penetration, 0.001f);
+    EXPECT_TRUE(n > 0);
+    EXPECT_GE(collisions[0].m_penetration, 0);
+    EXPECT_LE(collisions[1].m_penetration, 0.001f);
 }
 
 TEST(CollisionTests, BoxBoxOffCenterDifferentSizes) {
@@ -108,12 +108,12 @@ TEST(CollisionTests, BoxBoxOffCenterDifferentSizes) {
     b2.Orientation = ysMath::Constants::QuatIdentity;
 
     dphysics::CollisionDetector detector;
-    dphysics::Collision collision;
-    bool colliding = detector.BoxBoxCollision(collision, nullptr, nullptr, &b1, &b2);
+    dphysics::Collision collisions[2];
+    int n = detector.BoxBoxCollision(collisions, nullptr, nullptr, &b1, &b2);
 
-    EXPECT_TRUE(colliding);
-    EXPECT_GE(collision.m_penetration, 0);
-    EXPECT_LE(collision.m_penetration, Penetration);
+    EXPECT_TRUE(n > 0);
+    EXPECT_GE(collisions[0].m_penetration, 0);
+    EXPECT_LE(collisions[1].m_penetration, Penetration);
 }
 
 TEST(CollisionTests, BoxBoxOffCenterDifferentSizesDeep) {
@@ -136,14 +136,14 @@ TEST(CollisionTests, BoxBoxOffCenterDifferentSizesDeep) {
     dphysics::RigidBody b;
 
     dphysics::CollisionDetector detector;
-    dphysics::Collision collision;
-    bool colliding = detector.BoxBoxCollision(collision, &a, &b, &b1, &b2);
+    dphysics::Collision collisions[2];
+    int n = detector.BoxBoxCollision(collisions, &a, &b, &b1, &b2);
 
-    EXPECT_TRUE(colliding);
-    EXPECT_GE(collision.m_penetration, 0);
-    EXPECT_LE(collision.m_penetration, Penetration);
-    EXPECT_EQ(collision.m_body1, &b);
-    EXPECT_EQ(collision.m_body2, &a);
+    EXPECT_TRUE(n > 0);
+    EXPECT_GE(collisions[0].m_penetration, 0);
+    EXPECT_LE(collisions[0].m_penetration, Penetration);
+    EXPECT_EQ(collisions[0].m_body1, &b);
+    EXPECT_EQ(collisions[0].m_body2, &a);
 }
 
 TEST(CollisionTests, BoxBoxOffCenterDifferentSizesDeep2) {
@@ -164,14 +164,14 @@ TEST(CollisionTests, BoxBoxOffCenterDifferentSizesDeep2) {
     dphysics::RigidBody b;
 
     dphysics::CollisionDetector detector;
-    dphysics::Collision collision;
-    bool colliding = detector.BoxBoxCollision(collision, &b, &a, &b2, &b1);
+    dphysics::Collision collisions[2];
+    int n = detector.BoxBoxCollision(collisions, &b, &a, &b2, &b1);
 
-    EXPECT_TRUE(colliding);
-    EXPECT_GE(collision.m_penetration, 0);
-    EXPECT_EQ(collision.m_body1, &a);
-    EXPECT_EQ(collision.m_body2, &b);
-    VecEq(collision.m_normal, ysMath::LoadVector(-1.0f, 0.0f, 0.0f));
+    EXPECT_TRUE(n > 0);
+    EXPECT_GE(collisions[0].m_penetration, 0);
+    EXPECT_EQ(collisions[0].m_body1, &a);
+    EXPECT_EQ(collisions[0].m_body2, &b);
+    VecEq(collisions[0].m_normal, ysMath::LoadVector(-1.0f, 0.0f, 0.0f));
 }
 
 TEST(CollisionTests, BoxBoxBigSmall) {
@@ -192,11 +192,11 @@ TEST(CollisionTests, BoxBoxBigSmall) {
     dphysics::RigidBody b;
 
     dphysics::CollisionDetector detector;
-    dphysics::Collision collision;
-    bool colliding = detector.BoxBoxCollision(collision, &b, &a, &b2, &b1);
+    dphysics::Collision collisions[2];
+    int n = detector.BoxBoxCollision(collisions, &b, &a, &b2, &b1);
 
-    EXPECT_TRUE(colliding);
-    EXPECT_NEAR(collision.m_penetration, 0.1f, 1E-4);
+    EXPECT_TRUE(n == 2);
+    EXPECT_NEAR(collisions[0].m_penetration, 0.1f, 1E-4);
 }
 
 TEST(CollisionTests, RayCircleCollision) {
@@ -213,22 +213,22 @@ TEST(CollisionTests, RayCircleCollision) {
     dphysics::RigidBody b;
 
     dphysics::CollisionDetector detector;
-    dphysics::Collision collision;
-    bool colliding = detector.RayCircleCollision(collision, &b, &a, &b1, &b2);
+    dphysics::Collision collisions[2];
+    int n = detector.RayCircleCollision(collisions, &b, &a, &b1, &b2);
 
-    EXPECT_TRUE(colliding);
-    EXPECT_NEAR(collision.m_penetration, 9.0f, 1E-4);
+    EXPECT_TRUE(n == 1);
+    EXPECT_NEAR(collisions[0].m_penetration, 9.0f, 1E-4);
 
     b2.Position = ysMath::LoadVector(10.0f, 1.0f, 0.0f, 0.0f); 
-    colliding = detector.RayCircleCollision(collision, &b, &a, &b1, &b2);
+    n = detector.RayCircleCollision(collisions, &b, &a, &b1, &b2);
 
-    EXPECT_TRUE(colliding);
-    EXPECT_NEAR(collision.m_penetration, 10.0f, 1E-4);
+    EXPECT_TRUE(n == 1);
+    EXPECT_NEAR(collisions[0].m_penetration, 10.0f, 1E-4);
 
     b2.Position = ysMath::LoadVector(-10.0f, 1.0f, 0.0f, 0.0f);
-    colliding = detector.RayCircleCollision(collision, &b, &a, &b1, &b2);
+    n = detector.RayCircleCollision(collisions, &b, &a, &b1, &b2);
 
-    EXPECT_FALSE(colliding);
+    EXPECT_TRUE(n == 0);
 }
 
 TEST(CollisionTests, BoxCircleEdgeCase) {
@@ -247,8 +247,33 @@ TEST(CollisionTests, BoxCircleEdgeCase) {
     dphysics::RigidBody b;
 
     dphysics::CollisionDetector detector;
-    dphysics::Collision collision;
-    bool colliding = detector.CircleBoxCollision(collision, &b, &a, &b2, &b1);
+    dphysics::Collision collisions[2];
+    int colliding = detector.CircleBoxCollision(collisions, &b, &a, &b2, &b1);
 
-    EXPECT_TRUE(colliding);
+    EXPECT_TRUE(colliding == 1);
+}
+
+TEST(CollisionTests, BoxBoxSideGlitch) {
+    dphysics::BoxPrimitive b1;
+    dphysics::BoxPrimitive b2;
+
+    b1.Position = ysMath::LoadVector(0.0f, 0.0f, 0.0f, 0.0f);
+    b1.HalfHeight = 3.0f;
+    b1.HalfWidth = 1.0f;
+    b1.Orientation = ysMath::Constants::QuatIdentity;
+
+    b2.Position = ysMath::LoadVector(1.0f + 0.5f - 0.1f, 1.0f, 0.0f, 0.0f);
+    b2.HalfHeight = 1.5f;
+    b2.HalfWidth = 0.5f;
+    b2.Orientation = ysMath::Constants::QuatIdentity;
+
+    dphysics::RigidBody a;
+    dphysics::RigidBody b;
+
+    dphysics::CollisionDetector detector;
+    dphysics::Collision collisions[2];
+    int n = detector.BoxBoxCollision(collisions, &b, &a, &b2, &b1);
+
+    EXPECT_TRUE(n == 2);
+    EXPECT_NEAR(collisions[0].m_penetration, 0.1f, 1E-4);
 }

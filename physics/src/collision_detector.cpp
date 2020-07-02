@@ -28,40 +28,47 @@ bool dphysics::CollisionDetector::CircleCircleIntersect(RigidBody *body1, RigidB
     return false;
 }
 
-bool dphysics::CollisionDetector::BoxBoxCollision(Collision &collision, RigidBody *body1, RigidBody *body2, BoxPrimitive *box1, BoxPrimitive *box2) {
-    Collision collision1;
-    Collision collision2;
+int dphysics::CollisionDetector::BoxBoxCollision(Collision *collisions, RigidBody *body1, RigidBody *body2, BoxPrimitive *box1, BoxPrimitive *box2) {
+    Collision collisions1[2];
+    Collision collisions2[2];
 
-    bool collision1Valid = false;
-    bool collision2Valid = false;
+    int n1 = _BoxBoxCollision(collisions1, box1, box2);
+    int n2 = _BoxBoxCollision(collisions2, box2, box1);
 
-    collision1Valid = _BoxBoxCollision(&collision1, box1, box2);
-    collision2Valid = _BoxBoxCollision(&collision2, box2, box1);
+    float minPenetration1 = (n1 > 0)
+        ? collisions1->m_penetration
+        : FLT_MAX;
+    float minPenetration2 = (n2 > 0)
+        ? collisions2->m_penetration
+        : FLT_MAX;
 
-    if (collision1Valid) {
-        if (!collision2Valid || (collision2Valid && collision2.m_penetration >= collision1.m_penetration)) {
-            collision.m_body1 = body1;
-            collision.m_body2 = body2;
-            collision.m_normal = collision1.m_normal;
-            collision.m_penetration = collision1.m_penetration;
-            collision.m_position = collision1.m_position;
+    int n = 0;
+    if (n1 > 0) {
+        if (minPenetration2 >= minPenetration1) {
+            for (int i = 0; i < n1; ++i) {
+                collisions[i] = collisions1[i];
+                collisions[i].m_body1 = body1;
+                collisions[i].m_body2 = body2;
+            }
+            n = n1;
         }
     }
 
-    if (collision2Valid) {
-        if (!collision1Valid || (collision1Valid && collision1.m_penetration >= collision2.m_penetration)) {
-            collision.m_body1 = body2;
-            collision.m_body2 = body1;
-            collision.m_normal = collision2.m_normal;
-            collision.m_penetration = collision2.m_penetration;
-            collision.m_position = collision2.m_position;
+    if (n2 > 0) {
+        if (minPenetration2 <= minPenetration1) {
+            for (int i = 0; i < n2; ++i) {
+                collisions[i] = collisions2[i];
+                collisions[i].m_body1 = body2;
+                collisions[i].m_body2 = body1;
+            }
+            n = n2;
         }
     }
 
-    return (collision1Valid || collision2Valid);
+    return n;
 }
 
-bool dphysics::CollisionDetector::CircleBoxCollision(Collision &collision, RigidBody *body1, RigidBody *body2, CirclePrimitive *circle, BoxPrimitive *box) {
+int dphysics::CollisionDetector::CircleBoxCollision(Collision *collisions, RigidBody *body1, RigidBody *body2, CirclePrimitive *circle, BoxPrimitive *box) {
     constexpr float epsilon = 1E-5f;
 
     ysVector relativePosition = ysMath::Sub(circle->Position, box->Position);
@@ -76,7 +83,7 @@ bool dphysics::CollisionDetector::CircleBoxCollision(Collision &collision, Rigid
     
     float d0 = ysMath::GetScalar(ysMath::MagnitudeSquared3(ysMath::Sub(circle->Position, box->Position)));
     float d2 = ysMath::GetScalar(ysMath::MagnitudeSquared3(ysMath::Sub(circle->Position, realPosition)));
-    if (d2 > circle->Radius * circle->Radius) return false;
+    if (d2 > circle->Radius * circle->Radius) return 0;
 
     ysVector normal;
     if (d0 <= epsilon) {
@@ -91,16 +98,17 @@ bool dphysics::CollisionDetector::CircleBoxCollision(Collision &collision, Rigid
         normal = ysMath::Mask(normal, ysMath::Constants::MaskOffZ);
     }
 
-    collision.m_normal = ysMath::Normalize(normal);
-    collision.m_body1 = body1;
-    collision.m_body2 = body2;
-    collision.m_penetration = circle->Radius - ysMath::GetScalar(ysMath::Magnitude(normal));
-    collision.m_position = realPosition;
+    collisions[0].m_normal = ysMath::Normalize(normal);
+    collisions[0].m_body1 = body1;
+    collisions[0].m_body2 = body2;
+    collisions[0].m_penetration = circle->Radius - ysMath::GetScalar(ysMath::Magnitude(normal));
+    collisions[0].m_position = realPosition;
+    collisions[0].m_collisionType = Collision::CollisionType::Generic;
     
-    return true;
+    return 1;
 }
 
-bool dphysics::CollisionDetector::CircleCircleCollision(Collision &collision, RigidBody *body1, RigidBody *body2, CirclePrimitive *circle1, CirclePrimitive *circle2) {
+int dphysics::CollisionDetector::CircleCircleCollision(Collision *collisions, RigidBody *body1, RigidBody *body2, CirclePrimitive *circle1, CirclePrimitive *circle2) {
     ysVector delta = ysMath::Sub(circle2->Position, circle1->Position);
     delta = ysMath::Mask(delta, ysMath::Constants::MaskOffZ);
 
@@ -117,15 +125,14 @@ bool dphysics::CollisionDetector::CircleCircleCollision(Collision &collision, Ri
 
     float combinedRadius = circle1->Radius + circle2->Radius;
 
-    //if ((s_distance * s_distance) > (circle1->RadiusSquared - circle2->RadiusSquared)) ||
-    if ((s_distance * s_distance) < combinedRadius * combinedRadius)
-    {
-        collision.m_body1 = body1;
-        collision.m_body2 = body2;
-        collision.m_normal = ysMath::Negate3(direction);
-        collision.m_penetration = circle1->Radius + circle2->Radius - s_distance;
-        collision.m_position =
+    if ((s_distance * s_distance) < combinedRadius * combinedRadius) {
+        collisions[0].m_body1 = body1;
+        collisions[0].m_body2 = body2;
+        collisions[0].m_normal = ysMath::Negate3(direction);
+        collisions[0].m_penetration = circle1->Radius + circle2->Radius - s_distance;
+        collisions[0].m_position =
             ysMath::Add(circle1->Position, ysMath::Mul(direction, ysMath::LoadScalar(circle1->Radius)));
+        collisions[0].m_collisionType = Collision::CollisionType::Generic;
 
         return true;
     }
@@ -133,13 +140,13 @@ bool dphysics::CollisionDetector::CircleCircleCollision(Collision &collision, Ri
     return false;
 }
 
-bool dphysics::CollisionDetector::RayBoxCollision(Collision &collision, RigidBody *body1, RigidBody *body2, RayPrimitive *ray, BoxPrimitive *box) {
+int dphysics::CollisionDetector::RayBoxCollision(Collision *collisions, RigidBody *body1, RigidBody *body2, RayPrimitive *ray, BoxPrimitive *box) {
     /* TODO */
 
-    return false;
+    return 0;
 }
 
-bool dphysics::CollisionDetector::RayCircleCollision(Collision &collision, RigidBody *body1, RigidBody *body2, RayPrimitive *ray, CirclePrimitive *circle) {
+int dphysics::CollisionDetector::RayCircleCollision(Collision *collisions, RigidBody *body1, RigidBody *body2, RayPrimitive *ray, CirclePrimitive *circle) {
     ysVector D = ray->Direction;
     ysVector P = ray->Position;
     ysVector C = circle->Position;
@@ -165,17 +172,15 @@ bool dphysics::CollisionDetector::RayCircleCollision(Collision &collision, Rigid
     else if (t2 < 0) closest = t1;
     else closest = min(t1, t2);
 
-    collision.m_body1 = body1;
-    collision.m_body2 = body2;
-    collision.m_penetration = closest;
-    collision.m_position = ray->Position;
+    collisions[0].m_body1 = body1;
+    collisions[0].m_body2 = body2;
+    collisions[0].m_penetration = closest;
+    collisions[0].m_position = ray->Position;
     
     return true;
 }
 
-bool dphysics::CollisionDetector::_BoxBoxCollision(Collision *collision, BoxPrimitive *body1, BoxPrimitive *body2) {
-    bool ret = false;
-
+int dphysics::CollisionDetector::_BoxBoxCollision(Collision *collisions, BoxPrimitive *body1, BoxPrimitive *body2) {
     ysVector point1 = ysMath::Add(ysMath::QuatTransform(body1->Orientation, ysMath::LoadVector(body1->HalfWidth, body1->HalfHeight)), body1->Position);
     ysVector point2 = ysMath::Add(ysMath::QuatTransform(body1->Orientation, ysMath::LoadVector(-body1->HalfWidth, body1->HalfHeight)), body1->Position);
     ysVector point3 = ysMath::Add(ysMath::QuatTransform(body1->Orientation, ysMath::LoadVector(body1->HalfWidth, -body1->HalfHeight)), body1->Position);
@@ -224,181 +229,82 @@ bool dphysics::CollisionDetector::_BoxBoxCollision(Collision *collision, BoxPrim
         penetrationY[i] = ysMath::GetScalar(projy);
     }
 
-    Collision &retcol = *collision;
     float smallestPenetration = FLT_MAX;
+    Collision rawCollisions[4];
 
     for (int i = 0; i < 4; i++) {
         float norX_1 = ysMath::GetX(normals_1[i]);
         float norY_1 = ysMath::GetY(normals_1[i]);
         float norX_2 = ysMath::GetX(normals_2[i]);
         float norY_2 = ysMath::GetY(normals_2[i]);
+
+        Collision &col = rawCollisions[i];
+        rawCollisions[i].m_collisionType = Collision::CollisionType::Unknown;
 
         if (abs(penetrationX[i]) <= body2->HalfWidth && abs(penetrationY[i]) <= body2->HalfHeight) {
             float actualPenetrationX = body2->HalfWidth - abs(penetrationX[i]);
             float actualPenetrationY = body2->HalfHeight - abs(penetrationY[i]);
 
-            if (actualPenetrationX < smallestPenetration) {
-                if (norX_2 >= THRESH_0_NEGATIVE && norX_1 >= THRESH_0_NEGATIVE && penetrationX[i] < 0) {
-                    smallestPenetration = actualPenetrationX;
-                    ret = true;
+            bool foundValid = false;
+            if (norX_2 >= THRESH_0_NEGATIVE && norX_1 >= THRESH_0_NEGATIVE && penetrationX[i] < 0) {
+                smallestPenetration = min(actualPenetrationX, smallestPenetration);
 
-                    retcol.m_normal = ysMath::Negate(xaxis);
-                    retcol.m_penetration = smallestPenetration;
-                    retcol.m_position = points[i];
-                }
-                else if (norX_2 <= THRESH_0_POSITIVE && norX_1 <= THRESH_0_POSITIVE && penetrationX[i] > 0) {
-                    smallestPenetration = actualPenetrationX;
-                    ret = true;
+                col.m_normal = ysMath::Negate(xaxis);
+                col.m_penetration = actualPenetrationX;
+                col.m_position = points[i];
+                col.m_collisionType = Collision::CollisionType::PointFace;
+                col.m_feature1 = i;
+                col.m_feature2 = -1;
 
-                    retcol.m_normal = xaxis;
-                    retcol.m_penetration = smallestPenetration;
-                    retcol.m_position = points[i];
-                }
+                foundValid = true;
             }
+            else if (norX_2 <= THRESH_0_POSITIVE && norX_1 <= THRESH_0_POSITIVE && penetrationX[i] > 0) {
+                smallestPenetration = min(actualPenetrationX, smallestPenetration);
 
-            if (actualPenetrationY < smallestPenetration) {
+                col.m_normal = xaxis;
+                col.m_penetration = actualPenetrationX;
+                col.m_position = points[i];
+                col.m_collisionType = Collision::CollisionType::PointFace;
+                col.m_feature1 = i;
+                col.m_feature2 = -1;
+
+                foundValid = true;
+            }
+            if (actualPenetrationY < actualPenetrationX || !foundValid) {
                 if (norY_2 >= THRESH_0_NEGATIVE && norY_1 >= THRESH_0_NEGATIVE && penetrationY[i] < 0) {
-                    smallestPenetration = actualPenetrationY;
-                    ret = true;
+                    smallestPenetration = min(actualPenetrationY, smallestPenetration);
 
-                    retcol.m_normal = ysMath::Negate(yaxis);
-                    retcol.m_penetration = smallestPenetration;
-                    retcol.m_position = points[i];
+                    col.m_normal = ysMath::Negate(yaxis);
+                    col.m_penetration = actualPenetrationY;
+                    col.m_position = points[i];
+                    col.m_collisionType = Collision::CollisionType::PointFace;
+                    col.m_feature1 = i;
+                    col.m_feature2 = -1;
                 }
                 else if (norY_2 <= THRESH_0_POSITIVE && norY_1 <= THRESH_0_POSITIVE && penetrationY[i] > 0) {
-                    smallestPenetration = actualPenetrationY;
-                    ret = true;
+                    smallestPenetration = min(actualPenetrationY, smallestPenetration);
 
-                    retcol.m_normal = yaxis;
-                    retcol.m_penetration = smallestPenetration;
-                    retcol.m_position = points[i];
+                    col.m_normal = yaxis;
+                    col.m_penetration = actualPenetrationY;
+                    col.m_position = points[i];
+                    col.m_collisionType = Collision::CollisionType::PointFace;
+                    col.m_feature1 = i;
+                    col.m_feature2 = -1;
                 }
             }
         }
     }
 
-    return ret;
-}
+    int nCollisions = 0;
+    for (int i = 0; i < 4; ++i) {
+        if (nCollisions >= 2) break;
+        if (rawCollisions[i].m_collisionType == Collision::CollisionType::Unknown) continue;
 
-bool dphysics::CollisionDetector::_BoxBoxEdgeDetect(Collision *collisions, BoxPrimitive *body1, BoxPrimitive *body2) {
-    bool ret = false;
-
-    ysVector point1 = ysMath::Add(ysMath::QuatTransform(body1->Orientation, ysMath::LoadVector(body1->HalfWidth, body1->HalfHeight)), body1->Position);
-    ysVector point2 = ysMath::Add(ysMath::QuatTransform(body1->Orientation, ysMath::LoadVector(-body1->HalfWidth, body1->HalfHeight)), body1->Position);
-    ysVector point3 = ysMath::Add(ysMath::QuatTransform(body1->Orientation, ysMath::LoadVector(body1->HalfWidth, -body1->HalfHeight)), body1->Position);
-    ysVector point4 = ysMath::Add(ysMath::QuatTransform(body1->Orientation, ysMath::LoadVector(-body1->HalfWidth, -body1->HalfHeight)), body1->Position);
-
-    ysVector edgeNormal_1 = ysMath::QuatTransform(body1->Orientation, ysMath::LoadVector(1.0f, 0.0f));
-    ysVector edgeNormal_2 = ysMath::Negate(edgeNormal_1);
-    ysVector edgeNormal_3 = ysMath::QuatTransform(body1->Orientation, ysMath::LoadVector(0.0f, 1.0f));
-    ysVector edgeNormal_4 = ysMath::Negate(edgeNormal_3);
-
-    ysVector normal1_1 = edgeNormal_1;
-    ysVector normal2_1 = edgeNormal_2;
-    ysVector normal3_1 = edgeNormal_1;
-    ysVector normal4_1 = edgeNormal_2;
-
-    ysVector normal1_2 = edgeNormal_3;
-    ysVector normal2_2 = edgeNormal_3;
-    ysVector normal3_2 = edgeNormal_4;
-    ysVector normal4_2 = edgeNormal_4;
-
-    ysVector points[] = { point1, point2, point3, point4 };
-    int edges[][2] = { {0, 2}, {1, 3}, {0, 1}, {2, 3} };
-    ysVector edgeNormals[] = { edgeNormal_1, edgeNormal_2, edgeNormal_3, edgeNormal_4 };
-    ysVector normals_1[] = { normal1_1, normal2_1, normal3_1, normal4_1 };
-    ysVector normals_2[] = { normal1_2, normal2_2, normal3_2, normal4_2 };
-
-    float penetrationX[4];
-    float penetrationY[4];
-
-    ysVector xaxis = ysMath::Constants::XAxis;
-    ysVector yaxis = ysMath::Constants::YAxis;
-    xaxis = ysMath::QuatTransform(body2->Orientation, xaxis);
-    yaxis = ysMath::QuatTransform(body2->Orientation, yaxis);
-
-    ysVector del = ysMath::Sub(body2->Position, body1->Position);
-    ysVector delDir = ysMath::Normalize(del);
-
-    int numCollisions = 0;
-
-    for (int i = 0; i < 4; i++) {
-        ysVector relPoint = ysMath::Sub(points[i], body2->Position);
-
-        ysVector projx = ysMath::Dot(relPoint, xaxis);
-        ysVector projy = ysMath::Dot(relPoint, yaxis);
-
-        penetrationX[i] = ysMath::GetScalar(projx);
-        penetrationY[i] = ysMath::GetScalar(projy);
-    }
-
-    float smallestPenetration = FLT_MAX;
-    for (int i = 0; i < 4; i++) {
-        float norX_1 = ysMath::GetX(normals_1[i]);
-        float norY_1 = ysMath::GetY(normals_1[i]);
-        float norX_2 = ysMath::GetX(normals_2[i]);
-        float norY_2 = ysMath::GetY(normals_2[i]);
-
-        int *edge = edges[i];
-
-        if ((abs(penetrationX[edge[0]]) <= body2->HalfWidth && abs(penetrationX[edge[1]]) <= body2->HalfWidth) &&
-            (min(penetrationY[edge[0]], penetrationY[edge[1]]) <= body2->HalfHeight) &&
-            (max(penetrationY[edge[0]], penetrationY[edge[1]]) >= -body2->HalfHeight)) {
-
-            float actualPenetrationX0 = body2->HalfWidth - abs(penetrationX[edge[0]]);
-            float actualPenetrationX1 = body2->HalfWidth - abs(penetrationX[edge[1]]);
-            float actualPenetrationX = (actualPenetrationX0 < actualPenetrationX1) ? actualPenetrationX0 : actualPenetrationX1;
-
-            if (actualPenetrationX < smallestPenetration) {
-                numCollisions = 0;
-                if (abs(penetrationY[edge[0]]) <= body2->HalfHeight) {
-                    collisions[numCollisions].m_penetration = actualPenetrationX0;
-                    collisions[numCollisions].m_position = points[edge[0]];
-                    collisions[numCollisions].m_normal = ysMath::Negate(edgeNormals[i]);
-                    numCollisions++;
-                }
-
-                if (abs(penetrationY[edge[1]]) <= body2->HalfHeight) {
-                    collisions[numCollisions].m_penetration = actualPenetrationX1;
-                    collisions[numCollisions].m_position = points[edge[1]];
-                    collisions[numCollisions].m_normal = ysMath::Negate(edgeNormals[i]);
-                    numCollisions++;
-                }
-                smallestPenetration = actualPenetrationX;
-            }
-
-            ret = true;
-        }
-
-        if ((abs(penetrationY[edge[0]]) <= body2->HalfHeight && abs(penetrationY[edge[1]]) <= body2->HalfHeight) &&
-            (min(penetrationX[edge[0]], penetrationX[edge[1]]) <= body2->HalfWidth) &&
-            (max(penetrationX[edge[0]], penetrationX[edge[1]]) >= -body2->HalfWidth)) {
-
-            float actualPenetrationY0 = body2->HalfHeight - abs(penetrationY[edge[0]]);
-            float actualPenetrationY1 = body2->HalfHeight - abs(penetrationY[edge[1]]);
-            float actualPenetrationY = (actualPenetrationY0 < actualPenetrationY1) ? actualPenetrationY0 : actualPenetrationY1;
-
-            if (actualPenetrationY < smallestPenetration) {
-                numCollisions = 0;
-                if (abs(penetrationX[edge[0]]) <= body2->HalfWidth) {
-                    collisions[numCollisions].m_penetration = actualPenetrationY0;
-                    collisions[numCollisions].m_position = points[edge[0]];
-                    collisions[numCollisions].m_normal = ysMath::Negate(edgeNormals[i]);
-                    numCollisions++;
-                }
-
-                if (abs(penetrationX[edge[1]]) <= body2->HalfWidth) {
-                    collisions[numCollisions].m_penetration = actualPenetrationY1;
-                    collisions[numCollisions].m_position = points[edge[1]];
-                    collisions[numCollisions].m_normal = ysMath::Negate(edgeNormals[i]);
-                    numCollisions++;
-                }
-                smallestPenetration = actualPenetrationY;
-            }
-
-            ret = true;
+        if (std::abs(rawCollisions[i].m_penetration - smallestPenetration) < 1E-4) {
+            collisions[nCollisions] = rawCollisions[i];
+            ++nCollisions;
         }
     }
 
-    return ret;
+    return nCollisions;
 }
