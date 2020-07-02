@@ -36,8 +36,8 @@ int dphysics::LedgeLink::GenerateCollisions(Collision *collisionArray) {
     retcol.m_collisionObject1 = nullptr;
     retcol.m_collisionObject2 = nullptr;
     retcol.m_restitution = 0.0f;
-    retcol.m_staticFriction = 10.0f;
-    retcol.m_dynamicFriction = 10.0f;
+    retcol.m_staticFriction = 100.0f;
+    retcol.m_dynamicFriction = 100.0f;
 
     return 1;
 }

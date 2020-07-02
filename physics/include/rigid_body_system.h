@@ -62,8 +62,12 @@ namespace dphysics {
         void CloseReplayFile();
 
     protected:
+        bool CollisionExists(Collision *collision);
+
         void GenerateCollisions();
         void InitializeCollisions();
+        void CleanCollisions();
+        void ClearCollisions();
         void GenerateCollisions(RigidBody *body1, RigidBody *body2);
 
         void ResolveCollisions(float dt);

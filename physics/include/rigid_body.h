@@ -139,6 +139,8 @@ namespace dphysics {
 
         bool CheckState();
 
+        Collision *FindMatchingCollision(Collision *collision);
+
     protected:
         // Properties
         bool m_registered;

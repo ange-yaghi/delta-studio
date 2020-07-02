@@ -9,7 +9,7 @@ dbasic::SceneObjectAsset::SceneObjectAsset() : ysObject("SceneObjectAsset") {
     m_skeletonIndex = -1;
     m_type = ysObjectData::ObjectType::Undefined;
 
-    m_localTransform = ysMath::LoadIdentity();
+    m_localTransform = ysMath::Constants::Identity;
     m_localOrientation = ysMath::Constants::QuatIdentity;
     m_localPosition = ysMath::Constants::Zero;
 

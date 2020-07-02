@@ -418,10 +418,6 @@ TEST(DeltaPhysicsSystemTests, SpinningWheel) {
     rb.OpenReplayFile("SystemTest_replay.txt");
 
     for (int i = 0; i < 1000; ++i) {
-        if (i == 420) {
-            int a = 0;
-        }
-
         A.ClearAccumulators();
         A.AddForceWorldSpace(ysMath::LoadVector(0.0f, -20.0f, 0.0f), A.Transform.GetWorldPosition());
 
@@ -549,6 +545,59 @@ TEST(DeltaPhysicsSystemTests, RectangleCircleCollision) {
 
     for (int i = 0; i < 1000; ++i) {
         B.SetVelocity(ysMath::LoadVector(-4.0f, 0.0f, 0.0f));
+
+        rb.Update(1 / 60.0f);
+        EXPECT_TRUE(rb.CheckState()) << "Check failed on iteration: " << i;
+    }
+
+    rb.CloseReplayFile();
+}
+
+TEST(DeltaPhysicsSystemTests, GroundJitterTest) {
+    dphysics::RigidBodySystem rb;
+
+    dphysics::RigidBody A;
+    A.SetHint(dphysics::RigidBody::RigidBodyHint::Dynamic);
+    A.SetInverseMass(1.0f / 100.0f);
+    A.SetAlwaysAwake(true);
+    A.SetInverseInertiaTensor(A.GetRectangleTensor(1.0f * 4.0f, 1.48f * 4.0f));
+    A.Transform.SetPosition(ysMath::LoadVector(0.0f, 5.0f, 0.0f));
+    A.Transform.SetOrientation(ysMath::Constants::QuatIdentity);
+
+    dphysics::CollisionObject *col;
+    A.CollisionGeometry.NewBoxObject(&col);
+    col->SetMode(dphysics::CollisionObject::Mode::Fine);
+    col->GetAsBox()->Position = ysMath::Constants::Zero;
+    col->GetAsBox()->HalfHeight = 1.48f;
+    col->GetAsBox()->HalfWidth = 1.0f;
+
+    dphysics::RigidBody B;
+    B.SetHint(dphysics::RigidBody::RigidBodyHint::Dynamic);
+    B.SetInverseMass(0.0f);
+    B.Transform.SetPosition(ysMath::LoadVector(0.0f, 0.0f, 0.0f));
+    B.Transform.SetOrientation(ysMath::Constants::QuatIdentity);
+
+    B.CollisionGeometry.NewBoxObject(&col);
+    col->SetMode(dphysics::CollisionObject::Mode::Fine);
+    col->GetAsBox()->Position = ysMath::Constants::Zero;
+    col->GetAsBox()->HalfHeight = 1.0f;
+    col->GetAsBox()->HalfWidth = 1.0f;
+    col->GetAsBox()->Orientation = ysMath::Constants::QuatIdentity;
+
+    B.SetVelocity(ysMath::LoadVector(0.0f, 0.0f, 0.0f));
+
+    rb.RegisterRigidBody(&B);
+    rb.RegisterRigidBody(&A);
+
+    rb.OpenReplayFile("SystemTest_replay.txt");
+
+    for (int i = 0; i < 1000; ++i) {
+        if (i == 44) {
+            int a = 0;
+        }
+
+        A.ClearAccumulators();
+        A.AddForceWorldSpace(ysMath::LoadVector(0.0f, -100.0f * 10.0f, 0.0f), A.Transform.GetWorldPosition());  
 
         rb.Update(1 / 60.0f);
         EXPECT_TRUE(rb.CheckState()) << "Check failed on iteration: " << i;
