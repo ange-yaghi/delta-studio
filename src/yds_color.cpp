@@ -47,9 +47,9 @@ ysVector ysColor::linearToSrgb(const ysVector &srgb) {
 }
 
 ysVector ysColor::srgbiToLinear(unsigned int rgb, float a) {
-    int b = rgb & 0xFF; rgb >>= 1;
-    int g = rgb & 0xFF; rgb >>= 1;
-    int r = rgb & 0xFF; rgb >>= 1;
+    int b = rgb & 0xFF; rgb >>= 8;
+    int g = rgb & 0xFF; rgb >>= 8;
+    int r = rgb & 0xFF; rgb >>= 8;
 
     return srgbToLinear(
         r / 255.0f, 

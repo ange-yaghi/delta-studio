@@ -20,7 +20,7 @@ namespace dbasic {
 
     class DeltaEngine : public ysObject {
     public:
-        static const int MAX_LAYERS = 256;
+        static const int MaxLayers = 256;
 
         enum class DrawTarget {
             Gui,
@@ -33,8 +33,8 @@ namespace dbasic {
         };
 
         struct DrawCall {
-            ysTexture *Texture = nullptr;
             ShaderObjectVariables ObjectVariables;
+            ysTexture *Texture = nullptr;
             ModelAsset *Model = nullptr;
         };
 
@@ -240,8 +240,8 @@ namespace dbasic {
     protected:
         // Drawing queues
         // TODO: these should not be on the stack
-        ysExpandingArray<DrawCall, 256> m_drawQueue[MAX_LAYERS];
-        ysExpandingArray<DrawCall, 256> m_drawQueueGui[MAX_LAYERS];
+        ysExpandingArray<DrawCall, 256> *m_drawQueue;
+        ysExpandingArray<DrawCall, 256> *m_drawQueueGui;
         ysError ExecuteDrawQueue(DrawTarget target);
     };
 

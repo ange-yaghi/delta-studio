@@ -23,7 +23,7 @@ ATOM ysWindowsWindow::RegisterWindowsClass() {
     wc.hInstance = m_instance;
     wc.hIcon = NULL;
     wc.hCursor = LoadCursor(NULL, IDC_ARROW);
-    wc.hbrBackground = (HBRUSH)GetStockObject(WHITE_BRUSH);
+    wc.hbrBackground = NULL;
     wc.lpszMenuName = NULL;
     wc.lpszClassName = "GAME_ENGINE_WINDOW";
     wc.hIconSm = NULL;
@@ -48,7 +48,6 @@ ysError ysWindowsWindow::InitializeWindow(ysWindow *parent, const char *title, W
     RECT rc = { 0, 0, width, height };
     AdjustWindowRect(&rc, win32Style, FALSE);
 
-    GetLastError();
     m_hwnd = CreateWindow(
         "GAME_ENGINE_WINDOW",
         title,

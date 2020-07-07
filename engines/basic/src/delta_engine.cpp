@@ -63,6 +63,9 @@ dbasic::DeltaEngine::DeltaEngine() {
     m_cameraFov = ysMath::Constants::PI / 3.0f;
 
     ResetLights();
+
+    m_drawQueue = new ysExpandingArray<DrawCall, 256>[MaxLayers];
+    m_drawQueueGui = new ysExpandingArray<DrawCall, 256>[MaxLayers];
 }
 
 dbasic::DeltaEngine::~DeltaEngine() {
@@ -863,7 +866,7 @@ ysError dbasic::DeltaEngine::ExecuteDrawQueue(DrawTarget target) {
         m_shaderScreenVariablesSync = false;
     }
 
-    for (int i = 0; i < MAX_LAYERS; i++) {
+    for (int i = 0; i < MaxLayers; i++) {
         int objectsAtLayer = 0;
 
         if (target == DrawTarget::Main) objectsAtLayer = m_drawQueue[i].GetNumObjects();

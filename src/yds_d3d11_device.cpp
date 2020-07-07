@@ -56,10 +56,15 @@ ysError ysD3D11Device::InitializeDevice() {
     HRESULT result;
     D3D_FEATURE_LEVEL highestFeatureLevel;
 
+    UINT deviceCreationFlags = 0;
+#ifdef _DEBUG
+    deviceCreationFlags |= D3D11_CREATE_DEVICE_DEBUG;
+#endif /* _DEBUG */
+
     result = D3D11CreateDevice(nullptr,
         D3D_DRIVER_TYPE_HARDWARE,
         nullptr,
-        D3D11_CREATE_DEVICE_DEBUG,
+        deviceCreationFlags,
         nullptr,
         0,
         D3D11_SDK_VERSION,
@@ -161,11 +166,11 @@ ysError ysD3D11Device::CreateRenderingContext(ysRenderingContext **context, ysWi
     swapChainDesc.SampleDesc.Count = m_multisampleCount;
     swapChainDesc.SampleDesc.Quality = m_multisampleQuality;
     swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
-    swapChainDesc.BufferCount = 2;
+    swapChainDesc.BufferCount = 1;
     swapChainDesc.OutputWindow = windowsWindow->GetWindowHandle();
     swapChainDesc.Windowed = window->GetStyle() != ysWindow::WindowStyle::FULLSCREEN;
     swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
-    swapChainDesc.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
+    swapChainDesc.Flags = 0;
 
     IDXGIFactory *factory = GetDXGIFactory();
 
@@ -286,7 +291,7 @@ ysError ysD3D11Device::UpdateRenderingContext(ysRenderingContext *context) {
         YDS_NESTED_ERROR_CALL(DestroyD3D11RenderTarget(attachedTarget));
     }
 
-    HRESULT result = d3d11Context->m_swapChain->ResizeBuffers(2, width, height, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH);
+    HRESULT result = d3d11Context->m_swapChain->ResizeBuffers(1, width, height, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH);
 
     if (FAILED(result)) {
         return YDS_ERROR_RETURN(ysError::YDS_API_ERROR);

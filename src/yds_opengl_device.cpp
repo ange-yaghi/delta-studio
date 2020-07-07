@@ -79,7 +79,7 @@ ysError ysOpenGLDevice::UpdateRenderingContext(ysRenderingContext *context) {
     ysRenderTarget *target = context->GetAttachedRenderTarget();
     ysOpenGLVirtualContext *openglContext = static_cast<ysOpenGLVirtualContext *>(context);
 
-    if (target != NULL) {
+    if (target != nullptr) {
         YDS_NESTED_ERROR_CALL(ResizeRenderTarget(target, context->GetWindow()->GetScreenWidth(), context->GetWindow()->GetScreenHeight()));
     }
 
