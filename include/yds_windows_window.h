@@ -43,7 +43,7 @@ protected:
 
     virtual void Close();
     virtual void SetTitle(const char *title);
-    virtual void SetState(WindowState state = WindowState::VISIBLE);
+    virtual void SetState(WindowState state = WindowState::Visible);
 
     virtual void AL_SetSize(int width, int height);
     virtual void AL_SetLocation(int x, int y);

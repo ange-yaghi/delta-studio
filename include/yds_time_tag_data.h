@@ -3,21 +3,14 @@
 
 #include "yds_expanding_array.h"
 
-class ysTimeTagData
-{
-
+class ysTimeTagData {
 public:
-
-	struct TimeTag
-	{
-
+	struct TimeTag {
 		char Name[64];
 		int Frame;
-
 	};
 
 public:
-
 	ysTimeTagData();
 	~ysTimeTagData();
 
@@ -25,7 +18,6 @@ public:
 
 	int m_timeTagCount;
 	ysExpandingArray<TimeTag, 1> m_timeTags;
-
 };
 
-#endif
+#endif /* YDS_TIME_TAG_DATA_H */

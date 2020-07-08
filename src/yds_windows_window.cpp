@@ -89,7 +89,7 @@ ysError ysWindowsWindow::InitializeWindow(ysWindow *parent, const char *title, W
 bool ysWindowsWindow::SetWindowStyle(WindowStyle style) {
     if (!ysWindow::SetWindowStyle(style)) return false;
 
-    if (style == WindowStyle::WINDOWED) {
+    if (style == WindowStyle::Windowed) {
         SetWindowLongPtr(m_hwnd, GWL_STYLE, GetWindowsStyle());
         SetWindowPos(m_hwnd, NULL, 0, 0, 0, 0, SWP_FRAMECHANGED);
 
@@ -102,7 +102,7 @@ bool ysWindowsWindow::SetWindowStyle(WindowStyle style) {
         ShowWindow(m_hwnd, SW_SHOW);
         SetForegroundWindow(m_hwnd);
     }
-    else if (style == WindowStyle::FULLSCREEN) {
+    else if (style == WindowStyle::Fullscreen) {
         SetWindowLongPtr(m_hwnd, GWL_STYLE, GetWindowsStyle());
         SetWindowPos(m_hwnd, NULL, 0, 0, 0, 0, SWP_FRAMECHANGED);
 
@@ -115,7 +115,7 @@ bool ysWindowsWindow::SetWindowStyle(WindowStyle style) {
         ShowWindow(m_hwnd, SW_SHOW);
         SetForegroundWindow(m_hwnd);
     }
-    else if (style == WindowStyle::POPUP) {
+    else if (style == WindowStyle::Popup) {
         SetWindowLongPtr(m_hwnd, GWL_STYLE, GetWindowsStyle());
         SetWindowPos(m_hwnd, NULL, 0, 0, 0, 0, SWP_FRAMECHANGED);
 
@@ -148,11 +148,11 @@ bool ysWindowsWindow::IsVisible() {
 
 int ysWindowsWindow::GetWindowsStyle() const {
     switch (m_windowStyle) {
-    case WindowStyle::FULLSCREEN:
+    case WindowStyle::Fullscreen:
         return WS_POPUP | WS_VISIBLE;
-    case WindowStyle::WINDOWED:
+    case WindowStyle::Windowed:
         return WS_OVERLAPPEDWINDOW | WS_VISIBLE;
-    case WindowStyle::POPUP:
+    case WindowStyle::Popup:
         return WS_POPUP | WS_VISIBLE;
     }
 
@@ -178,16 +178,16 @@ void ysWindowsWindow::SetState(WindowState state) {
     ysWindow::SetState(state);
 
     switch (state) {
-    case WindowState::VISIBLE:
+    case WindowState::Visible:
         ShowWindow(m_hwnd, SW_SHOW);
         break;
-    case WindowState::HIDDEN:
+    case WindowState::Hidden:
         ShowWindow(m_hwnd, SW_HIDE);
         break;
-    case WindowState::MAXIMIZED:
+    case WindowState::Maximized:
         ShowWindow(m_hwnd, SW_SHOWMAXIMIZED);
         break;
-    case WindowState::MINIMIZED:
+    case WindowState::Minimized:
         ShowWindow(m_hwnd, SW_SHOWMINIMIZED);
         break;
     }

@@ -182,6 +182,8 @@ public:
     // Initialize texture slots
     ysError InitializeTextureSlots(int maxSlots);
 
+    /* Debug */
+
     // TEMP
     virtual void Draw(int numFaces, int indexOffset, int vertexOffset) { (void)numFaces; (void)indexOffset; (void)vertexOffset; }
 

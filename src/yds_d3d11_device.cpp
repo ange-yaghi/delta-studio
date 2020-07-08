@@ -7,6 +7,7 @@
 #include "../include/yds_d3d11_shader_program.h"
 #include "../include/yds_d3d11_input_layout.h"
 #include "../include/yds_d3d11_texture.h"
+#include "../include/yds_d3d11_utilities.h"
 
 #include "../include/yds_windows_window.h"
 
@@ -96,9 +97,10 @@ ysError ysD3D11Device::InitializeDevice() {
 ysError ysD3D11Device::DestroyDevice() {
     YDS_ERROR_DECLARE("DestroyDevice");
 
-    if (m_deviceContext != nullptr)	m_deviceContext->Release();
-    if (m_device != nullptr) m_device->Release();
-    if (m_DXGIFactory != nullptr) m_DXGIFactory->Release();
+    if (m_deviceContext != nullptr) {
+        m_deviceContext->ClearState();
+        m_deviceContext->Flush();
+    }
 
     if (m_depthStencilDisabledState != nullptr) m_depthStencilDisabledState->Release();
     if (m_depthStencilEnabledState != nullptr) m_depthStencilEnabledState->Release();
@@ -108,13 +110,21 @@ ysError ysD3D11Device::DestroyDevice() {
 
     if (m_rasterizerState != nullptr) m_rasterizerState->Release();
 
+    if (m_DXGIFactory != nullptr) m_DXGIFactory->Release();
+    if (m_deviceContext != nullptr)	m_deviceContext->Release();
+    if (m_device != nullptr) m_device->Release();
+    
 #ifdef _DEBUG
     Microsoft::WRL::ComPtr<IDXGIDebug> dxgiDebug;
 
-    DXGIGetDebugInterface_proc proc = (DXGIGetDebugInterface_proc)GetProcAddress(GetModuleHandle(TEXT("Dxgidebug.dll")), "DXGIGetDebugInterface");
-    const IID &pD = DXGI_DEBUG_ALL;
-    HRESULT r = proc(IID_PPV_ARGS(dxgiDebug.GetAddressOf()));
-    dxgiDebug.Get()->ReportLiveObjects(pD, DXGI_DEBUG_RLO_ALL);
+    HMODULE debugModule = GetModuleHandle(TEXT("Dxgidebug.dll"));
+
+    if (debugModule != NULL) {
+        DXGIGetDebugInterface_proc proc = (DXGIGetDebugInterface_proc)GetProcAddress(debugModule, "DXGIGetDebugInterface");
+        const IID &pD = DXGI_DEBUG_ALL;
+        HRESULT r = proc(IID_PPV_ARGS(dxgiDebug.GetAddressOf()));
+        dxgiDebug.Get()->ReportLiveObjects(pD, DXGI_DEBUG_RLO_DETAIL);
+    }
 #endif /* _DEBUG */
 
     return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
@@ -166,9 +176,9 @@ ysError ysD3D11Device::CreateRenderingContext(ysRenderingContext **context, ysWi
     swapChainDesc.SampleDesc.Count = m_multisampleCount;
     swapChainDesc.SampleDesc.Quality = m_multisampleQuality;
     swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
-    swapChainDesc.BufferCount = 1;
+    swapChainDesc.BufferCount = 2;
     swapChainDesc.OutputWindow = windowsWindow->GetWindowHandle();
-    swapChainDesc.Windowed = window->GetStyle() != ysWindow::WindowStyle::FULLSCREEN;
+    swapChainDesc.Windowed = window->GetStyle() != ysWindow::WindowStyle::Fullscreen;
     swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
     swapChainDesc.Flags = 0;
 
@@ -205,6 +215,8 @@ ysError ysD3D11Device::CreateRenderingContext(ysRenderingContext **context, ysWi
         m_device->CreateRasterizerState(&rasterizerDescription, &m_rasterizerState);
         GetImmediateContext()->RSSetState(m_rasterizerState);
 
+        D3D11SetDebugName(m_rasterizerState, "RASTERIZER_STATE");
+
         // TEMPORARY ALPHA ENABLING
         D3D11_BLEND_DESC BlendState;
         ZeroMemory(&BlendState, sizeof(D3D11_BLEND_DESC));
@@ -217,6 +229,8 @@ ysError ysD3D11Device::CreateRenderingContext(ysRenderingContext **context, ysWi
         BlendState.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
         BlendState.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
         m_device->CreateBlendState(&BlendState, &m_blendState);
+
+        D3D11SetDebugName(m_blendState, "ALPHA_BLEND_STATE");
 
         float blendFactor[] = { 0.0f, 0.0f, 0.0f, 0.0f };
         UINT sampleMask = 0xffffffff;
@@ -311,7 +325,7 @@ ysError ysD3D11Device::DestroyRenderingContext(ysRenderingContext *&context) {
         YDS_NESTED_ERROR_CALL(SetContextMode(context, ysRenderingContext::ContextMode::Windowed));
 
         ysD3D11Context *d3d11Context = static_cast<ysD3D11Context *>(context);
-        if (d3d11Context->m_swapChain) d3d11Context->m_swapChain->Release();
+        if (d3d11Context->m_swapChain != nullptr) d3d11Context->m_swapChain->Release();
     }
 
     YDS_NESTED_ERROR_CALL(ysDevice::DestroyRenderingContext(context));
@@ -332,7 +346,7 @@ ysError ysD3D11Device::SetContextMode(ysRenderingContext *context, ysRenderingCo
     HRESULT result;
 
     if (mode == ysRenderingContext::ContextMode::Fullscreen) {
-        window->SetWindowStyle(ysWindow::WindowStyle::FULLSCREEN);
+        window->SetWindowStyle(ysWindow::WindowStyle::Fullscreen);
         result = d3d11Context->m_swapChain->SetFullscreenState(TRUE, nullptr);
 
         if (FAILED(result)) {
@@ -341,7 +355,7 @@ ysError ysD3D11Device::SetContextMode(ysRenderingContext *context, ysRenderingCo
     }
 
     else if (mode == ysRenderingContext::ContextMode::Windowed) {
-        window->SetWindowStyle(ysWindow::WindowStyle::WINDOWED);
+        window->SetWindowStyle(ysWindow::WindowStyle::Windowed);
         result = d3d11Context->m_swapChain->SetFullscreenState(FALSE, nullptr);
 
         if (FAILED(result)) {
@@ -586,6 +600,8 @@ ysError ysD3D11Device::CreateVertexBuffer(ysGPUBuffer **newBuffer, int size, cha
         return YDS_ERROR_RETURN(ysError::YDS_COULD_NOT_CREATE_GPU_BUFFER);
     }
 
+    D3D11SetDebugName(buffer, "VERTEX_BUFFER");
+
     ysD3D11GPUBuffer *newD3D11Buffer = m_gpuBuffers.NewGeneric<ysD3D11GPUBuffer>();
 
     newD3D11Buffer->m_size = size;
@@ -633,6 +649,8 @@ ysError ysD3D11Device::CreateIndexBuffer(ysGPUBuffer **newBuffer, int size, char
         return YDS_ERROR_RETURN(ysError::YDS_COULD_NOT_CREATE_GPU_BUFFER);
     }
 
+    D3D11SetDebugName(buffer, "INDEX_BUFFER");
+
     ysD3D11GPUBuffer *newD3D11Buffer = m_gpuBuffers.NewGeneric<ysD3D11GPUBuffer>();
 
     newD3D11Buffer->m_size = size;
@@ -642,7 +660,10 @@ ysError ysD3D11Device::CreateIndexBuffer(ysGPUBuffer **newBuffer, int size, char
 
     if (mirrorToRam) {
         newD3D11Buffer->m_RAMMirror = new char[size];
-        memcpy(newD3D11Buffer->m_RAMMirror, data, size);
+
+        if (data != nullptr) {
+            memcpy(newD3D11Buffer->m_RAMMirror, data, size);
+        }
     }
 
     *newBuffer = static_cast<ysGPUBuffer *>(newD3D11Buffer);
@@ -678,6 +699,8 @@ ysError ysD3D11Device::CreateConstantBuffer(ysGPUBuffer **newBuffer, int size, c
         return YDS_ERROR_RETURN(ysError::YDS_COULD_NOT_CREATE_GPU_BUFFER);
     }
 
+    D3D11SetDebugName(buffer, "CONSTANT_BUFFER");
+
     ysD3D11GPUBuffer *newD3D11Buffer = m_gpuBuffers.NewGeneric<ysD3D11GPUBuffer>();
 
     newD3D11Buffer->m_size = size;
@@ -689,7 +712,10 @@ ysError ysD3D11Device::CreateConstantBuffer(ysGPUBuffer **newBuffer, int size, c
 
     if (mirrorToRam) {
         newD3D11Buffer->m_RAMMirror = new char[size];
-        memcpy(newD3D11Buffer->m_RAMMirror, data, size);
+
+        if (data != nullptr) {
+            memcpy(newD3D11Buffer->m_RAMMirror, data, size);
+        }
     }
 
     return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
@@ -700,7 +726,7 @@ ysError ysD3D11Device::UseVertexBuffer(ysGPUBuffer *buffer, int stride, int offs
 
     if (!CheckCompatibility(buffer)) return YDS_ERROR_RETURN(ysError::YDS_INCOMPATIBLE_PLATFORMS);
 
-    if (buffer) {
+    if (buffer != nullptr) {
         UINT uoffset = (UINT)offset;
         UINT ustride = (UINT)stride;
 
@@ -880,6 +906,8 @@ ysError ysD3D11Device::CreateVertexShader(ysShader **newShader, const char *shad
     strcpy_s(newD3D11Shader->m_shaderName, 64, shaderName);
     newD3D11Shader->m_shaderType = ysShader::ShaderType::Vertex;
 
+    D3D11SetDebugName(newD3D11Shader->m_vertexShader, newD3D11Shader->m_filename);
+
     *newShader = static_cast<ysShader *>(newD3D11Shader);
 
     return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
@@ -920,6 +948,8 @@ ysError ysD3D11Device::CreatePixelShader(ysShader **newShader, const char *shade
     newD3D11Shader->m_shaderType = ysShader::ShaderType::Pixel;
 
     *newShader = newD3D11Shader;
+
+    D3D11SetDebugName(newD3D11Shader->m_pixelShader, newD3D11Shader->m_filename);
 
     // TEMP ----------------------------------------------------
 

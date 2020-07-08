@@ -56,6 +56,7 @@
     <ClInclude Include="..\..\include\yds_d3d11_shader.h" />
     <ClInclude Include="..\..\include\yds_d3d11_shader_program.h" />
     <ClInclude Include="..\..\include\yds_d3d11_texture.h" />
+    <ClInclude Include="..\..\include\yds_d3d11_utilities.h" />
     <ClInclude Include="..\..\include\yds_depth_buffer.h" />
     <ClInclude Include="..\..\include\yds_device.h" />
     <ClInclude Include="..\..\include\yds_ds8_audio_buffer.h" />
@@ -166,6 +167,7 @@
     <ClCompile Include="..\..\src\yds_d3d11_shader.cpp" />
     <ClCompile Include="..\..\src\yds_d3d11_shader_program.cpp" />
     <ClCompile Include="..\..\src\yds_d3d11_texture.cpp" />
+    <ClCompile Include="..\..\src\yds_d3d11_utilities.cpp" />
     <ClCompile Include="..\..\src\yds_depth_buffer.cpp" />
     <ClCompile Include="..\..\src\yds_device.cpp" />
     <ClCompile Include="..\..\src\yds_ds8_audio_buffer.cpp" />

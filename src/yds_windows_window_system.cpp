@@ -104,9 +104,12 @@ LRESULT WINAPI ysWindowsWindowSystem::WinProc(HWND hWnd, UINT msg, WPARAM wParam
             ysWindowSystem::Get()->CloseWindow(target);
             return 0;
         case WM_SIZE:
-            if (wParam == SIZE_MAXIMIZED || wParam == SIZE_MINIMIZED || wParam == SIZE_RESTORED) {
+            if (!target->IsResizing()) {
                 target->OnResizeWindow(LOWORD(lParam), HIWORD(lParam));
             }
+            return 0;
+        case WM_ENTERSIZEMOVE:
+            target->StartResizing();
             return 0;
         case WM_EXITSIZEMOVE:
         {
@@ -114,17 +117,14 @@ LRESULT WINAPI ysWindowsWindowSystem::WinProc(HWND hWnd, UINT msg, WPARAM wParam
             if (GetClientRect(hWnd, &rect)) {
                 target->OnResizeWindow(rect.right - rect.left, rect.bottom - rect.top);
             }
+            
+            target->EndResizing();
+
             return 0;
         }
         case WM_MOVE:
             target->OnMoveWindow(LOWORD(lParam), HIWORD(lParam));
             return 0;
-
-            //case WM_ACTIVATE:
-            //	if (wParam == WA_ACTIVE || wParam == WA_CLICKACTIVE) target->OnActivate();
-            //	else if (wParam == WA_INACTIVE) target->OnDeactivate();
-            //	return 0;
-
         case WM_SETFOCUS:
             target->OnActivate();
             return 0;

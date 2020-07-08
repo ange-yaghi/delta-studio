@@ -110,7 +110,7 @@ ysError ysD3D10Device::CreateRenderingContext(ysRenderingContext **context, ysWi
 	swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
 	swapChainDesc.BufferCount = 2;
 	swapChainDesc.OutputWindow = windowsWindow->GetWindowHandle();
-	swapChainDesc.Windowed = window->GetStyle() != ysWindow::WindowStyle::FULLSCREEN;
+	swapChainDesc.Windowed = window->GetStyle() != ysWindow::WindowStyle::Fullscreen;
 	swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
 	swapChainDesc.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
 
@@ -251,7 +251,7 @@ ysError ysD3D10Device::SetContextMode(ysRenderingContext *context, ysRenderingCo
 	HRESULT result;
 
 	if (mode == ysRenderingContext::ContextMode::Fullscreen) {
-		window->SetWindowStyle(ysWindow::WindowStyle::FULLSCREEN);
+		window->SetWindowStyle(ysWindow::WindowStyle::Fullscreen);
 		//d3d10Context->m_swapChain->ResizeBuffers
 		result = d3d10Context->m_swapChain->SetFullscreenState(TRUE, nullptr);
 
@@ -259,7 +259,7 @@ ysError ysD3D10Device::SetContextMode(ysRenderingContext *context, ysRenderingCo
 			return YDS_ERROR_RETURN(ysError::YDS_COULD_NOT_ENTER_FULLSCREEN);
 	}
 	else if (mode == ysRenderingContext::ContextMode::Windowed) {
-		window->SetWindowStyle(ysWindow::WindowStyle::WINDOWED);
+		window->SetWindowStyle(ysWindow::WindowStyle::Windowed);
 		result = d3d10Context->m_swapChain->SetFullscreenState(FALSE, nullptr);
 
 		if (FAILED(result))
