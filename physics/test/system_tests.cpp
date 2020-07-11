@@ -388,6 +388,65 @@ TEST(DeltaPhysicsSystemTests, Vases) {
     rb.CloseReplayFile();
 }
 
+TEST(DeltaPhysicsSystemTests, VaseTipForce) {
+    dphysics::RigidBodySystem rb;
+
+    dphysics::RigidBody A;
+    A.SetHint(dphysics::RigidBody::RigidBodyHint::Dynamic);
+    A.SetInverseMass(0.0f);
+    A.Transform.SetPosition(ysMath::LoadVector(0.0f, 0.0f, 0.0f));
+    A.Transform.SetOrientation(ysMath::Constants::QuatIdentity);
+
+    dphysics::CollisionObject *col;
+    A.CollisionGeometry.NewBoxObject(&col);
+    col->SetMode(dphysics::CollisionObject::Mode::Fine);
+    col->GetAsBox()->Position = ysMath::Constants::Zero;
+    col->GetAsBox()->HalfHeight = 0.1f;
+    col->GetAsBox()->HalfWidth = 1.0f;
+    col->GetAsBox()->Orientation = ysMath::Constants::QuatIdentity;
+
+    dphysics::RigidBody B;
+    B.SetHint(dphysics::RigidBody::RigidBodyHint::Dynamic);
+    B.SetInverseMass(1.0f);
+    B.SetInverseInertiaTensor(B.GetRectangleTensor(2.24f, 0.963f));
+    B.Transform.SetPosition(ysMath::LoadVector(0.0f, 4.0f, 0.0f));
+    B.Transform.SetOrientation(ysMath::Constants::QuatIdentity);
+
+    B.CollisionGeometry.NewBoxObject(&col);
+    col->SetMode(dphysics::CollisionObject::Mode::Fine);
+    col->GetAsBox()->Position = ysMath::Constants::Zero;
+    col->GetAsBox()->HalfHeight = 2.24f / 2;
+    col->GetAsBox()->HalfWidth = 0.963f / 2;
+    col->GetAsBox()->Orientation = ysMath::Constants::QuatIdentity;
+
+    rb.RegisterRigidBody(&A);
+    rb.RegisterRigidBody(&B);
+
+    rb.OpenReplayFile("SystemTest_replay.txt");
+
+    for (int i = 0; i < 1000; ++i) {
+        if (i == 18) {
+            int a = 0;
+        }
+
+        B.ClearAccumulators();
+        B.AddForceWorldSpace(
+            ysMath::LoadVector(0.0f, -15.0f / B.GetInverseMass(), 0.0f),
+            B.Transform.GetWorldPosition());
+
+        if (i > 50) {
+            B.AddForceWorldSpace(
+                ysMath::LoadVector(-10.0f, 0.0f, 0.0f),
+                ysMath::LoadVector(0.0f, 0.963f, 0.0f));
+        }
+
+        rb.Update(1 / 30.0f);
+        EXPECT_TRUE(rb.CheckState()) << "Check failed on iteration: " << i;
+    }
+
+    rb.CloseReplayFile();
+}
+
 TEST(DeltaPhysicsSystemTests, VelocityResolutionHighFriction) {
     dphysics::RigidBodySystem rb;
 
