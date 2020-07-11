@@ -47,7 +47,7 @@ public:
 
         m_maxSize = 0;
         m_nObjects = 0;
-        m_array = NULL;
+        m_array = nullptr;
     }
 
     TYPE *CreateArray(int nObjects, bool construct = true) {

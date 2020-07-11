@@ -282,9 +282,6 @@
     <ClInclude Include="..\..\include\yds_timing.h">
       <Filter>Header Files\timing</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\yds_time_tag_data.h">
-      <Filter>Header Files\timing</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\include\yds_windows_monitor.h">
       <Filter>Header Files\window-system\windows</Filter>
     </ClInclude>
@@ -497,6 +494,15 @@
     </ClInclude>
     <ClInclude Include="..\..\include\yds_d3d11_utilities.h">
       <Filter>Header Files\api\directx11</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\yds_time_tag_data.h">
+      <Filter>Header Files\assets\legacy</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\yds_breakdown_timer.h">
+      <Filter>Header Files\timing</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\yds_breakdown_timer_channel.h">
+      <Filter>Header Files\timing</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -758,9 +764,6 @@
     <ClCompile Include="..\..\src\yds_timing.cpp">
       <Filter>Source Files\timing</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\yds_time_tag_data.cpp">
-      <Filter>Source Files\timing</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\yds_tool_animation_file.cpp">
       <Filter>Source Files\assets\legacy</Filter>
     </ClCompile>
@@ -799,6 +802,15 @@
     </ClCompile>
     <ClCompile Include="..\..\src\yds_d3d11_utilities.cpp">
       <Filter>Source Files\api\directx11</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\yds_time_tag_data.cpp">
+      <Filter>Source Files\assets\legacy</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\yds_breakdown_timer_channel.cpp">
+      <Filter>Source Files\timing</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\yds_breakdown_timer.cpp">
+      <Filter>Source Files\timing</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

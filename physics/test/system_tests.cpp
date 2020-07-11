@@ -494,8 +494,8 @@ TEST(DeltaPhysicsSystemTests, SpinningWheelLinkTest) {
 
     for (int i = 0; i < 1000; ++i) {
         A.ClearAccumulators();
-        A.AddForceWorldSpace(ysMath::LoadVector(0.0f, -20.0f, 0.0f), A.Transform.GetWorldPosition());
-        C.AddForceWorldSpace(ysMath::LoadVector(0.0f, -20.0f, 0.0f), C.Transform.GetWorldPosition());
+        A.AddForceWorldSpace(ysMath::LoadVector(0.0f, -10.0f, 0.0f), A.Transform.GetWorldPosition());
+        C.AddForceWorldSpace(ysMath::LoadVector(0.0f, -10.0f, 0.0f), C.Transform.GetWorldPosition());
 
         if (ysMath::GetX(A.GetAngularVelocity()) < 5.0f) {
             A.AddTorque(ysMath::LoadVector(0.0f, 0.0f, 10.0f));
@@ -600,6 +600,60 @@ TEST(DeltaPhysicsSystemTests, GroundJitterTest) {
         A.AddForceWorldSpace(ysMath::LoadVector(0.0f, -100.0f * 10.0f, 0.0f), A.Transform.GetWorldPosition());  
 
         rb.Update(1 / 60.0f);
+        EXPECT_TRUE(rb.CheckState()) << "Check failed on iteration: " << i;
+    }
+
+    rb.CloseReplayFile();
+}
+
+TEST(DeltaPhysicsSystemTests, ForceWithFriction) {
+    dphysics::RigidBodySystem rb;
+
+    rb.InitializeFrictionTable(2, 0.5f, 0.2f);
+    rb.SetFriction(0, 1, 1.5f, 1.0f);
+
+    dphysics::RigidBody A;
+    A.SetMaterial(0);
+    A.SetHint(dphysics::RigidBody::RigidBodyHint::Dynamic);
+    A.SetInverseMass(1 / 1.0f);
+    A.SetInverseInertiaTensor(A.GetRectangleTensor(0.5f, 0.5f));
+    A.Transform.SetPosition(ysMath::LoadVector(-2.0f, 0.5f, 0.0f));
+    A.Transform.SetOrientation(ysMath::Constants::QuatIdentity);
+
+    dphysics::CollisionObject *col;
+    A.CollisionGeometry.NewBoxObject(&col);
+    col->SetMode(dphysics::CollisionObject::Mode::Fine);
+    col->GetAsBox()->Position = ysMath::Constants::Zero;
+    col->GetAsBox()->HalfHeight = 0.5f;
+    col->GetAsBox()->HalfWidth = 0.5f;
+    col->GetAsBox()->Orientation = ysMath::Constants::QuatIdentity;
+
+    dphysics::RigidBody B;
+    B.SetMaterial(1);
+    B.SetHint(dphysics::RigidBody::RigidBodyHint::Dynamic);
+    B.SetInverseMass(0.0f);
+    B.Transform.SetPosition(ysMath::LoadVector(0.0f, -2.0f, 0.0f));
+    B.Transform.SetOrientation(ysMath::Constants::QuatIdentity);
+
+    B.CollisionGeometry.NewBoxObject(&col);
+    col->SetMode(dphysics::CollisionObject::Mode::Fine);
+    col->GetAsBox()->Position = ysMath::Constants::Zero;
+    col->GetAsBox()->HalfHeight = 0.5f;
+    col->GetAsBox()->HalfWidth = 15.0f;
+    col->GetAsBox()->Orientation = ysMath::Constants::QuatIdentity;
+
+    B.SetVelocity(ysMath::LoadVector(0.0f, 0.0f, 0.0f));
+
+    rb.RegisterRigidBody(&A);
+    rb.RegisterRigidBody(&B);
+
+    rb.OpenReplayFile("SystemTest_replay.txt");
+
+    for (int i = 0; i < 100; ++i) {
+        A.AddForceWorldSpace(
+            ysMath::LoadVector(-1.0f, -1.0f, 0.0f, 0.0f),
+            ysMath::Add(A.Transform.GetWorldPosition(), ysMath::LoadVector(0.0f, 0.5f, 0.0f)));
+        rb.Update(1 / 120.0f);
         EXPECT_TRUE(rb.CheckState()) << "Check failed on iteration: " << i;
     }
 

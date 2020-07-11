@@ -27,8 +27,9 @@
 #include "yds_animation_interchange_file.h"
 
 // Timing
-#include "yds_time_tag_data.h"
 #include "yds_timing.h"
+#include "yds_breakdown_timer.h"
+#include "yds_breakdown_timer_channel.h"
 
 // Math
 #include "yds_math.h"

@@ -199,6 +199,74 @@ TEST(CollisionTests, BoxBoxBigSmall) {
     EXPECT_NEAR(collisions[0].m_penetration, 0.1f, 1E-4);
 }
 
+TEST(CollisionTests, BoxBoxDetectionOnly) {
+    dphysics::BoxPrimitive b1;
+    dphysics::BoxPrimitive b2;
+
+    b1.Position = ysMath::LoadVector(0.0f, 0.0f, 0.0f, 0.0f);
+    b1.HalfHeight = 10.0f;
+    b1.HalfWidth = 10.0f;
+    b1.Orientation = ysMath::Constants::QuatIdentity;
+
+    b2.Position = ysMath::LoadVector(11.4f, 0.0f, 0.0f, 0.0f);
+    b2.HalfHeight = 1.5f;
+    b2.HalfWidth = 1.5f;
+    b2.Orientation = ysMath::Constants::QuatIdentity;
+
+    dphysics::CollisionDetector detector;
+    bool result;
+
+    result = detector._BoxBoxColliding(&b1, &b2);
+    EXPECT_TRUE(result);
+
+    b1.Position = ysMath::LoadVector(-2.0f, 0.0f, 0.0f, 0.0f);
+    result = detector._BoxBoxColliding(&b1, &b2);
+    EXPECT_FALSE(result);
+
+    b1.Position = ysMath::LoadVector(0.0f, 0.0f, 0.0f, 0.0f);
+    b1.HalfHeight = 1.0f;
+    b1.HalfWidth = 1.0f;
+    b1.Orientation = ysMath::Constants::QuatIdentity;
+
+    b2.Position = ysMath::LoadVector(0.0f, 2.01f, 0.0f, 0.0f);
+    b2.HalfHeight = 1.0f;
+    b2.HalfWidth = 1.0f;
+    b2.Orientation = ysMath::Constants::QuatIdentity;
+
+    result = detector._BoxBoxColliding(&b1, &b2);
+    EXPECT_FALSE(result);
+
+    b1.Orientation = ysMath::LoadQuaternion(ysMath::Constants::PI / 4, ysMath::Constants::ZAxis);
+
+    result = detector._BoxBoxColliding(&b1, &b2);
+    EXPECT_TRUE(result);
+}
+
+TEST(CollisionTests, BoxBoxDeep) {
+    dphysics::BoxPrimitive b1;
+    dphysics::BoxPrimitive b2;
+
+    b1.Position = ysMath::LoadVector(0.0f, 0.2f, 0.0f, 0.0f);
+    b1.HalfHeight = 1.0f;
+    b1.HalfWidth = 1.0f;
+    b1.Orientation = ysMath::Constants::QuatIdentity;
+
+    b2.Position = ysMath::LoadVector(0.0f, 0.0f, 0.0f, 0.0f);
+    b2.HalfHeight = 0.2f;
+    b2.HalfWidth = 10.0f;
+    b2.Orientation = ysMath::Constants::QuatIdentity;
+
+    dphysics::RigidBody a;
+    dphysics::RigidBody b;
+
+    dphysics::CollisionDetector detector;
+    dphysics::Collision collisions[2];
+    int n = detector.BoxBoxCollision(collisions, &b, &a, &b2, &b1);
+
+    EXPECT_EQ(n, 2);
+    EXPECT_NEAR(collisions[0].m_penetration, 0.1f, 1E-4);
+}
+
 TEST(CollisionTests, RayCircleCollision) {
     dphysics::RayPrimitive b1;
     dphysics::CirclePrimitive b2;

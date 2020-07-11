@@ -19,8 +19,8 @@ namespace dphysics {
 
         bool CircleCircleIntersect(RigidBody *body1, RigidBody *body2, CirclePrimitive *circle1, CirclePrimitive *circle2);
 
-    protected:
-        int _BoxBoxCollision(Collision *collisions, BoxPrimitive *body1, BoxPrimitive *body2);
+        bool _BoxBoxColliding(BoxPrimitive *body1, BoxPrimitive *body2);
+        int BoxBoxVertexPenetration(Collision *collisions, BoxPrimitive *body1, BoxPrimitive *body2);
     };
 
 } /* namesapce dbasic */

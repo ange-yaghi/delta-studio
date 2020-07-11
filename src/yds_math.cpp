@@ -227,6 +227,9 @@ ysVector ysMath::Negate3(const ysVector &v) {
     return ysMath::Mul(v, ysMath::Constants::Negate3);
 }
 
+ysVector ysMath::Abs(const ysVector &a) {
+    return ComponentMax(a, Negate(a));
+}
 
 ysVector ysMath::Mask(const ysVector &v, const ysVectorMask &mask) {
     return _mm_and_ps(v, mask.vector);

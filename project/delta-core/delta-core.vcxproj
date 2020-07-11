@@ -19,6 +19,8 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\include\yds_breakdown_timer_channel.h" />
+    <ClInclude Include="..\..\include\yds_breakdown_timer.h" />
     <ClInclude Include="..\..\include\yds_color.h" />
     <ClInclude Include="..\..\include\yds_animation_action.h" />
     <ClInclude Include="..\..\include\yds_animation_action_binding.h" />
@@ -131,6 +133,8 @@
     <ClInclude Include="..\..\include\yds_window_system_object.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\src\yds_breakdown_timer.cpp" />
+    <ClCompile Include="..\..\src\yds_breakdown_timer_channel.cpp" />
     <ClCompile Include="..\..\src\yds_color.cpp" />
     <ClCompile Include="..\..\src\yds_animation_action.cpp" />
     <ClCompile Include="..\..\src\yds_animation_action_binding.cpp" />

@@ -18,16 +18,32 @@ public:
     std::string GetName() const { return m_name; }
 
     int GetEntryCount() const { return m_entryCount; }
+    uint64_t GetFrameCount() const { return m_frameCount; }
 
-    void RecordSample(float s);
-    float GetSample(int i) const;
+    void RecordSample(double s);
+    double GetSample(int i) const;
+    double GetLastSample() const;
+
+    uint64_t GetLastMeasurementStart() const { return m_lastMeasurementStart; }
+
+    void StartMeasurement(uint64_t timestamp);
+    void EndMeasurement(uint64_t timestamp);
+
+    bool IsMidMeasurement() const { return m_midMeasurement; }
 
 protected:
     std::string m_name;
-    float *m_sampleBuffer;
+    double *m_sampleBuffer;
     int m_bufferSize;
-    int m_currentBufferOffset;
+    int m_currentWriteIndex;
     int m_entryCount;
+
+    uint64_t m_frameCount;
+
+    bool m_midMeasurement;
+
+protected:
+    uint64_t m_lastMeasurementStart;
 };
 
 #endif /* YDS_BREAKDOWN_TIMER_CHANNEL_H */
