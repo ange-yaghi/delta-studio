@@ -291,7 +291,7 @@ ysError ysOpenGLDevice::SetRenderTarget(ysRenderTarget *target) {
 ysError ysOpenGLDevice::DestroyRenderTarget(ysRenderTarget *&target) {
     YDS_ERROR_DECLARE("DestroyRenderTarget");
 
-    if (target == NULL) return YDS_ERROR_RETURN(ysError::YDS_INVALID_PARAMETER);
+    if (target == nullptr) return YDS_ERROR_RETURN(ysError::YDS_INVALID_PARAMETER);
 
     if (target == m_activeRenderTarget) {
         YDS_NESTED_ERROR_CALL(SetRenderTarget(NULL));

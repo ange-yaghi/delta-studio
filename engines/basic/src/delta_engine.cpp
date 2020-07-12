@@ -165,7 +165,7 @@ ysError dbasic::DeltaEngine::CreateGameWindow(const GameEngineSettings &settings
 
     m_initialized = true;
 
-    SetWindowSize(m_gameWindow->GetScreenWidth(), m_gameWindow->GetScreenHeight());
+    m_windowHandler.OnResizeWindow(m_gameWindow->GetWidth(), m_gameWindow->GetHeight());
 
     return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
 }

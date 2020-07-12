@@ -61,17 +61,20 @@ ysError ysWindowsWindow::InitializeWindow(ysWindow *parent, const char *title, W
         m_instance,
         NULL);
 
-    m_width = width;
-    m_height = height;
-
-    m_locationx = x;
-    m_locationy = y;
-
     m_frameOriginXOffset = rc.left;
     m_frameOriginYOffset = rc.top;
 
     m_frameWidthOffset = rc.right - rc.left - width;
     m_frameHeightOffset = rc.bottom - rc.top - height;
+
+    RECT rect;
+    GetClientRect(m_hwnd, &rect);
+
+    m_width = rect.right - rect.left + m_frameWidthOffset;
+    m_height = rect.bottom - rect.top + m_frameHeightOffset;
+
+    m_locationx = x;
+    m_locationy = y;
 
     SetWindowPos(m_hwnd, NULL, m_locationx, m_locationy, 0, 0, SWP_NOSIZE | SWP_NOZORDER);
 

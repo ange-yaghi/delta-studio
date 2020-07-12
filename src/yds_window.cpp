@@ -151,20 +151,20 @@ void ysWindow::OnMoveWindow(int x, int y) {
     m_locationx = x + m_frameOriginXOffset;
     m_locationy = y + m_frameOriginYOffset;
 
-    if (m_eventHandler) m_eventHandler->OnMoveWindow(x, y);
+    if (m_eventHandler != nullptr) m_eventHandler->OnMoveWindow(x, y);
 }
 
 void ysWindow::OnResizeWindow(int w, int h) {
     m_width = w + m_frameWidthOffset;
     m_height = h + m_frameHeightOffset;
 
-    if (m_eventHandler) m_eventHandler->OnResizeWindow(w, h);
+    if (m_eventHandler != nullptr) m_eventHandler->OnResizeWindow(w, h);
 }
 
 void ysWindow::OnActivate() {
     m_active = true;
 
-    if (m_eventHandler) m_eventHandler->OnActivate();
+    if (m_eventHandler != nullptr) m_eventHandler->OnActivate();
 }
 
 void ysWindow::OnDeactivate() {

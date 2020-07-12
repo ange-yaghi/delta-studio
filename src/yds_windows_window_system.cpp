@@ -90,7 +90,7 @@ LRESULT WINAPI ysWindowsWindowSystem::WinProc(HWND hWnd, UINT msg, WPARAM wParam
     PAINTSTRUCT ps;
     HDC hdc;
 
-    if (target) {
+    if (target != nullptr) {
         switch (msg) {
         case WM_DESTROY:
             PostQuitMessage(0);
