@@ -102,7 +102,7 @@ int dphysics::CollisionDetector::BoxBoxCollision(
 }
 
 int dphysics::CollisionDetector::CircleBoxCollision(Collision *collisions, RigidBody *body1, RigidBody *body2, CirclePrimitive *circle, BoxPrimitive *box) {
-    constexpr float epsilon = 1E-5f;
+    constexpr float Epsilon = 1E-5f;
 
     ysVector relativePosition = ysMath::Sub(circle->Position, box->Position);
     relativePosition = ysMath::QuatTransformInverse(box->Orientation, relativePosition);
@@ -119,10 +119,10 @@ int dphysics::CollisionDetector::CircleBoxCollision(Collision *collisions, Rigid
     if (d2 > circle->Radius * circle->Radius) return 0;
 
     ysVector normal;
-    if (d0 <= epsilon) {
+    if (d0 <= Epsilon) {
         normal = ysMath::Mul(ysMath::Constants::XAxis, ysMath::LoadScalar(0.001f));
     }
-    else if (d2 <= epsilon) {
+    else if (d2 <= Epsilon) {
         normal = ysMath::Mask(ysMath::Sub(circle->Position, box->Position), ysMath::Constants::MaskOffW);
         normal = ysMath::Mask(normal, ysMath::Constants::MaskOffZ);
     }
