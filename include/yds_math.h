@@ -273,6 +273,7 @@ namespace ysMath {
 
     ysVector ComponentMax(const ysVector &a, const ysVector &b);
     ysVector ComponentMin(const ysVector &a, const ysVector &b);
+    ysVector Clamp(const ysVector &a, const ysVector &r_min, const ysVector &r_max);
 
     ysVector MaxComponent(const ysVector &v);
 

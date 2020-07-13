@@ -825,6 +825,13 @@ ysVector ysMath::ComponentMin(const ysVector &a, const ysVector &b) {
     return result;
 }
 
+ysVector ysMath::Clamp(const ysVector &a, const ysVector &r_min, const ysVector &r_max) {
+    return ComponentMax(
+        ComponentMin(a, r_max),
+        r_min
+    );
+}
+
 ysVector ysMath::MaxComponent(const ysVector &v) {
     // y, x, w, z
     ysVector r1 = _mm_shuffle_ps(v, v, _MM_SHUFFLE(2, 3, 0, 1));
