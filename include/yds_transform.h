@@ -28,6 +28,7 @@ public:
     ysVector ParentToLocalDirection(const ysVector &p);
     ysVector ParentToWorldDirection(const ysVector &p);
 
+    ysQuaternion WorldToLocalOrientation(const ysQuaternion &q);
     ysQuaternion WorldToParentOrientation(const ysQuaternion &q);
 
     ysQuaternion GetLocalOrientation() const;

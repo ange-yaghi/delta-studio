@@ -272,7 +272,7 @@ ysError ysOpenGLDevice::SetRenderTarget(ysRenderTarget *target) {
             m_realContext->glBindFramebuffer(GL_DRAW_FRAMEBUFFER, realTarget->GetFramebuffer());
         }
 
-        if (target->HasDepthBuffer()) glEnable(GL_DEPTH_TEST);
+        if (target->HasDepthBuffer() && target->IsDepthTestEnabled()) glEnable(GL_DEPTH_TEST);
         else glDisable(GL_DEPTH_TEST);
 
         int refw, refh;
@@ -284,6 +284,19 @@ ysError ysOpenGLDevice::SetRenderTarget(ysRenderTarget *target) {
     }
 
     YDS_NESTED_ERROR_CALL(ysDevice::SetRenderTarget(target));
+
+    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+}
+
+ysError ysOpenGLDevice::SetDepthTestEnabled(ysRenderTarget *target, bool enable) {
+    YDS_ERROR_DECLARE("SetDepthTestEnabled");
+
+    bool previousState = target->IsDepthTestEnabled();
+    YDS_NESTED_ERROR_CALL(ysDevice::SetDepthTestEnabled(target, enable));
+
+    if (target == GetActiveRenderTarget() && previousState != enable) {
+        SetRenderTarget(target);
+    }
 
     return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
 }

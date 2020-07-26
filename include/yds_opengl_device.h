@@ -30,6 +30,7 @@ public:
     virtual ysError ResizeRenderTarget(ysRenderTarget *target, int width, int height);
     virtual ysError DestroyRenderTarget(ysRenderTarget *&target);
     virtual ysError SetRenderTarget(ysRenderTarget *target);
+    virtual ysError SetDepthTestEnabled(ysRenderTarget *target, bool enable);
 
     virtual ysError ClearBuffers(const float *clearColor);
     virtual ysError Present();

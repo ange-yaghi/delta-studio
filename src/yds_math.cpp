@@ -66,7 +66,7 @@ ysQuaternion ysMath::LoadQuaternion(float angle, const ysVector &axis) {
     ysVector newAxis = _mm_shuffle_ps(axis, axis, _MM_SHUFFLE(2, 1, 0, 3));
     newAxis = _mm_and_ps(newAxis, ysMath::Constants::MaskOffX);
     newAxis = _mm_mul_ps(newAxis, ysMath::LoadScalar(sinAngle));
-    newAxis = _mm_or_ps(newAxis, ysMath::LoadVector(cosAngle));
+    newAxis = _mm_add_ps(newAxis, ysMath::LoadVector(cosAngle));
 
     newAxis = ysMath::Normalize(newAxis);
 
