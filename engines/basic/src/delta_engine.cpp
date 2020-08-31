@@ -4,6 +4,10 @@
 #include "../include/render_skeleton.h"
 #include "../include/material.h"
 
+#define STB_TRUETYPE_IMPLEMENTATION
+
+#include <stb/stb_truetype.h>
+
 #include <assert.h>
 
 const std::string dbasic::DeltaEngine::FrameBreakdownFull = "Frame Full";
@@ -440,6 +444,34 @@ ysError dbasic::DeltaEngine::LoadAnimation(Animation **animation, const char *pa
     newAnimation->m_textures = list;
 
     *animation = newAnimation;
+
+    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+}
+
+ysError dbasic::DeltaEngine::LoadFont(Font **font, const char *path) {
+    YDS_ERROR_DECLARE("LoadFont");
+
+    unsigned char *ttfBuffer = new unsigned char[1 << 20];
+    unsigned char *bitmapData = new unsigned char[4096 * 4096];
+
+    FILE *f;
+    fopen_s(&f, path, "rb");
+    fread(ttfBuffer, 1, 1 << 20, f);
+
+    stbtt_bakedchar *cdata = new stbtt_bakedchar[96];
+
+    stbtt_BakeFontBitmap(ttfBuffer, 0, 32.0, bitmapData, 4096, 4096, 32, 96, cdata);
+    delete[] ttfBuffer;
+
+    Font *newFont = new Font;
+    *font = newFont;
+
+    ysTexture *texture = nullptr;
+    YDS_NESTED_ERROR_CALL(m_device->CreateAlphaTexture(&texture, 4096, 4096, bitmapData));
+
+    newFont->Initialize(32, 96, cdata, texture);
+
+    delete[] cdata;
 
     return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
 }

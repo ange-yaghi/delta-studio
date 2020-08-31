@@ -9,6 +9,7 @@
 #include "model_asset.h"
 #include "audio_asset.h"
 #include "console.h"
+#include "font.h"
 
 #include "../../../physics/include/mass_spring_system.h"
 #include "../../../physics/include/rigid_body_system.h"
@@ -79,6 +80,7 @@ namespace dbasic {
         ysError DrawRenderSkeleton(RenderSkeleton *skeleton, float scale, int layer);
         ysError LoadTexture(ysTexture **image, const char *fname);
         ysError LoadAnimation(Animation **animation, const char *path, int start, int end);
+        ysError LoadFont(Font **font, const char *path);
 
         ysError PlayAudio(AudioAsset *audio);
 

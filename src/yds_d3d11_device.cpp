@@ -1207,6 +1207,14 @@ ysError ysD3D11Device::CreateTexture(ysTexture **newTexture, const char *fname) 
     return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
 }
 
+ysError ysD3D11Device::CreateAlphaTexture(ysTexture **texture, int width, int height, const unsigned char *buffer) {
+    YDS_ERROR_DECLARE("CreateTexture");
+
+    *texture = nullptr;
+
+    return YDS_ERROR_RETURN(ysError::YDS_NOT_IMPLEMENTED);
+}
+
 ysError ysD3D11Device::UseTexture(ysTexture *texture, int slot) {
     YDS_ERROR_DECLARE("UseTexture");
 

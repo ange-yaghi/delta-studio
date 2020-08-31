@@ -11,31 +11,34 @@ dbasic_demo::DeltaBasicDemoApplication::~DeltaBasicDemoApplication() {
     /* void */
 }
 
-void dbasic_demo::DeltaBasicDemoApplication::Initialize(void *instance, ysContextObject::DEVICE_API api) {
+void dbasic_demo::DeltaBasicDemoApplication::Initialize(void *instance, ysContextObject::DeviceAPI api) {
     m_engine.GetConsole()->SetDefaultFontDirectory("../../engines/basic/fonts/");
 
-    m_engine.CreateGameWindow(
-        "Delta Basic Engine - Demo Application", 
-        instance,
-        api,
-        "../../engines/basic/shaders/"); // TODO: path should be relative to exe
-    m_engine.SetClearColor(0x34, 0x98, 0xdb);
+    dbasic::DeltaEngine::GameEngineSettings settings;
+    settings.API = api;
+    settings.DepthBuffer = true;
+    settings.Instance = instance;
+    settings.ShaderDirectory = "../../engines/basic/shaders/";
+    settings.WindowTitle = "Delta Basic Engine - Demo Application";
+
+    m_engine.CreateGameWindow(settings); // TODO: path should be relative to exe
+    m_engine.SetClearColor(ysColor::srgbiToLinear(0x34, 0x98, 0xdb));
 
     dbasic::Material *lightFill = m_assetManager.NewMaterial();
     lightFill->SetName("LightFill");
-    lightFill->SetDiffuseColor(ysVector4(0xEF / 255.0f, 0x38 / 255.0f, 0x37 / 255.0f, 1.0f));
+    lightFill->SetDiffuseColor(ysColor::srgbiToLinear(0xEF, 0x38, 0x37));
 
     dbasic::Material *lineColor = m_assetManager.NewMaterial();
     lineColor->SetName("LineColor");
-    lineColor->SetDiffuseColor(ysVector4(0x91 / 255.0f, 0x1A / 255.0f, 0x1D / 255.0f, 1.0f));
+    lineColor->SetDiffuseColor(ysColor::srgbiToLinear(0x91, 0x1A, 0x1D));
 
     dbasic::Material *darkFill = m_assetManager.NewMaterial();
     darkFill->SetName("DarkFill");
-    darkFill->SetDiffuseColor(ysVector4(0xC4 / 255.0f, 0x21 / 255.0f, 0x26 / 255.0f, 1.0f));
+    darkFill->SetDiffuseColor(ysColor::srgbiToLinear(0xC4, 0x21, 0x26));
 
     dbasic::Material *highlight = m_assetManager.NewMaterial();
     highlight->SetName("Highlight");
-    highlight->SetDiffuseColor(ysVector4(1.0f, 1.0f, 1.0f, 1.0f - 0.941667f));
+    highlight->SetDiffuseColor(ysColor::srgbToLinear(1.0f, 1.0f, 1.0f, 1.0f - 0.941667f));
 
     m_assetManager.SetEngine(&m_engine);
     m_assetManager.CompileInterchangeFile("../../test/geometry_files/ant_rigged", 1.0f, true);
@@ -88,7 +91,7 @@ void dbasic_demo::DeltaBasicDemoApplication::Render() {
     m_currentAngle += 1.0f;
     if (m_currentAngle > 360.0f) m_currentAngle -= 360.0f;
 
-    m_engine.SetMultiplyColor(ysVector4(0xe7 / 255.0f, 0x4c / 255.0f, 0x3c / 255.0f, 1.0f));
+    m_engine.SetBaseColor(ysColor::srgbiToLinear(0xe7, 0x4c, 0x3c));
 
     ysQuaternion q = ysMath::Constants::QuatIdentity;
     q = ysMath::LoadQuaternion(45 * ysMath::Constants::PI / 180.0f, ysMath::LoadVector(1.0f, 0.0f, 0.0f));
@@ -175,8 +178,6 @@ void dbasic_demo::DeltaBasicDemoApplication::Render() {
     dbasic::Console *console = m_engine.GetConsole();
     console->Clear();
     console->MoveToLocation(dbasic::GuiPoint(1, 2));
-    console->SetFontForeColor(0, 0, 0, 1.0f);
-    console->SetFontBackColor(0, 0, 0, 0.0f);
 
     std::stringstream msg;
     msg << "FPS " << m_engine.GetAverageFramerate() << "\n";

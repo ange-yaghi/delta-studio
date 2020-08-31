@@ -10,7 +10,7 @@ namespace dbasic_demo {
         DeltaBasicDemoApplication();
         ~DeltaBasicDemoApplication();
 
-        void Initialize(void *instance, ysContextObject::DEVICE_API api);
+        void Initialize(void *instance, ysContextObject::DeviceAPI api);
         void Run();
 
         float m_currentAngle;

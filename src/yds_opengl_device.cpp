@@ -917,7 +917,7 @@ ysError ysOpenGLDevice::CreateTexture(ysTexture **texture, const char *fname) {
         }
     }
 
-    int texType = (useAlpha) ? GL_RGBA : GL_RGB;
+    const int texType = (useAlpha) ? GL_RGBA : GL_RGB;
 
     if (!useAlpha) glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
     else glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
@@ -927,6 +927,31 @@ ysError ysOpenGLDevice::CreateTexture(ysTexture **texture, const char *fname) {
 
     SDL_FreeSurface(pTexSurface);
     delete[] imageData;
+
+    *texture = static_cast<ysTexture *>(newTexture);
+
+    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+}
+
+ysError ysOpenGLDevice::CreateAlphaTexture(ysTexture **texture, int width, int height, const unsigned char *buffer) {
+    YDS_ERROR_DECLARE("CreateTexture");
+
+    if (texture == nullptr) return YDS_ERROR_RETURN(ysError::YDS_INVALID_PARAMETER);
+    *texture = nullptr;
+
+    ysOpenGLTexture *newTexture = m_textures.NewGeneric<ysOpenGLTexture>();
+    strcpy_s(newTexture->m_filename, 257, "");
+
+    glGenTextures(1, &newTexture->m_handle);
+    glBindTexture(GL_TEXTURE_2D, newTexture->m_handle);
+
+    newTexture->m_width = width;
+    newTexture->m_height = height;
+
+    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+    glPixelStorei(GL_PACK_ALIGNMENT, 1);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_R8, newTexture->m_width, newTexture->m_height, 0, GL_RED, GL_UNSIGNED_BYTE, buffer);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 
     *texture = static_cast<ysTexture *>(newTexture);
 
