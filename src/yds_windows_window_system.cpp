@@ -15,7 +15,7 @@ ysWindowsWindowSystem::~ysWindowsWindowSystem() {
 ysError ysWindowsWindowSystem::NewWindow(ysWindow **newWindow) {
     YDS_ERROR_DECLARE("NewWindow");
 
-    if (newWindow == NULL) return YDS_ERROR_RETURN(ysError::YDS_INVALID_PARAMETER);
+    if (newWindow == nullptr) return YDS_ERROR_RETURN(ysError::YDS_INVALID_PARAMETER);
     if (m_instance == NULL) return YDS_ERROR_RETURN(ysError::YDS_NO_CONTEXT);
 
     ysWindowsWindow *windowsWindow = m_windowArray.NewGeneric<ysWindowsWindow>();
@@ -86,27 +86,45 @@ LRESULT WINAPI ysWindowsWindowSystem::WinProc(HWND hWnd, UINT msg, WPARAM wParam
     ysWindowsInputSystem *inputSystem = static_cast<ysWindowsInputSystem *>(windowsSystem->GetInputSystem());
 
     ysWindow *target = windowsSystem->FindWindowFromHandle(hWnd);
-    if (target) {
+
+    PAINTSTRUCT ps;
+    HDC hdc;
+
+    if (target != nullptr) {
         switch (msg) {
         case WM_DESTROY:
             PostQuitMessage(0);
             return 0;
+        case WM_PAINT:
+            hdc = BeginPaint(hWnd, &ps);
+            EndPaint(hWnd, &ps);
+            break;
         case WM_CLOSE:
             target->OnCloseWindow();
             ysWindowSystem::Get()->CloseWindow(target);
             return 0;
         case WM_SIZE:
-            target->OnResizeWindow(LOWORD(lParam), HIWORD(lParam));
+            if (!target->IsResizing()) {
+                target->OnResizeWindow(LOWORD(lParam), HIWORD(lParam));
+            }
             return 0;
+        case WM_ENTERSIZEMOVE:
+            target->StartResizing();
+            return 0;
+        case WM_EXITSIZEMOVE:
+        {
+            RECT rect;
+            if (GetClientRect(hWnd, &rect)) {
+                target->OnResizeWindow(rect.right - rect.left, rect.bottom - rect.top);
+            }
+            
+            target->EndResizing();
+
+            return 0;
+        }
         case WM_MOVE:
             target->OnMoveWindow(LOWORD(lParam), HIWORD(lParam));
             return 0;
-
-            //case WM_ACTIVATE:
-            //	if (wParam == WA_ACTIVE || wParam == WA_CLICKACTIVE) target->OnActivate();
-            //	else if (wParam == WA_INACTIVE) target->OnDeactivate();
-            //	return 0;
-
         case WM_SETFOCUS:
             target->OnActivate();
             return 0;

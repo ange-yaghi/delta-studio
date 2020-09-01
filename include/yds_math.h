@@ -223,6 +223,7 @@ namespace ysMath {
     ysVector Normalize(const ysVector &v);
     ysVector Negate(const ysVector &v);
     ysVector Negate3(const ysVector &v);
+    ysVector Abs(const ysVector &a);
 
     ysVector Mask(const ysVector &v, const ysVectorMask &mask);
     ysVector Or(const ysVector &v1, const ysVector &v2);
@@ -272,6 +273,7 @@ namespace ysMath {
 
     ysVector ComponentMax(const ysVector &a, const ysVector &b);
     ysVector ComponentMin(const ysVector &a, const ysVector &b);
+    ysVector Clamp(const ysVector &a, const ysVector &r_min, const ysVector &r_max);
 
     ysVector MaxComponent(const ysVector &v);
 

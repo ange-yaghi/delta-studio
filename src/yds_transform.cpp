@@ -96,6 +96,11 @@ ysVector ysTransform::ParentToWorldDirection(const ysVector &p) {
     else return m_parent->LocalToWorldDirection(p);
 }
 
+ysQuaternion ysTransform::WorldToLocalOrientation(const ysQuaternion &q) {
+    return ysMath::QuatMultiply(
+        ysMath::QuatInvert(ysMath::Normalize(GetWorldOrientation())), q);
+}
+
 ysQuaternion ysTransform::WorldToParentOrientation(const ysQuaternion &q) {
     if (m_parent == nullptr) return q;
     else return ysMath::QuatMultiply(

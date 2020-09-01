@@ -79,7 +79,7 @@ ysError ysOpenGLDevice::UpdateRenderingContext(ysRenderingContext *context) {
     ysRenderTarget *target = context->GetAttachedRenderTarget();
     ysOpenGLVirtualContext *openglContext = static_cast<ysOpenGLVirtualContext *>(context);
 
-    if (target != NULL) {
+    if (target != nullptr) {
         YDS_NESTED_ERROR_CALL(ResizeRenderTarget(target, context->GetWindow()->GetScreenWidth(), context->GetWindow()->GetScreenHeight()));
     }
 
@@ -272,7 +272,7 @@ ysError ysOpenGLDevice::SetRenderTarget(ysRenderTarget *target) {
             m_realContext->glBindFramebuffer(GL_DRAW_FRAMEBUFFER, realTarget->GetFramebuffer());
         }
 
-        if (target->HasDepthBuffer()) glEnable(GL_DEPTH_TEST);
+        if (target->HasDepthBuffer() && target->IsDepthTestEnabled()) glEnable(GL_DEPTH_TEST);
         else glDisable(GL_DEPTH_TEST);
 
         int refw, refh;
@@ -288,10 +288,23 @@ ysError ysOpenGLDevice::SetRenderTarget(ysRenderTarget *target) {
     return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
 }
 
+ysError ysOpenGLDevice::SetDepthTestEnabled(ysRenderTarget *target, bool enable) {
+    YDS_ERROR_DECLARE("SetDepthTestEnabled");
+
+    bool previousState = target->IsDepthTestEnabled();
+    YDS_NESTED_ERROR_CALL(ysDevice::SetDepthTestEnabled(target, enable));
+
+    if (target == GetActiveRenderTarget() && previousState != enable) {
+        SetRenderTarget(target);
+    }
+
+    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+}
+
 ysError ysOpenGLDevice::DestroyRenderTarget(ysRenderTarget *&target) {
     YDS_ERROR_DECLARE("DestroyRenderTarget");
 
-    if (target == NULL) return YDS_ERROR_RETURN(ysError::YDS_INVALID_PARAMETER);
+    if (target == nullptr) return YDS_ERROR_RETURN(ysError::YDS_INVALID_PARAMETER);
 
     if (target == m_activeRenderTarget) {
         YDS_NESTED_ERROR_CALL(SetRenderTarget(NULL));
@@ -904,7 +917,7 @@ ysError ysOpenGLDevice::CreateTexture(ysTexture **texture, const char *fname) {
         }
     }
 
-    int texType = (useAlpha) ? GL_RGBA : GL_RGB;
+    const int texType = (useAlpha) ? GL_RGBA : GL_RGB;
 
     if (!useAlpha) glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
     else glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
@@ -914,6 +927,31 @@ ysError ysOpenGLDevice::CreateTexture(ysTexture **texture, const char *fname) {
 
     SDL_FreeSurface(pTexSurface);
     delete[] imageData;
+
+    *texture = static_cast<ysTexture *>(newTexture);
+
+    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+}
+
+ysError ysOpenGLDevice::CreateAlphaTexture(ysTexture **texture, int width, int height, const unsigned char *buffer) {
+    YDS_ERROR_DECLARE("CreateTexture");
+
+    if (texture == nullptr) return YDS_ERROR_RETURN(ysError::YDS_INVALID_PARAMETER);
+    *texture = nullptr;
+
+    ysOpenGLTexture *newTexture = m_textures.NewGeneric<ysOpenGLTexture>();
+    strcpy_s(newTexture->m_filename, 257, "");
+
+    glGenTextures(1, &newTexture->m_handle);
+    glBindTexture(GL_TEXTURE_2D, newTexture->m_handle);
+
+    newTexture->m_width = width;
+    newTexture->m_height = height;
+
+    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+    glPixelStorei(GL_PACK_ALIGNMENT, 1);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_R8, newTexture->m_width, newTexture->m_height, 0, GL_RED, GL_UNSIGNED_BYTE, buffer);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 
     *texture = static_cast<ysTexture *>(newTexture);
 

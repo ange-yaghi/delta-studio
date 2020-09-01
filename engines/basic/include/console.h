@@ -1,8 +1,8 @@
 #ifndef DELTA_BASIC_CONSOLE_H
 #define DELTA_BASIC_CONSOLE_H
 
+#include "font.h"
 #include "delta_core.h"
-
 #include "shader_controls.h"
 
 #include <string>
@@ -77,7 +77,7 @@ namespace dbasic {
         ysGPUBuffer *m_mainIndexBuffer;
 
         // Textures
-        ysTexture *m_font;
+        ysTexture *m_fontTexture;
 
         ysShader *m_vertexShader;
         ysShader *m_pixelShader;
@@ -88,6 +88,8 @@ namespace dbasic {
 
         // Vertex buffer
         ConsoleVertex *m_vertexData;
+
+        Font *m_font;
 
     protected:
         // Settings

@@ -19,6 +19,8 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\include\yds_breakdown_timer_channel.h" />
+    <ClInclude Include="..\..\include\yds_breakdown_timer.h" />
     <ClInclude Include="..\..\include\yds_color.h" />
     <ClInclude Include="..\..\include\yds_animation_action.h" />
     <ClInclude Include="..\..\include\yds_animation_action_binding.h" />
@@ -56,6 +58,7 @@
     <ClInclude Include="..\..\include\yds_d3d11_shader.h" />
     <ClInclude Include="..\..\include\yds_d3d11_shader_program.h" />
     <ClInclude Include="..\..\include\yds_d3d11_texture.h" />
+    <ClInclude Include="..\..\include\yds_d3d11_utilities.h" />
     <ClInclude Include="..\..\include\yds_depth_buffer.h" />
     <ClInclude Include="..\..\include\yds_device.h" />
     <ClInclude Include="..\..\include\yds_ds8_audio_buffer.h" />
@@ -130,6 +133,8 @@
     <ClInclude Include="..\..\include\yds_window_system_object.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\src\yds_breakdown_timer.cpp" />
+    <ClCompile Include="..\..\src\yds_breakdown_timer_channel.cpp" />
     <ClCompile Include="..\..\src\yds_color.cpp" />
     <ClCompile Include="..\..\src\yds_animation_action.cpp" />
     <ClCompile Include="..\..\src\yds_animation_action_binding.cpp" />
@@ -166,6 +171,7 @@
     <ClCompile Include="..\..\src\yds_d3d11_shader.cpp" />
     <ClCompile Include="..\..\src\yds_d3d11_shader_program.cpp" />
     <ClCompile Include="..\..\src\yds_d3d11_texture.cpp" />
+    <ClCompile Include="..\..\src\yds_d3d11_utilities.cpp" />
     <ClCompile Include="..\..\src\yds_depth_buffer.cpp" />
     <ClCompile Include="..\..\src\yds_device.cpp" />
     <ClCompile Include="..\..\src\yds_ds8_audio_buffer.cpp" />

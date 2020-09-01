@@ -44,7 +44,7 @@ public:
     ysDynamicArray() {
         m_maxSize = START_SIZE;
         m_nObjects = 0;
-        m_array = NULL;
+        m_array = nullptr;
 
         Preallocate(m_maxSize);
     }

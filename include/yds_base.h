@@ -15,15 +15,11 @@ public:
 //#define RaiseError(condition, format, ...) ((void)0)
 //#endif
 
-	void SetDebugName(const char *debugName);
-	const char *GetDebugName() const { return m_debugName; }
 	const char *GetTypeID() const { return m_typeID; }
 
 protected:
-	const char *m_debugName;
 	const char *m_typeID;
 };
-
 
 // TEMP
 #include "yds_error_system.h"

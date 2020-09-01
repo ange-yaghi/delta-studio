@@ -14,5 +14,6 @@ layout (binding = 1) uniform ObjectVariables {
 };
 
 void main(void) {
-    out_Color = texture(diffuseTex, ex_Tex).rgba * MulCol;
+	float a = texture(diffuseTex, ex_Tex).r;
+	out_Color = vec4(1.0, 1.0, 1.0, a) * MulCol;
 }

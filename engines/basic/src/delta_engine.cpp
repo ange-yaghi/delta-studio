@@ -4,7 +4,16 @@
 #include "../include/render_skeleton.h"
 #include "../include/material.h"
 
+#define STB_TRUETYPE_IMPLEMENTATION
+
+#include <stb/stb_truetype.h>
+
 #include <assert.h>
+
+const std::string dbasic::DeltaEngine::FrameBreakdownFull = "Frame Full";
+const std::string dbasic::DeltaEngine::FrameBreakdownRenderUI = "UI";
+const std::string dbasic::DeltaEngine::FrameBreakdownRenderScene = "Scene";
+const dbasic::DeltaEngine::GameEngineSettings dbasic::DeltaEngine::DefaultSettings;
 
 dbasic::DeltaEngine::DeltaEngine() {
     m_device = nullptr;
@@ -63,6 +72,9 @@ dbasic::DeltaEngine::DeltaEngine() {
     m_cameraFov = ysMath::Constants::PI / 3.0f;
 
     ResetLights();
+
+    m_drawQueue = new ysExpandingArray<DrawCall, 256>[MaxLayers];
+    m_drawQueueGui = new ysExpandingArray<DrawCall, 256>[MaxLayers];
 }
 
 dbasic::DeltaEngine::~DeltaEngine() {
@@ -93,12 +105,12 @@ dbasic::DeltaEngine::~DeltaEngine() {
     assert(m_lightingControlBuffer == nullptr);
 }
 
-ysError dbasic::DeltaEngine::CreateGameWindow(const char *title, void *instance, ysContextObject::DeviceAPI API, const char *shaderDirectory, bool depthBuffer) {
+ysError dbasic::DeltaEngine::CreateGameWindow(const GameEngineSettings &settings) {
     YDS_ERROR_DECLARE("CreateGameWindow");
 
     // Create the window system
     YDS_NESTED_ERROR_CALL(ysWindowSystem::CreateWindowSystem(&m_windowSystem, ysWindowSystemObject::Platform::Windows));
-    m_windowSystem->ConnectInstance(instance);
+    m_windowSystem->ConnectInstance(settings.Instance);
 
     // Find the monitor setup
     m_windowSystem->SurveyMonitors();
@@ -116,11 +128,11 @@ ysError dbasic::DeltaEngine::CreateGameWindow(const char *title, void *instance,
 
     // Create the game window
     YDS_NESTED_ERROR_CALL(m_windowSystem->NewWindow(&m_gameWindow));
-    YDS_NESTED_ERROR_CALL(m_gameWindow->InitializeWindow(nullptr, title, ysWindow::WindowStyle::WINDOWED, 0, 0, 1920, 1080, mainMonitor));
+    YDS_NESTED_ERROR_CALL(m_gameWindow->InitializeWindow(nullptr, settings.WindowTitle, ysWindow::WindowStyle::Windowed, 0, 0, 1920, 1080, mainMonitor));
     m_gameWindow->AttachEventHandler(&m_windowHandler);
 
     // Create the graphics device
-    YDS_NESTED_ERROR_CALL(ysDevice::CreateDevice(&m_device, API));
+    YDS_NESTED_ERROR_CALL(ysDevice::CreateDevice(&m_device, settings.API));
     YDS_NESTED_ERROR_CALL(m_device->InitializeDevice());
 
     // Create the audio device
@@ -135,7 +147,9 @@ ysError dbasic::DeltaEngine::CreateGameWindow(const char *title, void *instance,
     m_windowHandler.Initialize(m_device, m_renderingContext, this);
 
     // Main render target
-    YDS_NESTED_ERROR_CALL(m_device->CreateOnScreenRenderTarget(&m_mainRenderTarget, m_renderingContext, depthBuffer));
+    YDS_NESTED_ERROR_CALL(m_device->CreateOnScreenRenderTarget(&m_mainRenderTarget, m_renderingContext, settings.DepthBuffer));
+
+    m_mainRenderTarget->SetDebugName("MAIN_RENDER_TARGET");
 
     // Initialize Geometry
     YDS_NESTED_ERROR_CALL(InitializeGeometry());
@@ -145,21 +159,27 @@ ysError dbasic::DeltaEngine::CreateGameWindow(const char *title, void *instance,
     YDS_NESTED_ERROR_CALL(m_console.Initialize());
 
     // Initialize Shaders
-    YDS_NESTED_ERROR_CALL(InitializeShaders(shaderDirectory));
+    YDS_NESTED_ERROR_CALL(InitializeShaders(settings.ShaderDirectory));
 
     // Timing System
     m_timingSystem = ysTimingSystem::Get();
     m_timingSystem->Initialize();
 
+    InitializeBreakdownTimer(settings.LoggingDirectory);
+
     m_initialized = true;
 
-    SetWindowSize(m_gameWindow->GetScreenWidth(), m_gameWindow->GetScreenHeight());
+    m_windowHandler.OnResizeWindow(m_gameWindow->GetWidth(), m_gameWindow->GetHeight());
 
     return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
 }
 
 ysError dbasic::DeltaEngine::StartFrame() {
     YDS_ERROR_DECLARE("StartFrame");
+
+    m_breakdownTimer.WriteLastFrameToLogFile();
+    m_breakdownTimer.StartFrame();
+    m_breakdownTimer.StartMeasurement(FrameBreakdownFull);
 
     m_windowSystem->ProcessMessages();
     m_timingSystem->Update();
@@ -192,12 +212,29 @@ ysError dbasic::DeltaEngine::EndFrame() {
     YDS_ERROR_DECLARE("EndFrame");
 
     if (IsOpen()) {
-        ExecuteDrawQueue(DrawTarget::Main);
-        ExecuteDrawQueue(DrawTarget::Gui);
+        m_breakdownTimer.StartMeasurement(FrameBreakdownRenderScene);
+        {
+            ExecuteDrawQueue(DrawTarget::Main);
+        }
+        m_breakdownTimer.EndMeasurement(FrameBreakdownRenderScene);
+
+        m_breakdownTimer.StartMeasurement(FrameBreakdownRenderUI);
+        {
+            ExecuteDrawQueue(DrawTarget::Gui);
+        }
+        m_breakdownTimer.EndMeasurement(FrameBreakdownRenderUI);
+
         m_device->Present();
 
         ResetLights();
     }
+    else {
+        m_breakdownTimer.SkipMeasurement(FrameBreakdownRenderScene);
+        m_breakdownTimer.SkipMeasurement(FrameBreakdownRenderUI);
+    }
+
+    m_breakdownTimer.EndMeasurement(FrameBreakdownFull);
+    m_breakdownTimer.EndFrame();
 
     return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
 }
@@ -367,6 +404,21 @@ ysError dbasic::DeltaEngine::InitializeShaders(const char *shaderDirectory) {
     return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
 }
 
+ysError dbasic::DeltaEngine::InitializeBreakdownTimer(const char *loggingDirectory) {
+    YDS_ERROR_DECLARE("InitializeBreakdownTimer");
+
+    ysBreakdownTimerChannel *full = m_breakdownTimer.CreateChannel(FrameBreakdownFull);
+    ysBreakdownTimerChannel *scene = m_breakdownTimer.CreateChannel(FrameBreakdownRenderScene);
+    ysBreakdownTimerChannel *ui = m_breakdownTimer.CreateChannel(FrameBreakdownRenderUI);
+
+    std::string logFile = loggingDirectory;
+    logFile += "/frame_breakdown_log.csv";
+
+    m_breakdownTimer.OpenLogFile(logFile);
+
+    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+}
+
 ysError dbasic::DeltaEngine::LoadTexture(ysTexture **image, const char *fname) {
     YDS_ERROR_DECLARE("LoadTexture");
 
@@ -392,6 +444,34 @@ ysError dbasic::DeltaEngine::LoadAnimation(Animation **animation, const char *pa
     newAnimation->m_textures = list;
 
     *animation = newAnimation;
+
+    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+}
+
+ysError dbasic::DeltaEngine::LoadFont(Font **font, const char *path) {
+    YDS_ERROR_DECLARE("LoadFont");
+
+    unsigned char *ttfBuffer = new unsigned char[1 << 20];
+    unsigned char *bitmapData = new unsigned char[4096 * 4096];
+
+    FILE *f;
+    fopen_s(&f, path, "rb");
+    fread(ttfBuffer, 1, 1 << 20, f);
+
+    stbtt_bakedchar *cdata = new stbtt_bakedchar[96];
+
+    stbtt_BakeFontBitmap(ttfBuffer, 0, 32.0, bitmapData, 4096, 4096, 32, 96, cdata);
+    delete[] ttfBuffer;
+
+    Font *newFont = new Font;
+    *font = newFont;
+
+    ysTexture *texture = nullptr;
+    YDS_NESTED_ERROR_CALL(m_device->CreateAlphaTexture(&texture, 4096, 4096, bitmapData));
+
+    newFont->Initialize(32, 96, cdata, texture);
+
+    delete[] cdata;
 
     return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
 }
@@ -863,7 +943,7 @@ ysError dbasic::DeltaEngine::ExecuteDrawQueue(DrawTarget target) {
         m_shaderScreenVariablesSync = false;
     }
 
-    for (int i = 0; i < MAX_LAYERS; i++) {
+    for (int i = 0; i < MaxLayers; i++) {
         int objectsAtLayer = 0;
 
         if (target == DrawTarget::Main) objectsAtLayer = m_drawQueue[i].GetNumObjects();

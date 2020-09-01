@@ -3,6 +3,8 @@
 
 #include "yds_base.h"
 
+#include <string>
+
 class ysContextObject : public ysObject {
 public:
 	enum class DeviceAPI {
@@ -21,8 +23,12 @@ public:
 
 	bool CheckCompatibility(ysContextObject *object) const { return (object) ? object->m_api == m_api : true; }
 
+	virtual void SetDebugName(const std::string &debugName) { m_debugName = debugName; }
+	std::string GetDebugName() const { return m_debugName; }
+
 private:
 	DeviceAPI m_api;
+	std::string m_debugName;
 };
 
 #endif /* YDS_CONTEXT_OBJECT_H */

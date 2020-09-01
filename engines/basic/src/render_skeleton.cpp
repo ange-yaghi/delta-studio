@@ -8,6 +8,10 @@ dbasic::RenderSkeleton::~RenderSkeleton() {
     /* void */
 }
 
+dbasic::RenderNode *dbasic::RenderSkeleton::GetRoot() {
+    return GetNode(0);
+}
+
 dbasic::RenderNode *dbasic::RenderSkeleton::NewNode() {
     RenderNode *newNode = m_renderNodes.NewGeneric<RenderNode, 16>();
     newNode->SetSkeleton(this);
@@ -79,9 +83,7 @@ void dbasic::RenderSkeleton::UpdateAnimation(float dt) {
         TransformTarget *rotTarget = node->GetRotationTarget();
 
         if (locTarget->IsAnimated()) {
-            ysVector movement = node->Transform.LocalToParentDirection(locTarget->GetLocationResult());
-            ysVector movementParentSpace = movement;
-
+            ysVector movementParentSpace = locTarget->GetLocationResult();
             node->Transform.SetPosition(ysMath::Add(node->GetRestLocation(), movementParentSpace));
         }
 

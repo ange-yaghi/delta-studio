@@ -13,6 +13,8 @@ public:
 	ysD3D11RenderTarget();
 	virtual ~ysD3D11RenderTarget();
 
+	virtual void SetDebugName(const std::string &debugName);
+
 protected:
 	ID3D11ShaderResourceView *m_resourceView;
 	ID3D11RenderTargetView *m_renderTargetView;

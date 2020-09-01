@@ -8,8 +8,14 @@ namespace dphysics {
     struct BoxPrimitive {
         ysQuaternion Orientation;
         ysVector Position;
-        float HalfWidth;
-        float HalfHeight;
+
+        union {
+            struct {
+                float HalfWidth;
+                float HalfHeight;
+            };
+            float Extents[2];
+        };
 
         void GetBounds(ysVector &minPoint, ysVector &maxPoint) const;
     };

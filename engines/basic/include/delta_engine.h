@@ -6,13 +6,13 @@
 #include "window_handler.h"
 #include "shader_controls.h"
 #include "animation.h"
-
-#include "../../../physics/include/mass_spring_system.h"
-#include "../../../physics/include/rigid_body_system.h"
-
 #include "model_asset.h"
 #include "audio_asset.h"
 #include "console.h"
+#include "font.h"
+
+#include "../../../physics/include/mass_spring_system.h"
+#include "../../../physics/include/rigid_body_system.h"
 
 namespace dbasic {
 
@@ -20,7 +20,11 @@ namespace dbasic {
 
     class DeltaEngine : public ysObject {
     public:
-        static const int MAX_LAYERS = 256;
+        static const std::string FrameBreakdownFull;
+        static const std::string FrameBreakdownRenderUI;
+        static const std::string FrameBreakdownRenderScene;
+
+        static const int MaxLayers = 256;
 
         enum class DrawTarget {
             Gui,
@@ -33,10 +37,22 @@ namespace dbasic {
         };
 
         struct DrawCall {
-            ysTexture *Texture = nullptr;
             ShaderObjectVariables ObjectVariables;
+            ysTexture *Texture = nullptr;
             ModelAsset *Model = nullptr;
         };
+
+        struct GameEngineSettings {
+            const char *WindowTitle = "Delta_GameWindow";
+            void *Instance = nullptr;
+            ysContextObject::DeviceAPI API = ysContextObject::DeviceAPI::DirectX11;
+            const char *ShaderDirectory = "../DeltaEngineTullahoma/Shaders/";
+            const char *LoggingDirectory = "";
+            bool DepthBuffer = true;
+            bool FrameLogging = false;
+        };
+
+        static const GameEngineSettings DefaultSettings;
 
     public:
         DeltaEngine();
@@ -46,7 +62,7 @@ namespace dbasic {
         dphysics::MassSpringSystem PhysicsSystem;
         dphysics::RigidBodySystem RBSystem;
 
-        ysError CreateGameWindow(const char *title, void *instance, ysContextObject::DeviceAPI API, const char *shaderDirectory = "../DeltaEngineTullahoma/Shaders/", bool depthBuffer = true);
+        ysError CreateGameWindow(const GameEngineSettings &settings = DefaultSettings);
         ysError StartFrame();
         ysError EndFrame();
         ysError Destroy();
@@ -64,6 +80,7 @@ namespace dbasic {
         ysError DrawRenderSkeleton(RenderSkeleton *skeleton, float scale, int layer);
         ysError LoadTexture(ysTexture **image, const char *fname);
         ysError LoadAnimation(Animation **animation, const char *path, int start, int end);
+        ysError LoadFont(Font **font, const char *path);
 
         ysError PlayAudio(AudioAsset *audio);
 
@@ -145,6 +162,7 @@ namespace dbasic {
         Console *GetConsole() { return &m_console; }
 
         ysAudioDevice *GetAudioDevice() const { return m_audioDevice; }
+        ysBreakdownTimer &GetBreakdownTimer() { return m_breakdownTimer; }
 
     protected:
         float m_cameraAngle;
@@ -223,6 +241,7 @@ namespace dbasic {
 
         // Timing
         ysTimingSystem *m_timingSystem;
+        ysBreakdownTimer m_breakdownTimer;
 
     protected:
         // Settings
@@ -237,11 +256,12 @@ namespace dbasic {
         ysError InitializeGeometry();
         ysError InitializeShaders(const char *shaderDirectory);
 
+        ysError InitializeBreakdownTimer(const char *loggingDirectory);
+
     protected:
         // Drawing queues
-        // TODO: these should not be on the stack
-        ysExpandingArray<DrawCall, 256> m_drawQueue[MAX_LAYERS];
-        ysExpandingArray<DrawCall, 256> m_drawQueueGui[MAX_LAYERS];
+        ysExpandingArray<DrawCall, 256> *m_drawQueue;
+        ysExpandingArray<DrawCall, 256> *m_drawQueueGui;
         ysError ExecuteDrawQueue(DrawTarget target);
     };
 

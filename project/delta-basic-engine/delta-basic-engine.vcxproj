@@ -34,6 +34,7 @@
     <ClInclude Include="..\..\engines\basic\include\console.h" />
     <ClInclude Include="..\..\engines\basic\include\delta_engine.h" />
     <ClInclude Include="..\..\engines\basic\include\delta_physics.h" />
+    <ClInclude Include="..\..\engines\basic\include\font.h" />
     <ClInclude Include="..\..\engines\basic\include\os_utilities.h" />
     <ClInclude Include="..\..\engines\basic\include\path.h" />
     <ClInclude Include="..\..\engines\basic\include\texture_asset.h" />
@@ -62,6 +63,7 @@
     <ClCompile Include="..\..\engines\basic\src\color_scale.cpp" />
     <ClCompile Include="..\..\engines\basic\src\console.cpp" />
     <ClCompile Include="..\..\engines\basic\src\delta_engine.cpp" />
+    <ClCompile Include="..\..\engines\basic\src\font.cpp" />
     <ClCompile Include="..\..\engines\basic\src\os_utilities.cpp" />
     <ClCompile Include="..\..\engines\basic\src\path.cpp" />
     <ClCompile Include="..\..\engines\basic\src\texture_asset.cpp" />
@@ -135,22 +137,22 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <OutDir>$(ProjectDir)\..\$(PlatformTarget)\$(Configuration)\</OutDir>
     <IntDir>$(PlatformTarget)\$(Configuration)\</IntDir>
-    <IncludePath>$(ProjectDir)/../../dependencies/libraries/boost-filesystem/include;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)/../../dependencies/libraries;$(ProjectDir)/../../dependencies/libraries/boost-filesystem/include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>$(ProjectDir)\..\$(PlatformTarget)\$(Configuration)\</OutDir>
     <IntDir>$(PlatformTarget)\$(Configuration)\</IntDir>
-    <IncludePath>$(ProjectDir)/../../dependencies/libraries/boost-filesystem/include;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)/../../dependencies/libraries;$(ProjectDir)/../../dependencies/libraries/boost-filesystem/include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>$(ProjectDir)\..\$(PlatformTarget)\$(Configuration)\</OutDir>
     <IntDir>$(PlatformTarget)\$(Configuration)\</IntDir>
-    <IncludePath>$(ProjectDir)/../../dependencies/libraries/boost-filesystem/include;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)/../../dependencies/libraries;$(ProjectDir)/../../dependencies/libraries/boost-filesystem/include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <OutDir>$(ProjectDir)\..\$(PlatformTarget)\$(Configuration)\</OutDir>
     <IntDir>$(PlatformTarget)\$(Configuration)\</IntDir>
-    <IncludePath>$(ProjectDir)/../../dependencies/libraries/boost-filesystem/include;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)/../../dependencies/libraries;$(ProjectDir)/../../dependencies/libraries/boost-filesystem/include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>

@@ -56,6 +56,10 @@ void ysTimingSystem::SetPrecisionMode(Precision mode) {
     }
 }
 
+double ysTimingSystem::ConvertToSeconds(uint64_t t_u) {
+    return t_u / m_div;
+}
+
 void ysTimingSystem::Update() {
     if (!m_isPaused) {
         m_frameNumber++;

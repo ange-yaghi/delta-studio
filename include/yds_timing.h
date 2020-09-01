@@ -21,8 +21,9 @@ public:
 	~ysTimingSystem();
 
 	static ysTimingSystem *Get() { 
-		if (g_instance == nullptr) 
-			g_instance = new ysTimingSystem; 
+		if (g_instance == nullptr) {
+			g_instance = new ysTimingSystem;
+		}
 
 		return g_instance;
 	}
@@ -37,6 +38,9 @@ public:
     unsigned __int64 GetClock();
 
 	void SetPrecisionMode(Precision mode);
+	Precision GetPrecisionMode() const { return m_precisionMode; }
+
+	double ConvertToSeconds(uint64_t t_u);
 
 	float GetFPS() const { return m_fps; }
 

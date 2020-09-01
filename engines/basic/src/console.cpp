@@ -24,6 +24,8 @@ dbasic::Console::Console() {
 
     m_engine = nullptr;
     m_defaultFontDirectory = "";
+
+    m_font = nullptr;
 }
 
 dbasic::Console::~Console() {
@@ -35,10 +37,12 @@ ysError dbasic::Console::Initialize() {
 
     std::string defaultFontFilename = m_defaultFontDirectory + "dc_font_consolas.png";
 
-    m_engine->GetDevice()->CreateTexture(&m_font, defaultFontFilename.c_str());
+    m_engine->GetDevice()->CreateTexture(&m_fontTexture, defaultFontFilename.c_str());
     YDS_NESTED_ERROR_CALL(InitializeGeometry());
 
     InitializeFontMap();
+
+    m_engine->LoadFont(&m_font, "../../engines/basic/fonts/Silkscreen/slkscr.ttf");
 
     return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
 }
@@ -73,7 +77,7 @@ ysError dbasic::Console::Destroy() {
     m_engine->GetDevice()->DestroyGPUBuffer(m_mainIndexBuffer);
     m_engine->GetDevice()->DestroyGPUBuffer(m_mainVertexBuffer);
 
-    m_engine->GetDevice()->DestroyTexture(m_font);
+    m_engine->GetDevice()->DestroyTexture(m_fontTexture);
 
     delete[] m_vertexData;
 
@@ -108,10 +112,10 @@ ysError dbasic::Console::InitializeGeometry() {
 
     for (int i = 0; i < BUFFER_WIDTH; i++) {
         for (int j = 0; j < BUFFER_HEIGHT; j++) {
-            int offset = j * BUFFER_WIDTH + i;
+            const int offset = j * BUFFER_WIDTH + i;
 
-            float offsetX = (-m_engine->GetScreenWidth() / 2.0f) + (scaleX * i);
-            float offsetY = (m_engine->GetScreenHeight() / 2.0f) - (scaleY * j);
+            const float offsetX = (-m_engine->GetScreenWidth() / 2.0f) + (scaleX * i);
+            const float offsetY = (m_engine->GetScreenHeight() / 2.0f) - (scaleY * j);
 
             m_vertexData[offset * 4 + 0].Pos = ysVector2(0.0f * scaleX + offsetX, 0.0f * scaleY + offsetY);
             m_vertexData[offset * 4 + 1].Pos = ysVector2(1.0f * scaleX + offsetX, 0.0f * scaleY + offsetY);
@@ -141,7 +145,8 @@ ysError dbasic::Console::UpdateDisplay() {
     m_engine->GetDevice()->UseIndexBuffer(m_mainIndexBuffer, 0);
     m_engine->GetDevice()->UseVertexBuffer(m_mainVertexBuffer, sizeof(ConsoleVertex), 0);
 
-    m_engine->GetDevice()->UseTexture(m_font, 0);
+    //m_engine->GetDevice()->UseTexture(m_fontTexture, 0);
+    m_engine->GetDevice()->UseTexture(m_font->GetTexture(), 0);
 
     m_engine->GetDevice()->Draw(2 * BUFFER_SIZE, 0, 0);
 
@@ -190,10 +195,24 @@ ysError dbasic::Console::SetCharacter(char character) {
 
     int index = y * BUFFER_WIDTH + x;
 
-    m_vertexData[index * 4 + 0].TexCoord = ysVector2(0.0f * texScaleX + texOffsetX, 1.0f - (0.0f * texScaleY + texOffsetY));
-    m_vertexData[index * 4 + 1].TexCoord = ysVector2(1.0f * texScaleX + texOffsetX, 1.0f - (0.0f * texScaleY + texOffsetY));
-    m_vertexData[index * 4 + 2].TexCoord = ysVector2(1.0f * texScaleX + texOffsetX, 1.0f - (1.0f * texScaleY + texOffsetY));
-    m_vertexData[index * 4 + 3].TexCoord = ysVector2(0.0f * texScaleX + texOffsetX, 1.0f - (1.0f * texScaleY + texOffsetY));
+    const Font::GlyphData *data = m_font->GetGlyphData(character);
+
+    const float offsetX = (-m_engine->GetScreenWidth() / 2.0f) + (scaleX * x);
+    const float offsetY = (m_engine->GetScreenHeight() / 2.0f) - (scaleY * y);
+
+    m_vertexData[index * 4 + 0].TexCoord = ysVector2(data->uv0.x, data->uv0.y);
+    m_vertexData[index * 4 + 1].TexCoord = ysVector2(data->uv1.x, data->uv0.y);
+    m_vertexData[index * 4 + 2].TexCoord = ysVector2(data->uv1.x, data->uv1.y);
+    m_vertexData[index * 4 + 3].TexCoord = ysVector2(data->uv0.x, data->uv1.y);
+
+    if (character == '.') {
+        int a = 0;
+    }
+
+    m_vertexData[index * 4 + 0].Pos = ysVector2(data->p0.x + offsetX, -data->p0.y + offsetY);
+    m_vertexData[index * 4 + 1].Pos = ysVector2(data->p1.x + offsetX, -data->p0.y + offsetY);
+    m_vertexData[index * 4 + 2].Pos = ysVector2(data->p1.x + offsetX, -data->p1.y + offsetY);
+    m_vertexData[index * 4 + 3].Pos = ysVector2(data->p0.x + offsetX, -data->p1.y + offsetY);
 
     return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
 }

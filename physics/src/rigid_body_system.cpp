@@ -520,7 +520,7 @@ void dphysics::RigidBodySystem::AdjustVelocities(float timestep) {
     ysVector cp;
 
     // iteratively handle impacts in order of severity.
-    for (int velocityIterationsUsed = 0; velocityIterationsUsed < 100; ++velocityIterationsUsed) {
+    for (int velocityIterationsUsed = 0; velocityIterationsUsed < ResolutionIterationLimit; ++velocityIterationsUsed) {
         // Find contact with maximum magnitude of probable velocity change.
         float max = 1E-4;
         unsigned index = numContacts;

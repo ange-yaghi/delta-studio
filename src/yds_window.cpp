@@ -19,10 +19,11 @@ ysWindow::ysWindow() : ysWindowSystemObject("WINDOW", Platform::Unknown) {
     m_locationy = 0;
 
     m_windowStyle = WindowStyle::Unknown;
-    m_windowState = WindowState::HIDDEN;
+    m_windowState = WindowState::Hidden;
     m_parent = nullptr;
 
     m_active = false;
+    m_resizing = false;
 
     m_eventHandler = nullptr;
 }
@@ -43,10 +44,11 @@ ysWindow::ysWindow(Platform platform) : ysWindowSystemObject("WINDOW", platform)
     m_locationy = 0;
 
     m_windowStyle = WindowStyle::Unknown;
-    m_windowState = WindowState::HIDDEN;
+    m_windowState = WindowState::Hidden;
     m_parent = nullptr;
 
     m_active = true;
+    m_resizing = false;
 
     m_eventHandler = nullptr;
 }
@@ -66,7 +68,7 @@ ysError ysWindow::InitializeWindow(ysWindow *parent, const char *title, WindowSt
     m_locationx = x;
     m_locationy = y;
 
-    m_windowState = WindowState::HIDDEN; // DEFAULT
+    m_windowState = WindowState::Hidden; // DEFAULT
     m_windowStyle = style;
 
     m_monitor = monitor;
@@ -94,7 +96,7 @@ void ysWindow::RestoreWindow() {
 }
 
 bool ysWindow::IsOpen() {
-    return m_windowState != WindowState::CLOSED;
+    return m_windowState != WindowState::Closed;
 }
 
 bool ysWindow::IsActive() {
@@ -122,14 +124,14 @@ void ysWindow::SetTitle(const char *title) {
 bool ysWindow::SetWindowStyle(WindowStyle style) {
     if (style == m_windowStyle) return false;
 
-    if (style == WindowStyle::FULLSCREEN) {
+    if (style == WindowStyle::Fullscreen) {
         //RaiseError(m_monitor != NULL, "Cannot go into fullscreen without an attached monitor.");
         m_windowStyle = style;
     }
-    else if (style == WindowStyle::WINDOWED) {
+    else if (style == WindowStyle::Windowed) {
         m_windowStyle = style;
     }
-    else if (style == WindowStyle::POPUP) {
+    else if (style == WindowStyle::Popup) {
         m_windowStyle = style;
     }
 
@@ -149,30 +151,26 @@ void ysWindow::OnMoveWindow(int x, int y) {
     m_locationx = x + m_frameOriginXOffset;
     m_locationy = y + m_frameOriginYOffset;
 
-    if (m_eventHandler) m_eventHandler->OnMoveWindow(x, y);
+    if (m_eventHandler != nullptr) m_eventHandler->OnMoveWindow(x, y);
 }
 
 void ysWindow::OnResizeWindow(int w, int h) {
     m_width = w + m_frameWidthOffset;
     m_height = h + m_frameHeightOffset;
 
-    if (m_eventHandler) m_eventHandler->OnResizeWindow(w, h);
+    if (m_eventHandler != nullptr) m_eventHandler->OnResizeWindow(w, h);
 }
 
 void ysWindow::OnActivate() {
     m_active = true;
 
-    if (m_eventHandler) m_eventHandler->OnActivate();
+    if (m_eventHandler != nullptr) m_eventHandler->OnActivate();
 }
 
 void ysWindow::OnDeactivate() {
-    //HWND current_active = GetFocus();
-
     m_active = false;
 
     if (m_eventHandler) m_eventHandler->OnDeactivate();
-
-    //SetFocus(current_active);
 }
 
 void ysWindow::OnCloseWindow() {

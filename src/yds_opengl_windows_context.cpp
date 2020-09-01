@@ -169,7 +169,7 @@ ysError ysOpenGLWindowsContext::SetContextMode(ContextMode mode) {
     int result;
 
     if (mode == ysRenderingContext::ContextMode::Fullscreen) {
-        window->SetWindowStyle(ysWindow::WindowStyle::FULLSCREEN);
+        window->SetWindowStyle(ysWindow::WindowStyle::Fullscreen);
 
         DEVMODE dmScreenSettings;
         memset(&dmScreenSettings, 0, sizeof(dmScreenSettings));
@@ -185,7 +185,7 @@ ysError ysOpenGLWindowsContext::SetContextMode(ContextMode mode) {
         }
     }
     else if (mode == ysRenderingContext::ContextMode::Windowed) {
-        window->SetWindowStyle(ysWindow::WindowStyle::WINDOWED);
+        window->SetWindowStyle(ysWindow::WindowStyle::Windowed);
 
         result = ChangeDisplaySettingsEx(NULL, NULL, NULL, 0, NULL);
         if (result != DISP_CHANGE_SUCCESSFUL) {

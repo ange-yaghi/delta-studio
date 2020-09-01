@@ -12,6 +12,7 @@ namespace dbasic {
         RenderSkeleton();
         ~RenderSkeleton();
 
+        RenderNode *GetRoot();
         RenderNode *NewNode();
         RenderNode *GetNode(int index);
         RenderNode *GetNode(const char *nodeName);

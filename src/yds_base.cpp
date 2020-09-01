@@ -5,12 +5,10 @@
 
 ysObject::ysObject() {
 	m_typeID = "YS_OBJECT";
-	m_debugName = "NO_NAME";
 }
 
 ysObject::ysObject(const char *typeID) {
 	m_typeID = typeID;
-	m_debugName = "NO_NAME";
 }
 
 ysObject::~ysObject() {
@@ -39,7 +37,3 @@ ysObject::~ysObject() {
 //
 //}
 //#endif
-
-void ysObject::SetDebugName(const char *debugName) {
-	m_debugName = debugName;
-}

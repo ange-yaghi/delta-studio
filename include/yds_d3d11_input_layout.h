@@ -5,20 +5,18 @@
 
 #include <D3D11.h>
 
-class ysD3D11InputLayout : public ysInputLayout
-{
-
+class ysD3D11InputLayout : public ysInputLayout {
 	friend class ysD3D11Device;
 
 public:
-
 	ysD3D11InputLayout();
 	virtual ~ysD3D11InputLayout();
 
-protected:
+	virtual void SetDebugName(const std::string &debugName);
 
+protected:
 	ID3D11InputLayout *m_layout;
 
 };
 
-#endif
+#endif /* YDS_D3D11_INPUT_LAYOUT_H */

@@ -66,7 +66,7 @@ ysQuaternion ysMath::LoadQuaternion(float angle, const ysVector &axis) {
     ysVector newAxis = _mm_shuffle_ps(axis, axis, _MM_SHUFFLE(2, 1, 0, 3));
     newAxis = _mm_and_ps(newAxis, ysMath::Constants::MaskOffX);
     newAxis = _mm_mul_ps(newAxis, ysMath::LoadScalar(sinAngle));
-    newAxis = _mm_or_ps(newAxis, ysMath::LoadVector(cosAngle));
+    newAxis = _mm_add_ps(newAxis, ysMath::LoadVector(cosAngle));
 
     newAxis = ysMath::Normalize(newAxis);
 
@@ -227,6 +227,9 @@ ysVector ysMath::Negate3(const ysVector &v) {
     return ysMath::Mul(v, ysMath::Constants::Negate3);
 }
 
+ysVector ysMath::Abs(const ysVector &a) {
+    return ComponentMax(a, Negate(a));
+}
 
 ysVector ysMath::Mask(const ysVector &v, const ysVectorMask &mask) {
     return _mm_and_ps(v, mask.vector);
@@ -820,6 +823,13 @@ ysVector ysMath::ComponentMax(const ysVector &a, const ysVector &b) {
 ysVector ysMath::ComponentMin(const ysVector &a, const ysVector &b) {
     ysVector result = _mm_min_ps(a, b);
     return result;
+}
+
+ysVector ysMath::Clamp(const ysVector &a, const ysVector &r_min, const ysVector &r_max) {
+    return ComponentMax(
+        ComponentMin(a, r_max),
+        r_min
+    );
 }
 
 ysVector ysMath::MaxComponent(const ysVector &v) {

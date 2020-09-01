@@ -28,48 +28,81 @@ bool dphysics::CollisionDetector::CircleCircleIntersect(RigidBody *body1, RigidB
     return false;
 }
 
-int dphysics::CollisionDetector::BoxBoxCollision(Collision *collisions, RigidBody *body1, RigidBody *body2, BoxPrimitive *box1, BoxPrimitive *box2) {
+int dphysics::CollisionDetector::BoxBoxCollision(
+    Collision *collisions, RigidBody *body1, RigidBody *body2, BoxPrimitive *box1, BoxPrimitive *box2) 
+{
+    constexpr float CoherenceThreshold = 0.999f;
+
     Collision collisions1[2];
     Collision collisions2[2];
 
-    int n1 = _BoxBoxCollision(collisions1, box1, box2);
-    int n2 = _BoxBoxCollision(collisions2, box2, box1);
+    bool colliding = _BoxBoxColliding(box1, box2);
+    if (!colliding) return 0;
 
-    float minPenetration1 = (n1 > 0)
-        ? collisions1->m_penetration
-        : FLT_MAX;
-    float minPenetration2 = (n2 > 0)
-        ? collisions2->m_penetration
-        : FLT_MAX;
+    int n1 = BoxBoxVertexPenetration(collisions1, box1, box2);
+    int n2 = BoxBoxVertexPenetration(collisions2, box2, box1);
 
-    int n = 0;
-    if (n1 > 0) {
-        if (minPenetration2 >= minPenetration1) {
-            for (int i = 0; i < n1; ++i) {
-                collisions[i] = collisions1[i];
-                collisions[i].m_body1 = body1;
-                collisions[i].m_body2 = body2;
-            }
-            n = n1;
-        }
+    if (n1 == 0 && n2 == 0) return 0;
+
+    if (n2 == 1) {
+        collisions2[0].m_normal = ysMath::Negate(collisions2[0].m_normal);
     }
 
-    if (n2 > 0) {
-        if (minPenetration2 <= minPenetration1) {
-            for (int i = 0; i < n2; ++i) {
-                collisions[i] = collisions2[i];
-                collisions[i].m_body1 = body2;
-                collisions[i].m_body2 = body1;
+    ysVector position;
+    ysVector normal;
+    float penetration;
+
+    if (n1 == 1 && n2 == 1) {
+        ysVector normal1 = collisions1[0].m_normal;
+        ysVector normal2 = collisions2[0].m_normal;
+
+        ysVector coherence = ysMath::Dot(normal1, normal2);
+        float coherence_s = ysMath::GetScalar(coherence);
+
+        if (coherence_s > CoherenceThreshold && false) {
+            position = ysMath::Mul(
+                ysMath::Add(collisions1[0].m_position, collisions2[0].m_position),
+                ysMath::Constants::Half);
+            normal = normal1;
+            penetration = collisions1[0].m_penetration;
+        }
+        else {
+            if (collisions1[0].m_penetration < collisions2[0].m_penetration) {
+                position = collisions1[0].m_position;
+                penetration = collisions1[0].m_penetration;
+                normal = collisions1[0].m_normal;
             }
-            n = n2;
+            else {
+                position = collisions2[0].m_position;
+                penetration = collisions2[0].m_penetration;
+                normal = collisions2[0].m_normal;
+            }
         }
     }
+    else if (n1 == 1) {
+        position = collisions1[0].m_position;
+        penetration = collisions1[0].m_penetration;
+        normal = collisions1[0].m_normal;
+    }
+    else {
+        position = collisions2[0].m_position;
+        penetration = collisions2[0].m_penetration;
+        normal = collisions2[0].m_normal;
+    }
 
-    return n;
+    if (penetration < 0) return 0;
+
+    collisions[0].m_position = position;
+    collisions[0].m_penetration = penetration;
+    collisions[0].m_normal = normal;
+    collisions[0].m_body1 = body1;
+    collisions[0].m_body2 = body2;
+
+    return 1;
 }
 
 int dphysics::CollisionDetector::CircleBoxCollision(Collision *collisions, RigidBody *body1, RigidBody *body2, CirclePrimitive *circle, BoxPrimitive *box) {
-    constexpr float epsilon = 1E-5f;
+    constexpr float Epsilon = 1E-5f;
 
     ysVector relativePosition = ysMath::Sub(circle->Position, box->Position);
     relativePosition = ysMath::QuatTransformInverse(box->Orientation, relativePosition);
@@ -86,10 +119,10 @@ int dphysics::CollisionDetector::CircleBoxCollision(Collision *collisions, Rigid
     if (d2 > circle->Radius * circle->Radius) return 0;
 
     ysVector normal;
-    if (d0 <= epsilon) {
+    if (d0 <= Epsilon) {
         normal = ysMath::Mul(ysMath::Constants::XAxis, ysMath::LoadScalar(0.001f));
     }
-    else if (d2 <= epsilon) {
+    else if (d2 <= Epsilon) {
         normal = ysMath::Mask(ysMath::Sub(circle->Position, box->Position), ysMath::Constants::MaskOffW);
         normal = ysMath::Mask(normal, ysMath::Constants::MaskOffZ);
     }
@@ -180,131 +213,230 @@ int dphysics::CollisionDetector::RayCircleCollision(Collision *collisions, Rigid
     return true;
 }
 
-int dphysics::CollisionDetector::_BoxBoxCollision(Collision *collisions, BoxPrimitive *body1, BoxPrimitive *body2) {
-    ysVector point1 = ysMath::Add(ysMath::QuatTransform(body1->Orientation, ysMath::LoadVector(body1->HalfWidth, body1->HalfHeight)), body1->Position);
-    ysVector point2 = ysMath::Add(ysMath::QuatTransform(body1->Orientation, ysMath::LoadVector(-body1->HalfWidth, body1->HalfHeight)), body1->Position);
-    ysVector point3 = ysMath::Add(ysMath::QuatTransform(body1->Orientation, ysMath::LoadVector(body1->HalfWidth, -body1->HalfHeight)), body1->Position);
-    ysVector point4 = ysMath::Add(ysMath::QuatTransform(body1->Orientation, ysMath::LoadVector(-body1->HalfWidth, -body1->HalfHeight)), body1->Position);
+bool dphysics::CollisionDetector::_BoxBoxColliding(BoxPrimitive *a, BoxPrimitive *b) {
+    const ysVector Epsilon = ysMath::LoadScalar(1E-4);
 
-    ysQuaternion invBody2 = ysMath::QuatInvert(body2->Orientation);
-    ysQuaternion final = ysMath::QuatMultiply(invBody2, body1->Orientation);
+    ysQuaternion o_a = a->Orientation;
+    ysQuaternion o_b = b->Orientation;
 
-    ysVector edgeNormal_1 = ysMath::QuatTransform(final, ysMath::LoadVector(1.0f, 0.0f));
-    ysVector edgeNormal_2 = ysMath::QuatTransform(final, ysMath::LoadVector(-1.0f, 0.0f));
-    ysVector edgeNormal_3 = ysMath::QuatTransform(final, ysMath::LoadVector(0.0f, 1.0f));
-    ysVector edgeNormal_4 = ysMath::QuatTransform(final, ysMath::LoadVector(0.0f, -1.0f));
+    ysMatrix r;
+    ysMatrix abs_r;
 
-    ysVector normal1_1 = edgeNormal_1;
-    ysVector normal2_1 = edgeNormal_2;
-    ysVector normal3_1 = edgeNormal_1;
-    ysVector normal4_1 = edgeNormal_2;
+    float ra, rb;
 
-    ysVector normal1_2 = edgeNormal_3;
-    ysVector normal2_2 = edgeNormal_3;
-    ysVector normal3_2 = edgeNormal_4;
-    ysVector normal4_2 = edgeNormal_4;
+    ysQuaternion a_inv = ysMath::QuatInvert(o_a);
+    ysQuaternion b_in_a = ysMath::QuatMultiply(a_inv, o_b);
+    r = ysMath::LoadMatrix(b_in_a);
 
-    ysVector points[] = { point1, point2, point3, point4 };
-    ysVector normals_1[] = { normal1_1, normal2_1, normal3_1, normal4_1 };
-    ysVector normals_2[] = { normal1_2, normal2_2, normal3_2, normal4_2 };
+    ysVector t_v = ysMath::Sub(b->Position, a->Position);
+    t_v = ysMath::QuatTransform(a_inv, t_v);
+    ysVector2 t = ysMath::GetVector2(t_v);
 
-    float penetrationX[4];
-    float penetrationY[4];
-
-    ysVector xaxis = ysMath::Constants::XAxis;
-    ysVector yaxis = ysMath::Constants::YAxis;
-    xaxis = ysMath::QuatTransform(body2->Orientation, xaxis);
-    yaxis = ysMath::QuatTransform(body2->Orientation, yaxis);
-
-    ysVector del = ysMath::Sub(body2->Position, body1->Position);
-    ysVector delDir = ysMath::Normalize(del);
-
-    for (int i = 0; i < 4; i++) {
-        ysVector relPoint = ysMath::Sub(points[i], body2->Position);
-
-        ysVector projx = ysMath::Dot(relPoint, xaxis);
-        ysVector projy = ysMath::Dot(relPoint, yaxis);
-
-        penetrationX[i] = ysMath::GetScalar(projx);
-        penetrationY[i] = ysMath::GetScalar(projy);
+    for (int i = 0; i < 4; ++i) {
+        abs_r.rows[i] = ysMath::Add(ysMath::Abs(r.rows[i]), Epsilon);
     }
+
+    ysVector a_extents = ysMath::LoadVector(a->HalfWidth, a->HalfHeight);
+    ysVector b_extents = ysMath::LoadVector(b->HalfWidth, b->HalfHeight);
+
+    for (int i = 0; i < 2; ++i) {
+        ra = a->Extents[i];
+        rb = ysMath::GetScalar(ysMath::Dot(abs_r.rows[i], b_extents));
+        if (abs(t.vec[i]) > ra + rb) return false;
+    }
+
+    ysMatrix abs_r_inv = ysMath::Transpose(abs_r);
+    ysMatrix r_inv = ysMath::Transpose(r);
+
+    for (int i = 0; i < 2; ++i) {
+        ra = ysMath::GetScalar(ysMath::Dot(abs_r_inv.rows[i], a_extents));
+        rb = b->Extents[i];
+        if (abs(ysMath::GetScalar(ysMath::Dot(t_v, r_inv.rows[i]))) > ra + rb) return false;
+    }
+
+    return true;
+}
+
+void swap(int &a, int &b) {
+    int temp = a;
+    a = b;
+    b = temp;
+}
+
+void sort4(const float *d, int *index) {
+    if (d[index[0]] > d[index[1]]) swap(index[0], index[1]);
+    if (d[index[2]] > d[index[3]]) swap(index[2], index[3]);
+    if (d[index[0]] > d[index[2]]) swap(index[0], index[2]);
+    if (d[index[1]] > d[index[3]]) swap(index[1], index[3]);
+    if (d[index[1]] > d[index[2]]) swap(index[1], index[2]);
+}
+
+float vertexBoxCollision(float proj_x, float proj_y, float halfWidth, float halfHeight, bool limit=false) {
+    constexpr float Epsilon = 1E-4;
+    
+    if (abs(proj_x) > halfWidth + Epsilon) return FLT_MAX;
+    if (limit && proj_y > halfHeight + Epsilon) return FLT_MAX;
+
+    return halfHeight - proj_y;
+}
+
+int dphysics::CollisionDetector::BoxBoxVertexPenetration(
+    Collision *collisions, BoxPrimitive *a, BoxPrimitive *b) 
+{
+    constexpr float ParallelEpsilon = 1E-4;
+
+    ysQuaternion a_inv = ysMath::QuatInvert(a->Orientation);
+    ysQuaternion b_to_a = ysMath::QuatMultiply(
+        a_inv,
+        b->Orientation);
+
+    ysVector d = ysMath::Sub(b->Position, a->Position);
+    ysVector d_rel = ysMath::QuatTransform(a_inv, d);
+
+    ysVector v1 = ysMath::Add(ysMath::QuatTransform(b_to_a, ysMath::LoadVector(b->HalfWidth, b->HalfHeight)), d_rel);
+    ysVector v2 = ysMath::Add(ysMath::QuatTransform(b_to_a, ysMath::LoadVector(-b->HalfWidth, b->HalfHeight)), d_rel);
+    ysVector v3 = ysMath::Add(ysMath::QuatTransform(b_to_a, ysMath::LoadVector(b->HalfWidth, -b->HalfHeight)), d_rel);
+    ysVector v4 = ysMath::Add(ysMath::QuatTransform(b_to_a, ysMath::LoadVector(-b->HalfWidth, -b->HalfHeight)), d_rel);
+
+    float proj_x[] = {
+        ysMath::GetX(v1),
+        ysMath::GetX(v2),
+        ysMath::GetX(v3),
+        ysMath::GetX(v4)
+    };
+
+    int order_x[] = { 0, 1, 2, 3 };
+
+    float proj_y[] = {
+        ysMath::GetY(v1),
+        ysMath::GetY(v2),
+        ysMath::GetY(v3),
+        ysMath::GetY(v4)
+    };
+
+    int order_y[] = { 0, 1, 2, 3 };
+
+    sort4(proj_x, order_x);
+    sort4(proj_y, order_y);
 
     float smallestPenetration = FLT_MAX;
-    Collision rawCollisions[4];
+    int vertex = -1;
+    int other = -1;
+    ysVector normal;
 
-    for (int i = 0; i < 4; i++) {
-        float norX_1 = ysMath::GetX(normals_1[i]);
-        float norY_1 = ysMath::GetY(normals_1[i]);
-        float norX_2 = ysMath::GetX(normals_2[i]);
-        float norY_2 = ysMath::GetY(normals_2[i]);
+    float penetration0, penetration1;
 
-        Collision &col = rawCollisions[i];
-        rawCollisions[i].m_collisionType = Collision::CollisionType::Unknown;
+    // Top face
+    penetration0 = vertexBoxCollision(proj_x[order_y[0]], proj_y[order_y[0]], a->HalfWidth, a->HalfHeight);
+    penetration1 = abs(proj_y[order_y[1]] - proj_y[order_y[0]]) < ParallelEpsilon
+        ? vertexBoxCollision(proj_x[order_y[1]], proj_y[order_y[1]], a->HalfWidth, a->HalfHeight)
+        : FLT_MAX;
+    if (penetration0 < smallestPenetration || penetration1 < smallestPenetration) {
+        normal = ysMath::LoadVector(0.0f, 1.0f, 0.0f);
+        smallestPenetration = min(penetration0, penetration1);
 
-        if (abs(penetrationX[i]) <= body2->HalfWidth && abs(penetrationY[i]) <= body2->HalfHeight) {
-            float actualPenetrationX = body2->HalfWidth - abs(penetrationX[i]);
-            float actualPenetrationY = body2->HalfHeight - abs(penetrationY[i]);
-
-            bool foundValid = false;
-            if (norX_2 >= THRESH_0_NEGATIVE && norX_1 >= THRESH_0_NEGATIVE && penetrationX[i] < 0) {
-                smallestPenetration = min(actualPenetrationX, smallestPenetration);
-
-                col.m_normal = ysMath::Negate(xaxis);
-                col.m_penetration = actualPenetrationX;
-                col.m_position = points[i];
-                col.m_collisionType = Collision::CollisionType::PointFace;
-                col.m_feature1 = i;
-                col.m_feature2 = -1;
-
-                foundValid = true;
-            }
-            else if (norX_2 <= THRESH_0_POSITIVE && norX_1 <= THRESH_0_POSITIVE && penetrationX[i] > 0) {
-                smallestPenetration = min(actualPenetrationX, smallestPenetration);
-
-                col.m_normal = xaxis;
-                col.m_penetration = actualPenetrationX;
-                col.m_position = points[i];
-                col.m_collisionType = Collision::CollisionType::PointFace;
-                col.m_feature1 = i;
-                col.m_feature2 = -1;
-
-                foundValid = true;
-            }
-            if (actualPenetrationY < actualPenetrationX || !foundValid) {
-                if (norY_2 >= THRESH_0_NEGATIVE && norY_1 >= THRESH_0_NEGATIVE && penetrationY[i] < 0) {
-                    smallestPenetration = min(actualPenetrationY, smallestPenetration);
-
-                    col.m_normal = ysMath::Negate(yaxis);
-                    col.m_penetration = actualPenetrationY;
-                    col.m_position = points[i];
-                    col.m_collisionType = Collision::CollisionType::PointFace;
-                    col.m_feature1 = i;
-                    col.m_feature2 = -1;
-                }
-                else if (norY_2 <= THRESH_0_POSITIVE && norY_1 <= THRESH_0_POSITIVE && penetrationY[i] > 0) {
-                    smallestPenetration = min(actualPenetrationY, smallestPenetration);
-
-                    col.m_normal = yaxis;
-                    col.m_penetration = actualPenetrationY;
-                    col.m_position = points[i];
-                    col.m_collisionType = Collision::CollisionType::PointFace;
-                    col.m_feature1 = i;
-                    col.m_feature2 = -1;
-                }
-            }
+        if (penetration0 != FLT_MAX && penetration1 != FLT_MAX && abs(penetration0 - penetration1) < ParallelEpsilon) {
+            vertex = order_y[0];
+            other = order_y[1];
+        }
+        else if (penetration1 == FLT_MAX || penetration0 < penetration1) {
+            other = -1;
+            vertex = order_y[0];
+        }
+        else {
+            other = -1;
+            vertex = order_y[1];
         }
     }
 
-    int nCollisions = 0;
-    for (int i = 0; i < 4; ++i) {
-        if (nCollisions >= 2) break;
-        if (rawCollisions[i].m_collisionType == Collision::CollisionType::Unknown) continue;
+    // Bottom face
+    penetration0 = vertexBoxCollision(proj_x[order_y[3]], -proj_y[order_y[3]], a->HalfWidth, a->HalfHeight);
+    penetration1 = abs(proj_y[order_y[2]] - proj_y[order_y[3]]) < ParallelEpsilon
+        ? vertexBoxCollision(proj_x[order_y[2]], -proj_y[order_y[2]], a->HalfWidth, a->HalfHeight)
+        : FLT_MAX;
+    if (penetration0 < smallestPenetration || penetration1 < smallestPenetration) {
+        normal = ysMath::LoadVector(0.0f, -1.0f, 0.0f);
+        smallestPenetration = min(penetration0, penetration1);
 
-        if (std::abs(rawCollisions[i].m_penetration - smallestPenetration) < 1E-4) {
-            collisions[nCollisions] = rawCollisions[i];
-            ++nCollisions;
+        if (penetration0 != FLT_MAX && penetration1 != FLT_MAX && abs(penetration0 - penetration1) < ParallelEpsilon) {
+            vertex = order_y[3];
+            other = order_y[2];
+        }
+        else if (penetration1 == FLT_MAX || penetration0 < penetration1) {
+            other = -1;
+            vertex = order_y[3];
+        }
+        else {
+            other = -1;
+            vertex = order_y[2];
         }
     }
 
-    return nCollisions;
+    // Left face
+    penetration0 = vertexBoxCollision(proj_y[order_x[3]], -proj_x[order_x[3]], a->HalfHeight, a->HalfWidth);
+    penetration1 = abs(proj_x[order_x[2]] - proj_x[order_x[3]]) < ParallelEpsilon
+        ? vertexBoxCollision(proj_y[order_x[2]], -proj_x[order_x[2]], a->HalfHeight, a->HalfWidth, true)
+        : FLT_MAX;
+    if (penetration0 < smallestPenetration || penetration1 < smallestPenetration) {
+        normal = ysMath::LoadVector(-1.0f, 0.0f, 0.0f);
+        smallestPenetration = min(penetration0, penetration1);
+
+        if (penetration0 != FLT_MAX && penetration1 != FLT_MAX && abs(penetration0 - penetration1) < ParallelEpsilon) {
+            vertex = order_x[3];
+            other = order_x[2];
+        }
+        else if (penetration1 == FLT_MAX || penetration0 < penetration1) {
+            other = -1;
+            vertex = order_x[3];
+        }
+        else {
+            other = -1;
+            vertex = order_x[2];
+        }
+    }
+
+    // Right face
+    penetration0 = vertexBoxCollision(proj_y[order_x[0]], proj_x[order_x[0]], a->HalfHeight, a->HalfWidth);
+    penetration1 = abs(proj_x[order_x[0]] - proj_x[order_x[1]]) < ParallelEpsilon
+        ? vertexBoxCollision(proj_y[order_x[1]], proj_x[order_x[1]], a->HalfHeight, a->HalfWidth, true)
+        : FLT_MAX;
+    if (penetration0 < smallestPenetration || penetration1 < smallestPenetration) {
+        normal = ysMath::LoadVector(1.0f, 0.0f, 0.0f);
+        smallestPenetration = min(penetration0, penetration1);
+
+        if (penetration0 != FLT_MAX && penetration1 != FLT_MAX && abs(penetration0 - penetration1) < ParallelEpsilon) {
+            vertex = order_x[0];
+            other = order_x[1];
+        }
+        else if (penetration1 == FLT_MAX || penetration0 < penetration1) {
+            other = -1;
+            vertex = order_x[0];
+        }
+        else {
+            other = -1;
+            vertex = order_x[1];
+        }
+    }
+
+    if (vertex == -1) return 0;
+
+    ysVector position = ysMath::LoadVector(proj_x[vertex], proj_y[vertex]);
+
+    if (other != -1) {
+        ysVector otherPosition = ysMath::LoadVector(proj_x[other], proj_y[other]);
+        position = ysMath::Mul(
+            ysMath::Add(position, otherPosition),
+            ysMath::Constants::Half
+            );
+    }
+
+    position = ysMath::QuatTransform(a->Orientation, position);
+    normal = ysMath::QuatTransform(a->Orientation, normal);
+
+    collisions[0].m_position = ysMath::Add(position, a->Position);
+    collisions[0].m_normal = ysMath::Negate(normal);
+    collisions[0].m_penetration = smallestPenetration;
+    collisions[0].m_collisionType = Collision::CollisionType::Generic;
+
+    return 1;
 }
