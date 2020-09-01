@@ -80,7 +80,7 @@ namespace dbasic {
         ysError DrawRenderSkeleton(RenderSkeleton *skeleton, float scale, int layer);
         ysError LoadTexture(ysTexture **image, const char *fname);
         ysError LoadAnimation(Animation **animation, const char *path, int start, int end);
-        ysError LoadFont(Font **font, const char *path);
+        ysError LoadFont(Font **font, const char *path, int size=4096);
 
         ysError PlayAudio(AudioAsset *audio);
 

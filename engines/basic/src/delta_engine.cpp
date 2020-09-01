@@ -448,26 +448,31 @@ ysError dbasic::DeltaEngine::LoadAnimation(Animation **animation, const char *pa
     return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
 }
 
-ysError dbasic::DeltaEngine::LoadFont(Font **font, const char *path) {
+ysError dbasic::DeltaEngine::LoadFont(Font **font, const char *path, int size) {
     YDS_ERROR_DECLARE("LoadFont");
 
     unsigned char *ttfBuffer = new unsigned char[1 << 20];
-    unsigned char *bitmapData = new unsigned char[4096 * 4096];
+    unsigned char *bitmapData = new unsigned char[size * size];
 
-    FILE *f;
+    FILE *f = nullptr;
     fopen_s(&f, path, "rb");
+
+    if (f == nullptr) {
+        return YDS_ERROR_RETURN(ysError::YDS_COULD_NOT_OPEN_FILE);
+    }
+
     fread(ttfBuffer, 1, 1 << 20, f);
 
     stbtt_bakedchar *cdata = new stbtt_bakedchar[96];
 
-    stbtt_BakeFontBitmap(ttfBuffer, 0, 32.0, bitmapData, 4096, 4096, 32, 96, cdata);
+    stbtt_BakeFontBitmap(ttfBuffer, 0, 32.0, bitmapData, size, size, 32, 96, cdata);
     delete[] ttfBuffer;
 
     Font *newFont = new Font;
     *font = newFont;
 
     ysTexture *texture = nullptr;
-    YDS_NESTED_ERROR_CALL(m_device->CreateAlphaTexture(&texture, 4096, 4096, bitmapData));
+    YDS_NESTED_ERROR_CALL(m_device->CreateAlphaTexture(&texture, size, size, bitmapData));
 
     newFont->Initialize(32, 96, cdata, texture);
 

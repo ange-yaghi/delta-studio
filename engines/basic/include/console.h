@@ -50,9 +50,9 @@ namespace dbasic {
 
     class Console : public ysObject {
     public:
-        static const int BUFFER_WIDTH = 175;
-        static const int BUFFER_HEIGHT = 75;
-        static const int BUFFER_SIZE = BUFFER_WIDTH * BUFFER_HEIGHT; // Maximum of 4096 characters displayed at once
+        static const int BufferWidth = 175;
+        static const int BufferHeight = 75;
+        static const int BufferSize = BufferWidth * BufferHeight; // Maximum of 4096 characters displayed at once
 
     public:
         Console();
@@ -116,7 +116,7 @@ namespace dbasic {
         GuiPoint m_nominalLocation;
         GuiPoint m_actualLocation;
 
-        bool m_fontBold;
+        char *m_buffer;
 
     public:
         // ----------------------------------------------------
@@ -128,8 +128,6 @@ namespace dbasic {
 
         // Drawing Text
         ysError SetCharacter(char character);
-
-        void SetFontBold(bool fontBold) { m_fontBold = fontBold; }
 
         void Clear();
 

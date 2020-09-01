@@ -25,7 +25,7 @@ void dbasic::Font::Initialize(int firstGlyph, int glyphCount, void *cdata_, ysTe
         stbtt_aligned_quad q;
 
         float x = 0.0, y = 0.0;
-        stbtt_GetBakedQuad(cdata, 4096, 4096, i, &x, &y, &q, 1);
+        stbtt_GetBakedQuad(cdata, texture->GetWidth(), texture->GetHeight(), i, &x, &y, &q, 1);
 
         GlyphData &data = m_glyphData[i];
         data.p0 = { q.x0, q.y0 };
