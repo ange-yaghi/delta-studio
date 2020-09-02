@@ -1,4 +1,5 @@
 #include <stb/stb_truetype.h>
+#include <stb/stb_rect_pack.h>
 
 #include "../include/font.h"
 
@@ -13,25 +14,27 @@ dbasic::Font::~Font() {
     /* void */
 }
 
-void dbasic::Font::Initialize(int firstGlyph, int glyphCount, void *cdata_, ysTexture *texture) {
+void dbasic::Font::Initialize(int firstGlyph, int glyphCount, void *cdata_, float fontHeight, ysTexture *texture) {
     m_glyphData = new GlyphData[glyphCount];
     m_firstGlyph = firstGlyph;
     m_glyphCount = glyphCount;
     m_texture = texture;
+    m_fontHeight = fontHeight;
 
-    const stbtt_bakedchar *cdata = reinterpret_cast<const stbtt_bakedchar *>(cdata_);
+    const stbtt_packedchar *cdata = reinterpret_cast<const stbtt_packedchar *>(cdata_);
 
     for (int i = 0; i < m_glyphCount; ++i) {
         stbtt_aligned_quad q;
 
         float x = 0.0, y = 0.0;
-        stbtt_GetBakedQuad(cdata, texture->GetWidth(), texture->GetHeight(), i, &x, &y, &q, 1);
+        stbtt_GetPackedQuad(cdata, texture->GetWidth(), texture->GetHeight(), i, &x, &y, &q, 1);
 
         GlyphData &data = m_glyphData[i];
         data.p0 = { q.x0, q.y0 };
         data.p1 = { q.x1, q.y1 };
         data.uv0 = { q.s0, q.t0 };
         data.uv1 = { q.s1, q.t1 };
+        data.Shift = x;
     }
 }
 

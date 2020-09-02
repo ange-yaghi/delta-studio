@@ -525,12 +525,10 @@ ysError ysOpenGLDevice::UseConstantBuffer(ysGPUBuffer *buffer, int slot) {
 }
 
 ysError ysOpenGLDevice::EditBufferDataRange(ysGPUBuffer *buffer, char *data, int size, int offset) {
-    YDS_ERROR_DECLARE("EditBufferDataRange");
+    YDS_ERROR_DECLARE("EditBufferData");
 
-    if (!CheckCompatibility(buffer))			return YDS_ERROR_RETURN(ysError::YDS_INCOMPATIBLE_PLATFORMS);
-    if (buffer == nullptr || data == nullptr)   return YDS_ERROR_RETURN(ysError::YDS_INVALID_PARAMETER);
-    if ((size + offset) > buffer->GetSize())	return YDS_ERROR_RETURN(ysError::YDS_OUT_OF_BOUNDS);
-    if (size < 0 || offset < 0)					return YDS_ERROR_RETURN(ysError::YDS_OUT_OF_BOUNDS);
+    if (!CheckCompatibility(buffer))		    return YDS_ERROR_RETURN(ysError::YDS_INCOMPATIBLE_PLATFORMS);
+    if (buffer == nullptr || data == nullptr)	return YDS_ERROR_RETURN(ysError::YDS_INVALID_PARAMETER);
 
     ysGPUBuffer *previous = GetActiveBuffer(buffer->GetType());
 
@@ -538,11 +536,7 @@ ysError ysOpenGLDevice::EditBufferDataRange(ysGPUBuffer *buffer, char *data, int
     int target = openglBuffer->GetTarget();
 
     m_realContext->glBindBuffer(target, openglBuffer->m_bufferHandle);
-
-    char *mappedBuffer = (char *)m_realContext->glMapBufferRange(target, offset, size, GL_WRITE_ONLY);
-    memcpy(mappedBuffer, data, buffer->GetSize());
-
-    m_realContext->glUnmapBuffer(target);
+    m_realContext->glBufferSubData(target, offset, size, data);
 
     // Restore Previous State
     if (previous != buffer) {

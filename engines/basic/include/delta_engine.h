@@ -124,6 +124,7 @@ namespace dbasic {
         // Input Device
         bool IsKeyDown(ysKeyboard::KEY_CODE key);
         bool ProcessKeyDown(ysKeyboard::KEY_CODE key);
+        bool ProcessKeyUp(ysKeyboard::KEY_CODE key);
 
         bool IsMouseKeyDown(ysMouse::Button key);
         int GetMouseWheel();
@@ -232,6 +233,7 @@ namespace dbasic {
         ysInputLayout *m_consoleInputLayout;
 
         // Text Support
+        UiRenderer m_uiRenderer;
         Console m_console;
 
         bool m_initialized;

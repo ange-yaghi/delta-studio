@@ -38,6 +38,7 @@
     <ClInclude Include="..\..\engines\basic\include\os_utilities.h" />
     <ClInclude Include="..\..\engines\basic\include\path.h" />
     <ClInclude Include="..\..\engines\basic\include\texture_asset.h" />
+    <ClInclude Include="..\..\engines\basic\include\ui_renderer.h" />
     <ClInclude Include="..\..\engines\basic\include\window_handler.h" />
     <ClInclude Include="..\..\engines\basic\include\font_map.h" />
     <ClInclude Include="..\..\engines\basic\include\keyframe.h" />
@@ -67,6 +68,7 @@
     <ClCompile Include="..\..\engines\basic\src\os_utilities.cpp" />
     <ClCompile Include="..\..\engines\basic\src\path.cpp" />
     <ClCompile Include="..\..\engines\basic\src\texture_asset.cpp" />
+    <ClCompile Include="..\..\engines\basic\src\ui_renderer.cpp" />
     <ClCompile Include="..\..\engines\basic\src\window_handler.cpp" />
     <ClCompile Include="..\..\engines\basic\src\font_map.cpp" />
     <ClCompile Include="..\..\engines\basic\src\keyframe.cpp" />

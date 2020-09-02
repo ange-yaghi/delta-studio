@@ -105,8 +105,6 @@ void dbasic_demo::DeltaBasicDemoApplication::Render() {
 
     //m_skeletonBase.UpdateDerivedData(true);
     int color[] = { 0xff, 0x0, 0x0 };
-    //m_engine.SetObjectTransform(ysMath::LoadMatrix(q));
-    //m_engine.DrawBox(color, 5.0f, 5.0f, 0);
     m_engine.DrawRenderSkeleton(m_renderSkeleton, 1.0f, 0);
 
     ysAnimationChannel::ActionSettings normalSpeed;
@@ -177,7 +175,7 @@ void dbasic_demo::DeltaBasicDemoApplication::Render() {
 
     dbasic::Console *console = m_engine.GetConsole();
     console->Clear();
-    console->MoveToLocation(dbasic::GuiPoint(1, 2));
+    console->MoveToOrigin();
 
     std::stringstream msg;
     msg << "FPS " << m_engine.GetAverageFramerate() << "\n";

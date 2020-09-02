@@ -5,7 +5,9 @@
 #include "../include/material.h"
 
 #define STB_TRUETYPE_IMPLEMENTATION
+#define STB_RECT_PACK_IMPLEMENTATION
 
+#include <stb/stb_rect_pack.h>
 #include <stb/stb_truetype.h>
 
 #include <assert.h>
@@ -154,8 +156,13 @@ ysError dbasic::DeltaEngine::CreateGameWindow(const GameEngineSettings &settings
     // Initialize Geometry
     YDS_NESTED_ERROR_CALL(InitializeGeometry());
 
+    // Initialize UI renderer
+    m_uiRenderer.SetEngine(this);
+    YDS_NESTED_ERROR_CALL(m_uiRenderer.Initialize(32768));
+
     // Initialize the console
     m_console.SetEngine(this);
+    m_console.SetRenderer(&m_uiRenderer);
     YDS_NESTED_ERROR_CALL(m_console.Initialize());
 
     // Initialize Shaders
@@ -176,6 +183,8 @@ ysError dbasic::DeltaEngine::CreateGameWindow(const GameEngineSettings &settings
 
 ysError dbasic::DeltaEngine::StartFrame() {
     YDS_ERROR_DECLARE("StartFrame");
+
+    m_uiRenderer.Reset();
 
     m_breakdownTimer.WriteLastFrameToLogFile();
     m_breakdownTimer.StartFrame();
@@ -463,9 +472,13 @@ ysError dbasic::DeltaEngine::LoadFont(Font **font, const char *path, int size) {
 
     fread(ttfBuffer, 1, 1 << 20, f);
 
-    stbtt_bakedchar *cdata = new stbtt_bakedchar[96];
+    stbtt_packedchar *cdata = new stbtt_packedchar[96];
 
-    stbtt_BakeFontBitmap(ttfBuffer, 0, 32.0, bitmapData, size, size, 32, 96, cdata);
+    int result = 0;
+    stbtt_pack_context context;
+    result = stbtt_PackBegin(&context, bitmapData, size, size, 0, 16, nullptr);
+    result = stbtt_PackFontRange(&context, ttfBuffer, 0,  64.0f, 32, 96, cdata);
+    stbtt_PackEnd(&context);
     delete[] ttfBuffer;
 
     Font *newFont = new Font;
@@ -474,7 +487,7 @@ ysError dbasic::DeltaEngine::LoadFont(Font **font, const char *path, int size) {
     ysTexture *texture = nullptr;
     YDS_NESTED_ERROR_CALL(m_device->CreateAlphaTexture(&texture, size, size, bitmapData));
 
-    newFont->Initialize(32, 96, cdata, texture);
+    newFont->Initialize(32, 96, cdata, 64.0f, texture);
 
     delete[] cdata;
 
@@ -614,6 +627,15 @@ bool dbasic::DeltaEngine::ProcessKeyDown(ysKeyboard::KEY_CODE key) {
     return false;
 }
 
+bool dbasic::DeltaEngine::ProcessKeyUp(ysKeyboard::KEY_CODE key) {
+    if (m_mainKeyboard != nullptr) {
+        ysKeyboard *keyboard = m_mainKeyboard->GetAsKeyboard();
+        return keyboard->ProcessKeyTransition(key, ysKey::KEY_STATE::KEY_UP_TRANS);
+    }
+
+    return false;
+}
+
 bool dbasic::DeltaEngine::IsMouseKeyDown(ysMouse::Button key) {
     if (m_mainMouse != nullptr) {
         ysMouse *mouse = m_mainMouse->GetAsMouse();
@@ -634,7 +656,7 @@ int dbasic::DeltaEngine::GetMouseWheel() {
 
 void dbasic::DeltaEngine::GetMousePos(int *x, int *y) {
     if (m_mainMouse != nullptr) {
-        ysMouse *mouse = m_mainMouse->GetAsMouse();
+        const ysMouse *mouse = m_mainMouse->GetAsMouse();
 
         if (x != nullptr) {
             *x = mouse->GetX();
@@ -1030,7 +1052,8 @@ ysError dbasic::DeltaEngine::ExecuteDrawQueue(DrawTarget target) {
         m_device->UseConstantBuffer(m_shaderScreenVariablesBuffer, 0);
         m_device->UseConstantBuffer(m_consoleShaderObjectVariablesBuffer, 1);
 
-        YDS_NESTED_ERROR_CALL(m_console.UpdateDisplay());
+        YDS_NESTED_ERROR_CALL(m_console.UpdateGeometry());
+        YDS_NESTED_ERROR_CALL(m_uiRenderer.Update());
     }
 
     return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);

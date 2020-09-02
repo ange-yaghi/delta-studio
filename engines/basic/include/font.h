@@ -14,19 +14,22 @@ namespace dbasic {
             ysVector2 p1;
             ysVector2 uv0;
             ysVector2 uv1;
+            float Shift;
         };
 
     public:
         Font();
         ~Font();
 
-        void Initialize(int firstGlyph, int glyphCount, void *cdata, ysTexture *texture);
+        void Initialize(int firstGlyph, int glyphCount, void *cdata, float fontHeight, ysTexture *texture);
 
         const GlyphData *GetGlyphData(int glyph) const;
 
         ysTexture *GetTexture() const { return m_texture;  }
+        float GetFontHeight() const { return m_fontHeight; }
 
     protected:
+        float m_fontHeight;
         int m_firstGlyph;
         int m_glyphCount;
         GlyphData *m_glyphData;
