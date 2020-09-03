@@ -47,7 +47,15 @@ ysError dbasic::UiRenderer::Update() {
 }
 
 ysError dbasic::UiRenderer::Destroy() {
-    return ysError();
+    YDS_ERROR_DECLARE("Destroy");
+
+    m_engine->GetDevice()->DestroyGPUBuffer(m_mainIndexBuffer);
+    m_engine->GetDevice()->DestroyGPUBuffer(m_mainVertexBuffer);
+    
+    delete[] m_indexBuffer;
+    delete[] m_vertexBuffer;
+
+    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
 }
 
 dbasic::ConsoleVertex *dbasic::UiRenderer::AllocateQuads(int n) {

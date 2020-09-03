@@ -54,6 +54,10 @@ ysError dbasic::Console::Destroy() {
     YDS_ERROR_DECLARE("Destroy");
 
     delete[] m_buffer;
+    m_buffer = nullptr;
+
+    ysTexture *fontTexture = m_font->GetTexture();
+    m_engine->GetDevice()->DestroyTexture(fontTexture);
 
     return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
 }

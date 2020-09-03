@@ -5,7 +5,7 @@
 
 #include <sys/stat.h>
 
-dbasic::AssetManager::AssetManager() : ysObject("ASSET_MANAGER") {
+dbasic::AssetManager::AssetManager() : ysObject("AssetManager") {
     m_engine = nullptr;
 }
 

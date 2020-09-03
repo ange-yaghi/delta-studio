@@ -31,7 +31,7 @@ VS_OUTPUT VS_CONSOLE(VS_INPUT_CONSOLE input) {
 
 	output.Pos = float4(inputPos.xyzw);
 
-	input.TexCoord.y = 1 - input.TexCoord.y;
+	input.TexCoord.y = input.TexCoord.y;
 	output.TexCoord = ((input.TexCoord) * TexScale) + TexOffset;
 	output.TexCoord = float2(output.TexCoord.x, output.TexCoord.y);
 
@@ -39,5 +39,6 @@ VS_OUTPUT VS_CONSOLE(VS_INPUT_CONSOLE input) {
 }
 
 float4 PS_CONSOLE(VS_OUTPUT input) : SV_Target {
-	return float4(txDiffuse.Sample(samLinear, input.TexCoord).rgba * MulCol);
+	float a = txDiffuse.Sample(samLinear, input.TexCoord).r;
+	return MulCol * float4(1.0, 1.0, 1.0, a);
 }

@@ -1177,7 +1177,6 @@ ysError ysD3D11Device::CreateTexture(ysTexture **newTexture, const char *fname) 
 
     D3DX11_IMAGE_LOAD_INFO info;
     memset((void *)&info, 0, sizeof(D3DX11_IMAGE_LOAD_INFO));
-    //info.Format = DXGI_FORMAT::DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
 
     result = D3DX11CreateTextureFromFile(m_device, fname, nullptr, nullptr, (ID3D11Resource **)&newD3DTexture, nullptr);
     if (FAILED(result)) {
@@ -1210,9 +1209,54 @@ ysError ysD3D11Device::CreateTexture(ysTexture **newTexture, const char *fname) 
 ysError ysD3D11Device::CreateAlphaTexture(ysTexture **texture, int width, int height, const unsigned char *buffer) {
     YDS_ERROR_DECLARE("CreateTexture");
 
-    *texture = nullptr;
+    D3D11_TEXTURE2D_DESC desc;
+    desc.Width = width;
+    desc.Height = height;
+    desc.MipLevels = desc.ArraySize = 1;
+    desc.Format = DXGI_FORMAT_R8_UNORM;
+    desc.SampleDesc.Count = 1;
+    desc.SampleDesc.Quality = 0;
+    desc.Usage = D3D11_USAGE_DYNAMIC;
+    desc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+    desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+    desc.MiscFlags = 0;
 
-    return YDS_ERROR_RETURN(ysError::YDS_NOT_IMPLEMENTED);
+    D3D11_SUBRESOURCE_DATA data;
+    data.pSysMem = reinterpret_cast<const void *>(buffer);
+    data.SysMemPitch = width * sizeof(unsigned char);
+    data.SysMemSlicePitch = 0;
+
+    HRESULT result;
+
+    ID3D11Texture2D *newD3DTexture = nullptr;
+    result = m_device->CreateTexture2D(&desc, &data, &newD3DTexture);
+
+    if (FAILED(result)) {
+        return YDS_ERROR_RETURN(ysError::YDS_INVALID_OPERATION);
+    }
+
+    D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc;
+    ZeroMemory(&srvDesc, sizeof(srvDesc));
+    srvDesc.Format = desc.Format;
+    srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+    srvDesc.Texture2D.MostDetailedMip = 0;
+    srvDesc.Texture2D.MipLevels = desc.MipLevels;
+
+    ID3D11ShaderResourceView *resourceView = nullptr;
+    result = m_device->CreateShaderResourceView(newD3DTexture, &srvDesc, &resourceView);
+    if (FAILED(result)) {
+        return YDS_ERROR_RETURN(ysError::YDS_COULD_NOT_MAKE_SHADER_RESOURCE_VIEW);
+    }
+
+    ysD3D11Texture *newD3D11Texture = m_textures.NewGeneric<ysD3D11Texture>();
+    newD3D11Texture->m_resourceView = resourceView;
+    newD3D11Texture->m_width = desc.Width;
+    newD3D11Texture->m_height = desc.Height;
+    *texture = newD3D11Texture;
+        
+    newD3DTexture->Release();
+
+    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
 }
 
 ysError ysD3D11Device::UseTexture(ysTexture *texture, int slot) {

@@ -252,6 +252,7 @@ ysError dbasic::DeltaEngine::Destroy() {
     YDS_ERROR_DECLARE("Destroy");
 
     YDS_NESTED_ERROR_CALL(GetConsole()->Destroy());
+    YDS_NESTED_ERROR_CALL(GetUiRenderer()->Destroy());
 
     YDS_NESTED_ERROR_CALL(m_device->DestroyGPUBuffer(m_mainIndexBuffer));
     YDS_NESTED_ERROR_CALL(m_device->DestroyGPUBuffer(m_mainVertexBuffer));
