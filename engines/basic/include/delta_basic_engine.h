@@ -5,6 +5,7 @@
 #include "asset_manager.h"
 #include "path.h"
 #include "os_utilities.h"
+#include "text_renderer.h"
 
 #pragma comment(lib, "delta-basic-engine.lib")
 

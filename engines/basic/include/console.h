@@ -38,6 +38,8 @@ namespace dbasic {
         void SetRenderer(UiRenderer *renderer) { m_renderer = renderer; }
         UiRenderer *GetRenderer() const { return m_renderer; }
 
+        Font *GetFont() const { return m_font; }
+
     protected:
         // Settings
         std::string m_defaultFontDirectory;

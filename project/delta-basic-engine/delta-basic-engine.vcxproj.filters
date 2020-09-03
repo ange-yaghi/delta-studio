@@ -180,6 +180,9 @@
     <ClInclude Include="..\..\engines\basic\include\ui_renderer.h">
       <Filter>Header Files\ui</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\engines\basic\include\text_renderer.h">
+      <Filter>Header Files\ui</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\engines\basic\src\animation.cpp">
@@ -261,6 +264,9 @@
       <Filter>Source Files\ui</Filter>
     </ClCompile>
     <ClCompile Include="..\..\engines\basic\src\ui_renderer.cpp">
+      <Filter>Source Files\ui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\engines\basic\src\text_renderer.cpp">
       <Filter>Source Files\ui</Filter>
     </ClCompile>
   </ItemGroup>
