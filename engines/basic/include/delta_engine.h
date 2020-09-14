@@ -126,9 +126,12 @@ namespace dbasic {
         bool ProcessKeyDown(ysKeyboard::KEY_CODE key);
         bool ProcessKeyUp(ysKeyboard::KEY_CODE key);
 
+        bool ProcessMouseKeyDown(ysMouse::Button key);
+        bool ProcessMouseKeyUp(ysMouse::Button key);
         bool IsMouseKeyDown(ysMouse::Button key);
         int GetMouseWheel();
         void GetMousePos(int *x, int *y);
+        void GetOsMousePos(int *x, int *y);
 
         void SetCursorPositionLock(bool lock) { m_cursorPositionLocked = lock; }
         bool GetCursorPositionLock() { return m_cursorPositionLocked; }
@@ -157,8 +160,8 @@ namespace dbasic {
 
         void SetDrawTarget(DrawTarget target) { m_currentTarget = target; }
 
-        int GetScreenWidth();
-        int GetScreenHeight();
+        int GetScreenWidth() const;
+        int GetScreenHeight() const;
 
         Console *GetConsole() { return &m_console; }
         UiRenderer *GetUiRenderer() { return &m_uiRenderer; }

@@ -21,8 +21,7 @@ public:
 
     virtual bool SetWindowStyle(WindowStyle style);
 
-    //virtual void PrepareFullscreen();
-    //virtual void PrepareWindowed();
+    virtual void ScreenToLocal(int &x, int &y);
 
     virtual bool IsVisible();
 

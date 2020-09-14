@@ -637,6 +637,24 @@ bool dbasic::DeltaEngine::ProcessKeyUp(ysKeyboard::KEY_CODE key) {
     return false;
 }
 
+bool dbasic::DeltaEngine::ProcessMouseKeyDown(ysMouse::Button key) {
+    if (m_mainMouse != nullptr) {
+        ysMouse *mouse = m_mainMouse->GetAsMouse();
+        return mouse->ProcessMouseButton(key, ysKey::KEY_STATE::KEY_DOWN_TRANS);
+    }
+
+    return false;
+}
+
+bool dbasic::DeltaEngine::ProcessMouseKeyUp(ysMouse::Button key) {
+    if (m_mainMouse != nullptr) {
+        ysMouse *mouse = m_mainMouse->GetAsMouse();
+        return mouse->ProcessMouseButton(key, ysKey::KEY_STATE::KEY_UP_TRANS);
+    }
+
+    return false;
+}
+
 bool dbasic::DeltaEngine::IsMouseKeyDown(ysMouse::Button key) {
     if (m_mainMouse != nullptr) {
         ysMouse *mouse = m_mainMouse->GetAsMouse();
@@ -666,6 +684,20 @@ void dbasic::DeltaEngine::GetMousePos(int *x, int *y) {
         if (y != nullptr) {
             *y = mouse->GetY();
         }
+    }
+}
+
+void dbasic::DeltaEngine::GetOsMousePos(int *x, int *y) {
+    if (m_mainMouse != nullptr) {
+        const ysMouse *mouse = m_mainMouse->GetAsMouse();
+
+        int os_x = mouse->GetOsPositionX();
+        int os_y = mouse->GetOsPositionY();
+
+        m_gameWindow->ScreenToLocal(os_x, os_y);
+
+        if (x != nullptr) *x = os_x;
+        if (y != nullptr) *y = os_y;
     }
 }
 
@@ -725,11 +757,11 @@ void dbasic::DeltaEngine::SetIncidentSpecular(float incidentSpecular) {
     m_shaderObjectVariables.IncidentSpecular = incidentSpecular;
 }
 
-int dbasic::DeltaEngine::GetScreenWidth() {
+int dbasic::DeltaEngine::GetScreenWidth() const {
     return m_gameWindow->GetScreenWidth();
 }
 
-int dbasic::DeltaEngine::GetScreenHeight() {
+int dbasic::DeltaEngine::GetScreenHeight() const {
     return m_gameWindow->GetScreenHeight();
 }
 

@@ -135,6 +135,14 @@ bool ysWindowsWindow::SetWindowStyle(WindowStyle style) {
     return true;
 }
 
+void ysWindowsWindow::ScreenToLocal(int &x, int &y) {
+    POINT p = { x, y };
+    ScreenToClient(m_hwnd, &p);
+
+    x = p.x;
+    y = (m_height - m_frameHeightOffset) - p.y;
+}
+
 bool ysWindowsWindow::IsVisible() {
     WINDOWPLACEMENT placement;
     GetWindowPlacement(m_hwnd, &placement);

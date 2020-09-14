@@ -214,7 +214,7 @@ int dphysics::CollisionDetector::RayCircleCollision(Collision *collisions, Rigid
 }
 
 bool dphysics::CollisionDetector::_BoxBoxColliding(BoxPrimitive *a, BoxPrimitive *b) {
-    const ysVector Epsilon = ysMath::LoadScalar(1E-4);
+    const ysVector Epsilon = ysMath::LoadScalar(1E-4f);
 
     ysQuaternion o_a = a->Orientation;
     ysQuaternion o_b = b->Orientation;
@@ -272,7 +272,7 @@ void sort4(const float *d, int *index) {
 }
 
 float vertexBoxCollision(float proj_x, float proj_y, float halfWidth, float halfHeight, bool limit=false) {
-    constexpr float Epsilon = 1E-4;
+    constexpr float Epsilon = 1E-4f;
     
     if (abs(proj_x) > halfWidth + Epsilon) return FLT_MAX;
     if (limit && proj_y > halfHeight + Epsilon) return FLT_MAX;
@@ -283,7 +283,7 @@ float vertexBoxCollision(float proj_x, float proj_y, float halfWidth, float half
 int dphysics::CollisionDetector::BoxBoxVertexPenetration(
     Collision *collisions, BoxPrimitive *a, BoxPrimitive *b) 
 {
-    constexpr float ParallelEpsilon = 1E-4;
+    constexpr float ParallelEpsilon = 1E-4f;
 
     ysQuaternion a_inv = ysMath::QuatInvert(a->Orientation);
     ysQuaternion b_to_a = ysMath::QuatMultiply(

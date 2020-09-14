@@ -25,10 +25,7 @@ void dbasic::TextRenderer::RenderText(const std::string &s, float x, float y, fl
     ConsoleVertex *vertexData = m_renderer->AllocateQuads(n);
     int quadIndex = 0;
 
-    const float scale_x = 22.0f;
-    const float scale_y = 32.0f;
-
-    const float scale = scale_y / m_font->GetFontHeight();
+    const float scale = h / m_font->GetFontHeight();
 
     float current_x = x;
     float current_y = y;

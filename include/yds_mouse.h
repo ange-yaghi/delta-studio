@@ -27,6 +27,10 @@ public:
     void UpdatePosition(int x, int y, bool delta = true);
     void UpdateWheel(int dwheel);
     void UpdateButton(Button button, ysKey::KEY_STATE state);
+    void SetOsPosition(int x, int y);
+
+    int GetOsPositionX() const { return m_osPosition_x; }
+    int GetOsPositionY() const { return m_osPosition_y; }
 
     int GetX() const { return m_x; }
     int GetY() const { return m_y; }
@@ -39,6 +43,9 @@ protected:
     int m_x;
     int m_y;
     int m_wheel;
+
+    int m_osPosition_x;
+    int m_osPosition_y;
 
 protected:
     ysKey m_buttons[(int)Button::Count];

@@ -51,6 +51,8 @@ public:
     int GetPositionX() const { return m_locationx; }
     int GetPositionY() const { return m_locationy; }
 
+    virtual void ScreenToLocal(int &x, int &y) { /* void */ }
+
     bool IsOpen();
     virtual bool IsActive();
     virtual bool IsVisible();

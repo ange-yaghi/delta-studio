@@ -245,7 +245,7 @@ int ysWindowsInputSystem::ProcessInputMessage(HRAWINPUT lparam) {
         else device = GetMainDevice(TranslateType(raw->header.dwType));
     }
 
-    if (device) {
+    if (device != nullptr) {
         if (raw->header.dwType == RIM_TYPEKEYBOARD) {
             ysKeyboard *keyboard = device->GetAsKeyboard();
             ysKeyboard::KEY_CODE index = keyboard->GetKeyMap(raw->data.keyboard.VKey);
@@ -267,6 +267,11 @@ int ysWindowsInputSystem::ProcessInputMessage(HRAWINPUT lparam) {
 
             bool delta = true;
             if (raw->data.mouse.usFlags & MOUSE_MOVE_ABSOLUTE) delta = false;
+
+            POINT p;
+            if (GetCursorPos(&p)) {
+                mouse->SetOsPosition(p.x, p.y);
+            }
 
             mouse->UpdatePosition(raw->data.mouse.lLastX, raw->data.mouse.lLastY, delta);
 

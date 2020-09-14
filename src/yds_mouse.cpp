@@ -4,6 +4,9 @@ ysMouse::ysMouse() {
     m_x = 0;
     m_y = 0;
     m_wheel = 0;
+
+    m_osPosition_x = 0;
+    m_osPosition_y = 0;
 }
 
 ysMouse::~ysMouse() {
@@ -16,6 +19,9 @@ void ysMouse::Reset() {
     m_x = 0;
     m_y = 0;
     m_wheel = 0;
+
+    m_osPosition_x = 0;
+    m_osPosition_y = 0;
 }
 
 void ysMouse::UpdatePosition(int x, int y, bool delta) {
@@ -35,6 +41,11 @@ void ysMouse::UpdateWheel(int dwheel) {
 
 void ysMouse::UpdateButton(Button button, ysKey::KEY_STATE state) {
     m_buttons[(int)button].m_state = state;
+}
+
+void ysMouse::SetOsPosition(int x, int y) {
+    m_osPosition_x = x;
+    m_osPosition_y = y;
 }
 
 bool ysMouse::ProcessMouseButton(Button button, ysKey::KEY_STATE state) {
