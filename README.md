@@ -1,1 +1,1 @@
-![Alt text](docs/public/delta_studio_banner_v1.png?raw=true)
+![Alt text](docs/public/banner_v2.png?raw=true)
