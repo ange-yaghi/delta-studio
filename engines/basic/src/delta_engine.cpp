@@ -64,6 +64,9 @@ dbasic::DeltaEngine::DeltaEngine() {
     m_shaderScreenVariablesSync = false;
 
     // Camera
+    m_nearClip = 2.0f;
+    m_farClip = 100.0f;
+
     m_cameraPosition = ysMath::LoadVector(0.0f, 0.0f, 10.0f);
     m_cameraTarget = ysMath::Constants::Zero3;
     m_cameraMode = CameraMode::Flat;
@@ -327,7 +330,7 @@ ysError dbasic::DeltaEngine::InitializeGeometry() {
         { { -1.0f, 1.0f, 0.0f, 1.0f },		{0.0f, 1.0f},	{0.0f, 0.0f, 1.0f, 0.0f} },
         { { 1.0f, 1.0f, 0.0f, 1.0f },		{1.0f, 1.0f},	{0.0f, 0.0f, 1.0f, 0.0f} },
         { { 1.0f, -1.0f, 0.0f, 1.0f },		{1.0f, 0.0f},	{0.0f, 0.0f, 1.0f, 0.0f} },
-        { { -1.0f, -1.0f, 0.0f, 1.0f },    {0.0f, 0.0f},	{0.0f, 0.0f, 1.0f, 0.0f} } };
+        { { -1.0f, -1.0f, 0.0f, 1.0f },     {0.0f, 0.0f},	{0.0f, 0.0f, 1.0f, 0.0f} } };
 
     unsigned short indices[] = {
         2, 1, 0,
@@ -442,7 +445,7 @@ ysError dbasic::DeltaEngine::LoadAnimation(Animation **animation, const char *pa
 
     ysTexture **list = new ysTexture * [end - start + 1];
     char buffer[256];
-    for (int i = start; i <= end; i++) {
+    for (int i = start; i <= end; ++i) {
         sprintf_s(buffer, 256, "%s/%.4i.png", path, i);
 
         YDS_NESTED_ERROR_CALL(m_device->CreateTexture(&list[i - start], buffer));
@@ -940,10 +943,10 @@ ysError dbasic::DeltaEngine::ExecuteDrawQueue(DrawTarget target) {
     YDS_NESTED_ERROR_CALL(m_device->EditBufferData(m_lightingControlBuffer, (char *)(&m_lightingControls)));
 
     if (!m_shaderScreenVariablesSync) {
-        float aspect = m_gameWindow->GetScreenWidth() / (float)m_gameWindow->GetScreenHeight();
+        const float aspect = m_gameWindow->GetScreenWidth() / (float)m_gameWindow->GetScreenHeight();
 
         if (target == DrawTarget::Main) {
-            m_shaderScreenVariables.Projection = ysMath::Transpose(ysMath::FrustrumPerspective(m_cameraFov, aspect, 2.0f, 100.0f));
+            m_shaderScreenVariables.Projection = ysMath::Transpose(ysMath::FrustrumPerspective(m_cameraFov, aspect, m_nearClip, m_farClip));
         }
         else if (target == DrawTarget::Gui) {
             m_shaderScreenVariables.Projection = ysMath::Transpose(
