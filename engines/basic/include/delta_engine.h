@@ -156,6 +156,12 @@ namespace dbasic {
         void SetSpecularPower(float power);
         void SetIncidentSpecular(float incidentSpecular);
 
+        void SetNearClip(float nearClip) { m_nearClip = nearClip; }
+        float GetNearClip() const { return m_nearClip; }
+
+        void SetFarClip(float farClip) { m_farClip = farClip; }
+        float GetFarClip() const { return m_farClip; }
+
         ysDevice *GetDevice() { return m_device; }
 
         void SetDrawTarget(DrawTarget target) { m_currentTarget = target; }
@@ -172,6 +178,9 @@ namespace dbasic {
     protected:
         float m_cameraAngle;
         float m_cameraFov;
+
+        float m_nearClip;
+        float m_farClip;
 
         ysVector m_cameraPosition;
         ysVector m_cameraTarget;

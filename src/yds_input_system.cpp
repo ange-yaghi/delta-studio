@@ -63,7 +63,7 @@ ysError ysInputSystem::CreateDevices(bool supportMultiple) {
 }
 
 int ysInputSystem::GetNextDeviceID(ysInputDevice::InputDeviceType type) {
-	int deviceCount = GetDeviceCount();
+	const int deviceCount = GetDeviceCount();
 
 	char *arr = new char[deviceCount];
 	memset(arr, 0, sizeof(char) * deviceCount);
@@ -91,9 +91,9 @@ int ysInputSystem::GetNextDeviceID(ysInputDevice::InputDeviceType type) {
 }
 
 ysInputDevice *ysInputSystem::GetInputDevice(int id, ysInputDevice::InputDeviceType type) {
-	if (!m_supportMultiple && id > 0) return NULL;
+	if (!m_supportMultiple && id != 0) return nullptr;
 
-	int deviceCount = GetDeviceCount();
+	const int deviceCount = GetDeviceCount();
 
     for (int i = 0; i < deviceCount; i++) {
         if (m_inputDeviceArray.Get(i)->GetDeviceID() == id && m_inputDeviceArray.Get(i)->GetType() == type) {
