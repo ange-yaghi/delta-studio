@@ -2,125 +2,125 @@
 
 #include <Windows.h>
 
-ysKeyboard::KEY_CODE *ysKeyMaps::m_windowsKeyMap;
+ysKey::Code *ysKeyMaps::m_windowsKeyMap;
 
-const ysKeyboard::KEY_CODE *ysKeyMaps::GetWindowsKeyMap() {
+const ysKey::Code *ysKeyMaps::GetWindowsKeyMap() {
     if (m_windowsKeyMap == NULL) {
-        m_windowsKeyMap = new ysKeyboard::KEY_CODE[256];
-        for (int i = 0; i < 256; i++) m_windowsKeyMap[i] = ysKeyboard::KEY_UNDEFINED;
+        m_windowsKeyMap = new ysKey::Code[256];
+        for (int i = 0; i < 256; ++i) m_windowsKeyMap[i] = ysKey::Code::Undefined;
 
-        m_windowsKeyMap[VK_BACK] = ysKeyboard::KEY_BACK;
-        m_windowsKeyMap[VK_TAB] = ysKeyboard::KEY_TAB;
+        m_windowsKeyMap[VK_BACK] = ysKey::Code::Back;
+        m_windowsKeyMap[VK_TAB] = ysKey::Code::Tab;
 
-        m_windowsKeyMap[VK_CLEAR] = ysKeyboard::KEY_CLEAR;
+        m_windowsKeyMap[VK_CLEAR] = ysKey::Code::Clear;
 
-        m_windowsKeyMap[VK_RETURN] = ysKeyboard::KEY_RETURN;
-        m_windowsKeyMap[VK_SHIFT] = ysKeyboard::KEY_SHIFT;
-        m_windowsKeyMap[VK_CONTROL] = ysKeyboard::KEY_CONTROL;
+        m_windowsKeyMap[VK_RETURN] = ysKey::Code::Return;
+        m_windowsKeyMap[VK_SHIFT] = ysKey::Code::Shift;
+        m_windowsKeyMap[VK_CONTROL] = ysKey::Code::Control;
 
-        m_windowsKeyMap[VK_MENU] = ysKeyboard::KEY_MENU;
-        m_windowsKeyMap[VK_PAUSE] = ysKeyboard::KEY_PAUSE;
-        m_windowsKeyMap[VK_CAPITAL] = ysKeyboard::KEY_CAPSLOCK;
+        m_windowsKeyMap[VK_MENU] = ysKey::Code::Menu;
+        m_windowsKeyMap[VK_PAUSE] = ysKey::Code::Pause;
+        m_windowsKeyMap[VK_CAPITAL] = ysKey::Code::CapsLock;
 
-        m_windowsKeyMap[VK_ESCAPE] = ysKeyboard::KEY_ESCAPE;
-        m_windowsKeyMap[VK_CONVERT] = ysKeyboard::KEY_CONVERT;
-        m_windowsKeyMap[VK_NONCONVERT] = ysKeyboard::KEY_NONCONVERT;
-        m_windowsKeyMap[VK_ACCEPT] = ysKeyboard::KEY_ACCEPT;
-        m_windowsKeyMap[VK_MODECHANGE] = ysKeyboard::KEY_MODECHANGE;
+        m_windowsKeyMap[VK_ESCAPE] = ysKey::Code::Escape;
+        m_windowsKeyMap[VK_CONVERT] = ysKey::Code::Convert;
+        m_windowsKeyMap[VK_NONCONVERT] = ysKey::Code::NonConvert;
+        m_windowsKeyMap[VK_ACCEPT] = ysKey::Code::Accept;
+        m_windowsKeyMap[VK_MODECHANGE] = ysKey::Code::ModeChange;
 
-        m_windowsKeyMap[VK_SPACE] = ysKeyboard::KEY_SPACE;
-        m_windowsKeyMap[VK_PRIOR] = ysKeyboard::KEY_PAGEUP;
-        m_windowsKeyMap[VK_NEXT] = ysKeyboard::KEY_PAGEDOWN;
-        m_windowsKeyMap[VK_END] = ysKeyboard::KEY_END;
-        m_windowsKeyMap[VK_HOME] = ysKeyboard::KEY_HOME;
+        m_windowsKeyMap[VK_SPACE] = ysKey::Code::Space;
+        m_windowsKeyMap[VK_PRIOR] = ysKey::Code::PageUp;
+        m_windowsKeyMap[VK_NEXT] = ysKey::Code::PageDown;
+        m_windowsKeyMap[VK_END] = ysKey::Code::End;
+        m_windowsKeyMap[VK_HOME] = ysKey::Code::Home;
 
-        m_windowsKeyMap[VK_LEFT] = ysKeyboard::KEY_LEFT;
-        m_windowsKeyMap[VK_UP] = ysKeyboard::KEY_UP;
-        m_windowsKeyMap[VK_RIGHT] = ysKeyboard::KEY_RIGHT;
-        m_windowsKeyMap[VK_DOWN] = ysKeyboard::KEY_DOWN;
+        m_windowsKeyMap[VK_LEFT] = ysKey::Code::Left;
+        m_windowsKeyMap[VK_UP] = ysKey::Code::Up;
+        m_windowsKeyMap[VK_RIGHT] = ysKey::Code::Right;
+        m_windowsKeyMap[VK_DOWN] = ysKey::Code::Down;
 
-        m_windowsKeyMap[VK_SELECT] = ysKeyboard::KEY_SELECT;
-        m_windowsKeyMap[VK_PRINT] = ysKeyboard::KEY_PRINT;
-        m_windowsKeyMap[VK_SNAPSHOT] = ysKeyboard::KEY_PRINTSCREEN;
-        m_windowsKeyMap[VK_INSERT] = ysKeyboard::KEY_INSERT;
-        m_windowsKeyMap[VK_DELETE] = ysKeyboard::KEY_DELETE;
-        m_windowsKeyMap[VK_HELP] = ysKeyboard::KEY_HELP;
+        m_windowsKeyMap[VK_SELECT] = ysKey::Code::Select;
+        m_windowsKeyMap[VK_PRINT] = ysKey::Code::Print;
+        m_windowsKeyMap[VK_SNAPSHOT] = ysKey::Code::PrintScreen;
+        m_windowsKeyMap[VK_INSERT] = ysKey::Code::Insert;
+        m_windowsKeyMap[VK_DELETE] = ysKey::Code::Delete;
+        m_windowsKeyMap[VK_HELP] = ysKey::Code::Help;
 
         // 0 - 9 keys
-        for (int i = 0; i < 10; i++) m_windowsKeyMap[0x30 + i] = (ysKeyboard::KEY_CODE)(ysKeyboard::KEY_0 + i);
+        for (int i = 0; i < 10; ++i) m_windowsKeyMap[0x30 + i] = (ysKey::Code)((int)ysKey::Code::N0 + i);
 
         // A - Z keys
-        for (int i = 0; i < 26; i++) m_windowsKeyMap[0x41 + i] = (ysKeyboard::KEY_CODE)(ysKeyboard::KEY_A + i);
+        for (int i = 0; i < 26; ++i) m_windowsKeyMap[0x41 + i] = (ysKey::Code)((int)ysKey::Code::A + i);
 
-        m_windowsKeyMap[VK_LWIN] = ysKeyboard::KEY_LEFTWIN;
-        m_windowsKeyMap[VK_RWIN] = ysKeyboard::KEY_RIGHTWIN;
-        m_windowsKeyMap[VK_APPS] = ysKeyboard::KEY_APPS;
+        m_windowsKeyMap[VK_LWIN] = ysKey::Code::LeftWin;
+        m_windowsKeyMap[VK_RWIN] = ysKey::Code::RightWin;
+        m_windowsKeyMap[VK_APPS] = ysKey::Code::Apps;
 
-        m_windowsKeyMap[VK_SLEEP] = ysKeyboard::KEY_SLEEP;
+        m_windowsKeyMap[VK_SLEEP] = ysKey::Code::Sleep;
 
         // Numpad keys
-        for (int i = 0; i < 10; i++) m_windowsKeyMap[VK_NUMPAD0 + i] = (ysKeyboard::KEY_CODE)(ysKeyboard::KEY_NUMPAD0 + i);
+        for (int i = 0; i < 10; ++i) m_windowsKeyMap[VK_NUMPAD0 + i] = (ysKey::Code)((int)ysKey::Code::Numpad0 + i);
 
-        m_windowsKeyMap[VK_ADD] = ysKeyboard::KEY_ADD;
-        m_windowsKeyMap[VK_SEPARATOR] = ysKeyboard::KEY_SEPARATOR;
-        m_windowsKeyMap[VK_SUBTRACT] = ysKeyboard::KEY_SUBTRACT;
-        m_windowsKeyMap[VK_DECIMAL] = ysKeyboard::KEY_DECIMAL;
-        m_windowsKeyMap[VK_DIVIDE] = ysKeyboard::KEY_DIVIDE;
-        m_windowsKeyMap[VK_MULTIPLY] = ysKeyboard::KEY_MULTIPLY;
+        m_windowsKeyMap[VK_ADD] = ysKey::Code::Add;
+        m_windowsKeyMap[VK_SEPARATOR] = ysKey::Code::Separator;
+        m_windowsKeyMap[VK_SUBTRACT] = ysKey::Code::Subtract;
+        m_windowsKeyMap[VK_DECIMAL] = ysKey::Code::Decimal;
+        m_windowsKeyMap[VK_DIVIDE] = ysKey::Code::Divide;
+        m_windowsKeyMap[VK_MULTIPLY] = ysKey::Code::Multiply;
 
         // F keys
-        for (int i = 0; i < 24; i++) m_windowsKeyMap[VK_F1 + i] = (ysKeyboard::KEY_CODE)(ysKeyboard::KEY_F1 + i);
+        for (int i = 0; i < 24; ++i) m_windowsKeyMap[VK_F1 + i] = (ysKey::Code)((int)ysKey::Code::F1 + i);
 
-        m_windowsKeyMap[VK_NUMLOCK] = ysKeyboard::KEY_NUMLOCK;
-        m_windowsKeyMap[VK_SCROLL] = ysKeyboard::KEY_SCROLL_LOCK;
-        m_windowsKeyMap[VK_LSHIFT] = ysKeyboard::KEY_LSHIFT;
-        m_windowsKeyMap[VK_RSHIFT] = ysKeyboard::KEY_RSHIFT;
-        m_windowsKeyMap[VK_LCONTROL] = ysKeyboard::KEY_LCONTROL;
-        m_windowsKeyMap[VK_RCONTROL] = ysKeyboard::KEY_RCONTROL;
-        m_windowsKeyMap[VK_LMENU] = ysKeyboard::KEY_LMENU;
-        m_windowsKeyMap[VK_RMENU] = ysKeyboard::KEY_RMENU;
+        m_windowsKeyMap[VK_NUMLOCK] = ysKey::Code::NumLock;
+        m_windowsKeyMap[VK_SCROLL] = ysKey::Code::ScrollLock;
+        m_windowsKeyMap[VK_LSHIFT] = ysKey::Code::LeftShift;
+        m_windowsKeyMap[VK_RSHIFT] = ysKey::Code::RightShift;
+        m_windowsKeyMap[VK_LCONTROL] = ysKey::Code::LeftControl;
+        m_windowsKeyMap[VK_RCONTROL] = ysKey::Code::RightControl;
+        m_windowsKeyMap[VK_LMENU] = ysKey::Code::LeftMenu;
+        m_windowsKeyMap[VK_RMENU] = ysKey::Code::RightMenu;
 
-        m_windowsKeyMap[VK_BROWSER_BACK] = ysKeyboard::KEY_BROWSER_BACK;
-        m_windowsKeyMap[VK_BROWSER_FORWARD] = ysKeyboard::KEY_BROWSER_FORWARD;
-        m_windowsKeyMap[VK_BROWSER_REFRESH] = ysKeyboard::KEY_BROWSER_REFRESH;
-        m_windowsKeyMap[VK_BROWSER_STOP] = ysKeyboard::KEY_BROWSER_STOP;
+        m_windowsKeyMap[VK_BROWSER_BACK] = ysKey::Code::BrowserBack;
+        m_windowsKeyMap[VK_BROWSER_FORWARD] = ysKey::Code::BrowserForward;
+        m_windowsKeyMap[VK_BROWSER_REFRESH] = ysKey::Code::BrowserRefresh;
+        m_windowsKeyMap[VK_BROWSER_STOP] = ysKey::Code::BrowserStop;
 
-        m_windowsKeyMap[VK_BROWSER_SEARCH] = ysKeyboard::KEY_BROWSER_SEARCH;
-        m_windowsKeyMap[VK_BROWSER_FAVORITES] = ysKeyboard::KEY_BROWSER_FAVORITES;
-        m_windowsKeyMap[VK_BROWSER_HOME] = ysKeyboard::KEY_BROWSER_HOME;
+        m_windowsKeyMap[VK_BROWSER_SEARCH] = ysKey::Code::BrowserSearch;
+        m_windowsKeyMap[VK_BROWSER_FAVORITES] = ysKey::Code::BrowserFavorites;
+        m_windowsKeyMap[VK_BROWSER_HOME] = ysKey::Code::BrowserHome;
 
-        m_windowsKeyMap[VK_VOLUME_MUTE] = ysKeyboard::KEY_VOLUME_MUTE;
-        m_windowsKeyMap[VK_VOLUME_DOWN] = ysKeyboard::KEY_VOLUME_DOWN;
-        m_windowsKeyMap[VK_VOLUME_UP] = ysKeyboard::KEY_VOLUME_UP;
-        m_windowsKeyMap[VK_MEDIA_NEXT_TRACK] = ysKeyboard::KEY_MEDIA_NEXT_TRACK;
-        m_windowsKeyMap[VK_MEDIA_PREV_TRACK] = ysKeyboard::KEY_MEDIA_PREV_TRACK;
-        m_windowsKeyMap[VK_MEDIA_STOP] = ysKeyboard::KEY_MEDIA_STOP;
-        m_windowsKeyMap[VK_MEDIA_PLAY_PAUSE] = ysKeyboard::KEY_MEDIA_PLAY_PAUSE;
-        m_windowsKeyMap[VK_LAUNCH_MAIL] = ysKeyboard::KEY_LAUNCH_MAIL;
-        m_windowsKeyMap[VK_LAUNCH_MEDIA_SELECT] = ysKeyboard::KEY_LAUNCH_MEDIA_SELECT;
+        m_windowsKeyMap[VK_VOLUME_MUTE] = ysKey::Code::VolumeMute;
+        m_windowsKeyMap[VK_VOLUME_DOWN] = ysKey::Code::VolumeDown;
+        m_windowsKeyMap[VK_VOLUME_UP] = ysKey::Code::VolumeUp;
+        m_windowsKeyMap[VK_MEDIA_NEXT_TRACK] = ysKey::Code::MediaNextTrack;
+        m_windowsKeyMap[VK_MEDIA_PREV_TRACK] = ysKey::Code::MediaPrevTrack;
+        m_windowsKeyMap[VK_MEDIA_STOP] = ysKey::Code::MediaStop;
+        m_windowsKeyMap[VK_MEDIA_PLAY_PAUSE] = ysKey::Code::MediaPlay;
+        m_windowsKeyMap[VK_LAUNCH_MAIL] = ysKey::Code::LaunchMail;
+        m_windowsKeyMap[VK_LAUNCH_MEDIA_SELECT] = ysKey::Code::LaunchMediaSelect;
 
-        m_windowsKeyMap[VK_LAUNCH_APP1] = ysKeyboard::KEY_LAUNCH_APP1;
-        m_windowsKeyMap[VK_LAUNCH_APP2] = ysKeyboard::KEY_LAUNCH_APP2;
+        m_windowsKeyMap[VK_LAUNCH_APP1] = ysKey::Code::LaunchApp1;
+        m_windowsKeyMap[VK_LAUNCH_APP2] = ysKey::Code::LaunchApp2;
 
-        m_windowsKeyMap[VK_OEM_PLUS] = ysKeyboard::KEY_OEM_PLUS;
-        m_windowsKeyMap[VK_OEM_COMMA] = ysKeyboard::KEY_OEM_COMMA;
-        m_windowsKeyMap[VK_OEM_MINUS] = ysKeyboard::KEY_OEM_MINUS;
-        m_windowsKeyMap[VK_OEM_PERIOD] = ysKeyboard::KEY_OEM_PERIOD;
-        m_windowsKeyMap[VK_OEM_CLEAR] = ysKeyboard::KEY_OEM_CLEAR;
+        m_windowsKeyMap[VK_OEM_PLUS] = ysKey::Code::OEM_Plus;
+        m_windowsKeyMap[VK_OEM_COMMA] = ysKey::Code::OEM_Comma;
+        m_windowsKeyMap[VK_OEM_MINUS] = ysKey::Code::OEM_Minus;
+        m_windowsKeyMap[VK_OEM_PERIOD] = ysKey::Code::OEM_Period;
+        m_windowsKeyMap[VK_OEM_CLEAR] = ysKey::Code::OEM_Clear;
 
-        m_windowsKeyMap[VK_OEM_1] = ysKeyboard::KEY_OEM_1;
-        m_windowsKeyMap[VK_OEM_2] = ysKeyboard::KEY_OEM_2;
-        m_windowsKeyMap[VK_OEM_3] = ysKeyboard::KEY_OEM_3;
-        m_windowsKeyMap[VK_OEM_4] = ysKeyboard::KEY_OEM_4;
-        m_windowsKeyMap[VK_OEM_5] = ysKeyboard::KEY_OEM_5;
-        m_windowsKeyMap[VK_OEM_6] = ysKeyboard::KEY_OEM_6;
-        m_windowsKeyMap[VK_OEM_7] = ysKeyboard::KEY_OEM_7;
-        m_windowsKeyMap[VK_OEM_8] = ysKeyboard::KEY_OEM_8;
+        m_windowsKeyMap[VK_OEM_1] = ysKey::Code::OEM_1;
+        m_windowsKeyMap[VK_OEM_2] = ysKey::Code::OEM_2;
+        m_windowsKeyMap[VK_OEM_3] = ysKey::Code::OEM_3;
+        m_windowsKeyMap[VK_OEM_4] = ysKey::Code::OEM_4;
+        m_windowsKeyMap[VK_OEM_5] = ysKey::Code::OEM_5;
+        m_windowsKeyMap[VK_OEM_6] = ysKey::Code::OEM_6;
+        m_windowsKeyMap[VK_OEM_7] = ysKey::Code::OEM_7;
+        m_windowsKeyMap[VK_OEM_8] = ysKey::Code::OEM_8;
 
-        m_windowsKeyMap[VK_PLAY] = ysKeyboard::KEY_PLAY;
-        m_windowsKeyMap[VK_ZOOM] = ysKeyboard::KEY_ZOOM;
+        m_windowsKeyMap[VK_PLAY] = ysKey::Code::Play;
+        m_windowsKeyMap[VK_ZOOM] = ysKey::Code::Zoom;
 
-        m_windowsKeyMap[0xff] = ysKeyboard::KEY_FUNCTION;
+        m_windowsKeyMap[0xff] = ysKey::Code::Function;
     }
 
     return m_windowsKeyMap;

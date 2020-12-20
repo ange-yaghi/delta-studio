@@ -70,7 +70,7 @@ public:
 
     void Allocate(int nObjects) {
         if (nObjects == 0) return;
-        if (m_array != NULL) {
+        if (m_array != nullptr) {
             if (m_maxSize < nObjects) {
                 Destroy();
             }
@@ -88,7 +88,7 @@ public:
 
     void Preallocate(int nObjects) {
         if (nObjects == 0) return;
-        if (m_array != NULL) {
+        if (m_array != nullptr) {
             if (m_maxSize < nObjects) {
                 Destroy();
             }

@@ -8,10 +8,10 @@ public:
 	ysKeyMaps() { m_windowsKeyMap = nullptr; }
 	~ysKeyMaps() {}
 
-	static const ysKeyboard::KEY_CODE *GetWindowsKeyMap();
+	static const ysKey::Code *GetWindowsKeyMap();
 
 protected:
-	static ysKeyboard::KEY_CODE *m_windowsKeyMap;
+	static ysKey::Code *m_windowsKeyMap;
 };
 
 #endif /* YDS_KEY_MAPS_H */

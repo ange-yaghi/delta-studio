@@ -1,8 +1,8 @@
 #include "../include/yds_keyboard.h"
 
 ysKey::ysKey() {
-	m_state = KEY_UP;
-	m_configuration = KEY_CONF_UNDEFINED;
+	m_state = State::Up;
+	m_configuration = Variation::Undefined;
 }
 
 ysKey::~ysKey() {
@@ -10,11 +10,11 @@ ysKey::~ysKey() {
 }
 
 void ysKey::Reset() {
-	m_state = KEY_UP;
-	m_configuration = KEY_CONF_UNDEFINED;
+	m_state = State::Up;
+	m_configuration = Variation::Undefined;
 }
 
-const char ysKeyboard::CHAR_MAP[] = {
+const char ysKeyboard::CharMap[] = {
 	'\b',	// KEY_BACK
 	'\t',	// KEY_TAB
 
@@ -192,7 +192,7 @@ const char ysKeyboard::CHAR_MAP[] = {
 
 };
 
-const char ysKeyboard::CHAR_MAP_MOD[] = {
+const char ysKeyboard::CharMapUpper[] = {
 	'\b',	// KEY_BACK
 	'\t',	// KEY_TAB
 
@@ -380,10 +380,10 @@ ysKeyboard::~ysKeyboard() {
 	delete [] m_keys;
 }
 
-bool ysKeyboard::ProcessKeyTransition(KEY_CODE key, ysKey::KEY_STATE state) {
-	if (m_keys[key].m_state == state) {
-		if (state == ysKey::KEY_DOWN_TRANS) m_keys[key].m_state = ysKey::KEY_DOWN;
-		if (state == ysKey::KEY_UP_TRANS) m_keys[key].m_state = ysKey::KEY_UP;
+bool ysKeyboard::ProcessKeyTransition(ysKey::Code key, ysKey::State state) {
+	if (m_keys[(int)key].m_state == state) {
+		if (state == ysKey::State::DownTransition) m_keys[(int)key].m_state = ysKey::State::Down;
+		if (state == ysKey::State::UpTransition) m_keys[(int)key].m_state = ysKey::State::Up;
 
 		return true;
 	}
@@ -396,23 +396,31 @@ void ysKeyboard::ClearInputBuffer() {
 	m_inputBufferOffset = 0;
 }
 
-void ysKeyboard::SetKeyState(KEY_CODE key, ysKey::KEY_STATE state, ysKey::KEY_CONF conf) {
-	m_keys[key].m_state = state;
-	m_keys[key].m_configuration = conf;
+void ysKeyboard::SetKeyState(ysKey::Code key, ysKey::State state, ysKey::Variation conf) {
+	m_keys[(int)key].m_state = state;
+	m_keys[(int)key].m_configuration = conf;
 
 	// Process the input buffer
-	if (state == ysKey::KEY_DOWN_TRANS) {
-		const char *keyMap = NULL;
+	if (state == ysKey::State::DownTransition) {
+		const char *keyMap = nullptr;
 
-		if (GetKey(KEY_SHIFT)->IsDown()) {
-			keyMap = CHAR_MAP_MOD;
+		if (IsKeyDown(ysKey::Code::Shift)) {
+			keyMap = CharMapUpper;
 		}
 		else {
-			keyMap = CHAR_MAP;
+			keyMap = CharMap;
 		}
 
-		if (keyMap[key] != '\0') {
-			m_inputBuffer[m_inputBufferOffset] = keyMap[key];
+		if (keyMap[(int)key] != '\0') {
+			if (m_inputBufferOffset == 255) {
+				--m_inputBufferOffset;
+
+				for (int i = 1; i < 256; ++i) {
+					m_inputBuffer[i - 1] = m_inputBuffer[i];
+				}
+			}
+
+			m_inputBuffer[m_inputBufferOffset] = keyMap[(int)key];
 			m_inputBuffer[m_inputBufferOffset + 1] = '\0';
 
 			m_inputBufferOffset++;

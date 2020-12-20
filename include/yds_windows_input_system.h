@@ -10,13 +10,13 @@ class ysWindowsInputDevice;
 class ysWindowsInputSystem : public ysInputSystem {
 public:
     ysWindowsInputSystem();
-    ~ysWindowsInputSystem();
-
-    virtual ysError CreateDevices(bool supportMultiple);
+    virtual ~ysWindowsInputSystem();
 
     int ProcessInputMessage(HRAWINPUT lparam);
 
 protected:
+    virtual ysError CreateDevices();
+
     virtual ysError CheckDeviceStatus(ysInputDevice *device);
     virtual ysError CheckAllDevices();
 

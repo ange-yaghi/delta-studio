@@ -86,6 +86,7 @@
     <ClInclude Include="..\..\include\yds_interchange_file_0_1.h" />
     <ClInclude Include="..\..\include\yds_interchange_object.h" />
     <ClInclude Include="..\..\include\yds_keyboard.h" />
+    <ClInclude Include="..\..\include\yds_keyboard_aggregator.h" />
     <ClInclude Include="..\..\include\yds_key_maps.h" />
     <ClInclude Include="..\..\include\yds_linked_list.h" />
     <ClInclude Include="..\..\include\yds_logger.h" />
@@ -95,6 +96,7 @@
     <ClInclude Include="..\..\include\yds_memory_base.h" />
     <ClInclude Include="..\..\include\yds_monitor.h" />
     <ClInclude Include="..\..\include\yds_mouse.h" />
+    <ClInclude Include="..\..\include\yds_mouse_aggregator.h" />
     <ClInclude Include="..\..\include\yds_object_animation_data.h" />
     <ClInclude Include="..\..\include\yds_object_data.h" />
     <ClInclude Include="..\..\include\yds_opengl_context.h" />
@@ -133,6 +135,7 @@
     <ClInclude Include="..\..\include\yds_window_system_object.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\src\yds_mouse_aggregator.cpp" />
     <ClCompile Include="..\..\src\yds_breakdown_timer.cpp" />
     <ClCompile Include="..\..\src\yds_breakdown_timer_channel.cpp" />
     <ClCompile Include="..\..\src\yds_color.cpp" />
@@ -193,6 +196,7 @@
     <ClCompile Include="..\..\src\yds_interchange_file_0_1.cpp" />
     <ClCompile Include="..\..\src\yds_interchange_object.cpp" />
     <ClCompile Include="..\..\src\yds_keyboard.cpp" />
+    <ClCompile Include="..\..\src\yds_keyboard_aggregator.cpp" />
     <ClCompile Include="..\..\src\yds_linked_list.cpp" />
     <ClCompile Include="..\..\src\yds_logger.cpp" />
     <ClCompile Include="..\..\src\yds_logger_output.cpp" />

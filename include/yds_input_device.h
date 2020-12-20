@@ -50,7 +50,6 @@ public:
     void SetGeneric(bool newGeneric) { m_generic = newGeneric; }
 
 private:
-
     void Destroy();
 
     InputDeviceType m_type;

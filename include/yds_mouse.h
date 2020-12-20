@@ -1,8 +1,6 @@
 #ifndef YDS_MOUSE_H
 #define YDS_MOUSE_H
 
-#include "yds_keyboard.h"
-
 class ysMouse {
 public:
     enum class Button {
@@ -19,25 +17,33 @@ public:
         Count
     };
 
+    enum class ButtonState {
+        Up,
+        Down,
+
+        UpTransition,
+        DownTransition
+    };
+
 public:
     ysMouse();
-    ~ysMouse();
+    virtual ~ysMouse();
 
     void Reset();
     void UpdatePosition(int x, int y, bool delta = true);
     void UpdateWheel(int dwheel);
-    void UpdateButton(Button button, ysKey::KEY_STATE state);
+    void UpdateButton(Button button, ButtonState state);
     void SetOsPosition(int x, int y);
 
-    int GetOsPositionX() const { return m_osPosition_x; }
-    int GetOsPositionY() const { return m_osPosition_y; }
+    virtual int GetOsPositionX() const { return m_osPosition_x; }
+    virtual int GetOsPositionY() const { return m_osPosition_y; }
 
-    int GetX() const { return m_x; }
-    int GetY() const { return m_y; }
-    int GetWheel() const { return m_wheel; }
-    const ysKey *GetButton(Button button) const { return &m_buttons[(int)button]; }
+    virtual int GetX() const { return m_x; }
+    virtual int GetY() const { return m_y; }
+    virtual int GetWheel() const { return m_wheel; }
+    virtual bool IsDown(Button button) const;
 
-    bool ProcessMouseButton(Button button, ysKey::KEY_STATE state);
+    virtual bool ProcessMouseButton(Button button, ButtonState state);
 
 protected:
     int m_x;
@@ -48,7 +54,7 @@ protected:
     int m_osPosition_y;
 
 protected:
-    ysKey m_buttons[(int)Button::Count];
+    ButtonState m_buttonStates[(int)Button::Count];
 };
 
 #endif /* YDS_MOUSE_H */

@@ -15,4 +15,3 @@ void ysD3D11GPUBuffer::SetDebugName(const std::string &debugName) {
         m_buffer->SetPrivateData(WKPDID_D3DDebugObjectName, debugName.size(), debugName.c_str());
     }
 }
-

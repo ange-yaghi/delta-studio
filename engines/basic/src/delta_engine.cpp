@@ -123,13 +123,10 @@ ysError dbasic::DeltaEngine::CreateGameWindow(const GameEngineSettings &settings
 
     YDS_NESTED_ERROR_CALL(ysInputSystem::CreateInputSystem(&m_inputSystem, ysWindowSystemObject::Platform::Windows));
     m_windowSystem->AssignInputSystem(m_inputSystem);
-    m_inputSystem->CreateDevices(false);
+    m_inputSystem->Initialize();
 
-    m_mainKeyboard = m_inputSystem->GetMainDevice(ysInputDevice::InputDeviceType::KEYBOARD);
-    m_mainMouse = m_inputSystem->GetMainDevice(ysInputDevice::InputDeviceType::MOUSE);
-
-    m_mainKeyboard->AttachDependency();
-    m_mainMouse->AttachDependency();
+    m_mainKeyboard = m_inputSystem->GetKeyboardAggregator();
+    m_mainMouse = m_inputSystem->GetMouseAggregator();
 
     // Create the game window
     YDS_NESTED_ERROR_CALL(m_windowSystem->NewWindow(&m_gameWindow));
@@ -197,7 +194,7 @@ ysError dbasic::DeltaEngine::StartFrame() {
     m_timingSystem->Update();
 
     // TEMP
-    if (IsKeyDown(ysKeyboard::KEY_B)) m_device->SetDebugFlag(0, true);
+    if (IsKeyDown(ysKey::Code::B)) m_device->SetDebugFlag(0, true);
     else m_device->SetDebugFlag(0, false);
 
     if (m_gameWindow->IsActive()) {
@@ -613,55 +610,49 @@ void dbasic::DeltaEngine::SetClearColor(const ysVector &v) {
     m_clearColor[3] = v4.w;
 }
 
-bool dbasic::DeltaEngine::IsKeyDown(ysKeyboard::KEY_CODE key) {
+bool dbasic::DeltaEngine::IsKeyDown(ysKey::Code key) {
     if (m_mainKeyboard != nullptr) {
-        ysKeyboard *keyboard = m_mainKeyboard->GetAsKeyboard();
-        return keyboard->GetKey(key)->IsDown();
+        return m_mainKeyboard->IsKeyDown(key);
     }
 
     return false;
 }
 
-bool dbasic::DeltaEngine::ProcessKeyDown(ysKeyboard::KEY_CODE key) {
+bool dbasic::DeltaEngine::ProcessKeyDown(ysKey::Code key) {
     if (m_mainKeyboard != nullptr) {
-        ysKeyboard *keyboard = m_mainKeyboard->GetAsKeyboard();
-        return keyboard->ProcessKeyTransition(key);
+        return m_mainKeyboard->ProcessKeyTransition(key);
     }
 
     return false;
 }
 
-bool dbasic::DeltaEngine::ProcessKeyUp(ysKeyboard::KEY_CODE key) {
+bool dbasic::DeltaEngine::ProcessKeyUp(ysKey::Code key) {
     if (m_mainKeyboard != nullptr) {
-        ysKeyboard *keyboard = m_mainKeyboard->GetAsKeyboard();
-        return keyboard->ProcessKeyTransition(key, ysKey::KEY_STATE::KEY_UP_TRANS);
+        return m_mainKeyboard->ProcessKeyTransition(key, ysKey::State::UpTransition);
     }
 
     return false;
 }
 
-bool dbasic::DeltaEngine::ProcessMouseKeyDown(ysMouse::Button key) {
+bool dbasic::DeltaEngine::ProcessMouseButtonDown(ysMouse::Button key) {
     if (m_mainMouse != nullptr) {
-        ysMouse *mouse = m_mainMouse->GetAsMouse();
-        return mouse->ProcessMouseButton(key, ysKey::KEY_STATE::KEY_DOWN_TRANS);
+        return m_mainMouse->ProcessMouseButton(key, ysMouse::ButtonState::DownTransition);
     }
 
     return false;
 }
 
-bool dbasic::DeltaEngine::ProcessMouseKeyUp(ysMouse::Button key) {
+bool dbasic::DeltaEngine::ProcessMouseButtonUp(ysMouse::Button key) {
     if (m_mainMouse != nullptr) {
-        ysMouse *mouse = m_mainMouse->GetAsMouse();
-        return mouse->ProcessMouseButton(key, ysKey::KEY_STATE::KEY_UP_TRANS);
+        return m_mainMouse->ProcessMouseButton(key, ysMouse::ButtonState::UpTransition);
     }
 
     return false;
 }
 
-bool dbasic::DeltaEngine::IsMouseKeyDown(ysMouse::Button key) {
+bool dbasic::DeltaEngine::IsMouseButtonDown(ysMouse::Button button) {
     if (m_mainMouse != nullptr) {
-        ysMouse *mouse = m_mainMouse->GetAsMouse();
-        return mouse->GetButton(key)->IsDown();
+        return m_mainMouse->IsDown(button);
     }
 
     return false;
@@ -669,8 +660,7 @@ bool dbasic::DeltaEngine::IsMouseKeyDown(ysMouse::Button key) {
 
 int dbasic::DeltaEngine::GetMouseWheel() {
     if (m_mainMouse != nullptr) {
-        ysMouse *mouse = m_mainMouse->GetAsMouse();
-        return mouse->GetWheel();
+        return m_mainMouse->GetWheel();
     }
 
     return 0;
@@ -678,24 +668,20 @@ int dbasic::DeltaEngine::GetMouseWheel() {
 
 void dbasic::DeltaEngine::GetMousePos(int *x, int *y) {
     if (m_mainMouse != nullptr) {
-        const ysMouse *mouse = m_mainMouse->GetAsMouse();
-
         if (x != nullptr) {
-            *x = mouse->GetX();
+            *x = m_mainMouse->GetX();
         }
 
         if (y != nullptr) {
-            *y = mouse->GetY();
+            *y = m_mainMouse->GetY();
         }
     }
 }
 
 void dbasic::DeltaEngine::GetOsMousePos(int *x, int *y) {
     if (m_mainMouse != nullptr) {
-        const ysMouse *mouse = m_mainMouse->GetAsMouse();
-
-        int os_x = mouse->GetOsPositionX();
-        int os_y = mouse->GetOsPositionY();
+        int os_x = m_mainMouse->GetOsPositionX();
+        int os_y = m_mainMouse->GetOsPositionY();
 
         m_gameWindow->ScreenToLocal(os_x, os_y);
 

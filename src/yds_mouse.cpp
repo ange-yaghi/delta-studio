@@ -1,12 +1,7 @@
 #include "../include/yds_mouse.h"
 
 ysMouse::ysMouse() {
-    m_x = 0;
-    m_y = 0;
-    m_wheel = 0;
-
-    m_osPosition_x = 0;
-    m_osPosition_y = 0;
+    Reset();
 }
 
 ysMouse::~ysMouse() {
@@ -14,7 +9,7 @@ ysMouse::~ysMouse() {
 }
 
 void ysMouse::Reset() {
-    for (int i = 0; i < (int)Button::Count; i++) m_buttons[i].Reset();
+    for (int i = 0; i < (int)Button::Count; ++i) m_buttonStates[i] = ButtonState::Up;
 
     m_x = 0;
     m_y = 0;
@@ -39,8 +34,8 @@ void ysMouse::UpdateWheel(int dwheel) {
     m_wheel += dwheel;
 }
 
-void ysMouse::UpdateButton(Button button, ysKey::KEY_STATE state) {
-    m_buttons[(int)button].m_state = state;
+void ysMouse::UpdateButton(Button button, ButtonState state) {
+    m_buttonStates[(int)button] = state;
 }
 
 void ysMouse::SetOsPosition(int x, int y) {
@@ -48,11 +43,19 @@ void ysMouse::SetOsPosition(int x, int y) {
     m_osPosition_y = y;
 }
 
-bool ysMouse::ProcessMouseButton(Button button, ysKey::KEY_STATE state) {
-    if (m_buttons[(int)button].m_state != state) return false;
+bool ysMouse::IsDown(Button button) const {
+    return
+        m_buttonStates[(int)button] == ButtonState::DownTransition ||
+        m_buttonStates[(int)button] == ButtonState::Down;
+}
 
-    if (m_buttons[(int)button].m_state == ysKey::KEY_UP_TRANS) m_buttons[(int)button].m_state = ysKey::KEY_UP;
-    if (m_buttons[(int)button].m_state == ysKey::KEY_DOWN_TRANS) m_buttons[(int)button].m_state = ysKey::KEY_DOWN;
+bool ysMouse::ProcessMouseButton(Button button, ButtonState state) {
+    ButtonState &currentState = m_buttonStates[(int)button];
+
+    if (currentState != state) return false;
+
+    if (currentState == ButtonState::UpTransition) currentState = ButtonState::UpTransition;
+    if (currentState == ButtonState::DownTransition) currentState = ButtonState::DownTransition;
 
     return true;
 }
