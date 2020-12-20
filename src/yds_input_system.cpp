@@ -5,12 +5,10 @@
 
 ysInputSystem::ysInputSystem() : ysWindowSystemObject("INPUT_SYSTEM", Platform::Unknown) {
 	m_windowSystem = nullptr;
-    m_supportMultiple = false;
 }
 
 ysInputSystem::ysInputSystem(Platform platform) : ysWindowSystemObject("INPUT_SYSTEM", platform) {
 	m_windowSystem = nullptr;
-    m_supportMultiple = false;
 }
 
 ysInputSystem::~ysInputSystem() {
@@ -43,21 +41,22 @@ ysError ysInputSystem::DestroyInputSystem(ysInputSystem *&inputSystem) {
 	return YDS_ERROR_RETURN_STATIC(ysError::YDS_NO_ERROR);
 }
 
+ysError ysInputSystem::Initialize() {
+	YDS_ERROR_DECLARE("Initialize");
+
+	if (m_windowSystem == nullptr) return YDS_ERROR_RETURN(ysError::YDS_NO_WINDOW_SYSTEM);
+
+	YDS_NESTED_ERROR_CALL(CreateDevices());
+
+	return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+}
+
 ysError ysInputSystem::AssignWindowSystem(ysWindowSystem *system) {
 	YDS_ERROR_DECLARE("AssignWindowSystem");
 
 	if (!CheckCompatibility(system)) return YDS_ERROR_RETURN(ysError::YDS_INCOMPATIBLE_PLATFORMS);
 
 	m_windowSystem = system;
-
-	return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
-}
-
-ysError ysInputSystem::CreateDevices(bool supportMultiple) {
-	YDS_ERROR_DECLARE("CreateDevices");
-
-	if (m_windowSystem == nullptr) return YDS_ERROR_RETURN(ysError::YDS_NO_WINDOW_SYSTEM);
-	m_supportMultiple = supportMultiple;
 
 	return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
 }
@@ -91,8 +90,6 @@ int ysInputSystem::GetNextDeviceID(ysInputDevice::InputDeviceType type) {
 }
 
 ysInputDevice *ysInputSystem::GetInputDevice(int id, ysInputDevice::InputDeviceType type) {
-	if (!m_supportMultiple && id != 0) return nullptr;
-
 	const int deviceCount = GetDeviceCount();
 
     for (int i = 0; i < deviceCount; i++) {
@@ -104,23 +101,16 @@ ysInputDevice *ysInputSystem::GetInputDevice(int id, ysInputDevice::InputDeviceT
 	return CreateDevice(type, id);
 }
 
-ysInputDevice *ysInputSystem::GetMainDevice(ysInputDevice::InputDeviceType type) {
-	// Main device should always have ID=0
-	ysInputDevice *mainDevice = GetInputDevice(0, type);
-
-	return mainDevice;
-}
-
 ysError ysInputSystem::CheckDeviceStatus(ysInputDevice *device) {
 	return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
 }
 
 ysError ysInputSystem::CheckAllDevices() {
-	// This implementations is slow for most platforms
+	// This implementation is slow for most platforms
 	// since the list of devices must be polled for each
 	// game engine device.
 
-	int deviceCount = GetDeviceCount();
+	const int deviceCount = GetDeviceCount();
 
 	// Reverse loop in the case some devices are deleted
 	for (int i = deviceCount - 1; i >= 0; i--) {
@@ -128,6 +118,24 @@ ysError ysInputSystem::CheckAllDevices() {
 	}
 
 	return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+}
+
+void ysInputSystem::RegisterDevice(ysInputDevice *device) {
+	if (device->GetType() == ysInputDevice::InputDeviceType::KEYBOARD) {
+		m_keyboardAggregator.RegisterKeyboard(device->GetAsKeyboard());
+	}
+	else if (device->GetType() == ysInputDevice::InputDeviceType::MOUSE) {
+		m_mouseAggregator.RegisterMouse(device->GetAsMouse());
+	}
+}
+
+void ysInputSystem::UnregisterDevice(ysInputDevice *device) {
+	if (device->GetType() == ysInputDevice::InputDeviceType::KEYBOARD) {
+		m_keyboardAggregator.DeleteKeyboard(device->GetAsKeyboard());
+	}
+	else if (device->GetType() == ysInputDevice::InputDeviceType::MOUSE) {
+		m_mouseAggregator.DeleteMouse(device->GetAsMouse());
+	}
 }
 
 void ysInputSystem::DisconnectDevice(ysInputDevice *device) {
@@ -142,7 +150,7 @@ void ysInputSystem::DisconnectDevice(ysInputDevice *device) {
 }
 
 ysInputDevice *ysInputSystem::FindGenericSlot(ysInputDevice::InputDeviceType type) {
-	int deviceCount = GetDeviceCount();
+	const int deviceCount = GetDeviceCount();
 
 	for (int i = 0; i < deviceCount; i++) {
 		if (m_inputDeviceArray.Get(i)->IsGeneric() &&

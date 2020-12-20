@@ -122,13 +122,13 @@ namespace dbasic {
         void SetPositionOffset(const ysVector &position);
 
         // Input Device
-        bool IsKeyDown(ysKeyboard::KEY_CODE key);
-        bool ProcessKeyDown(ysKeyboard::KEY_CODE key);
-        bool ProcessKeyUp(ysKeyboard::KEY_CODE key);
+        bool IsKeyDown(ysKey::Code key);
+        bool ProcessKeyDown(ysKey::Code key);
+        bool ProcessKeyUp(ysKey::Code key);
 
-        bool ProcessMouseKeyDown(ysMouse::Button key);
-        bool ProcessMouseKeyUp(ysMouse::Button key);
-        bool IsMouseKeyDown(ysMouse::Button key);
+        bool ProcessMouseButtonDown(ysMouse::Button button);
+        bool ProcessMouseButtonUp(ysMouse::Button button);
+        bool IsMouseButtonDown(ysMouse::Button button);
         int GetMouseWheel();
         void GetMousePos(int *x, int *y);
         void GetOsMousePos(int *x, int *y);
@@ -207,8 +207,8 @@ namespace dbasic {
         ysGPUBuffer *m_mainVertexBuffer;
         ysGPUBuffer *m_mainIndexBuffer;
 
-        ysInputDevice *m_mainKeyboard;
-        ysInputDevice *m_mainMouse;
+        ysKeyboard *m_mainKeyboard;
+        ysMouse *m_mainMouse;
 
         // Shader Controls
         ysGPUBuffer *m_shaderObjectVariablesBuffer;

@@ -166,6 +166,12 @@
     <Filter Include="Header Files\api\directx10">
       <UniqueIdentifier>{c5519309-5f66-4f30-b1b7-501af7412375}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\input\aggregators">
+      <UniqueIdentifier>{566ee269-a53c-441e-aba1-6dcd44385dbb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\input\aggregators">
+      <UniqueIdentifier>{910b8f70-6a9e-45ef-aac8-a0d26929305c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\include\yds_core.h">
@@ -304,9 +310,6 @@
       <Filter>Header Files\error-handling</Filter>
     </ClInclude>
     <ClInclude Include="..\..\include\yds_input_device.h">
-      <Filter>Header Files\input</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\yds_input_layout.h">
       <Filter>Header Files\input</Filter>
     </ClInclude>
     <ClInclude Include="..\..\include\yds_input_system.h">
@@ -504,6 +507,15 @@
     <ClInclude Include="..\..\include\yds_breakdown_timer_channel.h">
       <Filter>Header Files\timing</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\include\yds_input_layout.h">
+      <Filter>Header Files\api</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\yds_keyboard_aggregator.h">
+      <Filter>Header Files\input\aggregators</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\yds_mouse_aggregator.h">
+      <Filter>Header Files\input\aggregators</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\yds_interchange_file_0_0.cpp">
@@ -683,9 +695,6 @@
     <ClCompile Include="..\..\src\yds_input_device.cpp">
       <Filter>Source Files\input</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\yds_input_layout.cpp">
-      <Filter>Source Files\input</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\yds_input_system.cpp">
       <Filter>Source Files\input</Filter>
     </ClCompile>
@@ -811,6 +820,15 @@
     </ClCompile>
     <ClCompile Include="..\..\src\yds_breakdown_timer.cpp">
       <Filter>Source Files\timing</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\yds_input_layout.cpp">
+      <Filter>Source Files\api</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\yds_keyboard_aggregator.cpp">
+      <Filter>Source Files\input\aggregators</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\yds_mouse_aggregator.cpp">
+      <Filter>Source Files\input\aggregators</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

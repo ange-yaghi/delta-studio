@@ -46,20 +46,20 @@ ysWindowsInputDevice *ysWindowsInputSystem::SystemNameDeviceLookup(char *systemN
         if (strcmp(systemName, windowsDevice->m_systemName) == 0) return windowsDevice;
     }
 
-    return NULL;
+    return nullptr;
 }
 
 ysError ysWindowsInputSystem::CheckDeviceStatus(ysInputDevice *device) {
     YDS_ERROR_DECLARE("CheckDeviceStatus");
 
-    if (device == NULL) return YDS_ERROR_RETURN(ysError::YDS_INVALID_PARAMETER);
+    if (device == nullptr) return YDS_ERROR_RETURN(ysError::YDS_INVALID_PARAMETER);
 
     ysWindowsInputDevice *windowsDevice = static_cast<ysWindowsInputDevice *>(device);
 
     UINT nDevices;
     PRAWINPUTDEVICELIST pRawInputDeviceList;
 
-    if (GetRawInputDeviceList(NULL, &nDevices, sizeof(RAWINPUTDEVICELIST)) != 0) return YDS_ERROR_RETURN(ysError::YDS_NO_DEVICE_LIST);
+    if (GetRawInputDeviceList(nullptr, &nDevices, sizeof(RAWINPUTDEVICELIST)) != 0) return YDS_ERROR_RETURN(ysError::YDS_NO_DEVICE_LIST);
 
     pRawInputDeviceList = new RAWINPUTDEVICELIST[nDevices];
     if (pRawInputDeviceList == NULL) return YDS_ERROR_RETURN(ysError::YDS_OUT_OF_MEMORY);
@@ -97,7 +97,7 @@ ysError ysWindowsInputSystem::CheckAllDevices() {
     if (pRawInputDeviceList == NULL) return YDS_ERROR_RETURN(ysError::YDS_OUT_OF_MEMORY);
     if (GetRawInputDeviceList(pRawInputDeviceList, &nDevices, sizeof(RAWINPUTDEVICELIST)) == -1) return YDS_ERROR_RETURN(ysError::YDS_NO_DEVICE_LIST);
 
-    int deviceCount = GetDeviceCount();
+    const int deviceCount = GetDeviceCount();
 
     for (int j = deviceCount - 1; j >= 0; j--) {
         ysWindowsInputDevice *windowsDevice = static_cast<ysWindowsInputDevice *>(m_inputDeviceArray.Get(j));
@@ -121,10 +121,8 @@ ysError ysWindowsInputSystem::CheckAllDevices() {
     return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
 }
 
-ysError ysWindowsInputSystem::CreateDevices(bool supportMultiple) {
+ysError ysWindowsInputSystem::CreateDevices() {
     YDS_ERROR_DECLARE("CreateDevices");
-
-    YDS_NESTED_ERROR_CALL(ysInputSystem::CreateDevices(supportMultiple));
 
     RAWINPUTDEVICE deviceList[2];
 
@@ -184,6 +182,8 @@ ysInputDevice *ysWindowsInputSystem::CreateDevice(ysInputDevice::InputDeviceType
         keyboard->RegisterKeyMap(ysKeyMaps::GetWindowsKeyMap());
     }
 
+    RegisterDevice(newDevice);
+
     return newDevice;
 }
 
@@ -202,12 +202,12 @@ ysWindowsInputDevice *ysWindowsInputSystem::AddDevice(RAWINPUT *rawInput) {
     GetRawInputDeviceInfo(rawInput->header.hDevice, RIDI_DEVICENAME, systemName, &nameSize);
 
     ysWindowsInputDevice *nameLookup = SystemNameDeviceLookup(systemName);
-    ysWindowsInputDevice *newDevice = NULL;
+    ysWindowsInputDevice *newDevice = nullptr;
 
     if (nameLookup && !nameLookup->IsConnected()) newDevice = nameLookup;
     else newDevice = static_cast<ysWindowsInputDevice *>(FindGenericSlot(type));
 
-    if (newDevice == NULL) {
+    if (newDevice == nullptr) {
         newDevice = static_cast<ysWindowsInputDevice *>(CreateDevice(type, -1));
     }
 
@@ -233,32 +233,30 @@ int ysWindowsInputSystem::ProcessInputMessage(HRAWINPUT lparam) {
 
     RAWINPUT *raw = (RAWINPUT *)lpb;
 
-    ysInputDevice *device = NULL;
+    ysInputDevice *device = nullptr;
 
-    if (raw->header.hDevice != NULL) {
-        if (m_supportMultiple) {
-            device = DeviceLookup(raw->header.hDevice);
+    if (raw->header.hDevice != nullptr) {
+        device = DeviceLookup(raw->header.hDevice);
 
-            if (device == NULL) // NEW DEVICE
-                device = AddDevice(raw);
+        if (device == nullptr) {
+            device = AddDevice(raw);
         }
-        else device = GetMainDevice(TranslateType(raw->header.dwType));
     }
 
     if (device != nullptr) {
         if (raw->header.dwType == RIM_TYPEKEYBOARD) {
             ysKeyboard *keyboard = device->GetAsKeyboard();
-            ysKeyboard::KEY_CODE index = keyboard->GetKeyMap(raw->data.keyboard.VKey);
+            ysKey::Code index = keyboard->GetKeyMap(raw->data.keyboard.VKey);
             const ysKey *key = keyboard->GetKey(index);
 
-            ysKey::KEY_CONF newConf = key->m_configuration;
-            ysKey::KEY_STATE newState = key->m_state;
+            ysKey::Variation newConf = key->m_configuration;
+            ysKey::State newState = key->m_state;
 
-            if (raw->data.keyboard.Flags & RI_KEY_E0)		newConf = ysKey::KEY_CONF_LEFT;
-            else if (raw->data.keyboard.Flags & RI_KEY_E1)	newConf = ysKey::KEY_CONF_RIGHT;
+            if (raw->data.keyboard.Flags & RI_KEY_E0) newConf = ysKey::Variation::Left;
+            else if (raw->data.keyboard.Flags & RI_KEY_E1) newConf = ysKey::Variation::Right;
 
-            newState = ysKey::KEY_DOWN_TRANS; // Default
-            if (raw->data.keyboard.Flags & RI_KEY_BREAK)	newState = ysKey::KEY_UP_TRANS;
+            newState = ysKey::State::DownTransition; // Default
+            if (raw->data.keyboard.Flags & RI_KEY_BREAK) newState = ysKey::State::UpTransition;
 
             keyboard->SetKeyState(index, newState, newConf);
         }
@@ -277,29 +275,29 @@ int ysWindowsInputSystem::ProcessInputMessage(HRAWINPUT lparam) {
 
             if (raw->data.mouse.usButtonFlags & RI_MOUSE_WHEEL) mouse->UpdateWheel((int)((short)raw->data.mouse.usButtonData));
 
-            if (raw->data.mouse.usButtonFlags & RI_MOUSE_LEFT_BUTTON_DOWN) mouse->UpdateButton(ysMouse::Button::Left, ysKey::KEY_DOWN_TRANS);
-            if (raw->data.mouse.usButtonFlags & RI_MOUSE_LEFT_BUTTON_UP) mouse->UpdateButton(ysMouse::Button::Left, ysKey::KEY_UP_TRANS);
+            if (raw->data.mouse.usButtonFlags & RI_MOUSE_LEFT_BUTTON_DOWN) mouse->UpdateButton(ysMouse::Button::Left, ysMouse::ButtonState::DownTransition);
+            if (raw->data.mouse.usButtonFlags & RI_MOUSE_LEFT_BUTTON_UP) mouse->UpdateButton(ysMouse::Button::Left, ysMouse::ButtonState::UpTransition);
 
-            if (raw->data.mouse.usButtonFlags & RI_MOUSE_RIGHT_BUTTON_DOWN) mouse->UpdateButton(ysMouse::Button::Right, ysKey::KEY_DOWN_TRANS);
-            if (raw->data.mouse.usButtonFlags & RI_MOUSE_RIGHT_BUTTON_UP) mouse->UpdateButton(ysMouse::Button::Right, ysKey::KEY_UP_TRANS);
+            if (raw->data.mouse.usButtonFlags & RI_MOUSE_RIGHT_BUTTON_DOWN) mouse->UpdateButton(ysMouse::Button::Right, ysMouse::ButtonState::DownTransition);
+            if (raw->data.mouse.usButtonFlags & RI_MOUSE_RIGHT_BUTTON_UP) mouse->UpdateButton(ysMouse::Button::Right, ysMouse::ButtonState::UpTransition);
 
-            if (raw->data.mouse.usButtonFlags & RI_MOUSE_MIDDLE_BUTTON_DOWN) mouse->UpdateButton(ysMouse::Button::Middle, ysKey::KEY_DOWN_TRANS);
-            if (raw->data.mouse.usButtonFlags & RI_MOUSE_MIDDLE_BUTTON_UP) mouse->UpdateButton(ysMouse::Button::Middle, ysKey::KEY_UP_TRANS);
+            if (raw->data.mouse.usButtonFlags & RI_MOUSE_MIDDLE_BUTTON_DOWN) mouse->UpdateButton(ysMouse::Button::Middle, ysMouse::ButtonState::DownTransition);
+            if (raw->data.mouse.usButtonFlags & RI_MOUSE_MIDDLE_BUTTON_UP) mouse->UpdateButton(ysMouse::Button::Middle, ysMouse::ButtonState::UpTransition);
 
-            if (raw->data.mouse.usButtonFlags & RI_MOUSE_BUTTON_1_DOWN) mouse->UpdateButton(ysMouse::Button::Aux_1, ysKey::KEY_DOWN_TRANS);
-            if (raw->data.mouse.usButtonFlags & RI_MOUSE_BUTTON_1_UP) mouse->UpdateButton(ysMouse::Button::Aux_1, ysKey::KEY_UP_TRANS);
+            if (raw->data.mouse.usButtonFlags & RI_MOUSE_BUTTON_1_DOWN) mouse->UpdateButton(ysMouse::Button::Aux_1, ysMouse::ButtonState::DownTransition);
+            if (raw->data.mouse.usButtonFlags & RI_MOUSE_BUTTON_1_UP) mouse->UpdateButton(ysMouse::Button::Aux_1, ysMouse::ButtonState::UpTransition);
 
-            if (raw->data.mouse.usButtonFlags & RI_MOUSE_BUTTON_2_DOWN) mouse->UpdateButton(ysMouse::Button::Aux_2, ysKey::KEY_DOWN_TRANS);
-            if (raw->data.mouse.usButtonFlags & RI_MOUSE_BUTTON_2_UP) mouse->UpdateButton(ysMouse::Button::Aux_2, ysKey::KEY_UP_TRANS);
+            if (raw->data.mouse.usButtonFlags & RI_MOUSE_BUTTON_2_DOWN) mouse->UpdateButton(ysMouse::Button::Aux_2, ysMouse::ButtonState::DownTransition);
+            if (raw->data.mouse.usButtonFlags & RI_MOUSE_BUTTON_2_UP) mouse->UpdateButton(ysMouse::Button::Aux_2, ysMouse::ButtonState::UpTransition);
 
-            if (raw->data.mouse.usButtonFlags & RI_MOUSE_BUTTON_3_DOWN) mouse->UpdateButton(ysMouse::Button::Aux_3, ysKey::KEY_DOWN_TRANS);
-            if (raw->data.mouse.usButtonFlags & RI_MOUSE_BUTTON_3_UP) mouse->UpdateButton(ysMouse::Button::Aux_3, ysKey::KEY_UP_TRANS);
+            if (raw->data.mouse.usButtonFlags & RI_MOUSE_BUTTON_3_DOWN) mouse->UpdateButton(ysMouse::Button::Aux_3, ysMouse::ButtonState::DownTransition);
+            if (raw->data.mouse.usButtonFlags & RI_MOUSE_BUTTON_3_UP) mouse->UpdateButton(ysMouse::Button::Aux_3, ysMouse::ButtonState::UpTransition);
 
-            if (raw->data.mouse.usButtonFlags & RI_MOUSE_BUTTON_4_DOWN) mouse->UpdateButton(ysMouse::Button::Aux_4, ysKey::KEY_DOWN_TRANS);
-            if (raw->data.mouse.usButtonFlags & RI_MOUSE_BUTTON_4_UP) mouse->UpdateButton(ysMouse::Button::Aux_4, ysKey::KEY_UP_TRANS);
+            if (raw->data.mouse.usButtonFlags & RI_MOUSE_BUTTON_4_DOWN) mouse->UpdateButton(ysMouse::Button::Aux_4, ysMouse::ButtonState::DownTransition);
+            if (raw->data.mouse.usButtonFlags & RI_MOUSE_BUTTON_4_UP) mouse->UpdateButton(ysMouse::Button::Aux_4, ysMouse::ButtonState::UpTransition);
 
-            if (raw->data.mouse.usButtonFlags & RI_MOUSE_BUTTON_5_DOWN) mouse->UpdateButton(ysMouse::Button::Aux_5, ysKey::KEY_DOWN_TRANS);
-            if (raw->data.mouse.usButtonFlags & RI_MOUSE_BUTTON_5_UP) mouse->UpdateButton(ysMouse::Button::Aux_5, ysKey::KEY_UP_TRANS);
+            if (raw->data.mouse.usButtonFlags & RI_MOUSE_BUTTON_5_DOWN) mouse->UpdateButton(ysMouse::Button::Aux_5, ysMouse::ButtonState::DownTransition);
+            if (raw->data.mouse.usButtonFlags & RI_MOUSE_BUTTON_5_UP) mouse->UpdateButton(ysMouse::Button::Aux_5, ysMouse::ButtonState::UpTransition);
         }
     }
 

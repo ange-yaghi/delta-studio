@@ -99,8 +99,7 @@ void ysBreakdownTimer::WriteLastFrameToLogFile() {
         assert(!channel->IsMidMeasurement());
         assert(channel->GetFrameCount() == m_frameCount);
 
-        float s = channel->GetLastSample();
-        m_logFile << ", " << s;
+        m_logFile << ", " << channel->GetLastSample();
     }
 
     m_logFile << "\n";
