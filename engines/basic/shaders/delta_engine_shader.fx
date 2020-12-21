@@ -29,6 +29,10 @@ cbuffer ScreenVariables : register(b0) {
 	matrix CameraView;
 	matrix Projection;
 	float4 CameraEye;
+
+	float4 FogColor;
+	float FogNear;
+	float FogFar;
 };
 
 cbuffer ObjectVariables : register(b1) {
@@ -311,6 +315,14 @@ float4 PS(VS_OUTPUT input) : SV_Target {
 			totalLighting += falloff * bsdf * spotAttenuation * spotAttenuation * spotAttenuation;
 		}
 	}
-	
-	return float4(linearToSrgb(totalLighting), 1.0);
+
+	const float distanceToCamera = length(CameraEye.xyz - input.VertexPosition.xyz);
+	const float fogAttenuation = (clamp(distanceToCamera, FogNear, FogFar) - FogNear) / (FogFar - FogNear);
+
+	return float4(
+		linearToSrgb(
+			lerp(
+				totalLighting.rgb,
+				FogColor.rgb,
+				fogAttenuation)), 1.0);
 }
