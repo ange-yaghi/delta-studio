@@ -12,6 +12,10 @@ layout (binding = 0) uniform ScreenVariables {
 	mat4 CameraView;
 	mat4 Projection;
 	vec4 CameraEye;
+	
+	vec4 FogColor;
+	float FogNear;
+	float FogFar;
 };
 
 layout (binding = 1) uniform ObjectVariables {
@@ -28,7 +32,7 @@ layout (binding = 1) uniform ObjectVariables {
 	float DiffuseRoughness;
 	float SpecularPower;
 	float IncidentSpecular;
-
+	
 	int ColorReplace;
 	int Lit;
 };

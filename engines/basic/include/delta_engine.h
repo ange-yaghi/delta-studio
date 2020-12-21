@@ -155,6 +155,9 @@ namespace dbasic {
         void SetSpecularRoughness(float specularRoughness);
         void SetSpecularPower(float power);
         void SetIncidentSpecular(float incidentSpecular);
+        void SetFogNear(float fogNear);
+        void SetFogFar(float fogFar);
+        void SetFogColor(const ysVector &color);
 
         void SetNearClip(float nearClip) { m_nearClip = nearClip; }
         float GetNearClip() const { return m_nearClip; }

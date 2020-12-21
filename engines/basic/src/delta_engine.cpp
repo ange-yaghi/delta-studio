@@ -348,7 +348,7 @@ ysError dbasic::DeltaEngine::InitializeShaders(const char *shaderDirectory) {
         m_device->GetAPI() == ysContextObject::DeviceAPI::DirectX10) 
     {
         sprintf_s(buffer, "%s%s", shaderDirectory, "delta_engine_shader.fx");
-        YDS_NESTED_ERROR_CALL(m_device->CreateVertexShader(&m_vertexShader, buffer, "VS_STANDARD"));
+        YDS_NESTED_ERROR_CALL(m_device->CreateVertexShader(&m_vertexShader, buffer, "VS_STANDARD")); 
         YDS_NESTED_ERROR_CALL(m_device->CreateVertexShader(&m_vertexSkinnedShader, buffer, "VS_SKINNED"));
         YDS_NESTED_ERROR_CALL(m_device->CreatePixelShader(&m_pixelShader, buffer, "PS"));
 
@@ -602,7 +602,7 @@ void dbasic::DeltaEngine::SetConsoleColor(const ysVector &v) {
 }
 
 void dbasic::DeltaEngine::SetClearColor(const ysVector &v) {
-    ysVector4 v4 = ysMath::GetVector4(v);
+    ysVector4 v4 = ysMath::GetVector4(ysColor::linearToSrgb(v));
 
     m_clearColor[0] = v4.x;
     m_clearColor[1] = v4.y;
@@ -734,7 +734,7 @@ void dbasic::DeltaEngine::SetDiffuseRoughness(float diffuseRoughness) {
     m_shaderObjectVariables.DiffuseRoughness = diffuseRoughness;
 }
 
-void dbasic::DeltaEngine::SetSpecularRoughness(float specularRoughness) {
+void dbasic::DeltaEngine::SetSpecularRoughness(float specularRoughness) { 
     m_shaderObjectVariables.SpecularPower = ::pow(2.0f, 12.0f * (1.0f - specularRoughness));
 }
 
@@ -744,6 +744,18 @@ void dbasic::DeltaEngine::SetSpecularPower(float power) {
 
 void dbasic::DeltaEngine::SetIncidentSpecular(float incidentSpecular) {
     m_shaderObjectVariables.IncidentSpecular = incidentSpecular;
+}
+
+void dbasic::DeltaEngine::SetFogNear(float fogNear) {
+    m_shaderScreenVariables.FogNear = fogNear;
+}
+
+void dbasic::DeltaEngine::SetFogFar(float fogFar) {
+    m_shaderScreenVariables.FogFar = fogFar;
+}
+
+void dbasic::DeltaEngine::SetFogColor(const ysVector &color) {
+    m_shaderScreenVariables.FogColor = ysMath::GetVector4(color);
 }
 
 int dbasic::DeltaEngine::GetScreenWidth() const {
@@ -943,8 +955,8 @@ ysError dbasic::DeltaEngine::ExecuteDrawQueue(DrawTarget target) {
                     500.0f));
         }
 
-        float sinRot = sin(m_cameraAngle * ysMath::Constants::PI / 180.0f);
-        float cosRot = cos(m_cameraAngle * ysMath::Constants::PI / 180.0f);
+        const float sinRot = sin(m_cameraAngle * ysMath::Constants::PI / 180.0f);
+        const float cosRot = cos(m_cameraAngle * ysMath::Constants::PI / 180.0f);
 
         ysVector cameraEye;
         ysVector cameraTarget;

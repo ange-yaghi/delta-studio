@@ -12,6 +12,10 @@ layout (binding = 0) uniform ScreenVariables {
 	mat4 CameraView;
 	mat4 Projection;
 	vec4 CameraEye;
+	
+	vec4 FogColor;
+	float FogNear;
+	float FogFar;
 };
 
 layout (binding = 1) uniform ObjectVariables {
@@ -207,5 +211,13 @@ void main(void) {
 		}
 	}
 
-	out_Color = vec4(linearToSrgb(totalLighting.rgb), 1.0);
+	const float distanceToCamera = length(CameraEye.xyz - ex_Pos.xyz);
+	const float fogAttenuation = (clamp(distanceToCamera, FogNear, FogFar) - FogNear) / (FogFar - FogNear);
+
+	out_Color = vec4(
+		linearToSrgb(
+			mix(
+				totalLighting.rgb,
+				FogColor.rgb,
+				fogAttenuation)), 1.0);
 }

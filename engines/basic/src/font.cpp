@@ -8,6 +8,7 @@ dbasic::Font::Font() {
     m_glyphData = nullptr;
     m_firstGlyph = 0;
     m_glyphCount = 0;
+    m_fontHeight = 12.0f;
 }
 
 dbasic::Font::~Font() {
