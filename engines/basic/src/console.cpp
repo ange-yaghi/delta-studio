@@ -32,7 +32,7 @@ ysError dbasic::Console::Initialize() {
 
     Clear();
 
-    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+    return YDS_ERROR_RETURN(ysError::None);
 }
 
 ysError dbasic::Console::ResetScreenPosition() {
@@ -47,7 +47,7 @@ ysError dbasic::Console::ResetScreenPosition() {
         }
     }
 
-    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+    return YDS_ERROR_RETURN(ysError::None);
 }
 
 ysError dbasic::Console::Destroy() {
@@ -59,7 +59,7 @@ ysError dbasic::Console::Destroy() {
     ysTexture *fontTexture = m_font->GetTexture();
     m_engine->GetDevice()->DestroyTexture(fontTexture);
 
-    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+    return YDS_ERROR_RETURN(ysError::None);
 }
 
 ysError dbasic::Console::UpdateGeometry() {
@@ -68,7 +68,7 @@ ysError dbasic::Console::UpdateGeometry() {
     m_renderer->SetFont(m_font);
 
     const int n = GetTotalNotWhitespace();
-    if (n == 0) return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+    if (n == 0) return YDS_ERROR_RETURN(ysError::None);
 
     ConsoleVertex *vertexData = m_renderer->AllocateQuads(n);
     int quadIndex = 0;
@@ -108,7 +108,7 @@ ysError dbasic::Console::UpdateGeometry() {
         }
     }
 
-    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+    return YDS_ERROR_RETURN(ysError::None);
 }
 
 void dbasic::Console::MoveToLocation(const GuiPoint &location) {
@@ -132,12 +132,12 @@ ysError dbasic::Console::SetCharacter(char character) {
     const int y = m_actualLocation.y;
 
     if (x >= BufferWidth || y >= BufferHeight ||
-        x < 0 || y < 0) return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+        x < 0 || y < 0) return YDS_ERROR_RETURN(ysError::None);
 
     const int index = y * BufferWidth + x;
     m_buffer[index] = character;
 
-    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+    return YDS_ERROR_RETURN(ysError::None);
 }
 
 void dbasic::Console::OutputChar(unsigned char c, int n) {

@@ -37,8 +37,8 @@ namespace dbasic {
             int m_frame;
             unsigned int m_keyType;
 
-            ysVector4 m_rotationKey;	// Used only if this is a rotation key
-            ysVector3 m_positionKey;	// Used only if this is a location key
+            ysVector4 m_rotationKey;    // Used only if this is a rotation key
+            ysVector3 m_positionKey;    // Used only if this is a location key
         };
 
     public:
@@ -118,9 +118,9 @@ namespace dbasic {
         bool ReadSeparator(const char *tag, int &index);
         bool ReadName(const char *tag, char *name, int &index);
 
-        ysExpandingArray<ObjectKeyframeDataExport>	m_keyframes;
-        ysExpandingArray<PoseExport>		m_poses;
-        ysExpandingArray<MotionExport>	m_motions;
+        ysExpandingArray<ObjectKeyframeDataExport>    m_keyframes;
+        ysExpandingArray<PoseExport>        m_poses;
+        ysExpandingArray<MotionExport>    m_motions;
 
         int m_referenceFrame;
     };

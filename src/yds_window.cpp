@@ -73,7 +73,7 @@ ysError ysWindow::InitializeWindow(ysWindow *parent, const char *title, WindowSt
 
     m_monitor = monitor;
 
-    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+    return YDS_ERROR_RETURN(ysError::None);
 }
 
 ysError ysWindow::InitializeWindow(ysWindow *parent, const char *title, WindowStyle style, ysMonitor *monitor) {
@@ -85,7 +85,7 @@ ysError ysWindow::InitializeWindow(ysWindow *parent, const char *title, WindowSt
             monitor->GetOriginX(), monitor->GetOriginY(), 
             monitor->GetWidth(), monitor->GetHeight(), monitor));
 
-    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+    return YDS_ERROR_RETURN(ysError::None);
 }
 
 void ysWindow::RestoreWindow() {
@@ -95,7 +95,7 @@ void ysWindow::RestoreWindow() {
     SetState(prevWindowState);
 }
 
-bool ysWindow::IsOpen() {
+bool ysWindow::IsOpen() const {
     return m_windowState != WindowState::Closed;
 }
 

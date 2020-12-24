@@ -6,19 +6,19 @@
 class ysOpenGLGPUBuffer : public ysGPUBuffer
 {
 
-	friend class ysOpenGLDevice;
+    friend class ysOpenGLDevice;
 
 public:
 
-	ysOpenGLGPUBuffer();
-	virtual ~ysOpenGLGPUBuffer();
+    ysOpenGLGPUBuffer();
+    virtual ~ysOpenGLGPUBuffer();
 
 protected:
 
-	int GetTarget();
+    int GetTarget();
 
-	unsigned int m_bufferHandle;
-	unsigned int m_vertexArrayHandle;
+    unsigned int m_bufferHandle;
+    unsigned int m_vertexArrayHandle;
 
 };
 

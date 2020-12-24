@@ -12,7 +12,7 @@ TEST(GeometryFile, SanityCheck) {
 TEST(GeometryFile, LoadCheck) {
     ysInterchangeFile0_0 f;
     ysError r = f.Open("fake_file.fake");
-    EXPECT_EQ(r, ysError::YDS_COULD_NOT_OPEN_FILE);
+    EXPECT_EQ(r, ysError::CouldNotOpenFile);
 
     f.Close();
 }
@@ -22,7 +22,7 @@ TEST(GeometryFile, LoadValidCheck) {
 
     ysInterchangeFile0_0 f;
     ysError r = f.Open("../../../test/geometry_files/empty_file.dia");
-    EXPECT_EQ(r, ysError::YDS_NO_ERROR);
+    EXPECT_EQ(r, ysError::None);
 
     EXPECT_EQ(f.GetMajorVersion(), 0);
     EXPECT_EQ(f.GetMinorVersion(), 0);
@@ -33,7 +33,7 @@ TEST(GeometryFile, LoadValidCheck) {
 TEST(GeometryFile, LoadInvalidheck) {
     ysInterchangeFile0_0 f;
     ysError r = f.Open("../../../test/geometry_files/invalid_file.dia");
-    EXPECT_EQ(r, ysError::YDS_INVALID_FILE_TYPE);
+    EXPECT_EQ(r, ysError::InvalidFileType);
 
     f.Close();
 }
@@ -41,11 +41,11 @@ TEST(GeometryFile, LoadInvalidheck) {
 TEST(GeometryFile, LoadCube) {
     ysInterchangeFile0_0 f;
     ysError r = f.Open("../../../test/geometry_files/cube.dia");
-    EXPECT_EQ(r, ysError::YDS_NO_ERROR);
+    EXPECT_EQ(r, ysError::None);
 
     ysInterchangeObject obj;
     r = f.ReadObject(&obj);
-    EXPECT_EQ(r, ysError::YDS_NO_ERROR);
+    EXPECT_EQ(r, ysError::None);
 
     EXPECT_EQ(obj.MaterialName, "Material");
     EXPECT_EQ(obj.Name, "Cube");
@@ -67,11 +67,11 @@ TEST(GeometryFile, LoadCube) {
 TEST(GeometryFile, RipByNormals) {
     ysInterchangeFile0_0 f;
     ysError r = f.Open("../../../test/geometry_files/flat_cube.dia");
-    EXPECT_EQ(r, ysError::YDS_NO_ERROR);
+    EXPECT_EQ(r, ysError::None);
 
     ysInterchangeObject obj;
     r = f.ReadObject(&obj);
-    EXPECT_EQ(r, ysError::YDS_NO_ERROR);
+    EXPECT_EQ(r, ysError::None);
 
     EXPECT_EQ(obj.MaterialName, "Material");
     EXPECT_EQ(obj.Name, "Cube");
@@ -97,11 +97,11 @@ TEST(GeometryFile, RipByNormals) {
 TEST(GeometryFile, RipByTangents) {
     ysInterchangeFile0_0 f;
     ysError r = f.Open("../../../test/geometry_files/cube.dia");
-    EXPECT_EQ(r, ysError::YDS_NO_ERROR);
+    EXPECT_EQ(r, ysError::None);
 
     ysInterchangeObject obj;
     r = f.ReadObject(&obj);
-    EXPECT_EQ(r, ysError::YDS_NO_ERROR);
+    EXPECT_EQ(r, ysError::None);
 
     EXPECT_TRUE(obj.Validate());
 
@@ -116,11 +116,11 @@ TEST(GeometryFile, RipByTangents) {
 TEST(GeometryFile, RipByUVs) {
     ysInterchangeFile0_0 f;
     ysError r = f.Open("../../../test/geometry_files/cube.dia");
-    EXPECT_EQ(r, ysError::YDS_NO_ERROR);
+    EXPECT_EQ(r, ysError::None);
 
     ysInterchangeObject obj;
     r = f.ReadObject(&obj);
-    EXPECT_EQ(r, ysError::YDS_NO_ERROR);
+    EXPECT_EQ(r, ysError::None);
 
     EXPECT_TRUE(obj.Validate());
 
@@ -135,11 +135,11 @@ TEST(GeometryFile, RipByUVs) {
 TEST(GeometryFile, FullRip) {
     ysInterchangeFile0_0 f;
     ysError r = f.Open("../../../test/geometry_files/cube.dia");
-    EXPECT_EQ(r, ysError::YDS_NO_ERROR);
+    EXPECT_EQ(r, ysError::None);
 
     ysInterchangeObject obj;
     r = f.ReadObject(&obj);
-    EXPECT_EQ(r, ysError::YDS_NO_ERROR);
+    EXPECT_EQ(r, ysError::None);
 
     EXPECT_TRUE(obj.Validate());
 
@@ -156,11 +156,11 @@ TEST(GeometryFile, FullRip) {
 TEST(GeometryFile, ConnectedUVsRip) {
     ysInterchangeFile0_0 f;
     ysError r = f.Open("../../../test/geometry_files/cube_connected_uvs.dia");
-    EXPECT_EQ(r, ysError::YDS_NO_ERROR);
+    EXPECT_EQ(r, ysError::None);
 
     ysInterchangeObject obj;
     r = f.ReadObject(&obj);
-    EXPECT_EQ(r, ysError::YDS_NO_ERROR);
+    EXPECT_EQ(r, ysError::None);
 
     EXPECT_TRUE(obj.Validate());
 
@@ -179,7 +179,7 @@ TEST(GeometryFile, ConnectedUVsRip) {
 TEST(GeometryFile, FullRipCompilation) {
     ysInterchangeFile0_0 f;
     ysError r = f.Open("../../../test/geometry_files/cube.dia");
-    EXPECT_EQ(r, ysError::YDS_NO_ERROR);
+    EXPECT_EQ(r, ysError::None);
 
     ysInterchangeObject obj;
     r = f.ReadObject(&obj);
@@ -212,7 +212,7 @@ TEST(GeometryFile, FullRipCompilation) {
 TEST(GeometryFile, FullModel) {
     ysInterchangeFile0_0 f;
     ysError r = f.Open("../../../test/geometry_files/ant.dia");
-    EXPECT_EQ(r, ysError::YDS_NO_ERROR);
+    EXPECT_EQ(r, ysError::None);
 
     ysInterchangeObject obj;
     r = f.ReadObject(&obj);

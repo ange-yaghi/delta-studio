@@ -6,14 +6,14 @@
 class ysOpenGLTexture : public ysTexture
 {
 
-	friend class ysOpenGLDevice;
+    friend class ysOpenGLDevice;
 
 public:
 
-	ysOpenGLTexture();
-	~ysOpenGLTexture();
+    ysOpenGLTexture();
+    ~ysOpenGLTexture();
 
-	unsigned int m_handle;
+    unsigned int m_handle;
 
 };
 

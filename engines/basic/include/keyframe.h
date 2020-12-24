@@ -26,8 +26,8 @@ namespace dbasic {
 
         int m_frame;
 
-        ysVector		m_positionKey;
-        ysQuaternion	m_rotationKey;
+        ysVector        m_positionKey;
+        ysQuaternion    m_rotationKey;
     };
 
 } /* namespace dbasic */

@@ -8,16 +8,16 @@
 class ysD3D10InputLayout : public ysInputLayout
 {
 
-	friend class ysD3D10Device;
+    friend class ysD3D10Device;
 
 public:
 
-	ysD3D10InputLayout();
-	virtual ~ysD3D10InputLayout();
+    ysD3D10InputLayout();
+    virtual ~ysD3D10InputLayout();
 
 protected:
 
-	ID3D10InputLayout *m_layout;
+    ID3D10InputLayout *m_layout;
 
 };
 

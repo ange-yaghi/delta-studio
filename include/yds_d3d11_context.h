@@ -7,14 +7,14 @@
 struct IDXGISwapChain;
 
 class ysD3D11Context : public ysRenderingContext {
-	friend class ysD3D11Device;
+    friend class ysD3D11Device;
 
 public:
-	ysD3D11Context();
-	virtual ~ysD3D11Context();
+    ysD3D11Context();
+    virtual ~ysD3D11Context();
 
 protected:
-	IDXGISwapChain *m_swapChain;
+    IDXGISwapChain *m_swapChain;
 };
 
 #endif /* YDS_D3D11_CONTEXT_H */

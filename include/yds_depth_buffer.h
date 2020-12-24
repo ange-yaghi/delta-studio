@@ -5,9 +5,9 @@
 
 class ysDepthBuffer : public ysContextObject {
 public:
-	ysDepthBuffer();
-	ysDepthBuffer(DeviceAPI API);
-	virtual ~ysDepthBuffer();
+    ysDepthBuffer();
+    ysDepthBuffer(DeviceAPI API);
+    virtual ~ysDepthBuffer();
 };
 
 #endif /* YDS_DEPTH_BUFFER_H */

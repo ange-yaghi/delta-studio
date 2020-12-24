@@ -9,238 +9,238 @@ class ysQueue
 
 public:
 
-	ysQueue()
-	{
+    ysQueue()
+    {
 
-		m_maxSize = InitialSize;
-		m_objectCount = 0;
-		m_start = 0;
-		m_array = NULL;
+        m_maxSize = InitialSize;
+        m_objectCount = 0;
+        m_start = 0;
+        m_array = NULL;
 
-	}
+    }
 
-	~ysQueue()
-	{
-	}
+    ~ysQueue()
+    {
+    }
 
-	inline Type &Append()
-	{
+    inline Type &Append()
+    {
 
-		if (m_objectCount >= m_maxSize) Extend();
+        if (m_objectCount >= m_maxSize) Extend();
 
-		Type *newObject = (new ((void *)&m_array[(m_start + m_objectCount) % m_objectCount]) Type);
+        Type *newObject = (new ((void *)&m_array[(m_start + m_objectCount) % m_objectCount]) Type);
 
-		m_objectCount++;
+        m_objectCount++;
 
-		return newObject;
+        return newObject;
 
-	}
+    }
 
-	inline Type &Prepend()
-	{
+    inline Type &Prepend()
+    {
 
-		if (m_objectCount >= m_maxSize) Extend();
+        if (m_objectCount >= m_maxSize) Extend();
 
-		Type *newObject = (new ((void *)&m_array[(m_start + m_objectCount) % m_objectCount]) Type);
+        Type *newObject = (new ((void *)&m_array[(m_start + m_objectCount) % m_objectCount]) Type);
 
-		m_objectCount++;
+        m_objectCount++;
 
-		m_start += m_maxSize;
-		m_start--;
-		m_start %= m_maxSize;
+        m_start += m_maxSize;
+        m_start--;
+        m_start %= m_maxSize;
 
-		return newObject;
+        return newObject;
 
-	}
+    }
 
-	Type *GetBuffer() { return m_array; }
+    Type *GetBuffer() { return m_array; }
 
-	__forceinline Type &operator[](int index)
-	{
+    __forceinline Type &operator[](int index)
+    {
 
-		return m_array[(index + m_start) % m_maxSize];
+        return m_array[(index + m_start) % m_maxSize];
 
-	}
+    }
 
-	void DeleteFront()
-	{
+    void DeleteFront()
+    {
 
-		m_start++;
-		m_start %= m_maxSize;
-		m_objectCount--;
+        m_start++;
+        m_start %= m_maxSize;
+        m_objectCount--;
 
-	}
+    }
 
-	void DeleteBack()
-	{
+    void DeleteBack()
+    {
 
-		m_objectCount--;
+        m_objectCount--;
 
-	}
+    }
 
-	void Clear()
-	{
+    void Clear()
+    {
 
-		m_objectCount = 0;
-		m_start = 0;
+        m_objectCount = 0;
+        m_start = 0;
 
-	}
+    }
 
-	void Destroy()
-	{
+    void Destroy()
+    {
 
-		DestroyArray(m_array);
+        DestroyArray(m_array);
 
-		m_maxSize = 0;
-		m_objectCount = 0;
-		m_array = NULL;
-		m_start = 0;
+        m_maxSize = 0;
+        m_objectCount = 0;
+        m_array = NULL;
+        m_start = 0;
 
-	}
+    }
 
 protected:
 
-	Type *CreateArray(int size)
-	{
+    Type *CreateArray(int size)
+    {
 
-		Type *ret = NULL;
+        Type *ret = NULL;
 
-		if (Alignment != 1)
-		{
+        if (Alignment != 1)
+        {
 
-			void *memory = _aligned_malloc(sizeof(Type) * size, Alignment);
-			ret = (Type *)memory;
+            void *memory = _aligned_malloc(sizeof(Type) * size, Alignment);
+            ret = (Type *)memory;
 
-		}
+        }
 
-		else ret = new Type[size];
+        else ret = new Type[size];
 
-		return ret;
+        return ret;
 
-	}
+    }
 
-	void DestroyArray(Type *arr)
-	{
+    void DestroyArray(Type *arr)
+    {
 
-		if (Alignment == 1)
-		{
+        if (Alignment == 1)
+        {
 
-			delete [] arr;
+            delete [] arr;
 
-		}
+        }
 
-		else
-		{
+        else
+        {
 
-			for (int i=0; i < m_maxSize; i++)
-			{
+            for (int i=0; i < m_maxSize; i++)
+            {
 
-				arr[i].~Type();
+                arr[i].~Type();
 
-			}
+            }
 
-			_aligned_free(arr);
+            _aligned_free(arr);
 
-		}
+        }
 
-	}
+    }
 
-	void Allocate(int size)
-	{
+    void Allocate(int size)
+    {
 
-		if (size == 0) return;
-		if (m_array != NULL)
-		{
+        if (size == 0) return;
+        if (m_array != NULL)
+        {
 
-			if (m_maxSize < size)
-			{
+            if (m_maxSize < size)
+            {
 
-				Destroy();
+                Destroy();
 
-			}
+            }
 
-			else
-			{
+            else
+            {
 
-				m_objectCount = size;
-				return;
+                m_objectCount = size;
+                return;
 
-			}
+            }
 
-		}
+        }
 
-		m_array = CreateArray(size);
-		m_maxSize = size;
-		m_objectCount = size;
-		m_start = 0;
+        m_array = CreateArray(size);
+        m_maxSize = size;
+        m_objectCount = size;
+        m_start = 0;
 
-	}
+    }
 
-	void Preallocate(int size)
-	{
+    void Preallocate(int size)
+    {
 
-		if (size == 0) return;
-		if (m_array != NULL)
-		{
+        if (size == 0) return;
+        if (m_array != NULL)
+        {
 
-			if (m_maxSize < size)
-			{
+            if (m_maxSize < size)
+            {
 
-				Destroy();
+                Destroy();
 
-			}
+            }
 
-			else
-			{
+            else
+            {
 
-				// Already allcoated
-				m_objectCount = 0;
-				return;
+                // Already allcoated
+                m_objectCount = 0;
+                return;
 
-			}
+            }
 
-		}
+        }
 
-		m_array = CreateArray(size);
-		m_maxSize = size;
-		m_objectCount = 0;
-		m_start = 0;
+        m_array = CreateArray(size);
+        m_maxSize = size;
+        m_objectCount = 0;
+        m_start = 0;
 
-	}
+    }
 
-	void Extend()
-	{
+    void Extend()
+    {
 
-		Type *newArray = CreateArray(m_maxSize * 2 + 1);
+        Type *newArray = CreateArray(m_maxSize * 2 + 1);
 
-		int modIndex=m_start;
-		for (int i=0; i < m_nObjects; i++)
-		{
+        int modIndex=m_start;
+        for (int i=0; i < m_nObjects; i++)
+        {
 
-			newArray[i] = m_array[i];
+            newArray[i] = m_array[i];
 
-			modIndex++;
-			modIndex %= m_maxSize;
+            modIndex++;
+            modIndex %= m_maxSize;
 
-		}
+        }
 
-		m_start = 0;
+        m_start = 0;
 
-		DestroyArray(m_array);
+        DestroyArray(m_array);
 
-		m_array = newAray;
-		m_maxSize *= 2;
-		m_maxSize += 1;
+        m_array = newAray;
+        m_maxSize *= 2;
+        m_maxSize += 1;
 
-	}
+    }
 
 protected:
 
-	int m_maxSize;
-	int m_start;
-	int m_objectCount;
+    int m_maxSize;
+    int m_start;
+    int m_objectCount;
 
-	Type *m_array;
+    Type *m_array;
 
 };
 

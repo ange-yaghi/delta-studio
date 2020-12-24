@@ -16,7 +16,7 @@ ysError ysToolGeometryFile::Open(const char *fname) {
     YDS_ERROR_DECLARE("Open");
 
     m_file.open(fname, std::ios::binary | std::ios::in | std::ios::out);
-    if (!m_file.is_open()) return YDS_ERROR_RETURN_MSG(ysError::YDS_COULD_NOT_OPEN_FILE, fname);
+    if (!m_file.is_open()) return YDS_ERROR_RETURN_MSG(ysError::CouldNotOpenFile, fname);
 
     // Read Magic Number
     unsigned int magicNumber = 0;
@@ -24,7 +24,7 @@ ysError ysToolGeometryFile::Open(const char *fname) {
 
     if (magicNumber != MAGIC_NUMBER) {
         m_file.close();
-        return YDS_ERROR_RETURN(ysError::YDS_INVALID_FILE_TYPE);
+        return YDS_ERROR_RETURN(ysError::InvalidFileType);
     }
 
     // Read File Version
@@ -34,7 +34,7 @@ ysError ysToolGeometryFile::Open(const char *fname) {
 
     if (fileVersion < 0 || fileVersion > CURRENT_FILE_VERSION) {
         m_file.close();
-        return YDS_ERROR_RETURN(ysError::YDS_UNSUPPORTED_FILE_VERSION);
+        return YDS_ERROR_RETURN(ysError::UnsupportedFileVersion);
     }
 
     // Read Last Editor
@@ -46,7 +46,7 @@ ysError ysToolGeometryFile::Open(const char *fname) {
             m_lastEditor = EditorId::Undefined;
 
             m_file.close();
-            return YDS_ERROR_RETURN(ysError::YDS_CORRUPTED_FILE);
+            return YDS_ERROR_RETURN(ysError::CorruptedFile);
         }
         else {
             m_lastEditor = (EditorId)lastEditor;
@@ -65,7 +65,7 @@ ysError ysToolGeometryFile::Open(const char *fname) {
             m_compilationStatus = CompilationStatus::Undefined;
 
             m_file.close();
-            return YDS_ERROR_RETURN(ysError::YDS_CORRUPTED_FILE);
+            return YDS_ERROR_RETURN(ysError::CorruptedFile);
         }
         else {
             m_compilationStatus = (CompilationStatus)compilationStatus;
@@ -79,7 +79,7 @@ ysError ysToolGeometryFile::Open(const char *fname) {
 
     m_fileVersion = fileVersion;
 
-    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+    return YDS_ERROR_RETURN(ysError::None);
 }
 
 ysError ysToolGeometryFile::ReadHeader(int fileVersion) {
@@ -98,10 +98,10 @@ ysError ysToolGeometryFile::ReadHeader(int fileVersion) {
         free(m_header);
         m_header = NULL;
 
-        return YDS_ERROR_RETURN(ysError::YDS_CORRUPTED_FILE);
+        return YDS_ERROR_RETURN(ysError::CorruptedFile);
     }
 
-    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+    return YDS_ERROR_RETURN(ysError::None);
 }
 
 ysError ysToolGeometryFile::Close() {
@@ -114,7 +114,7 @@ ysError ysToolGeometryFile::Close() {
     m_header = nullptr;
     m_fileVersion = -1;
 
-    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+    return YDS_ERROR_RETURN(ysError::None);
 }
 
 int ysToolGeometryFile::GetObjectCount() const {
@@ -154,15 +154,15 @@ bool ysToolGeometryFile::SmoothingData() const {
 ysError ysToolGeometryFile::ReadObject(ysObjectData **newObject) {
     YDS_ERROR_DECLARE("ReadObject");
 
-    if (newObject == nullptr) return YDS_ERROR_RETURN(ysError::YDS_INVALID_PARAMETER);
+    if (newObject == nullptr) return YDS_ERROR_RETURN(ysError::InvalidParameter);
     *newObject = nullptr;
 
-    if (!m_file.is_open()) return YDS_ERROR_RETURN(ysError::YDS_NO_FILE);
+    if (!m_file.is_open()) return YDS_ERROR_RETURN(ysError::NoFile);
 
     ysObjectData *object = new ysObjectData;
     object->Clear();
 
-    ysError error = ysError::YDS_NO_ERROR;
+    ysError error = ysError::None;
     if (m_fileVersion == 0) {
         error = ReadObjectVersion000(object);
     }
@@ -182,7 +182,7 @@ ysError ysToolGeometryFile::ReadObject(ysObjectData **newObject) {
         error = ReadObjectVersion005(object);
     }
 
-    if (error != ysError::YDS_NO_ERROR) {
+    if (error != ysError::None) {
         DestroyMemory();
         delete object;
 
@@ -193,7 +193,7 @@ ysError ysToolGeometryFile::ReadObject(ysObjectData **newObject) {
     ReleaseMemory();
     *newObject = object;
 
-    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+    return YDS_ERROR_RETURN(ysError::None);
 }
 
 ysError ysToolGeometryFile::UpdateCompilationStatus(CompilationStatus status) {
@@ -210,7 +210,7 @@ ysError ysToolGeometryFile::UpdateCompilationStatus(CompilationStatus status) {
         m_file.seekg(currentPosition);
     }
 
-    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+    return YDS_ERROR_RETURN(ysError::None);
 }
 
 ysError ysToolGeometryFile::ReadString(char *dest) {
@@ -221,12 +221,12 @@ ysError ysToolGeometryFile::ReadString(char *dest) {
 
     do {
         m_file.read(&c, sizeof(char));
-        if (!m_file) return YDS_ERROR_RETURN(ysError::YDS_CORRUPTED_FILE);
+        if (!m_file) return YDS_ERROR_RETURN(ysError::CorruptedFile);
 
         dest[i++] = c;
     } while (c);
 
-    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+    return YDS_ERROR_RETURN(ysError::None);
 }
 
 ysError ysToolGeometryFile::ReadObjectDataVersion000_005(ysObjectData *object) {
@@ -247,7 +247,7 @@ ysError ysToolGeometryFile::ReadObjectDataVersion000_005(ysObjectData *object) {
         for (int i = 0; i < object->m_objectStatistics.NumVertices; i++) {
             m_file.read((char *)&object->m_vertices.New(), sizeof(ysVector3));
             if (!m_file) {
-                return YDS_ERROR_RETURN(ysError::YDS_CORRUPTED_FILE);
+                return YDS_ERROR_RETURN(ysError::CorruptedFile);
             }
 
             if (MaterialData()) {
@@ -268,10 +268,10 @@ ysError ysToolGeometryFile::ReadObjectDataVersion000_005(ysObjectData *object) {
                 weights->m_boneWeights.Allocate(nBones);
 
                 m_file.read((char *)weights->m_boneIndices.GetBuffer(), sizeof(int) * nBones);
-                if (!m_file) return YDS_ERROR_RETURN(ysError::YDS_CORRUPTED_FILE);
+                if (!m_file) return YDS_ERROR_RETURN(ysError::CorruptedFile);
 
                 m_file.read((char *)weights->m_boneWeights.GetBuffer(), sizeof(float) * nBones);
-                if (!m_file) return YDS_ERROR_RETURN(ysError::YDS_CORRUPTED_FILE);
+                if (!m_file) return YDS_ERROR_RETURN(ysError::CorruptedFile);
             }
         }
 
@@ -284,12 +284,12 @@ ysError ysToolGeometryFile::ReadObjectDataVersion000_005(ysObjectData *object) {
             for (int i = 0; i < object->m_objectStatistics.NumUVChannels; i++) {
                 int nCoordinates = 0;
                 m_file.read((char *)&nCoordinates, sizeof(int));
-                if (!m_file) return YDS_ERROR_RETURN(ysError::YDS_CORRUPTED_FILE);
+                if (!m_file) return YDS_ERROR_RETURN(ysError::CorruptedFile);
 
                 object->m_channels[i].m_coordinates.Allocate(nCoordinates);
 
                 m_file.read((char *)object->m_channels[i].m_coordinates.GetBuffer(), sizeof(ysVector2) * nCoordinates);
-                if (!m_file) return YDS_ERROR_RETURN(ysError::YDS_CORRUPTED_FILE);
+                if (!m_file) return YDS_ERROR_RETURN(ysError::CorruptedFile);
             }
         }
 
@@ -310,17 +310,17 @@ ysError ysToolGeometryFile::ReadObjectDataVersion000_005(ysObjectData *object) {
         bool smoothingData = SmoothingData();
         for (int i = 0; i < object->m_objectStatistics.NumFaces; i++) {
             m_file.read((char *)&object->m_vertexIndexSet[i], sizeof(ysObjectData::IndexSet));
-            if (!m_file) return YDS_ERROR_RETURN(ysError::YDS_CORRUPTED_FILE);
+            if (!m_file) return YDS_ERROR_RETURN(ysError::CorruptedFile);
 
             if (smoothingData) {
                 m_file.read((char *)&object->m_smoothingGroups[i], sizeof(int));
-                if (!m_file) return YDS_ERROR_RETURN(ysError::YDS_CORRUPTED_FILE);
+                if (!m_file) return YDS_ERROR_RETURN(ysError::CorruptedFile);
             }
 
             if (object->m_objectStatistics.NumUVChannels > 0) {
                 for (int channel = 0; channel < object->m_objectStatistics.NumUVChannels; channel++) {
                     m_file.read((char *)&object->m_UVIndexSets[channel].UVIndexSets[i], sizeof(ysObjectData::IndexSet));
-                    if (!m_file) return YDS_ERROR_RETURN(ysError::YDS_CORRUPTED_FILE);
+                    if (!m_file) return YDS_ERROR_RETURN(ysError::CorruptedFile);
                 }
             }
         }
@@ -331,15 +331,15 @@ ysError ysToolGeometryFile::ReadObjectDataVersion000_005(ysObjectData *object) {
         if (object->m_objectInformation.UsesBones) {
             int nBones;
             m_file.read((char *)&nBones, sizeof(int));
-            if (!m_file) return YDS_ERROR_RETURN(ysError::YDS_CORRUPTED_FILE);
+            if (!m_file) return YDS_ERROR_RETURN(ysError::CorruptedFile);
 
             object->m_boneIndices.Allocate(nBones);
             m_file.read((char *)object->m_boneIndices.GetBuffer(), sizeof(int) * nBones);
-            if (!m_file) return YDS_ERROR_RETURN(ysError::YDS_CORRUPTED_FILE);
+            if (!m_file) return YDS_ERROR_RETURN(ysError::CorruptedFile);
         }
     }
 
-    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+    return YDS_ERROR_RETURN(ysError::None);
 }
 
 ysError ysToolGeometryFile::ReadObjectVersion000(ysObjectData *object) {
@@ -347,7 +347,7 @@ ysError ysToolGeometryFile::ReadObjectVersion000(ysObjectData *object) {
 
     ObjectInformation_000_002 objectInformation;
     m_file.read((char *)&objectInformation, sizeof(ObjectInformation_000_002));
-    if (!m_file) return YDS_ERROR_RETURN(ysError::YDS_CORRUPTED_FILE);
+    if (!m_file) return YDS_ERROR_RETURN(ysError::CorruptedFile);
 
     object->m_objectInformation.ModelIndex = objectInformation.ModelIndex;
     object->m_objectInformation.ObjectType = objectInformation.ObjectType;
@@ -360,7 +360,7 @@ ysError ysToolGeometryFile::ReadObjectVersion000(ysObjectData *object) {
 
     ObjectTransformation_000_003 objectTransformation;
     m_file.read((char *)&objectTransformation, sizeof(ObjectTransformation_000_003));
-    if (!m_file) return YDS_ERROR_RETURN(ysError::YDS_CORRUPTED_FILE);
+    if (!m_file) return YDS_ERROR_RETURN(ysError::CorruptedFile);
 
     object->m_objectTransformation.OrientationEuler = objectTransformation.Orientation;
     object->m_objectTransformation.Position = objectTransformation.Position;
@@ -369,7 +369,7 @@ ysError ysToolGeometryFile::ReadObjectVersion000(ysObjectData *object) {
 
     ObjectStatistics_000_005 objectStatistics;
     m_file.read((char *)&objectStatistics, sizeof(ObjectStatistics_000_005));
-    if (!m_file) return YDS_ERROR_RETURN(ysError::YDS_CORRUPTED_FILE);
+    if (!m_file) return YDS_ERROR_RETURN(ysError::CorruptedFile);
 
     object->m_objectStatistics.NumFaces = objectStatistics.NumFaces;
     object->m_objectStatistics.NumUVChannels = objectStatistics.NumUVChannels;
@@ -381,7 +381,7 @@ ysError ysToolGeometryFile::ReadObjectVersion000(ysObjectData *object) {
 
     YDS_NESTED_ERROR_CALL(ReadObjectDataVersion000_005(object));
 
-    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+    return YDS_ERROR_RETURN(ysError::None);
 }
 
 ysError ysToolGeometryFile::ReadObjectVersion001(ysObjectData *object) {
@@ -389,7 +389,7 @@ ysError ysToolGeometryFile::ReadObjectVersion001(ysObjectData *object) {
 
     ObjectInformation_000_002 objectInformation;
     m_file.read((char *)&objectInformation, sizeof(ObjectInformation_000_002));
-    if (!m_file) return YDS_ERROR_RETURN(ysError::YDS_CORRUPTED_FILE);
+    if (!m_file) return YDS_ERROR_RETURN(ysError::CorruptedFile);
 
     object->m_objectInformation.ModelIndex = objectInformation.ModelIndex;
     object->m_objectInformation.ObjectType = objectInformation.ObjectType;
@@ -402,7 +402,7 @@ ysError ysToolGeometryFile::ReadObjectVersion001(ysObjectData *object) {
 
     ObjectTransformation_000_003 objectTransformation;
     m_file.read((char *)&objectTransformation, sizeof(ObjectTransformation_000_003));
-    if (!m_file) return YDS_ERROR_RETURN(ysError::YDS_CORRUPTED_FILE);
+    if (!m_file) return YDS_ERROR_RETURN(ysError::CorruptedFile);
 
     object->m_objectTransformation.OrientationEuler = objectTransformation.Orientation;
     object->m_objectTransformation.Position = objectTransformation.Position;
@@ -411,7 +411,7 @@ ysError ysToolGeometryFile::ReadObjectVersion001(ysObjectData *object) {
 
     ObjectStatistics_000_005 objectStatistics;
     m_file.read((char *)&objectStatistics, sizeof(ObjectStatistics_000_005));
-    if (!m_file) return YDS_ERROR_RETURN(ysError::YDS_CORRUPTED_FILE);
+    if (!m_file) return YDS_ERROR_RETURN(ysError::CorruptedFile);
 
     object->m_objectStatistics.NumFaces = objectStatistics.NumFaces;
     object->m_objectStatistics.NumUVChannels = objectStatistics.NumUVChannels;
@@ -420,14 +420,14 @@ ysError ysToolGeometryFile::ReadObjectVersion001(ysObjectData *object) {
     // ONLY ADDITION
     int flipNormals;
     m_file.read((char *)&flipNormals, sizeof(int));
-    if (!m_file) return YDS_ERROR_RETURN(ysError::YDS_CORRUPTED_FILE);
+    if (!m_file) return YDS_ERROR_RETURN(ysError::CorruptedFile);
 
     object->m_flipNormals = (flipNormals == 1);
     object->m_objectInformation.ParentInstance = -1;
 
     YDS_NESTED_ERROR_CALL(ReadObjectDataVersion000_005(object));
 
-    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+    return YDS_ERROR_RETURN(ysError::None);
 }
 
 ysError ysToolGeometryFile::ReadObjectVersion002(ysObjectData *object) {
@@ -435,7 +435,7 @@ ysError ysToolGeometryFile::ReadObjectVersion002(ysObjectData *object) {
 
     ObjectInformation_000_002 objectInformation;
     m_file.read((char *)&objectInformation, sizeof(ObjectInformation_000_002));
-    if (!m_file) return YDS_ERROR_RETURN(ysError::YDS_CORRUPTED_FILE);
+    if (!m_file) return YDS_ERROR_RETURN(ysError::CorruptedFile);
 
     object->m_objectInformation.ModelIndex = objectInformation.ModelIndex;
     object->m_objectInformation.ObjectType = objectInformation.ObjectType;
@@ -449,7 +449,7 @@ ysError ysToolGeometryFile::ReadObjectVersion002(ysObjectData *object) {
 
     ObjectTransformation_000_003 objectTransformation;
     m_file.read((char *)&objectTransformation, sizeof(ObjectTransformation_000_003));
-    if (!m_file) return YDS_ERROR_RETURN(ysError::YDS_CORRUPTED_FILE);
+    if (!m_file) return YDS_ERROR_RETURN(ysError::CorruptedFile);
 
     object->m_objectTransformation.OrientationEuler = objectTransformation.Orientation;
     object->m_objectTransformation.Position = objectTransformation.Position;
@@ -458,7 +458,7 @@ ysError ysToolGeometryFile::ReadObjectVersion002(ysObjectData *object) {
 
     ObjectStatistics_000_005 objectStatistics;
     m_file.read((char *)&objectStatistics, sizeof(ObjectStatistics_000_005));
-    if (!m_file) return YDS_ERROR_RETURN(ysError::YDS_CORRUPTED_FILE);
+    if (!m_file) return YDS_ERROR_RETURN(ysError::CorruptedFile);
 
     object->m_objectStatistics.NumFaces = objectStatistics.NumFaces;
     object->m_objectStatistics.NumUVChannels = objectStatistics.NumUVChannels;
@@ -466,14 +466,14 @@ ysError ysToolGeometryFile::ReadObjectVersion002(ysObjectData *object) {
 
     int flipNormals;
     m_file.read((char *)&flipNormals, sizeof(int));
-    if (!m_file) return YDS_ERROR_RETURN(ysError::YDS_CORRUPTED_FILE);
+    if (!m_file) return YDS_ERROR_RETURN(ysError::CorruptedFile);
 
     object->m_flipNormals = (flipNormals == 1);
     object->m_objectInformation.ParentInstance = -1;
 
     YDS_NESTED_ERROR_CALL(ReadObjectDataVersion000_005(object));
 
-    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+    return YDS_ERROR_RETURN(ysError::None);
 }
 
 ysError ysToolGeometryFile::ReadObjectVersion003(ysObjectData *object) {
@@ -481,7 +481,7 @@ ysError ysToolGeometryFile::ReadObjectVersion003(ysObjectData *object) {
 
     ObjectInformation_003_004 objectInformation;
     m_file.read((char *)&objectInformation, sizeof(ObjectInformation_003_004));
-    if (!m_file) return YDS_ERROR_RETURN(ysError::YDS_CORRUPTED_FILE);
+    if (!m_file) return YDS_ERROR_RETURN(ysError::CorruptedFile);
 
     object->m_objectInformation.ModelIndex = objectInformation.ModelIndex;
     object->m_objectInformation.ObjectType = objectInformation.ObjectType;
@@ -495,7 +495,7 @@ ysError ysToolGeometryFile::ReadObjectVersion003(ysObjectData *object) {
 
     ObjectTransformation_000_003 objectTransformation;
     m_file.read((char *)&objectTransformation, sizeof(ObjectTransformation_000_003));
-    if (!m_file) return YDS_ERROR_RETURN(ysError::YDS_CORRUPTED_FILE);
+    if (!m_file) return YDS_ERROR_RETURN(ysError::CorruptedFile);
 
     object->m_objectTransformation.OrientationEuler = objectTransformation.Orientation;
     object->m_objectTransformation.Position = objectTransformation.Position;
@@ -504,7 +504,7 @@ ysError ysToolGeometryFile::ReadObjectVersion003(ysObjectData *object) {
 
     ObjectStatistics_000_005 objectStatistics;
     m_file.read((char *)&objectStatistics, sizeof(ObjectStatistics_000_005));
-    if (!m_file) return YDS_ERROR_RETURN(ysError::YDS_CORRUPTED_FILE);
+    if (!m_file) return YDS_ERROR_RETURN(ysError::CorruptedFile);
 
     object->m_objectStatistics.NumFaces = objectStatistics.NumFaces;
     object->m_objectStatistics.NumUVChannels = objectStatistics.NumUVChannels;
@@ -512,13 +512,13 @@ ysError ysToolGeometryFile::ReadObjectVersion003(ysObjectData *object) {
 
     int flipNormals;
     m_file.read((char *)&flipNormals, sizeof(int));
-    if (!m_file) return YDS_ERROR_RETURN(ysError::YDS_CORRUPTED_FILE);
+    if (!m_file) return YDS_ERROR_RETURN(ysError::CorruptedFile);
 
     object->m_flipNormals = (flipNormals == 1);
 
     YDS_NESTED_ERROR_CALL(ReadObjectDataVersion000_005(object));
 
-    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+    return YDS_ERROR_RETURN(ysError::None);
 }
 
 ysError ysToolGeometryFile::ReadObjectVersion004(ysObjectData *object) {
@@ -526,7 +526,7 @@ ysError ysToolGeometryFile::ReadObjectVersion004(ysObjectData *object) {
 
     ObjectInformation_003_004 objectInformation;
     m_file.read((char *)&objectInformation, sizeof(ObjectInformation_003_004));
-    if (!m_file) return YDS_ERROR_RETURN(ysError::YDS_CORRUPTED_FILE);
+    if (!m_file) return YDS_ERROR_RETURN(ysError::CorruptedFile);
 
     object->m_objectInformation.ModelIndex = objectInformation.ModelIndex;
     object->m_objectInformation.ObjectType = objectInformation.ObjectType;
@@ -540,7 +540,7 @@ ysError ysToolGeometryFile::ReadObjectVersion004(ysObjectData *object) {
 
     ObjectTransformation_004_005 objectTransformation;
     m_file.read((char *)&objectTransformation, sizeof(ObjectTransformation_004_005));
-    if (!m_file) return YDS_ERROR_RETURN(ysError::YDS_CORRUPTED_FILE);
+    if (!m_file) return YDS_ERROR_RETURN(ysError::CorruptedFile);
 
     object->m_objectTransformation.OrientationEuler = objectTransformation.OrientationEuler;
     object->m_objectTransformation.Position = objectTransformation.Position;
@@ -549,7 +549,7 @@ ysError ysToolGeometryFile::ReadObjectVersion004(ysObjectData *object) {
 
     ObjectStatistics_000_005 objectStatistics;
     m_file.read((char *)&objectStatistics, sizeof(ObjectStatistics_000_005));
-    if (!m_file) return YDS_ERROR_RETURN(ysError::YDS_CORRUPTED_FILE);
+    if (!m_file) return YDS_ERROR_RETURN(ysError::CorruptedFile);
 
     object->m_objectStatistics.NumFaces = objectStatistics.NumFaces;
     object->m_objectStatistics.NumUVChannels = objectStatistics.NumUVChannels;
@@ -557,13 +557,13 @@ ysError ysToolGeometryFile::ReadObjectVersion004(ysObjectData *object) {
 
     int flipNormals;
     m_file.read((char *)&flipNormals, sizeof(int));
-    if (!m_file) return YDS_ERROR_RETURN(ysError::YDS_CORRUPTED_FILE);
+    if (!m_file) return YDS_ERROR_RETURN(ysError::CorruptedFile);
 
     object->m_flipNormals = (flipNormals == 1);
 
     YDS_NESTED_ERROR_CALL(ReadObjectDataVersion000_005(object));
 
-    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+    return YDS_ERROR_RETURN(ysError::None);
 }
 
 ysError ysToolGeometryFile::ReadObjectVersion005(ysObjectData *object) {
@@ -571,7 +571,7 @@ ysError ysToolGeometryFile::ReadObjectVersion005(ysObjectData *object) {
 
     ObjectInformation_005 objectInformation;
     m_file.read((char *)&objectInformation, sizeof(ObjectInformation_005));
-    if (!m_file) return YDS_ERROR_RETURN(ysError::YDS_CORRUPTED_FILE);
+    if (!m_file) return YDS_ERROR_RETURN(ysError::CorruptedFile);
 
     object->m_objectInformation.ModelIndex = objectInformation.ModelIndex;
     object->m_objectInformation.ObjectType = objectInformation.ObjectType;
@@ -585,7 +585,7 @@ ysError ysToolGeometryFile::ReadObjectVersion005(ysObjectData *object) {
 
     ObjectTransformation_004_005 objectTransformation;
     m_file.read((char *)&objectTransformation, sizeof(ObjectTransformation_004_005));
-    if (!m_file) return YDS_ERROR_RETURN(ysError::YDS_CORRUPTED_FILE);
+    if (!m_file) return YDS_ERROR_RETURN(ysError::CorruptedFile);
 
     object->m_objectTransformation.OrientationEuler = objectTransformation.OrientationEuler;
     object->m_objectTransformation.Position = objectTransformation.Position;
@@ -594,7 +594,7 @@ ysError ysToolGeometryFile::ReadObjectVersion005(ysObjectData *object) {
 
     ObjectStatistics_000_005 objectStatistics;
     m_file.read((char *)&objectStatistics, sizeof(ObjectStatistics_000_005));
-    if (!m_file) return YDS_ERROR_RETURN(ysError::YDS_CORRUPTED_FILE);
+    if (!m_file) return YDS_ERROR_RETURN(ysError::CorruptedFile);
 
     object->m_objectStatistics.NumFaces = objectStatistics.NumFaces;
     object->m_objectStatistics.NumUVChannels = objectStatistics.NumUVChannels;
@@ -602,13 +602,13 @@ ysError ysToolGeometryFile::ReadObjectVersion005(ysObjectData *object) {
 
     int flipNormals;
     m_file.read((char *)&flipNormals, sizeof(int));
-    if (!m_file) return YDS_ERROR_RETURN(ysError::YDS_CORRUPTED_FILE);
+    if (!m_file) return YDS_ERROR_RETURN(ysError::CorruptedFile);
 
     object->m_flipNormals = (flipNormals == 1);
 
     YDS_NESTED_ERROR_CALL(ReadObjectDataVersion000_005(object));
 
-    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+    return YDS_ERROR_RETURN(ysError::None);
 }
 
 void ysToolGeometryFile::DestroyMemory() {

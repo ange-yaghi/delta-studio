@@ -11,7 +11,7 @@ dphysics::CollisionGeometry::~CollisionGeometry() {
 ysError dphysics::CollisionGeometry::NewBoxObject(CollisionObject **newObject) {
     YDS_ERROR_DECLARE("NewBoxObject");
 
-    if (newObject == nullptr) return YDS_ERROR_RETURN(ysError::YDS_INVALID_PARAMETER);
+    if (newObject == nullptr) return YDS_ERROR_RETURN(ysError::InvalidParameter);
     *newObject = nullptr;
 
     CollisionObjectSpecialized<BoxPrimitive, CollisionObject::Type::Box> *newBox =
@@ -20,13 +20,13 @@ ysError dphysics::CollisionGeometry::NewBoxObject(CollisionObject **newObject) {
     newBox->SetParent(m_parent);
     *newObject = static_cast<CollisionObject *>(newBox);
 
-    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+    return YDS_ERROR_RETURN(ysError::None);
 }
 
 ysError dphysics::CollisionGeometry::NewCircleObject(CollisionObject **newObject) {
     YDS_ERROR_DECLARE("NewCircleObject");
 
-    if (newObject == nullptr) return YDS_ERROR_RETURN(ysError::YDS_INVALID_PARAMETER);
+    if (newObject == nullptr) return YDS_ERROR_RETURN(ysError::InvalidParameter);
     *newObject = nullptr;
 
     CollisionObjectSpecialized<CirclePrimitive, CollisionObject::Type::Circle> *newCircle =
@@ -35,13 +35,13 @@ ysError dphysics::CollisionGeometry::NewCircleObject(CollisionObject **newObject
     newCircle->SetParent(m_parent);
     *newObject = static_cast<CollisionObject *>(newCircle);
 
-    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+    return YDS_ERROR_RETURN(ysError::None);
 }
 
 ysError dphysics::CollisionGeometry::NewRayObject(CollisionObject **newObject) {
     YDS_ERROR_DECLARE("NewRayObject");
 
-    if (newObject == nullptr) return YDS_ERROR_RETURN(ysError::YDS_INVALID_PARAMETER);
+    if (newObject == nullptr) return YDS_ERROR_RETURN(ysError::InvalidParameter);
     *newObject = nullptr;
 
     CollisionObjectSpecialized<RayPrimitive, CollisionObject::Type::Ray> *newRay =
@@ -50,7 +50,7 @@ ysError dphysics::CollisionGeometry::NewRayObject(CollisionObject **newObject) {
     newRay->SetParent(m_parent);
     *newObject = static_cast<CollisionObject *>(newRay);
 
-    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+    return YDS_ERROR_RETURN(ysError::None);
 }
 
 void dphysics::CollisionGeometry::UpdatePrimitives() {

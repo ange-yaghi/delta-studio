@@ -17,19 +17,19 @@ ysError ysInterchangeFile0_1::Open(const char *fname) {
     YDS_ERROR_DECLARE("Open");
 
     m_file.open(fname, std::ios::binary | std::ios::in | std::ios::out);
-    if (!m_file.is_open()) return YDS_ERROR_RETURN_MSG(ysError::YDS_COULD_NOT_OPEN_FILE, fname);
+    if (!m_file.is_open()) return YDS_ERROR_RETURN_MSG(ysError::CouldNotOpenFile, fname);
 
     IdHeader idHeader;
     m_file.read((char *)&idHeader, sizeof(IdHeader));
 
     if (idHeader.MagicNumber != MAGIC_NUMBER) {
         m_file.close();
-        return YDS_ERROR_RETURN(ysError::YDS_INVALID_FILE_TYPE);
+        return YDS_ERROR_RETURN(ysError::InvalidFileType);
     }
 
     if (idHeader.MinorVersion != MINOR_VERSION || idHeader.MajorVersion != MAJOR_VERSION) {
         m_file.close();
-        return YDS_ERROR_RETURN(ysError::YDS_UNSUPPORTED_FILE_VERSION);
+        return YDS_ERROR_RETURN(ysError::UnsupportedFileVersion);
     }
 
     m_compilationStatus = idHeader.CompilationStatus == 0x0;
@@ -40,7 +40,7 @@ ysError ysInterchangeFile0_1::Open(const char *fname) {
 
     m_objectCount = sceneHeader.ObjectCount;
 
-    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+    return YDS_ERROR_RETURN(ysError::None);
 }
 
 ysError ysInterchangeFile0_1::ReadObject(ysInterchangeObject *object) {
@@ -130,7 +130,7 @@ ysError ysInterchangeFile0_1::ReadObject(ysInterchangeObject *object) {
         }
     }
 
-    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+    return YDS_ERROR_RETURN(ysError::None);
 }
 
 ysInterchangeObject::ObjectType ysInterchangeFile0_1::InterpretType(int i) {
@@ -153,5 +153,5 @@ ysError ysInterchangeFile0_1::Close() {
     m_majorVersion = -1;
     m_minorVersion = -1;
 
-    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+    return YDS_ERROR_RETURN(ysError::None);
 }

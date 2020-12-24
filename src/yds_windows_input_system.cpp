@@ -52,18 +52,18 @@ ysWindowsInputDevice *ysWindowsInputSystem::SystemNameDeviceLookup(char *systemN
 ysError ysWindowsInputSystem::CheckDeviceStatus(ysInputDevice *device) {
     YDS_ERROR_DECLARE("CheckDeviceStatus");
 
-    if (device == nullptr) return YDS_ERROR_RETURN(ysError::YDS_INVALID_PARAMETER);
+    if (device == nullptr) return YDS_ERROR_RETURN(ysError::InvalidParameter);
 
     ysWindowsInputDevice *windowsDevice = static_cast<ysWindowsInputDevice *>(device);
 
     UINT nDevices;
     PRAWINPUTDEVICELIST pRawInputDeviceList;
 
-    if (GetRawInputDeviceList(nullptr, &nDevices, sizeof(RAWINPUTDEVICELIST)) != 0) return YDS_ERROR_RETURN(ysError::YDS_NO_DEVICE_LIST);
+    if (GetRawInputDeviceList(nullptr, &nDevices, sizeof(RAWINPUTDEVICELIST)) != 0) return YDS_ERROR_RETURN(ysError::NoDeviceList);
 
     pRawInputDeviceList = new RAWINPUTDEVICELIST[nDevices];
-    if (pRawInputDeviceList == NULL) return YDS_ERROR_RETURN(ysError::YDS_OUT_OF_MEMORY);
-    if (GetRawInputDeviceList(pRawInputDeviceList, &nDevices, sizeof(RAWINPUTDEVICELIST)) == -1) return YDS_ERROR_RETURN(ysError::YDS_NO_DEVICE_LIST);
+    if (pRawInputDeviceList == NULL) return YDS_ERROR_RETURN(ysError::OutOfMemory);
+    if (GetRawInputDeviceList(pRawInputDeviceList, &nDevices, sizeof(RAWINPUTDEVICELIST)) == -1) return YDS_ERROR_RETURN(ysError::NoDeviceList);
 
     for (unsigned int i = 0; i < nDevices; i++) {
         RID_DEVICE_INFO info;
@@ -74,13 +74,13 @@ ysError ysWindowsInputSystem::CheckDeviceStatus(ysInputDevice *device) {
 
         if (pRawInputDeviceList[i].hDevice != windowsDevice->m_deviceHandle) continue;
         if (type != device->GetType()) continue;
-        return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR); // Device exists
+        return YDS_ERROR_RETURN(ysError::None); // Device exists
     }
 
     // Device no longer exists
     DisconnectDevice(device);
 
-    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+    return YDS_ERROR_RETURN(ysError::None);
 }
 
 ysError ysWindowsInputSystem::CheckAllDevices() {
@@ -91,11 +91,11 @@ ysError ysWindowsInputSystem::CheckAllDevices() {
     UINT nDevices;
     PRAWINPUTDEVICELIST pRawInputDeviceList;
 
-    if (GetRawInputDeviceList(NULL, &nDevices, sizeof(RAWINPUTDEVICELIST)) != 0) return YDS_ERROR_RETURN(ysError::YDS_NO_DEVICE_LIST);
+    if (GetRawInputDeviceList(NULL, &nDevices, sizeof(RAWINPUTDEVICELIST)) != 0) return YDS_ERROR_RETURN(ysError::NoDeviceList);
 
     pRawInputDeviceList = new RAWINPUTDEVICELIST[nDevices];
-    if (pRawInputDeviceList == NULL) return YDS_ERROR_RETURN(ysError::YDS_OUT_OF_MEMORY);
-    if (GetRawInputDeviceList(pRawInputDeviceList, &nDevices, sizeof(RAWINPUTDEVICELIST)) == -1) return YDS_ERROR_RETURN(ysError::YDS_NO_DEVICE_LIST);
+    if (pRawInputDeviceList == nullptr) return YDS_ERROR_RETURN(ysError::OutOfMemory);
+    if (GetRawInputDeviceList(pRawInputDeviceList, &nDevices, sizeof(RAWINPUTDEVICELIST)) == -1) return YDS_ERROR_RETURN(ysError::NoDeviceList);
 
     const int deviceCount = GetDeviceCount();
 
@@ -118,7 +118,7 @@ ysError ysWindowsInputSystem::CheckAllDevices() {
         DisconnectDevice(windowsDevice);
     }
 
-    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+    return YDS_ERROR_RETURN(ysError::None);
 }
 
 ysError ysWindowsInputSystem::CreateDevices() {
@@ -137,10 +137,10 @@ ysError ysWindowsInputSystem::CreateDevices() {
     deviceList[1].hwndTarget = 0;
 
     if (RegisterRawInputDevices(deviceList, 2, sizeof(RAWINPUTDEVICE)) == FALSE) {
-        return YDS_ERROR_RETURN(ysError::YDS_COULD_NOT_REGISTER_FOR_INPUT);
+        return YDS_ERROR_RETURN(ysError::CouldNotRegisterForInput);
     }
 
-    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+    return YDS_ERROR_RETURN(ysError::None);
 }
 
 ysInputDevice *ysWindowsInputSystem::CreateDevice(ysInputDevice::InputDeviceType type, int id) {

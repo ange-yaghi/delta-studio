@@ -16,5 +16,5 @@ ysError dbasic::TextureAsset::Destroy(ysDevice *device) {
         device->DestroyTexture(m_texture);
     }
 
-    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+    return YDS_ERROR_RETURN(ysError::None);
 }

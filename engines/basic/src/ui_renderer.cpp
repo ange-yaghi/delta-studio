@@ -17,13 +17,13 @@ ysError dbasic::UiRenderer::Initialize(int bufferSize) {
 
     YDS_NESTED_ERROR_CALL(InitializeGeometry(bufferSize));
 
-    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+    return YDS_ERROR_RETURN(ysError::None);
 }
 
 ysError dbasic::UiRenderer::Update() {
     YDS_ERROR_DECLARE("UpdateDisplay");
 
-    if (m_vertexOffset == 0) return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+    if (m_vertexOffset == 0) return YDS_ERROR_RETURN(ysError::None);
 
     m_engine->GetDevice()->EditBufferDataRange(
         m_mainVertexBuffer,
@@ -43,7 +43,7 @@ ysError dbasic::UiRenderer::Update() {
 
     m_engine->GetDevice()->Draw(m_indexOffset / 3, 0, 0);
 
-    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+    return YDS_ERROR_RETURN(ysError::None);
 }
 
 ysError dbasic::UiRenderer::Destroy() {
@@ -55,7 +55,7 @@ ysError dbasic::UiRenderer::Destroy() {
     delete[] m_indexBuffer;
     delete[] m_vertexBuffer;
 
-    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+    return YDS_ERROR_RETURN(ysError::None);
 }
 
 dbasic::ConsoleVertex *dbasic::UiRenderer::AllocateQuads(int n) {
@@ -98,7 +98,7 @@ ysError dbasic::UiRenderer::Reset() {
     m_indexOffset = 0;
     m_vertexOffset = 0;
 
-    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+    return YDS_ERROR_RETURN(ysError::None);
 }
 
 ysError dbasic::UiRenderer::InitializeGeometry(int bufferSize) {
@@ -122,5 +122,5 @@ ysError dbasic::UiRenderer::InitializeGeometry(int bufferSize) {
             sizeof(unsigned short) * 2 * m_bufferSize, 
             (char *)m_indexBuffer));
 
-    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+    return YDS_ERROR_RETURN(ysError::None);
 }

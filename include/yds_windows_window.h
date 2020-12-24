@@ -50,8 +50,8 @@ protected:
 protected:
     ATOM RegisterWindowsClass();
 
-    HINSTANCE	m_instance;
-    HWND		m_hwnd;
+    HINSTANCE    m_instance;
+    HWND        m_hwnd;
 };
 
 #endif /* YDS_WINDOWS_WINDOW_H */

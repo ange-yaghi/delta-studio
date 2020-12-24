@@ -25,7 +25,7 @@ ysError dbasic::AssetManager::Destroy() {
         m_engine->GetDevice()->DestroyGPUBuffer(buffer);
     }
 
-    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+    return YDS_ERROR_RETURN(ysError::None);
 }
 
 dbasic::Material *dbasic::AssetManager::NewMaterial() {
@@ -105,7 +105,7 @@ ysError dbasic::AssetManager::CompileSceneFile(const char *fname, float scale, b
             YDS_NESTED_ERROR_CALL(toolFile.Close());
 
             // File already exists, no compilation required
-            return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+            return YDS_ERROR_RETURN(ysError::None);
         }
     }
 
@@ -163,7 +163,7 @@ ysError dbasic::AssetManager::CompileSceneFile(const char *fname, float scale, b
     exportFile.Close();
     toolFile.Close();
 
-    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+    return YDS_ERROR_RETURN(ysError::None);
 }
 
 ysError dbasic::AssetManager::CompileInterchangeFile(const char *fname, float scale, bool force) {
@@ -186,7 +186,7 @@ ysError dbasic::AssetManager::CompileInterchangeFile(const char *fname, float sc
             YDS_NESTED_ERROR_CALL(toolFile.Close());
 
             // File already exists, no compilation required
-            return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+            return YDS_ERROR_RETURN(ysError::None);
         }
     }
 
@@ -226,7 +226,7 @@ ysError dbasic::AssetManager::CompileInterchangeFile(const char *fname, float sc
     exportFile.Close();
     toolFile.Close();
 
-    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+    return YDS_ERROR_RETURN(ysError::None);
 }
 
 ysError dbasic::AssetManager::LoadSceneFile(const char *fname, bool placeInVram) {
@@ -306,7 +306,7 @@ ysError dbasic::AssetManager::LoadSceneFile(const char *fname, bool placeInVram)
             newObject->m_localPosition = translation;
 
             if (objectType == ysObjectData::ObjectType::Plane) {
-                return YDS_ERROR_RETURN_MSG(ysError::YDS_UNSUPPORTED_TYPE, "Planes not supported.");
+                return YDS_ERROR_RETURN_MSG(ysError::UnsupportedType, "Planes not supported.");
             }
 
             if (objectType == ysObjectData::ObjectType::Instance) {
@@ -403,7 +403,7 @@ ysError dbasic::AssetManager::LoadSceneFile(const char *fname, bool placeInVram)
     m_buffers.push_back(indexBuffer);
     m_buffers.push_back(vertexBuffer);
 
-    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+    return YDS_ERROR_RETURN(ysError::None);
 }
 
 ysError dbasic::AssetManager::CompileAnimationFileLegacy(const char *fname) {
@@ -439,7 +439,7 @@ ysError dbasic::AssetManager::CompileAnimationFileLegacy(const char *fname) {
     animationExportFile.WriteObjectAnimationData(&exportAnimation);
     animationExportFile.Close();
 
-    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+    return YDS_ERROR_RETURN(ysError::None);
 }
 
 ysError dbasic::AssetManager::LoadAnimationFileLegacy(const char *fname) {
@@ -455,7 +455,7 @@ ysError dbasic::AssetManager::LoadAnimationFileLegacy(const char *fname) {
     animationExportFile.ReadObjectAnimationData(exportAnimationRead);
     animationExportFile.Close();
 
-    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+    return YDS_ERROR_RETURN(ysError::None);
 }
 
 
@@ -473,7 +473,7 @@ ysError dbasic::AssetManager::LoadAnimationFile(const char *fname) {
 
     animationFile.Close();
 
-    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+    return YDS_ERROR_RETURN(ysError::None);
 }
 
 ysAnimationAction *dbasic::AssetManager::GetAction(const char *name) {
@@ -497,7 +497,7 @@ ysError dbasic::AssetManager::LoadTexture(const char *fname, const char *name) {
     newTextureAsset->SetName(name);
     newTextureAsset->SetTexture(texture);
 
-    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+    return YDS_ERROR_RETURN(ysError::None);
 }
 
 dbasic::TextureAsset *dbasic::AssetManager::GetTexture(const char *name) {
@@ -529,7 +529,7 @@ ysError dbasic::AssetManager::LoadAudioFile(const char *fname, const char *name)
     newAsset->SetBuffer(newBuffer);
     newAsset->SetName(name);
 
-    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+    return YDS_ERROR_RETURN(ysError::None);
 }
 
 dbasic::AudioAsset *dbasic::AssetManager::GetAudioAsset(const char *name) {
@@ -705,5 +705,5 @@ ysError dbasic::AssetManager::ResolveNodeHierarchy() {
         }
     }
 
-    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+    return YDS_ERROR_RETURN(ysError::None);
 }

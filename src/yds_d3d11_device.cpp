@@ -75,7 +75,7 @@ ysError ysD3D11Device::InitializeDevice() {
 
     if (FAILED(result)) {
         m_device = nullptr;
-        return YDS_ERROR_RETURN(ysError::YDS_COULD_NOT_CREATE_GRAPHICS_DEVICE);
+        return YDS_ERROR_RETURN(ysError::CouldNotCreateGraphicsDevice);
     }
 
     result = CreateDXGIFactory(IID_IDXGIFactory, (void **)(&m_DXGIFactory));
@@ -83,7 +83,7 @@ ysError ysD3D11Device::InitializeDevice() {
         m_device->Release();
         m_device = nullptr;
 
-        return YDS_ERROR_RETURN(ysError::YDS_COULD_NOT_CREATE_GRAPHICS_DEVICE);
+        return YDS_ERROR_RETURN(ysError::CouldNotCreateGraphicsDevice);
     }
 
     // TEMP
@@ -91,7 +91,7 @@ ysError ysD3D11Device::InitializeDevice() {
     GetImmediateContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
     InitializeTextureSlots(D3D11_COMMONSHADER_INPUT_RESOURCE_SLOT_COUNT);
 
-    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+    return YDS_ERROR_RETURN(ysError::None);
 }
 
 ysError ysD3D11Device::DestroyDevice() {
@@ -111,7 +111,7 @@ ysError ysD3D11Device::DestroyDevice() {
     if (m_rasterizerState != nullptr) m_rasterizerState->Release();
 
     if (m_DXGIFactory != nullptr) m_DXGIFactory->Release();
-    if (m_deviceContext != nullptr)	m_deviceContext->Release();
+    if (m_deviceContext != nullptr)    m_deviceContext->Release();
     if (m_device != nullptr) m_device->Release();
     
 #ifdef _DEBUG
@@ -127,7 +127,7 @@ ysError ysD3D11Device::DestroyDevice() {
     }
 #endif /* _DEBUG */
 
-    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+    return YDS_ERROR_RETURN(ysError::None);
 }
 
 bool ysD3D11Device::CheckSupport() {
@@ -138,9 +138,9 @@ bool ysD3D11Device::CheckSupport() {
 ysError ysD3D11Device::CreateRenderingContext(ysRenderingContext **context, ysWindow *window) {
     YDS_ERROR_DECLARE("CreateRenderingContext");
 
-    if (window->GetPlatform() != ysWindowSystem::Platform::Windows) return YDS_ERROR_RETURN(ysError::YDS_INCOMPATIBLE_PLATFORMS);
-    if (context == nullptr) return YDS_ERROR_RETURN(ysError::YDS_INVALID_PARAMETER);
-    if (m_device == nullptr) return YDS_ERROR_RETURN(ysError::YDS_NO_DEVICE);
+    if (window->GetPlatform() != ysWindowSystem::Platform::Windows) return YDS_ERROR_RETURN(ysError::IncompatiblePlatforms);
+    if (context == nullptr) return YDS_ERROR_RETURN(ysError::InvalidParameter);
+    if (m_device == nullptr) return YDS_ERROR_RETURN(ysError::NoDevice);
     *context = nullptr;
 
     ysWindowsWindow *windowsWindow = static_cast<ysWindowsWindow *>(window);
@@ -148,7 +148,7 @@ ysError ysD3D11Device::CreateRenderingContext(ysRenderingContext **context, ysWi
     IDXGIDevice *pDXGIDevice = nullptr;
     GetDXGIDevice(&pDXGIDevice);
     if (pDXGIDevice == nullptr) {
-        return YDS_ERROR_RETURN(ysError::YDS_COULD_NOT_OBTAIN_DEVICE);
+        return YDS_ERROR_RETURN(ysError::CouldNotObtainDevice);
     }
 
     ysD3D11Context *newContext = m_renderingContexts.NewGeneric<ysD3D11Context>();
@@ -191,7 +191,7 @@ ysError ysD3D11Device::CreateRenderingContext(ysRenderingContext **context, ysWi
         m_renderingContexts.Delete(newContext->GetIndex());
         *context = nullptr;
 
-        return YDS_ERROR_RETURN(ysError::YDS_COULD_NOT_CREATE_SWAP_CHAIN);
+        return YDS_ERROR_RETURN(ysError::CouldNotCreateSwapChain);
     }
 
     *context = static_cast<ysRenderingContext *>(newContext);
@@ -273,18 +273,18 @@ ysError ysD3D11Device::CreateRenderingContext(ysRenderingContext **context, ysWi
     dsDesc.DepthEnable = false;
     m_device->CreateDepthStencilState(&dsDesc, &m_depthStencilDisabledState);
 
-    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+    return YDS_ERROR_RETURN(ysError::None);
 }
 
 ysError ysD3D11Device::UpdateRenderingContext(ysRenderingContext *context) {
     YDS_ERROR_DECLARE("UpdateRenderingContext");
 
-    if (context == nullptr) return YDS_ERROR_RETURN(ysError::YDS_INVALID_PARAMETER);
-    if (m_device == nullptr) return YDS_ERROR_RETURN(ysError::YDS_NO_DEVICE);
+    if (context == nullptr) return YDS_ERROR_RETURN(ysError::InvalidParameter);
+    if (m_device == nullptr) return YDS_ERROR_RETURN(ysError::NoDevice);
 
     // Check the window
     if (!context->GetWindow()->IsVisible()) {
-        return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+        return YDS_ERROR_RETURN(ysError::None);
     }
 
     ysD3D11Context *d3d11Context = static_cast<ysD3D11Context *>(context);
@@ -296,7 +296,7 @@ ysError ysD3D11Device::UpdateRenderingContext(ysRenderingContext *context) {
 
     if (width == 0 || height == 0) {
         // Don't do anything in this case
-        return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+        return YDS_ERROR_RETURN(ysError::None);
     }
 
     // Destroy render target first
@@ -308,14 +308,14 @@ ysError ysD3D11Device::UpdateRenderingContext(ysRenderingContext *context) {
     HRESULT result = d3d11Context->m_swapChain->ResizeBuffers(1, width, height, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH);
 
     if (FAILED(result)) {
-        return YDS_ERROR_RETURN(ysError::YDS_API_ERROR);
+        return YDS_ERROR_RETURN(ysError::ApiError);
     }
 
     if (context->GetAttachedRenderTarget() != nullptr) {
         YDS_NESTED_ERROR_CALL(ResizeRenderTarget(context->GetAttachedRenderTarget(), width, height));
     }
 
-    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+    return YDS_ERROR_RETURN(ysError::None);
 }
 
 ysError ysD3D11Device::DestroyRenderingContext(ysRenderingContext *&context) {
@@ -330,14 +330,14 @@ ysError ysD3D11Device::DestroyRenderingContext(ysRenderingContext *&context) {
 
     YDS_NESTED_ERROR_CALL(ysDevice::DestroyRenderingContext(context));
 
-    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+    return YDS_ERROR_RETURN(ysError::None);
 }
 
 ysError ysD3D11Device::SetContextMode(ysRenderingContext *context, ysRenderingContext::ContextMode mode) {
     YDS_ERROR_DECLARE("SetContextMode");
 
-    if (context == nullptr) return YDS_ERROR_RETURN(ysError::YDS_INVALID_PARAMETER);
-    if (!CheckCompatibility(context)) return YDS_ERROR_RETURN(ysError::YDS_INCOMPATIBLE_PLATFORMS);
+    if (context == nullptr) return YDS_ERROR_RETURN(ysError::InvalidParameter);
+    if (!CheckCompatibility(context)) return YDS_ERROR_RETURN(ysError::IncompatiblePlatforms);
 
     ysD3D11Context *d3d11Context = static_cast<ysD3D11Context *>(context);
     ysWindow *window = context->GetWindow();
@@ -350,7 +350,7 @@ ysError ysD3D11Device::SetContextMode(ysRenderingContext *context, ysRenderingCo
         result = d3d11Context->m_swapChain->SetFullscreenState(TRUE, nullptr);
 
         if (FAILED(result)) {
-            return YDS_ERROR_RETURN(ysError::YDS_COULD_NOT_ENTER_FULLSCREEN);
+            return YDS_ERROR_RETURN(ysError::CouldNotEnterFullscreen);
         }
     }
 
@@ -359,63 +359,63 @@ ysError ysD3D11Device::SetContextMode(ysRenderingContext *context, ysRenderingCo
         result = d3d11Context->m_swapChain->SetFullscreenState(FALSE, nullptr);
 
         if (FAILED(result)) {
-            return YDS_ERROR_RETURN(ysError::YDS_COULD_NOT_EXIT_FULLSCREEN);
+            return YDS_ERROR_RETURN(ysError::CouldNotExitFullscreen);
         }
     }
 
     YDS_NESTED_ERROR_CALL(ysDevice::SetContextMode(context, mode));
 
-    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+    return YDS_ERROR_RETURN(ysError::None);
 }
 
 ysError ysD3D11Device::CreateOnScreenRenderTarget(ysRenderTarget **newTarget, ysRenderingContext *context, bool depthBuffer) {
     YDS_ERROR_DECLARE("CreateOnScreenRenderTarget");
 
-    if (newTarget == nullptr) return YDS_ERROR_RETURN(ysError::YDS_INVALID_PARAMETER);
+    if (newTarget == nullptr) return YDS_ERROR_RETURN(ysError::InvalidParameter);
     *newTarget = nullptr;
 
-    if (context == nullptr) return YDS_ERROR_RETURN(ysError::YDS_INVALID_PARAMETER);
-    if (context->GetAttachedRenderTarget() != nullptr) return YDS_ERROR_RETURN(ysError::YDS_CONTEXT_ALREADY_HAS_RENDER_TARGET);
+    if (context == nullptr) return YDS_ERROR_RETURN(ysError::InvalidParameter);
+    if (context->GetAttachedRenderTarget() != nullptr) return YDS_ERROR_RETURN(ysError::ContextAlreadyHasRenderTarget);
 
     ysD3D11RenderTarget *newRenderTarget = m_renderTargets.NewGeneric<ysD3D11RenderTarget>();
 
     ysError result = CreateD3D11OnScreenRenderTarget(newRenderTarget, context, depthBuffer);
 
-    if (result != ysError::YDS_NO_ERROR) {
+    if (result != ysError::None) {
         m_renderTargets.Delete(newRenderTarget->GetIndex());
         return YDS_ERROR_RETURN(result);
     }
 
     *newTarget = static_cast<ysRenderTarget *>(newRenderTarget);
 
-    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+    return YDS_ERROR_RETURN(ysError::None);
 }
 
 ysError ysD3D11Device::CreateOffScreenRenderTarget(ysRenderTarget **newTarget, int width, int height, ysRenderTarget::Format format, bool colorData, bool depthBuffer) {
     YDS_ERROR_DECLARE("CreateOffScreenRenderTarget");
 
-    if (newTarget == nullptr) return YDS_ERROR_RETURN(ysError::YDS_INVALID_PARAMETER);
+    if (newTarget == nullptr) return YDS_ERROR_RETURN(ysError::InvalidParameter);
     *newTarget = nullptr;
 
     ysD3D11RenderTarget *d3d11Target = m_renderTargets.NewGeneric<ysD3D11RenderTarget>();
 
     ysError result = CreateD3D11OffScreenRenderTarget(d3d11Target, width, height, format, colorData, depthBuffer);
 
-    if (result != ysError::YDS_NO_ERROR) {
+    if (result != ysError::None) {
         m_renderTargets.Delete(d3d11Target->GetIndex());
         return YDS_ERROR_RETURN(result);
     }
 
     *newTarget = static_cast<ysRenderTarget *>(d3d11Target);
 
-    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+    return YDS_ERROR_RETURN(ysError::None);
 }
 
 ysError ysD3D11Device::CreateSubRenderTarget(ysRenderTarget **newTarget, ysRenderTarget *parent, int x, int y, int width, int height) {
     YDS_ERROR_DECLARE("CreateSubRenderTarget");
 
-    if (newTarget == nullptr) return YDS_ERROR_RETURN(ysError::YDS_INVALID_PARAMETER);
-    if (parent->GetType() == ysRenderTarget::Type::Subdivision) return YDS_ERROR_RETURN(ysError::YDS_INVALID_PARAMETER);
+    if (newTarget == nullptr) return YDS_ERROR_RETURN(ysError::InvalidParameter);
+    if (parent->GetType() == ysRenderTarget::Type::Subdivision) return YDS_ERROR_RETURN(ysError::InvalidParameter);
 
     ysD3D11RenderTarget *newRenderTarget = m_renderTargets.NewGeneric<ysD3D11RenderTarget>();
 
@@ -434,7 +434,7 @@ ysError ysD3D11Device::CreateSubRenderTarget(ysRenderTarget **newTarget, ysRende
 
     *newTarget = static_cast<ysRenderTarget *>(newRenderTarget);
 
-    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+    return YDS_ERROR_RETURN(ysError::None);
 }
 
 ysError ysD3D11Device::SetRenderTarget(ysRenderTarget *target) {
@@ -476,7 +476,7 @@ ysError ysD3D11Device::SetRenderTarget(ysRenderTarget *target) {
 
     YDS_NESTED_ERROR_CALL(ysDevice::SetRenderTarget(target));
 
-    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+    return YDS_ERROR_RETURN(ysError::None);
 }
 
 ysError ysD3D11Device::SetDepthTestEnabled(ysRenderTarget *target, bool enable) {
@@ -489,7 +489,7 @@ ysError ysD3D11Device::SetDepthTestEnabled(ysRenderTarget *target, bool enable) 
         SetRenderTarget(target);
     }
 
-    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+    return YDS_ERROR_RETURN(ysError::None);
 }
 
 ysError ysD3D11Device::ResizeRenderTarget(ysRenderTarget *target, int width, int height) {
@@ -521,13 +521,13 @@ ysError ysD3D11Device::ResizeRenderTarget(ysRenderTarget *target, int width, int
         SetRenderTarget(target);
     }
 
-    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+    return YDS_ERROR_RETURN(ysError::None);
 }
 
 ysError ysD3D11Device::DestroyRenderTarget(ysRenderTarget *&target) {
     YDS_ERROR_DECLARE("DestroyRenderTarget");
 
-    if (target == nullptr) return YDS_ERROR_RETURN(ysError::YDS_INVALID_PARAMETER);
+    if (target == nullptr) return YDS_ERROR_RETURN(ysError::InvalidParameter);
 
     if (target == m_activeRenderTarget) {
         YDS_NESTED_ERROR_CALL(SetRenderTarget(nullptr));
@@ -536,37 +536,37 @@ ysError ysD3D11Device::DestroyRenderTarget(ysRenderTarget *&target) {
     YDS_NESTED_ERROR_CALL(DestroyD3D11RenderTarget(target));
     YDS_NESTED_ERROR_CALL(ysDevice::DestroyRenderTarget(target));
 
-    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+    return YDS_ERROR_RETURN(ysError::None);
 }
 
 ysError ysD3D11Device::ClearBuffers(const float *clearColor) {
     YDS_ERROR_DECLARE("ClearBuffers");
 
-    if (GetDevice() == nullptr) return YDS_ERROR_RETURN(ysError::YDS_NO_DEVICE);
+    if (GetDevice() == nullptr) return YDS_ERROR_RETURN(ysError::NoDevice);
 
     if (m_activeRenderTarget != nullptr) {
         ysD3D11RenderTarget *renderTarget = static_cast<ysD3D11RenderTarget *>(m_activeRenderTarget);
         if (renderTarget->HasColorData()) GetImmediateContext()->ClearRenderTargetView(renderTarget->m_renderTargetView, clearColor);
         if (renderTarget->HasDepthBuffer()) GetImmediateContext()->ClearDepthStencilView(renderTarget->m_depthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
 
-        return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+        return YDS_ERROR_RETURN(ysError::None);
     }
 
-    return YDS_ERROR_RETURN(ysError::YDS_NO_RENDER_TARGET);
+    return YDS_ERROR_RETURN(ysError::NoRenderTarget);
 }
 
 ysError ysD3D11Device::Present() {
     YDS_ERROR_DECLARE("Present");
 
-    if (m_activeContext == nullptr) return YDS_ERROR_RETURN(ysError::YDS_NO_CONTEXT);
-    if (m_activeRenderTarget->GetType() == ysRenderTarget::Type::Subdivision) return YDS_ERROR_RETURN(ysError::YDS_INVALID_OPERATION);
+    if (m_activeContext == nullptr) return YDS_ERROR_RETURN(ysError::NoContext);
+    if (m_activeRenderTarget->GetType() == ysRenderTarget::Type::Subdivision) return YDS_ERROR_RETURN(ysError::InvalidOperation);
 
     ysD3D11Context *context = static_cast<ysD3D11Context *>(m_activeContext);
-    if (context->m_swapChain == nullptr) return YDS_ERROR_RETURN(ysError::YDS_NO_CONTEXT);
+    if (context->m_swapChain == nullptr) return YDS_ERROR_RETURN(ysError::NoContext);
 
     context->m_swapChain->Present(1, 0);
 
-    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+    return YDS_ERROR_RETURN(ysError::None);
 }
 
 // Vertex Buffers
@@ -574,7 +574,7 @@ ysError ysD3D11Device::Present() {
 ysError ysD3D11Device::CreateVertexBuffer(ysGPUBuffer **newBuffer, int size, char *data, bool mirrorToRam) {
     YDS_ERROR_DECLARE("CreateVertexBuffer");
 
-    if (newBuffer == nullptr) return YDS_ERROR_RETURN(ysError::YDS_INVALID_PARAMETER);
+    if (newBuffer == nullptr) return YDS_ERROR_RETURN(ysError::InvalidParameter);
     *newBuffer = nullptr;
 
     D3D11_BUFFER_DESC bd;
@@ -597,7 +597,7 @@ ysError ysD3D11Device::CreateVertexBuffer(ysGPUBuffer **newBuffer, int size, cha
     if (data == nullptr) result = m_device->CreateBuffer(&bd, nullptr, &buffer);
     else result = result = m_device->CreateBuffer(&bd, pInitData, &buffer);
     if (FAILED(result)) {
-        return YDS_ERROR_RETURN(ysError::YDS_COULD_NOT_CREATE_GPU_BUFFER);
+        return YDS_ERROR_RETURN(ysError::CouldNotCreateGpuBuffer);
     }
 
     D3D11SetDebugName(buffer, "VERTEX_BUFFER");
@@ -619,13 +619,13 @@ ysError ysD3D11Device::CreateVertexBuffer(ysGPUBuffer **newBuffer, int size, cha
 
     *newBuffer = static_cast<ysGPUBuffer *>(newD3D11Buffer);
 
-    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+    return YDS_ERROR_RETURN(ysError::None);
 }
 
 ysError ysD3D11Device::CreateIndexBuffer(ysGPUBuffer **newBuffer, int size, char *data, bool mirrorToRam) {
     YDS_ERROR_DECLARE("CreateIndexBuffer");
 
-    if (newBuffer == nullptr) return YDS_ERROR_RETURN(ysError::YDS_INVALID_PARAMETER);
+    if (newBuffer == nullptr) return YDS_ERROR_RETURN(ysError::InvalidParameter);
     *newBuffer = nullptr;
 
     D3D11_BUFFER_DESC bd;
@@ -646,7 +646,7 @@ ysError ysD3D11Device::CreateIndexBuffer(ysGPUBuffer **newBuffer, int size, char
     ID3D11Buffer *buffer;
     HRESULT result = m_device->CreateBuffer(&bd, pInitData, &buffer);
     if (FAILED(result)) {
-        return YDS_ERROR_RETURN(ysError::YDS_COULD_NOT_CREATE_GPU_BUFFER);
+        return YDS_ERROR_RETURN(ysError::CouldNotCreateGpuBuffer);
     }
 
     D3D11SetDebugName(buffer, "INDEX_BUFFER");
@@ -668,13 +668,13 @@ ysError ysD3D11Device::CreateIndexBuffer(ysGPUBuffer **newBuffer, int size, char
 
     *newBuffer = static_cast<ysGPUBuffer *>(newD3D11Buffer);
 
-    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+    return YDS_ERROR_RETURN(ysError::None);
 }
 
 ysError ysD3D11Device::CreateConstantBuffer(ysGPUBuffer **newBuffer, int size, char *data, bool mirrorToRam) {
     YDS_ERROR_DECLARE("CreateConstantBuffer");
 
-    if (newBuffer == nullptr) return YDS_ERROR_RETURN(ysError::YDS_INVALID_PARAMETER);
+    if (newBuffer == nullptr) return YDS_ERROR_RETURN(ysError::InvalidParameter);
     *newBuffer = nullptr;
 
     D3D11_BUFFER_DESC bd;
@@ -696,7 +696,7 @@ ysError ysD3D11Device::CreateConstantBuffer(ysGPUBuffer **newBuffer, int size, c
     ID3D11Buffer *buffer;
     result = m_device->CreateBuffer(&bd, pInitData, &buffer);
     if (FAILED(result)) {
-        return YDS_ERROR_RETURN(ysError::YDS_COULD_NOT_CREATE_GPU_BUFFER);
+        return YDS_ERROR_RETURN(ysError::CouldNotCreateGpuBuffer);
     }
 
     D3D11SetDebugName(buffer, "CONSTANT_BUFFER");
@@ -718,13 +718,13 @@ ysError ysD3D11Device::CreateConstantBuffer(ysGPUBuffer **newBuffer, int size, c
         }
     }
 
-    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+    return YDS_ERROR_RETURN(ysError::None);
 }
 
 ysError ysD3D11Device::UseVertexBuffer(ysGPUBuffer *buffer, int stride, int offset) {
     YDS_ERROR_DECLARE("UseVertexBuffer");
 
-    if (!CheckCompatibility(buffer)) return YDS_ERROR_RETURN(ysError::YDS_INCOMPATIBLE_PLATFORMS);
+    if (!CheckCompatibility(buffer)) return YDS_ERROR_RETURN(ysError::IncompatiblePlatforms);
 
     if (buffer != nullptr) {
         UINT uoffset = (UINT)offset;
@@ -748,7 +748,7 @@ ysError ysD3D11Device::UseVertexBuffer(ysGPUBuffer *buffer, int stride, int offs
 ysError ysD3D11Device::UseIndexBuffer(ysGPUBuffer *buffer, int offset) {
     YDS_ERROR_DECLARE("UseIndexBuffer");
 
-    if (!CheckCompatibility(buffer)) return YDS_ERROR_RETURN(ysError::YDS_INCOMPATIBLE_PLATFORMS);
+    if (!CheckCompatibility(buffer)) return YDS_ERROR_RETURN(ysError::IncompatiblePlatforms);
 
     if (buffer) {
         UINT uoffset = (UINT)offset;
@@ -765,13 +765,13 @@ ysError ysD3D11Device::UseIndexBuffer(ysGPUBuffer *buffer, int offset) {
 
     YDS_NESTED_ERROR_CALL(ysDevice::UseIndexBuffer(buffer, offset));
 
-    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+    return YDS_ERROR_RETURN(ysError::None);
 }
 
 ysError ysD3D11Device::UseConstantBuffer(ysGPUBuffer *buffer, int slot) {
     YDS_ERROR_DECLARE("UseConstantBuffer");
 
-    if (!CheckCompatibility(buffer)) return YDS_ERROR_RETURN(ysError::YDS_INCOMPATIBLE_PLATFORMS);
+    if (!CheckCompatibility(buffer)) return YDS_ERROR_RETURN(ysError::IncompatiblePlatforms);
 
     if (buffer) {
         ysD3D11GPUBuffer *d3d11Buffer = static_cast<ysD3D11GPUBuffer *>(buffer);
@@ -786,16 +786,16 @@ ysError ysD3D11Device::UseConstantBuffer(ysGPUBuffer *buffer, int slot) {
 
     YDS_NESTED_ERROR_CALL(ysDevice::UseConstantBuffer(buffer, slot));
 
-    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+    return YDS_ERROR_RETURN(ysError::None);
 }
 
 ysError ysD3D11Device::EditBufferDataRange(ysGPUBuffer *buffer, char *data, int size, int offset) {
     YDS_ERROR_DECLARE("EditBufferDataRange");
 
-    if (!CheckCompatibility(buffer))			return YDS_ERROR_RETURN(ysError::YDS_INCOMPATIBLE_PLATFORMS);
-    if (buffer == nullptr || data == nullptr)			return YDS_ERROR_RETURN(ysError::YDS_INVALID_PARAMETER);
-    if ((size + offset) > buffer->GetSize())	return YDS_ERROR_RETURN(ysError::YDS_OUT_OF_BOUNDS);
-    if (size < 0 || offset < 0)					return YDS_ERROR_RETURN(ysError::YDS_OUT_OF_BOUNDS);
+    if (!CheckCompatibility(buffer))            return YDS_ERROR_RETURN(ysError::IncompatiblePlatforms);
+    if (buffer == nullptr || data == nullptr)            return YDS_ERROR_RETURN(ysError::InvalidParameter);
+    if ((size + offset) > buffer->GetSize())    return YDS_ERROR_RETURN(ysError::OutOfBounds);
+    if (size < 0 || offset < 0)                    return YDS_ERROR_RETURN(ysError::OutOfBounds);
 
     ysD3D11GPUBuffer *d3d11Buffer = static_cast<ysD3D11GPUBuffer *>(buffer);
 
@@ -810,14 +810,14 @@ ysError ysD3D11Device::EditBufferDataRange(ysGPUBuffer *buffer, char *data, int 
 
     YDS_NESTED_ERROR_CALL(ysDevice::EditBufferDataRange(buffer, data, size, offset));
 
-    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+    return YDS_ERROR_RETURN(ysError::None);
 }
 
 ysError ysD3D11Device::EditBufferData(ysGPUBuffer *buffer, char *data) {
     YDS_ERROR_DECLARE("EditBufferData");
 
-    if (!CheckCompatibility(buffer))		return YDS_ERROR_RETURN(ysError::YDS_INCOMPATIBLE_PLATFORMS);
-    if (buffer == nullptr || data == nullptr)		return YDS_ERROR_RETURN(ysError::YDS_INVALID_PARAMETER);
+    if (!CheckCompatibility(buffer))        return YDS_ERROR_RETURN(ysError::IncompatiblePlatforms);
+    if (buffer == nullptr || data == nullptr)        return YDS_ERROR_RETURN(ysError::InvalidParameter);
 
     ysD3D11GPUBuffer *d3d11Buffer = static_cast<ysD3D11GPUBuffer *>(buffer);
 
@@ -825,14 +825,14 @@ ysError ysD3D11Device::EditBufferData(ysGPUBuffer *buffer, char *data) {
 
     YDS_NESTED_ERROR_CALL(ysDevice::EditBufferData(buffer, data));
 
-    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+    return YDS_ERROR_RETURN(ysError::None);
 }
 
 ysError ysD3D11Device::DestroyGPUBuffer(ysGPUBuffer *&buffer) {
     YDS_ERROR_DECLARE("DestroyGPUBuffer");
 
-    if (!CheckCompatibility(buffer))	return YDS_ERROR_RETURN(ysError::YDS_INCOMPATIBLE_PLATFORMS);
-    if (buffer == nullptr)					return YDS_ERROR_RETURN(ysError::YDS_INVALID_PARAMETER);
+    if (!CheckCompatibility(buffer))    return YDS_ERROR_RETURN(ysError::IncompatiblePlatforms);
+    if (buffer == nullptr)                    return YDS_ERROR_RETURN(ysError::InvalidParameter);
 
     ysD3D11GPUBuffer *d3d11Buffer = static_cast<ysD3D11GPUBuffer *>(buffer);
 
@@ -867,18 +867,18 @@ ysError ysD3D11Device::DestroyGPUBuffer(ysGPUBuffer *&buffer) {
 
     YDS_NESTED_ERROR_CALL(ysDevice::DestroyGPUBuffer(buffer));
 
-    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+    return YDS_ERROR_RETURN(ysError::None);
 }
 
 // Shaders
 ysError ysD3D11Device::CreateVertexShader(ysShader **newShader, const char *shaderFilename, const char *shaderName) {
     YDS_ERROR_DECLARE("CreateVertexShader");
 
-    if (newShader == nullptr) return YDS_ERROR_RETURN(ysError::YDS_INVALID_PARAMETER);
+    if (newShader == nullptr) return YDS_ERROR_RETURN(ysError::InvalidParameter);
     *newShader = nullptr;
 
-    if (shaderFilename == nullptr) return YDS_ERROR_RETURN(ysError::YDS_INVALID_PARAMETER);
-    if (shaderName == nullptr) return YDS_ERROR_RETURN(ysError::YDS_INVALID_PARAMETER);
+    if (shaderFilename == nullptr) return YDS_ERROR_RETURN(ysError::InvalidParameter);
+    if (shaderName == nullptr) return YDS_ERROR_RETURN(ysError::InvalidParameter);
 
     ID3D11VertexShader *vertexShader;
     ID3D10Blob *error;
@@ -888,14 +888,14 @@ ysError ysD3D11Device::CreateVertexShader(ysShader **newShader, const char *shad
     result = D3DX11CompileFromFile(shaderFilename, nullptr, nullptr, shaderName, "vs_4_0", D3D10_SHADER_ENABLE_STRICTNESS, 0, nullptr, &shaderBlob, &error, nullptr);
 
     if (FAILED(result)) {
-        return YDS_ERROR_RETURN_MSG(ysError::YDS_VERTEX_SHADER_COMPILATION_ERROR, (char *)error->GetBufferPointer());
+        return YDS_ERROR_RETURN_MSG(ysError::VertexShaderCompilationError, (char *)error->GetBufferPointer());
     }
 
     result = m_device->CreateVertexShader(shaderBlob->GetBufferPointer(), shaderBlob->GetBufferSize(), nullptr, &vertexShader);
     if (FAILED(result)) {
         shaderBlob->Release();
 
-        return YDS_ERROR_RETURN(ysError::YDS_COULD_NOT_CREATE_SHADER);
+        return YDS_ERROR_RETURN(ysError::CouldNotCreateShader);
     }
 
     ysD3D11Shader *newD3D11Shader = m_shaders.NewGeneric<ysD3D11Shader>();
@@ -910,17 +910,17 @@ ysError ysD3D11Device::CreateVertexShader(ysShader **newShader, const char *shad
 
     *newShader = static_cast<ysShader *>(newD3D11Shader);
 
-    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+    return YDS_ERROR_RETURN(ysError::None);
 }
 
 ysError ysD3D11Device::CreatePixelShader(ysShader **newShader, const char *shaderFilename, const char *shaderName) {
     YDS_ERROR_DECLARE("CreatePixelShader");
 
-    if (newShader == nullptr) return YDS_ERROR_RETURN(ysError::YDS_INVALID_PARAMETER);
+    if (newShader == nullptr) return YDS_ERROR_RETURN(ysError::InvalidParameter);
     *newShader = nullptr;
 
-    if (shaderFilename == nullptr) return YDS_ERROR_RETURN(ysError::YDS_INVALID_PARAMETER);
-    if (shaderName == nullptr) return YDS_ERROR_RETURN(ysError::YDS_INVALID_PARAMETER);
+    if (shaderFilename == nullptr) return YDS_ERROR_RETURN(ysError::InvalidParameter);
+    if (shaderName == nullptr) return YDS_ERROR_RETURN(ysError::InvalidParameter);
 
     ID3D11PixelShader *pixelShader;
     ID3D10Blob *error;
@@ -930,13 +930,13 @@ ysError ysD3D11Device::CreatePixelShader(ysShader **newShader, const char *shade
     result = D3DX11CompileFromFile(shaderFilename, nullptr, nullptr, shaderName, "ps_4_0", D3D10_SHADER_ENABLE_STRICTNESS, 0, nullptr, &shaderBlob, &error, nullptr);
 
     if (FAILED(result)) {
-        return YDS_ERROR_RETURN_MSG(ysError::YDS_FRAGMENT_SHADER_COMPILATION_ERROR, (char *)error->GetBufferPointer());
+        return YDS_ERROR_RETURN_MSG(ysError::FragmentShaderCompilationError, (char *)error->GetBufferPointer());
     }
 
     result = m_device->CreatePixelShader(shaderBlob->GetBufferPointer(), shaderBlob->GetBufferSize(), nullptr, &pixelShader);
     if (FAILED(result)) {
         shaderBlob->Release();
-        return YDS_ERROR_RETURN(ysError::YDS_COULD_NOT_CREATE_SHADER);
+        return YDS_ERROR_RETURN(ysError::CouldNotCreateShader);
     }
 
     ysD3D11Shader *newD3D11Shader = m_shaders.NewGeneric<ysD3D11Shader>();
@@ -974,14 +974,14 @@ ysError ysD3D11Device::CreatePixelShader(ysShader **newShader, const char *shade
 
     // END TEMP ----------------------------------------------------
 
-    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+    return YDS_ERROR_RETURN(ysError::None);
 }
 
 ysError ysD3D11Device::DestroyShader(ysShader *&shader) {
     YDS_ERROR_DECLARE("DestroyShader");
 
-    if (!CheckCompatibility(shader)) return YDS_ERROR_RETURN(ysError::YDS_INCOMPATIBLE_PLATFORMS);
-    if (shader == nullptr) return YDS_ERROR_RETURN(ysError::YDS_INVALID_PARAMETER);
+    if (!CheckCompatibility(shader)) return YDS_ERROR_RETURN(ysError::IncompatiblePlatforms);
+    if (shader == nullptr) return YDS_ERROR_RETURN(ysError::InvalidParameter);
 
     ysD3D11Shader *d3d11Shader = static_cast<ysD3D11Shader *>(shader);
     bool active = (m_activeShaderProgram != nullptr) && (m_activeShaderProgram->GetShader(shader->GetShaderType()) == shader);
@@ -1005,7 +1005,7 @@ ysError ysD3D11Device::DestroyShader(ysShader *&shader) {
 
     YDS_NESTED_ERROR_CALL(ysDevice::DestroyShader(shader));
 
-    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+    return YDS_ERROR_RETURN(ysError::None);
 }
 
 ysError ysD3D11Device::DestroyShaderProgram(ysShaderProgram *&program, bool destroyShaders) {
@@ -1013,19 +1013,19 @@ ysError ysD3D11Device::DestroyShaderProgram(ysShaderProgram *&program, bool dest
 
     YDS_NESTED_ERROR_CALL(ysDevice::DestroyShaderProgram(program, destroyShaders));
 
-    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+    return YDS_ERROR_RETURN(ysError::None);
 }
 
 ysError ysD3D11Device::CreateShaderProgram(ysShaderProgram **newProgram) {
     YDS_ERROR_DECLARE("CreateShaderProgram");
 
-    if (newProgram == nullptr) return YDS_ERROR_RETURN(ysError::YDS_INVALID_PARAMETER);
+    if (newProgram == nullptr) return YDS_ERROR_RETURN(ysError::InvalidParameter);
     *newProgram = nullptr;
 
     ysD3D11ShaderProgram *newD3D11Program = m_shaderPrograms.NewGeneric<ysD3D11ShaderProgram>();
     *newProgram = static_cast<ysShaderProgram *>(newD3D11Program);
 
-    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+    return YDS_ERROR_RETURN(ysError::None);
 }
 
 ysError ysD3D11Device::AttachShader(ysShaderProgram *program, ysShader *shader) {
@@ -1033,7 +1033,7 @@ ysError ysD3D11Device::AttachShader(ysShaderProgram *program, ysShader *shader) 
 
     YDS_NESTED_ERROR_CALL(ysDevice::AttachShader(program, shader));
 
-    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+    return YDS_ERROR_RETURN(ysError::None);
 }
 
 ysError ysD3D11Device::LinkProgram(ysShaderProgram *program) {
@@ -1041,20 +1041,20 @@ ysError ysD3D11Device::LinkProgram(ysShaderProgram *program) {
 
     YDS_NESTED_ERROR_CALL(ysDevice::LinkProgram(program));
 
-    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+    return YDS_ERROR_RETURN(ysError::None);
 }
 
 ysError ysD3D11Device::UseShaderProgram(ysShaderProgram *program) {
     YDS_ERROR_DECLARE("UseShaderProgram");
 
-    if (!CheckCompatibility(program)) return YDS_ERROR_RETURN(ysError::YDS_INCOMPATIBLE_PLATFORMS);
+    if (!CheckCompatibility(program)) return YDS_ERROR_RETURN(ysError::IncompatiblePlatforms);
 
     ysD3D11ShaderProgram *d3d11Program = static_cast<ysD3D11ShaderProgram *>(program);
     ysD3D11ShaderProgram *currentProgram = static_cast<ysD3D11ShaderProgram *>(m_activeShaderProgram);
     ysD3D11Shader *vertexShader = (d3d11Program) ? d3d11Program->GetShader(ysShader::ShaderType::Vertex) : nullptr;
     ysD3D11Shader *fragmentShader = (d3d11Program) ? d3d11Program->GetShader(ysShader::ShaderType::Pixel) : nullptr;
 
-    if (d3d11Program == currentProgram) return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+    if (d3d11Program == currentProgram) return YDS_ERROR_RETURN(ysError::None);
 
     ysD3D11Shader *currentVertexShader = (currentProgram) ? currentProgram->GetShader(ysShader::ShaderType::Vertex) : nullptr;
     ysD3D11Shader *currentPixelShader = (currentProgram) ? currentProgram->GetShader(ysShader::ShaderType::Pixel) : nullptr;
@@ -1069,17 +1069,17 @@ ysError ysD3D11Device::UseShaderProgram(ysShaderProgram *program) {
 
     YDS_NESTED_ERROR_CALL(ysDevice::UseShaderProgram(program));
 
-    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+    return YDS_ERROR_RETURN(ysError::None);
 }
 
 ysError ysD3D11Device::CreateInputLayout(ysInputLayout **newInputLayout, ysShader *shader, ysRenderGeometryFormat *format) {
     YDS_ERROR_DECLARE("CreateInputLayout");
 
-    if (newInputLayout == nullptr) return YDS_ERROR_RETURN(ysError::YDS_INVALID_PARAMETER);
+    if (newInputLayout == nullptr) return YDS_ERROR_RETURN(ysError::InvalidParameter);
     *newInputLayout = nullptr;
 
-    if (shader == nullptr || format == nullptr) return YDS_ERROR_RETURN(ysError::YDS_INVALID_PARAMETER);
-    if (!CheckCompatibility(shader)) return YDS_ERROR_RETURN(ysError::YDS_INCOMPATIBLE_PLATFORMS);
+    if (shader == nullptr || format == nullptr) return YDS_ERROR_RETURN(ysError::InvalidParameter);
+    if (!CheckCompatibility(shader)) return YDS_ERROR_RETURN(ysError::IncompatiblePlatforms);
 
     ysD3D11Shader *d3d11Shader = static_cast<ysD3D11Shader *>(shader);
 
@@ -1109,7 +1109,7 @@ ysError ysD3D11Device::CreateInputLayout(ysInputLayout **newInputLayout, ysShade
         &layout);
 
     if (FAILED(result)) {
-        return YDS_ERROR_RETURN(ysError::YDS_INCOMPATIBLE_INPUT_FORMAT);
+        return YDS_ERROR_RETURN(ysError::IncompatibleInputFormat);
     }
 
     ysD3D11InputLayout *newD3D11Layout = m_inputLayouts.NewGeneric<ysD3D11InputLayout>();
@@ -1117,13 +1117,13 @@ ysError ysD3D11Device::CreateInputLayout(ysInputLayout **newInputLayout, ysShade
 
     *newInputLayout = static_cast<ysInputLayout *>(newD3D11Layout);
 
-    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+    return YDS_ERROR_RETURN(ysError::None);
 }
 
 ysError ysD3D11Device::UseInputLayout(ysInputLayout *layout) {
     YDS_ERROR_DECLARE("UseInputLayout");
 
-    if (!CheckCompatibility(layout)) return YDS_ERROR_RETURN(ysError::YDS_INCOMPATIBLE_PLATFORMS);
+    if (!CheckCompatibility(layout)) return YDS_ERROR_RETURN(ysError::IncompatiblePlatforms);
 
     ysD3D11InputLayout *d3d11Layout = static_cast<ysD3D11InputLayout *>(layout);
 
@@ -1138,14 +1138,14 @@ ysError ysD3D11Device::UseInputLayout(ysInputLayout *layout) {
 
     YDS_NESTED_ERROR_CALL(ysDevice::UseInputLayout(layout));
 
-    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+    return YDS_ERROR_RETURN(ysError::None);
 }
 
 ysError ysD3D11Device::DestroyInputLayout(ysInputLayout *&layout) {
     YDS_ERROR_DECLARE("DestroyInputLayout");
 
-    if (layout == nullptr) return YDS_ERROR_RETURN(ysError::YDS_INVALID_PARAMETER);
-    if (!CheckCompatibility(layout)) return YDS_ERROR_RETURN(ysError::YDS_INCOMPATIBLE_PLATFORMS);
+    if (layout == nullptr) return YDS_ERROR_RETURN(ysError::InvalidParameter);
+    if (!CheckCompatibility(layout)) return YDS_ERROR_RETURN(ysError::IncompatiblePlatforms);
 
     if (layout == m_activeInputLayout) {
         UseInputLayout(nullptr);
@@ -1156,15 +1156,15 @@ ysError ysD3D11Device::DestroyInputLayout(ysInputLayout *&layout) {
 
     YDS_NESTED_ERROR_CALL(ysDevice::DestroyInputLayout(layout));
 
-    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+    return YDS_ERROR_RETURN(ysError::None);
 }
 
 // Textures
 ysError ysD3D11Device::CreateTexture(ysTexture **newTexture, const char *fname) {
     YDS_ERROR_DECLARE("CreateTexture");
 
-    if (newTexture == nullptr) return YDS_ERROR_RETURN(ysError::YDS_INVALID_PARAMETER);
-    if (fname == nullptr) return YDS_ERROR_RETURN(ysError::YDS_INVALID_PARAMETER);
+    if (newTexture == nullptr) return YDS_ERROR_RETURN(ysError::InvalidParameter);
+    if (fname == nullptr) return YDS_ERROR_RETURN(ysError::InvalidParameter);
 
     *newTexture = nullptr;
 
@@ -1180,7 +1180,7 @@ ysError ysD3D11Device::CreateTexture(ysTexture **newTexture, const char *fname) 
 
     result = D3DX11CreateTextureFromFile(m_device, fname, nullptr, nullptr, (ID3D11Resource **)&newD3DTexture, nullptr);
     if (FAILED(result)) {
-        return YDS_ERROR_RETURN_MSG(ysError::YDS_COULD_NOT_OPEN_TEXTURE, fname);
+        return YDS_ERROR_RETURN_MSG(ysError::CouldNotOpenTexture, fname);
     }
 
     newD3DTexture->GetDesc(&desc);
@@ -1192,7 +1192,7 @@ ysError ysD3D11Device::CreateTexture(ysTexture **newTexture, const char *fname) 
 
     result = m_device->CreateShaderResourceView(newD3DTexture, &srvDesc, &resourceView);
     if (FAILED(result)) {
-        return YDS_ERROR_RETURN(ysError::YDS_COULD_NOT_MAKE_SHADER_RESOURCE_VIEW);
+        return YDS_ERROR_RETURN(ysError::CouldNotMakeShaderResourceView);
     }
 
     ysD3D11Texture *newD3D11Texture = m_textures.NewGeneric<ysD3D11Texture>();
@@ -1203,7 +1203,7 @@ ysError ysD3D11Device::CreateTexture(ysTexture **newTexture, const char *fname) 
 
     newD3DTexture->Release();
 
-    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+    return YDS_ERROR_RETURN(ysError::None);
 }
 
 ysError ysD3D11Device::CreateAlphaTexture(ysTexture **texture, int width, int height, const unsigned char *buffer) {
@@ -1232,7 +1232,7 @@ ysError ysD3D11Device::CreateAlphaTexture(ysTexture **texture, int width, int he
     result = m_device->CreateTexture2D(&desc, &data, &newD3DTexture);
 
     if (FAILED(result)) {
-        return YDS_ERROR_RETURN(ysError::YDS_INVALID_OPERATION);
+        return YDS_ERROR_RETURN(ysError::InvalidOperation);
     }
 
     D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc;
@@ -1245,7 +1245,7 @@ ysError ysD3D11Device::CreateAlphaTexture(ysTexture **texture, int width, int he
     ID3D11ShaderResourceView *resourceView = nullptr;
     result = m_device->CreateShaderResourceView(newD3DTexture, &srvDesc, &resourceView);
     if (FAILED(result)) {
-        return YDS_ERROR_RETURN(ysError::YDS_COULD_NOT_MAKE_SHADER_RESOURCE_VIEW);
+        return YDS_ERROR_RETURN(ysError::CouldNotMakeShaderResourceView);
     }
 
     ysD3D11Texture *newD3D11Texture = m_textures.NewGeneric<ysD3D11Texture>();
@@ -1256,13 +1256,13 @@ ysError ysD3D11Device::CreateAlphaTexture(ysTexture **texture, int width, int he
         
     newD3DTexture->Release();
 
-    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+    return YDS_ERROR_RETURN(ysError::None);
 }
 
 ysError ysD3D11Device::UseTexture(ysTexture *texture, int slot) {
     YDS_ERROR_DECLARE("UseTexture");
 
-    if (slot >= m_maxTextureSlots) return YDS_ERROR_RETURN(ysError::YDS_OUT_OF_BOUNDS);
+    if (slot >= m_maxTextureSlots) return YDS_ERROR_RETURN(ysError::OutOfBounds);
 
     ysD3D11Texture *d3d11Texture = static_cast<ysD3D11Texture *>(texture);
 
@@ -1273,13 +1273,13 @@ ysError ysD3D11Device::UseTexture(ysTexture *texture, int slot) {
 
     YDS_NESTED_ERROR_CALL(ysDevice::UseTexture(texture, slot));
 
-    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+    return YDS_ERROR_RETURN(ysError::None);
 }
 
 ysError ysD3D11Device::UseRenderTargetAsTexture(ysRenderTarget *texture, int slot) {
     YDS_ERROR_DECLARE("UseTexture");
 
-    if (slot >= m_maxTextureSlots) return YDS_ERROR_RETURN(ysError::YDS_OUT_OF_BOUNDS);
+    if (slot >= m_maxTextureSlots) return YDS_ERROR_RETURN(ysError::OutOfBounds);
 
     ysD3D11RenderTarget *d3d11Texture = static_cast<ysD3D11RenderTarget *>(texture);
 
@@ -1290,13 +1290,13 @@ ysError ysD3D11Device::UseRenderTargetAsTexture(ysRenderTarget *texture, int slo
 
     YDS_NESTED_ERROR_CALL(ysDevice::UseRenderTargetAsTexture(texture, slot));
 
-    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+    return YDS_ERROR_RETURN(ysError::None);
 }
 
 ysError ysD3D11Device::DestroyTexture(ysTexture *&texture) {
     YDS_ERROR_DECLARE("DestroyTexture");
 
-    if (texture == nullptr) return YDS_ERROR_RETURN(ysError::YDS_INVALID_PARAMETER);
+    if (texture == nullptr) return YDS_ERROR_RETURN(ysError::InvalidParameter);
 
     ysD3D11Texture *d3d11Texture = static_cast<ysD3D11Texture *>(texture);
 
@@ -1311,7 +1311,7 @@ ysError ysD3D11Device::DestroyTexture(ysTexture *&texture) {
 
     YDS_NESTED_ERROR_CALL(ysDevice::DestroyTexture(texture));
 
-    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+    return YDS_ERROR_RETURN(ysError::None);
 }
 
 void ysD3D11Device::Draw(int numFaces, int indexOffset, int vertexOffset) {
@@ -1349,7 +1349,7 @@ DXGI_FORMAT ysD3D11Device::ConvertInputLayoutFormat(ysRenderGeometryChannel::Cha
 ysError ysD3D11Device::CreateD3D11DepthStencilView(ID3D11DepthStencilView **newDepthStencil, ID3D11ShaderResourceView **shaderResourceView, int width, int height, int count, int quality, bool shaderResource) {
     YDS_ERROR_DECLARE("CreateD3D11DepthBuffer");
 
-    if (newDepthStencil == nullptr) return YDS_ERROR_RETURN(ysError::YDS_INVALID_PARAMETER);
+    if (newDepthStencil == nullptr) return YDS_ERROR_RETURN(ysError::InvalidParameter);
     *newDepthStencil = nullptr;
 
     HRESULT result;
@@ -1380,7 +1380,7 @@ ysError ysD3D11Device::CreateD3D11DepthStencilView(ID3D11DepthStencilView **newD
     result = m_device->CreateTexture2D(&descDepth, nullptr, &depthBuffer);
 
     if (FAILED(result)) {
-        return YDS_ERROR_RETURN(ysError::YDS_COULD_NOT_CREATE_DEPTH_BUFFER);
+        return YDS_ERROR_RETURN(ysError::CouldNotCreateDepthBuffer);
     }
 
     D3D11_DEPTH_STENCIL_VIEW_DESC descDSV;
@@ -1399,21 +1399,21 @@ ysError ysD3D11Device::CreateD3D11DepthStencilView(ID3D11DepthStencilView **newD
     depthBuffer->Release();
 
     if (FAILED(result)) {
-        return YDS_ERROR_RETURN(ysError::YDS_COULD_NOT_CREATE_DEPTH_BUFFER);
+        return YDS_ERROR_RETURN(ysError::CouldNotCreateDepthBuffer);
     }
 
-    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+    return YDS_ERROR_RETURN(ysError::None);
 }
 
 ysError ysD3D11Device::DestroyD3D11DepthStencilView(ID3D11DepthStencilView *&depthStencil) {
     YDS_ERROR_DECLARE("DestroyD3D11DepthBuffer");
 
-    if (depthStencil == nullptr) return YDS_ERROR_RETURN(ysError::YDS_INVALID_PARAMETER);
+    if (depthStencil == nullptr) return YDS_ERROR_RETURN(ysError::InvalidParameter);
 
     depthStencil->Release();
     depthStencil = nullptr;
 
-    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+    return YDS_ERROR_RETURN(ysError::None);
 }
 
 ysError ysD3D11Device::CreateD3D11OnScreenRenderTarget(ysRenderTarget *newTarget, ysRenderingContext *context, bool depthBuffer) {
@@ -1428,14 +1428,14 @@ ysError ysD3D11Device::CreateD3D11OnScreenRenderTarget(ysRenderTarget *newTarget
 
     result = d3d11Context->m_swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID *)(&backBuffer));
     if (FAILED(result)) {
-        return YDS_ERROR_RETURN(ysError::YDS_COULD_NOT_GET_BACK_BUFFER);
+        return YDS_ERROR_RETURN(ysError::CouldNotGetBackBuffer);
     }
 
     result = m_device->CreateRenderTargetView(backBuffer, nullptr, &newRenderTargetView);
     backBuffer->Release();
 
     if (FAILED(result)) {
-        return YDS_ERROR_RETURN(ysError::YDS_COULD_NOT_CREATE_RENDER_TARGET);
+        return YDS_ERROR_RETURN(ysError::CouldNotCreateRenderTarget);
     }
 
     // Create Depth Buffer
@@ -1445,7 +1445,7 @@ ysError ysD3D11Device::CreateD3D11OnScreenRenderTarget(ysRenderTarget *newTarget
                 &newDepthStencilView, nullptr, context->GetWindow()->GetScreenWidth(), context->GetWindow()->GetScreenHeight(),
                 m_multisampleCount, m_multisampleQuality, false);
 
-        if (depthResult != ysError::YDS_NO_ERROR) {
+        if (depthResult != ysError::None) {
             newRenderTargetView->Release();
             return YDS_ERROR_RETURN(depthResult);
         }
@@ -1468,7 +1468,7 @@ ysError ysD3D11Device::CreateD3D11OnScreenRenderTarget(ysRenderTarget *newTarget
     newRenderTarget->m_depthStencilView = newDepthStencilView;
     newRenderTarget->m_resourceView = nullptr;
 
-    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+    return YDS_ERROR_RETURN(ysError::None);
 }
 
 ysError ysD3D11Device::CreateD3D11OffScreenRenderTarget(
@@ -1516,7 +1516,7 @@ ysError ysD3D11Device::CreateD3D11OffScreenRenderTarget(
         result = m_device->CreateTexture2D(&descBuffer, nullptr, &renderTarget);
 
         if (FAILED(result)) {
-            return YDS_ERROR_RETURN(ysError::YDS_COULD_NOT_CREATE_RENDER_TARGET);
+            return YDS_ERROR_RETURN(ysError::CouldNotCreateRenderTarget);
         }
 
         // Create the render target view
@@ -1529,7 +1529,7 @@ ysError ysD3D11Device::CreateD3D11OffScreenRenderTarget(
         result = m_device->CreateRenderTargetView(renderTarget, &rtDesc, &newRenderTargetView);
 
         if (FAILED(result)) {
-            return YDS_ERROR_RETURN(ysError::YDS_COULD_NOT_CREATE_RENDER_TARGET);
+            return YDS_ERROR_RETURN(ysError::CouldNotCreateRenderTarget);
         }
 
         // Create the shader resource view
@@ -1543,7 +1543,7 @@ ysError ysD3D11Device::CreateD3D11OffScreenRenderTarget(
         result = m_device->CreateShaderResourceView(renderTarget, &srDesc, &shaderResourceView);
 
         if (FAILED(result)) {
-            return YDS_ERROR_RETURN(ysError::YDS_COULD_NOT_CREATE_RENDER_TARGET);
+            return YDS_ERROR_RETURN(ysError::CouldNotCreateRenderTarget);
         }
 
         renderTarget->Release();
@@ -1556,7 +1556,7 @@ ysError ysD3D11Device::CreateD3D11OffScreenRenderTarget(
         if (!colorData) depthResult = CreateD3D11DepthStencilView(&newDepthStencil, &shaderResourceView, width, height, 1, 0, true);
         else depthResult = CreateD3D11DepthStencilView(&newDepthStencil, nullptr, width, height, 1, 0, false);
 
-        if (depthResult != ysError::YDS_NO_ERROR) {
+        if (depthResult != ysError::None) {
             if (newRenderTargetView != nullptr) newRenderTargetView->Release();
             return YDS_ERROR_RETURN(depthResult);
         }
@@ -1581,7 +1581,7 @@ ysError ysD3D11Device::CreateD3D11OffScreenRenderTarget(
     newRenderTarget->m_depthStencilView = newDepthStencil;
     newRenderTarget->m_resourceView = shaderResourceView;
 
-    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+    return YDS_ERROR_RETURN(ysError::None);
 }
 
 ysError ysD3D11Device::DestroyD3D11RenderTarget(ysRenderTarget *target) {
@@ -1596,5 +1596,5 @@ ysError ysD3D11Device::DestroyD3D11RenderTarget(ysRenderTarget *target) {
     d3d11Target->m_depthStencilView = nullptr;
     d3d11Target->m_resourceView = nullptr;
 
-    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+    return YDS_ERROR_RETURN(ysError::None);
 }

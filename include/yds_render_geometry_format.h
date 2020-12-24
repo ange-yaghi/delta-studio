@@ -5,22 +5,22 @@
 
 class ysRenderGeometryFormat : public ysObject {
 public:
-	ysRenderGeometryFormat();
-	~ysRenderGeometryFormat();
+    ysRenderGeometryFormat();
+    ~ysRenderGeometryFormat();
 
-	int GetChannelCount() const;
-	int GetFormatSize() const;
+    int GetChannelCount() const;
+    int GetFormatSize() const;
 
-	void AddChannel(const char *name, int offset, ysRenderGeometryChannel::ChannelFormat format);
+    void AddChannel(const char *name, int offset, ysRenderGeometryChannel::ChannelFormat format);
 
-	const ysRenderGeometryChannel *GetChannel(int index) {
-		ysRenderGeometryChannel *channel = m_channels.Get(index); 
-		return (const ysRenderGeometryChannel *)channel;
-	}
+    const ysRenderGeometryChannel *GetChannel(int index) {
+        ysRenderGeometryChannel *channel = m_channels.Get(index); 
+        return (const ysRenderGeometryChannel *)channel;
+    }
 
 protected:
-	ysDynamicArray<ysRenderGeometryChannel, 16> m_channels;
-	int m_formatSize;
+    ysDynamicArray<ysRenderGeometryChannel, 16> m_channels;
+    int m_formatSize;
 };
 
 #endif /* YDS_RENDER_GEOMETRY_FORMAT_H */

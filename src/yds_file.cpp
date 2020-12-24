@@ -1,36 +1,36 @@
 #include "../include/yds_file.h"
 
 ysFile::ysFile() : ysObject("FILE") {
-	m_name[0] = '\0';
+    m_name[0] = '\0';
 }
 
 ysFile::ysFile(const char *fname) : ysObject("FILE") {
-	OpenFile(fname);
+    OpenFile(fname);
 }
 
 ysFile::~ysFile() {
-	if (m_file.is_open()) {
-		m_file.close();
-	}
+    if (m_file.is_open()) {
+        m_file.close();
+    }
 }
 
 ysError ysFile::OpenFile(const char *fname, unsigned int filemode) {
-	YDS_ERROR_DECLARE("OpenFile");
+    YDS_ERROR_DECLARE("OpenFile");
 
-	strcpy_s(m_name, MAX_FILE_NAME_LENGTH, fname);
+    strcpy_s(m_name, MAX_FILE_NAME_LENGTH, fname);
 
-	unsigned int openMode=0;
-	if (filemode & FILE_READ) openMode |= std::ios::in;
-	else openMode |= std::ios::out;
+    unsigned int openMode=0;
+    if (filemode & FILE_READ) openMode |= std::ios::in;
+    else openMode |= std::ios::out;
 
-	if (filemode & FILE_BINARY) openMode |= std::ios::binary;
+    if (filemode & FILE_BINARY) openMode |= std::ios::binary;
 
-	m_file.open(fname, openMode);
-	if (!m_file.is_open()) {
-		return YDS_ERROR_RETURN(ysError::YDS_COULD_NOT_OPEN_FILE);
-	}
+    m_file.open(fname, openMode);
+    if (!m_file.is_open()) {
+        return YDS_ERROR_RETURN(ysError::CouldNotOpenFile);
+    }
 
-	return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+    return YDS_ERROR_RETURN(ysError::None);
 }
 
 void ysFile::CloseFile() {
@@ -40,19 +40,19 @@ void ysFile::CloseFile() {
 }
 
 int ysFile::GetFileLength() {
-	std::streampos fsize = 0;
+    std::streampos fsize = 0;
 
-	m_file.seekg(0, std::ios::beg);
-	fsize = m_file.tellg();
-	m_file.seekg(0, std::ios::end);
-	fsize = m_file.tellg() - fsize;
-	m_file.seekg(0, std::ios::beg);
+    m_file.seekg(0, std::ios::beg);
+    fsize = m_file.tellg();
+    m_file.seekg(0, std::ios::end);
+    fsize = m_file.tellg() - fsize;
+    m_file.seekg(0, std::ios::beg);
 
-	return (int)fsize;
+    return (int)fsize;
 }
 
 void ysFile::ReadFileToBuffer(char *buffer) {
-	int fileLength = GetFileLength();
+    int fileLength = GetFileLength();
 
-	m_file.read(buffer, fileLength);
+    m_file.read(buffer, fileLength);
 }

@@ -13,16 +13,16 @@
 class ysD3D10Context : public ysRenderingContext
 {
 
-	friend class ysD3D10Device;
+    friend class ysD3D10Device;
 
 public:
 
-	ysD3D10Context();
-	virtual ~ysD3D10Context();
+    ysD3D10Context();
+    virtual ~ysD3D10Context();
 
 protected:
 
-	IDXGISwapChain *m_swapChain;
+    IDXGISwapChain *m_swapChain;
 
 };
 

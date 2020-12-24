@@ -34,7 +34,7 @@ ysError ysAudioSource::LockEntireBuffer(void **buffer, SampleOffset *samples) {
     *buffer = nullptr;
     *samples = 0;
 
-    if (m_locked) return YDS_ERROR_RETURN(ysError::YDS_BUFFER_ALREADY_LOCKED);
+    if (m_locked) return YDS_ERROR_RETURN(ysError::BufferAlreadyLocked);
 
     m_lockOffset = 0;
     m_lockSegment1Size = m_bufferSize;
@@ -42,18 +42,18 @@ ysError ysAudioSource::LockEntireBuffer(void **buffer, SampleOffset *samples) {
     *samples = m_bufferSize;
     m_locked = true;
 
-    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+    return YDS_ERROR_RETURN(ysError::None);
 }
 
 ysError ysAudioSource::UnlockBuffer(void *buffer, SampleOffset samples) {
     YDS_ERROR_DECLARE("UnlockBuffer");
 
-    if (!m_locked) return YDS_ERROR_RETURN(ysError::YDS_BUFFER_NOT_LOCKED);
-    if (samples > m_lockSegment1Size) return YDS_ERROR_RETURN(ysError::YDS_OUT_OF_BOUNDS);
+    if (!m_locked) return YDS_ERROR_RETURN(ysError::BufferNotLocked);
+    if (samples > m_lockSegment1Size) return YDS_ERROR_RETURN(ysError::OutOfBounds);
 
     ResetLock();
 
-    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+    return YDS_ERROR_RETURN(ysError::None);
 }
 
 ysError ysAudioSource::LockBufferSegment(
@@ -62,12 +62,12 @@ ysError ysAudioSource::LockBufferSegment(
 {
     YDS_ERROR_DECLARE("LockBufferSegment");
 
-    if (m_locked) return YDS_ERROR_RETURN(ysError::YDS_BUFFER_ALREADY_LOCKED);
+    if (m_locked) return YDS_ERROR_RETURN(ysError::BufferAlreadyLocked);
     if (segment1 == nullptr || segment2 == nullptr || samples == 0) {
-        return YDS_ERROR_RETURN(ysError::YDS_INVALID_PARAMETER);
+        return YDS_ERROR_RETURN(ysError::InvalidParameter);
     }
-    if (samples > m_bufferSize) return YDS_ERROR_RETURN(ysError::YDS_OUT_OF_BOUNDS);
-    if (offset > m_bufferSize) return YDS_ERROR_RETURN(ysError::YDS_OUT_OF_BOUNDS);
+    if (samples > m_bufferSize) return YDS_ERROR_RETURN(ysError::OutOfBounds);
+    if (offset > m_bufferSize) return YDS_ERROR_RETURN(ysError::OutOfBounds);
 
     if (offset + samples > m_bufferSize) {
         m_lockSegment2Size = offset + samples - m_bufferSize;
@@ -80,7 +80,7 @@ ysError ysAudioSource::LockBufferSegment(
     if (size1) *size1 = m_lockSegment1Size;
     if (size2) *size2 = m_lockSegment2Size;
 
-    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+    return YDS_ERROR_RETURN(ysError::None);
 }
 
 ysError ysAudioSource::UnlockBufferSegments(
@@ -89,14 +89,14 @@ ysError ysAudioSource::UnlockBufferSegments(
 {
     YDS_ERROR_DECLARE("UnlockBufferSegments");
 
-    if (!m_locked) return YDS_ERROR_RETURN(ysError::YDS_BUFFER_NOT_LOCKED);
+    if (!m_locked) return YDS_ERROR_RETURN(ysError::BufferNotLocked);
 
-    if (segment1Size > m_lockSegment1Size) return YDS_ERROR_RETURN(ysError::YDS_OUT_OF_BOUNDS);
-    if (segment2Size > m_lockSegment2Size) return YDS_ERROR_RETURN(ysError::YDS_OUT_OF_BOUNDS);
+    if (segment1Size > m_lockSegment1Size) return YDS_ERROR_RETURN(ysError::OutOfBounds);
+    if (segment2Size > m_lockSegment2Size) return YDS_ERROR_RETURN(ysError::OutOfBounds);
 
     ResetLock();
 
-    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+    return YDS_ERROR_RETURN(ysError::None);
 }
 
 ysError ysAudioSource::SetDataBuffer(ysAudioBuffer *buffer) {
@@ -104,7 +104,7 @@ ysError ysAudioSource::SetDataBuffer(ysAudioBuffer *buffer) {
 
     m_dataBuffer = buffer;
 
-    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+    return YDS_ERROR_RETURN(ysError::None);
 }
 
 ysError ysAudioSource::SetMode(Mode mode) {
@@ -112,7 +112,7 @@ ysError ysAudioSource::SetMode(Mode mode) {
 
     m_bufferMode = mode;
 
-    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+    return YDS_ERROR_RETURN(ysError::None);
 }
 
 ysError ysAudioSource::SetVolume(float volume) {
@@ -120,18 +120,18 @@ ysError ysAudioSource::SetVolume(float volume) {
 
     m_volume = volume;
 
-    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+    return YDS_ERROR_RETURN(ysError::None);
 }
 
 ysError ysAudioSource::SetPan(float pan) {
     YDS_ERROR_DECLARE("SetPan");
 
     if (pan > 1.0f || pan < -1.0f)
-        return YDS_ERROR_RETURN(ysError::YDS_OUT_OF_BOUNDS);
+        return YDS_ERROR_RETURN(ysError::OutOfBounds);
 
     m_pan = pan;
 
-    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+    return YDS_ERROR_RETURN(ysError::None);
 }
 
 ysError ysAudioSource::Destroy() {
@@ -139,7 +139,7 @@ ysError ysAudioSource::Destroy() {
 
     /* void */
 
-    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+    return YDS_ERROR_RETURN(ysError::None);
 }
 
 void ysAudioSource::ResetLock() {

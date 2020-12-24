@@ -18,7 +18,7 @@ ysError ysOpenGLWindowsContext::CreateRenderingContext(ysOpenGLDevice *device, y
     YDS_ERROR_DECLARE("CreateRenderingContext");
 
     if (window->GetPlatform() != ysWindowSystemObject::Platform::Windows) {
-        return YDS_ERROR_RETURN(ysError::YDS_INCOMPATIBLE_PLATFORMS);
+        return YDS_ERROR_RETURN(ysError::IncompatiblePlatforms);
     }
 
     GLenum result = glGetError();
@@ -72,10 +72,10 @@ ysError ysOpenGLWindowsContext::CreateRenderingContext(ysOpenGLDevice *device, y
         SetPixelFormat(dummyDeviceHandle, pixelFormat, &pfd);
 
         HGLRC tempContext = wglCreateContext(dummyDeviceHandle);
-        if (tempContext == nullptr) return YDS_ERROR_RETURN(ysError::YDS_COULD_NOT_CREATE_TEMPORARY_CONTEXT);
+        if (tempContext == nullptr) return YDS_ERROR_RETURN(ysError::CouldNotCreateTemporaryContext);
 
         wresult = wglMakeCurrent(dummyDeviceHandle, tempContext);
-        if (wresult == FALSE) return YDS_ERROR_RETURN(ysError::YDS_COULD_NOT_ACTIVATE_TEMPORARY_CONTEXT);
+        if (wresult == FALSE) return YDS_ERROR_RETURN(ysError::CouldNotActivateTemporaryContext);
 
         LoadContextCreationExtension();
 
@@ -111,12 +111,12 @@ ysError ysOpenGLWindowsContext::CreateRenderingContext(ysOpenGLDevice *device, y
         wglDeleteContext(tempContext);
         DestroyWindow(dummyWnd);
 
-        if (hRC == 0) return YDS_ERROR_RETURN(ysError::YDS_COULD_NOT_CREATE_CONTEXT);
+        if (hRC == 0) return YDS_ERROR_RETURN(ysError::CouldNotCreateContext);
 
         wresult = wglMakeCurrent(deviceHandle, hRC);
         if (wresult == FALSE) {
             wglDeleteContext(hRC);
-            return YDS_ERROR_RETURN(ysError::YDS_COULD_NOT_ACTIVATE_CONTEXT);
+            return YDS_ERROR_RETURN(ysError::CouldNotActivateContext);
         }
 
         m_contextHandle = hRC;
@@ -131,7 +131,7 @@ ysError ysOpenGLWindowsContext::CreateRenderingContext(ysOpenGLDevice *device, y
 
     LoadAllExtensions();
 
-    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+    return YDS_ERROR_RETURN(ysError::None);
 }
 
 ysError ysOpenGLWindowsContext::DestroyContext() {
@@ -140,16 +140,16 @@ ysError ysOpenGLWindowsContext::DestroyContext() {
     wglMakeCurrent(NULL, NULL);
     if (m_contextHandle) {
         BOOL result = wglDeleteContext(m_contextHandle);
-        if (result == FALSE) return YDS_ERROR_RETURN(ysError::YDS_COULD_NOT_DESTROY_CONTEXT);
+        if (result == FALSE) return YDS_ERROR_RETURN(ysError::CouldNotDestroyContext);
     }
 
-    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+    return YDS_ERROR_RETURN(ysError::None);
 }
 
 ysError ysOpenGLWindowsContext::TransferContext(ysOpenGLVirtualContext *context) {
     YDS_ERROR_DECLARE("TransferContext");
 
-    if (context->GetPlatform() != ysWindowSystemObject::Platform::Windows) return YDS_ERROR_RETURN(ysError::YDS_INCOMPATIBLE_PLATFORMS);
+    if (context->GetPlatform() != ysWindowSystemObject::Platform::Windows) return YDS_ERROR_RETURN(ysError::IncompatiblePlatforms);
 
     ysOpenGLWindowsContext *windowsContext = static_cast<ysOpenGLWindowsContext *>(context);
     windowsContext->m_contextHandle = m_contextHandle;
@@ -158,7 +158,7 @@ ysError ysOpenGLWindowsContext::TransferContext(ysOpenGLVirtualContext *context)
     m_isRealContext = false;
     m_contextHandle = NULL;
 
-    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+    return YDS_ERROR_RETURN(ysError::None);
 }
 
 ysError ysOpenGLWindowsContext::SetContextMode(ContextMode mode) {
@@ -181,7 +181,7 @@ ysError ysOpenGLWindowsContext::SetContextMode(ContextMode mode) {
 
         result = ChangeDisplaySettingsEx(monitor->GetDeviceName(), &dmScreenSettings, NULL, CDS_FULLSCREEN | CDS_UPDATEREGISTRY, NULL);
         if (result != DISP_CHANGE_SUCCESSFUL) {
-            return YDS_ERROR_RETURN(ysError::YDS_COULD_NOT_ENTER_FULLSCREEN);
+            return YDS_ERROR_RETURN(ysError::CouldNotEnterFullscreen);
         }
     }
     else if (mode == ysRenderingContext::ContextMode::Windowed) {
@@ -189,11 +189,11 @@ ysError ysOpenGLWindowsContext::SetContextMode(ContextMode mode) {
 
         result = ChangeDisplaySettingsEx(NULL, NULL, NULL, 0, NULL);
         if (result != DISP_CHANGE_SUCCESSFUL) {
-            return YDS_ERROR_RETURN(ysError::YDS_COULD_NOT_EXIT_FULLSCREEN);
+            return YDS_ERROR_RETURN(ysError::CouldNotExitFullscreen);
         }
     }
 
-    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+    return YDS_ERROR_RETURN(ysError::None);
 }
 
 ysError ysOpenGLWindowsContext::SetContext(ysRenderingContext *realContext) {
@@ -204,13 +204,13 @@ ysError ysOpenGLWindowsContext::SetContext(ysRenderingContext *realContext) {
 
     if (realContext != nullptr) {
         result = wglMakeCurrent(m_deviceHandle, realOpenglContext->m_contextHandle);
-        if (result == FALSE) return YDS_ERROR_RETURN(ysError::YDS_COULD_NOT_ACTIVATE_CONTEXT);
+        if (result == FALSE) return YDS_ERROR_RETURN(ysError::CouldNotActivateContext);
     }
     else {
         wglMakeCurrent(NULL, NULL);
     }
 
-    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+    return YDS_ERROR_RETURN(ysError::None);
 }
 
 ysError ysOpenGLWindowsContext::Present() {
@@ -219,9 +219,9 @@ ysError ysOpenGLWindowsContext::Present() {
     BOOL result = TRUE;
     result = SwapBuffers(m_deviceHandle);
 
-    if (result == FALSE) return YDS_ERROR_RETURN(ysError::YDS_BUFFER_SWAP_ERROR);
+    if (result == FALSE) return YDS_ERROR_RETURN(ysError::BufferSwapError);
 
-    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+    return YDS_ERROR_RETURN(ysError::None);
 }
 
 void ysOpenGLWindowsContext::LoadContextCreationExtension() {

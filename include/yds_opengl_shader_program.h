@@ -5,16 +5,16 @@
 
 class ysOpenGLShader;
 class ysOpenGLShaderProgram : public ysShaderProgram {
-	friend class ysOpenGLDevice;
+    friend class ysOpenGLDevice;
 
 public:
-	ysOpenGLShaderProgram();
-	~ysOpenGLShaderProgram();
+    ysOpenGLShaderProgram();
+    ~ysOpenGLShaderProgram();
 
 protected:
-	ysOpenGLShader *GetShader(ysShader::ShaderType type);
+    ysOpenGLShader *GetShader(ysShader::ShaderType type);
 
-	unsigned int m_handle;
+    unsigned int m_handle;
 };
 
 #endif /* YDS_OPENGL_SHADER_PROGRAM_H */

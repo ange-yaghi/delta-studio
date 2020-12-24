@@ -13,12 +13,12 @@ ysError dbasic::AnimationExportFile::Open(const char *fname, Mode mode) {
     YDS_ERROR_DECLARE("Open");
 
     if (mode != Mode::Write &&
-        mode != Mode::Read) return YDS_ERROR_RETURN(ysError::YDS_INVALID_PARAMETER);
+        mode != Mode::Read) return YDS_ERROR_RETURN(ysError::InvalidParameter);
 
-    if (mode == Mode::Write)	m_file.open(fname, std::ios::binary | std::ios::out);
-    if (mode == Mode::Read)		m_file.open(fname, std::ios::binary | std::ios::in);
+    if (mode == Mode::Write)    m_file.open(fname, std::ios::binary | std::ios::out);
+    if (mode == Mode::Read)        m_file.open(fname, std::ios::binary | std::ios::in);
 
-    if (!m_file.is_open()) return YDS_ERROR_RETURN(ysError::YDS_COULD_NOT_OPEN_FILE);
+    if (!m_file.is_open()) return YDS_ERROR_RETURN(ysError::CouldNotOpenFile);
 
     if (mode == Mode::Read) {
         // Read header
@@ -27,17 +27,17 @@ ysError dbasic::AnimationExportFile::Open(const char *fname, Mode mode) {
 
         if (!m_file) {
             m_file.close();
-            return YDS_ERROR_RETURN(ysError::YDS_INVALID_FILE_TYPE);
+            return YDS_ERROR_RETURN(ysError::InvalidFileType);
         }
 
         if (header.FileMagicNumber != MAGIC_NUMBER) {
             m_file.close();
-            return YDS_ERROR_RETURN(ysError::YDS_INVALID_FILE_TYPE);
+            return YDS_ERROR_RETURN(ysError::InvalidFileType);
         }
 
         if (header.FileVersion < 0 || header.FileVersion > FILE_VERSION) {
             m_file.close();
-            return YDS_ERROR_RETURN(ysError::YDS_UNSUPPORTED_FILE_VERSION);
+            return YDS_ERROR_RETURN(ysError::UnsupportedFileVersion);
         }
 
         m_fileVersion = header.FileVersion;
@@ -54,27 +54,27 @@ ysError dbasic::AnimationExportFile::Open(const char *fname, Mode mode) {
 
     m_openMode = mode;
 
-    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+    return YDS_ERROR_RETURN(ysError::None);
 }
 
 ysError dbasic::AnimationExportFile::WriteCustomData(void *data, int size) {
     YDS_ERROR_DECLARE("WriteCustomData");
 
-    if (!m_file.is_open()) return YDS_ERROR_RETURN(ysError::YDS_NO_FILE);
-    if (data == NULL) return YDS_ERROR_RETURN(ysError::YDS_INVALID_PARAMETER);
-    if (m_openMode != Mode::Write) return YDS_ERROR_RETURN(ysError::YDS_INVALID_OPERATION);
+    if (!m_file.is_open()) return YDS_ERROR_RETURN(ysError::NoFile);
+    if (data == NULL) return YDS_ERROR_RETURN(ysError::InvalidParameter);
+    if (m_openMode != Mode::Write) return YDS_ERROR_RETURN(ysError::InvalidOperation);
 
     m_file.write((char *)data, size);
 
-    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+    return YDS_ERROR_RETURN(ysError::None);
 }
 
 ysError dbasic::AnimationExportFile::WriteObjectAnimationData(AnimationExportData *objectAnimationData) {
     YDS_ERROR_DECLARE("WriteObjectAnimationData");
 
-    if (!m_file.is_open()) return YDS_ERROR_RETURN(ysError::YDS_NO_FILE);
-    if (objectAnimationData == NULL) return YDS_ERROR_RETURN(ysError::YDS_INVALID_PARAMETER);
-    if (m_openMode != Mode::Write) return YDS_ERROR_RETURN(ysError::YDS_INVALID_OPERATION);
+    if (!m_file.is_open()) return YDS_ERROR_RETURN(ysError::NoFile);
+    if (objectAnimationData == NULL) return YDS_ERROR_RETURN(ysError::InvalidParameter);
+    if (m_openMode != Mode::Write) return YDS_ERROR_RETURN(ysError::InvalidOperation);
 
     // Write Keys First
     KeyframeSectionHeader keyHeader;
@@ -130,26 +130,26 @@ ysError dbasic::AnimationExportFile::WriteObjectAnimationData(AnimationExportDat
         m_file.write((char *)&motionHeader, sizeof(MotionOutputHeader));
     }
 
-    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+    return YDS_ERROR_RETURN(ysError::None);
 }
 
 ysError dbasic::AnimationExportFile::ReadObjectAnimationData(AnimationExportData *objectAnimationData) {
     YDS_ERROR_DECLARE("ReadObjectAnimationData");
 
-    if (!m_file.is_open()) return YDS_ERROR_RETURN(ysError::YDS_NO_FILE);
-    if (objectAnimationData == NULL) return YDS_ERROR_RETURN(ysError::YDS_INVALID_PARAMETER);
-    if (m_openMode != Mode::Read) return YDS_ERROR_RETURN(ysError::YDS_INVALID_OPERATION);
+    if (!m_file.is_open()) return YDS_ERROR_RETURN(ysError::NoFile);
+    if (objectAnimationData == NULL) return YDS_ERROR_RETURN(ysError::InvalidParameter);
+    if (m_openMode != Mode::Read) return YDS_ERROR_RETURN(ysError::InvalidOperation);
 
     // Read Keys First
     KeyframeSectionHeader keyHeader;
 
     m_file.read((char *)&keyHeader, sizeof(KeyframeSectionHeader));
-    if (!m_file) return YDS_ERROR_RETURN(ysError::YDS_CORRUPTED_FILE);
+    if (!m_file) return YDS_ERROR_RETURN(ysError::CorruptedFile);
 
     for (int i = 0; i < keyHeader.KeyframeCount; i++) {
         KeyHeader keyHeader;
         m_file.read((char *)&keyHeader, sizeof(KeyHeader));
-        if (!m_file) return YDS_ERROR_RETURN(ysError::YDS_CORRUPTED_FILE);
+        if (!m_file) return YDS_ERROR_RETURN(ysError::CorruptedFile);
 
         ObjectKeyframeDataExport *newKeyframeData = objectAnimationData->AddObjectKeyData(keyHeader.ObjectName);
 
@@ -159,21 +159,21 @@ ysError dbasic::AnimationExportFile::ReadObjectAnimationData(AnimationExportData
             m_file.read((char *)newKeyframeData->GetKeyBuffer(), sizeof(ObjectKeyframeDataExport::KEY_DATA) * keyHeader.KeyCount);
         }
 
-        if (!m_file) return YDS_ERROR_RETURN(ysError::YDS_CORRUPTED_FILE);
+        if (!m_file) return YDS_ERROR_RETURN(ysError::CorruptedFile);
     }
 
     // Read Poses
 
     PoseSectionHeader poseSectionHeader;
     m_file.read((char *)&poseSectionHeader, sizeof(PoseSectionHeader));
-    if (!m_file) return YDS_ERROR_RETURN(ysError::YDS_CORRUPTED_FILE);
+    if (!m_file) return YDS_ERROR_RETURN(ysError::CorruptedFile);
 
     int poseCount = poseSectionHeader.PoseCount;
 
     for (int i = 0; i < poseCount; i++) {
         PoseOutputHeader poseHeader;
         m_file.read((char *)&poseHeader, sizeof(PoseOutputHeader));
-        if (!m_file) return YDS_ERROR_RETURN(ysError::YDS_CORRUPTED_FILE);
+        if (!m_file) return YDS_ERROR_RETURN(ysError::CorruptedFile);
 
         PoseExport *newPose = objectAnimationData->AddPose(poseHeader.PoseName, poseHeader.Frame);
     }
@@ -183,19 +183,19 @@ ysError dbasic::AnimationExportFile::ReadObjectAnimationData(AnimationExportData
     MotionSectionHeader motionSectionHeader;
 
     m_file.read((char *)&motionSectionHeader, sizeof(MotionSectionHeader));
-    if (!m_file) return YDS_ERROR_RETURN(ysError::YDS_CORRUPTED_FILE);
+    if (!m_file) return YDS_ERROR_RETURN(ysError::CorruptedFile);
 
     int motionCount = motionSectionHeader.MotionCount;
 
     for (int i = 0; i < motionCount; i++) {
         MotionOutputHeader motionHeader;
         m_file.read((char *)&motionHeader, sizeof(MotionOutputHeader));
-        if (!m_file) return YDS_ERROR_RETURN(ysError::YDS_CORRUPTED_FILE);
+        if (!m_file) return YDS_ERROR_RETURN(ysError::CorruptedFile);
 
         objectAnimationData->AddMotion(motionHeader.MotionName, motionHeader.StartFrame, motionHeader.EndFrame);
     }
 
-    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+    return YDS_ERROR_RETURN(ysError::None);
 }
 
 

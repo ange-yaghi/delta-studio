@@ -9,17 +9,17 @@ ysFileLogger::~ysFileLogger() {
 }
 
 void ysFileLogger::OpenFile(const char *fname) {
-	strcpy_s(m_fname, 256, fname);
+    strcpy_s(m_fname, 256, fname);
 }
 
 void ysFileLogger::Initialize() {
-	m_stream.open(m_fname, std::ios::out);
+    m_stream.open(m_fname, std::ios::out);
 }
 
 void ysFileLogger::Close() {
-	m_stream.close();
+    m_stream.close();
 }
 
 void ysFileLogger::Write(const char *data) {
-	m_stream.write(data, strlen(data));
+    m_stream.write(data, strlen(data));
 }

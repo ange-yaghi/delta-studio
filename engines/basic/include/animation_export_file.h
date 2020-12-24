@@ -17,8 +17,8 @@ namespace dbasic {
             Closed,
         };
 
-        static const unsigned int	MAGIC_NUMBER = 0x4B564E44;
-        static const int			FILE_VERSION = 0x0;
+        static const unsigned int    MAGIC_NUMBER = 0x4B564E44;
+        static const int            FILE_VERSION = 0x0;
 
         struct ExportFileHeader {
             unsigned int FileMagicNumber;

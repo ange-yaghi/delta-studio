@@ -9,18 +9,18 @@
 class ysD3D10RenderTarget : public ysRenderTarget
 {
 
-	friend class ysD3D10Device;
+    friend class ysD3D10Device;
 
 public:
 
-	ysD3D10RenderTarget();
-	virtual ~ysD3D10RenderTarget();
+    ysD3D10RenderTarget();
+    virtual ~ysD3D10RenderTarget();
 
 protected:
 
-	ID3D10ShaderResourceView *m_resourceView;
-	ID3D10RenderTargetView *m_renderTargetView;
-	ID3D10DepthStencilView *m_depthStencil;
+    ID3D10ShaderResourceView *m_resourceView;
+    ID3D10RenderTargetView *m_renderTargetView;
+    ID3D10DepthStencilView *m_depthStencil;
 
 };
 

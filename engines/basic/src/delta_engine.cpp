@@ -178,7 +178,7 @@ ysError dbasic::DeltaEngine::CreateGameWindow(const GameEngineSettings &settings
 
     m_windowHandler.OnResizeWindow(m_gameWindow->GetWidth(), m_gameWindow->GetHeight());
 
-    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+    return YDS_ERROR_RETURN(ysError::None);
 }
 
 ysError dbasic::DeltaEngine::StartFrame() {
@@ -214,7 +214,7 @@ ysError dbasic::DeltaEngine::StartFrame() {
         m_device->ClearBuffers(m_clearColor);
     }
 
-    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+    return YDS_ERROR_RETURN(ysError::None);
 }
 
 ysError dbasic::DeltaEngine::EndFrame() {
@@ -245,7 +245,7 @@ ysError dbasic::DeltaEngine::EndFrame() {
     m_breakdownTimer.EndMeasurement(FrameBreakdownFull);
     m_breakdownTimer.EndFrame();
 
-    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+    return YDS_ERROR_RETURN(ysError::None);
 }
 
 ysError dbasic::DeltaEngine::Destroy() {
@@ -295,7 +295,7 @@ ysError dbasic::DeltaEngine::Destroy() {
 
     ysWindowSystem::DestroyWindowSystem(m_windowSystem);
 
-    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+    return YDS_ERROR_RETURN(ysError::None);
 }
 
 ysError dbasic::DeltaEngine::UseMaterial(Material *material) {
@@ -308,7 +308,7 @@ ysError dbasic::DeltaEngine::UseMaterial(Material *material) {
         SetBaseColor(material->GetDiffuseColor());
     }
 
-    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+    return YDS_ERROR_RETURN(ysError::None);
 }
 
 void dbasic::DeltaEngine::ResetLights() {
@@ -324,10 +324,10 @@ ysError dbasic::DeltaEngine::InitializeGeometry() {
     YDS_ERROR_DECLARE("InitializeGeometry");
 
     Vertex vertexData[] = {
-        { { -1.0f, 1.0f, 0.0f, 1.0f },		{0.0f, 1.0f},	{0.0f, 0.0f, 1.0f, 0.0f} },
-        { { 1.0f, 1.0f, 0.0f, 1.0f },		{1.0f, 1.0f},	{0.0f, 0.0f, 1.0f, 0.0f} },
-        { { 1.0f, -1.0f, 0.0f, 1.0f },		{1.0f, 0.0f},	{0.0f, 0.0f, 1.0f, 0.0f} },
-        { { -1.0f, -1.0f, 0.0f, 1.0f },     {0.0f, 0.0f},	{0.0f, 0.0f, 1.0f, 0.0f} } };
+        { { -1.0f, 1.0f, 0.0f, 1.0f },        {0.0f, 1.0f},    {0.0f, 0.0f, 1.0f, 0.0f} },
+        { { 1.0f, 1.0f, 0.0f, 1.0f },        {1.0f, 1.0f},    {0.0f, 0.0f, 1.0f, 0.0f} },
+        { { 1.0f, -1.0f, 0.0f, 1.0f },        {1.0f, 0.0f},    {0.0f, 0.0f, 1.0f, 0.0f} },
+        { { -1.0f, -1.0f, 0.0f, 1.0f },     {0.0f, 0.0f},    {0.0f, 0.0f, 1.0f, 0.0f} } };
 
     unsigned short indices[] = {
         2, 1, 0,
@@ -336,7 +336,7 @@ ysError dbasic::DeltaEngine::InitializeGeometry() {
     YDS_NESTED_ERROR_CALL(m_device->CreateVertexBuffer(&m_mainVertexBuffer, sizeof(vertexData), (char *)vertexData));
     YDS_NESTED_ERROR_CALL(m_device->CreateIndexBuffer(&m_mainIndexBuffer, sizeof(indices), (char *)indices));
 
-    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+    return YDS_ERROR_RETURN(ysError::None);
 }
 
 ysError dbasic::DeltaEngine::InitializeShaders(const char *shaderDirectory) {
@@ -411,7 +411,7 @@ ysError dbasic::DeltaEngine::InitializeShaders(const char *shaderDirectory) {
     YDS_NESTED_ERROR_CALL(m_device->CreateConstantBuffer(&m_consoleShaderObjectVariablesBuffer, 
         sizeof(ConsoleShaderObjectVariables), nullptr));
 
-    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+    return YDS_ERROR_RETURN(ysError::None);
 }
 
 ysError dbasic::DeltaEngine::InitializeBreakdownTimer(const char *loggingDirectory) {
@@ -426,7 +426,7 @@ ysError dbasic::DeltaEngine::InitializeBreakdownTimer(const char *loggingDirecto
 
     m_breakdownTimer.OpenLogFile(logFile);
 
-    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+    return YDS_ERROR_RETURN(ysError::None);
 }
 
 ysError dbasic::DeltaEngine::LoadTexture(ysTexture **image, const char *fname) {
@@ -434,7 +434,7 @@ ysError dbasic::DeltaEngine::LoadTexture(ysTexture **image, const char *fname) {
 
     YDS_NESTED_ERROR_CALL(m_device->CreateTexture(image, fname));
 
-    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+    return YDS_ERROR_RETURN(ysError::None);
 }
 
 ysError dbasic::DeltaEngine::LoadAnimation(Animation **animation, const char *path, int start, int end) {
@@ -455,7 +455,7 @@ ysError dbasic::DeltaEngine::LoadAnimation(Animation **animation, const char *pa
 
     *animation = newAnimation;
 
-    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+    return YDS_ERROR_RETURN(ysError::None);
 }
 
 ysError dbasic::DeltaEngine::LoadFont(Font **font, const char *path, int size) {
@@ -468,7 +468,7 @@ ysError dbasic::DeltaEngine::LoadFont(Font **font, const char *path, int size) {
     fopen_s(&f, path, "rb");
 
     if (f == nullptr) {
-        return YDS_ERROR_RETURN(ysError::YDS_COULD_NOT_OPEN_FILE);
+        return YDS_ERROR_RETURN(ysError::CouldNotOpenFile);
     }
 
     fread(ttfBuffer, 1, 1 << 20, f);
@@ -492,7 +492,7 @@ ysError dbasic::DeltaEngine::LoadFont(Font **font, const char *path, int size) {
 
     delete[] cdata;
 
-    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+    return YDS_ERROR_RETURN(ysError::None);
 }
 
 ysError dbasic::DeltaEngine::PlayAudio(AudioAsset *audio) {
@@ -503,11 +503,11 @@ ysError dbasic::DeltaEngine::PlayAudio(AudioAsset *audio) {
     newSource->SetPan(0.0f);
     newSource->SetVolume(1.0f);
 
-    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+    return YDS_ERROR_RETURN(ysError::None);
 }
 
 void dbasic::DeltaEngine::SubmitSkeleton(Skeleton *skeleton) {
-    int nBones = skeleton->GetBoneCount();
+    const int nBones = skeleton->GetBoneCount();
 
     for (int i = 0; i < nBones; i++) {
         Bone *bone = skeleton->GetBone(i);
@@ -516,7 +516,7 @@ void dbasic::DeltaEngine::SubmitSkeleton(Skeleton *skeleton) {
 }
 
 void dbasic::DeltaEngine::SetCameraPosition(float x, float y) {
-    ysVector3 p = ysMath::GetVector3(m_cameraPosition);
+    const ysVector3 p = ysMath::GetVector3(m_cameraPosition);
     m_cameraPosition = ysMath::LoadVector(x, y, p.z, 1.0f);
 
     m_shaderScreenVariablesSync = false;
@@ -572,7 +572,7 @@ float dbasic::DeltaEngine::GetCameraAspect() const {
 }
 
 void dbasic::DeltaEngine::SetCameraAltitude(float altitude) {
-    ysVector3 p = ysMath::GetVector3(m_cameraPosition);
+    const ysVector3 p = ysMath::GetVector3(m_cameraPosition);
     m_cameraPosition = ysMath::LoadVector(p.x, p.y, altitude, 1.0f);
 
     m_shaderScreenVariablesSync = false;
@@ -798,19 +798,19 @@ ysError dbasic::DeltaEngine::DrawImage(ysTexture *image, int layer, float scaleX
         newCall->Model = nullptr;
     }
 
-    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+    return YDS_ERROR_RETURN(ysError::None);
 }
 
 ysError dbasic::DeltaEngine::AddLight(const Light &light) {
     YDS_ERROR_DECLARE("AddLight");
 
-    if (m_lightCount >= LightingControls::MaxLights) return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+    if (m_lightCount >= LightingControls::MaxLights) return YDS_ERROR_RETURN(ysError::None);
     m_lightingControls.Lights[m_lightCount] = light;
     m_lightingControls.Lights[m_lightCount].Active = 1;
     ++m_lightCount;
 
 
-    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+    return YDS_ERROR_RETURN(ysError::None);
 }
 
 ysError dbasic::DeltaEngine::SetAmbientLight(const ysVector4 &ambient) {
@@ -818,7 +818,7 @@ ysError dbasic::DeltaEngine::SetAmbientLight(const ysVector4 &ambient) {
 
     m_lightingControls.AmbientLighting = ambient;
 
-    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+    return YDS_ERROR_RETURN(ysError::None);
 }
 
 ysError dbasic::DeltaEngine::DrawBox(float width, float height, int layer) {
@@ -852,7 +852,7 @@ ysError dbasic::DeltaEngine::DrawBox(float width, float height, int layer) {
         newCall->Model = nullptr;
     }
 
-    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+    return YDS_ERROR_RETURN(ysError::None);
 }
 
 ysError dbasic::DeltaEngine::DrawAxis(const ysVector &position, const ysVector &direction, float width, float length, int layer) {
@@ -871,7 +871,7 @@ ysError dbasic::DeltaEngine::DrawAxis(const ysVector &position, const ysVector &
 
     YDS_NESTED_ERROR_CALL(DrawBox(width, length, layer));
 
-    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+    return YDS_ERROR_RETURN(ysError::None);
 }
 
 ysError dbasic::DeltaEngine::DrawModel(ModelAsset *model, float scale, ysTexture *texture, int layer) {
@@ -905,7 +905,7 @@ ysError dbasic::DeltaEngine::DrawModel(ModelAsset *model, float scale, ysTexture
         newCall->Model = model;
     }
 
-    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+    return YDS_ERROR_RETURN(ysError::None);
 }
 
 ysError dbasic::DeltaEngine::DrawRenderSkeleton(RenderSkeleton *skeleton, float scale, int layer) {
@@ -931,7 +931,7 @@ ysError dbasic::DeltaEngine::DrawRenderSkeleton(RenderSkeleton *skeleton, float 
         }
     }
 
-    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+    return YDS_ERROR_RETURN(ysError::None);
 }
 
 ysError dbasic::DeltaEngine::ExecuteDrawQueue(DrawTarget target) {
@@ -1090,5 +1090,5 @@ ysError dbasic::DeltaEngine::ExecuteDrawQueue(DrawTarget target) {
         YDS_NESTED_ERROR_CALL(m_uiRenderer.Update());
     }
 
-    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+    return YDS_ERROR_RETURN(ysError::None);
 }

@@ -3,15 +3,15 @@
 class ysOpenGLShader : public ysShader
 {
 
-	friend class ysOpenGLDevice;
+    friend class ysOpenGLDevice;
 
 public:
 
-	ysOpenGLShader();
-	~ysOpenGLShader();
+    ysOpenGLShader();
+    ~ysOpenGLShader();
 
 protected:
 
-	unsigned int m_handle;
+    unsigned int m_handle;
 
 };

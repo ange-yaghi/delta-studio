@@ -10,50 +10,50 @@ class ysDynamicArrayElement
 
 public:
 
-	ysDynamicArrayElement()
-	{
+    ysDynamicArrayElement()
+    {
 
-		m_index = -1;
-		m_alignment = 0;
+        m_index = -1;
+        m_alignment = 0;
 
-	}
+    }
 
-	~ysDynamicArrayElement()
-	{
-	}
+    ~ysDynamicArrayElement()
+    {
+    }
 
-	inline int GetIndex() const
-	{
+    inline int GetIndex() const
+    {
 
-		return m_index;
+        return m_index;
 
-	}
+    }
 
-	inline void SetIndex(int index)
-	{
+    inline void SetIndex(int index)
+    {
 
-		m_index = index;
+        m_index = index;
 
-	}
+    }
 
-	inline int GetAlignment() const
-	{
+    inline int GetAlignment() const
+    {
 
-		return m_alignment;
+        return m_alignment;
 
-	}
+    }
 
-	inline void SetAlignment(int alignment)
-	{
+    inline void SetAlignment(int alignment)
+    {
 
-		m_alignment = alignment;
+        m_alignment = alignment;
 
-	}
+    }
 
 protected:
 
-	int m_index;
-	int m_alignment;
+    int m_index;
+    int m_alignment;
 
 };
 
@@ -63,277 +63,277 @@ class ysDynamicArray
 
 public:
 
-	ysDynamicArray()
-	{
+    ysDynamicArray()
+    {
 
-		m_maxSize = START_SIZE;
-		m_nObjects = 0;
-		m_array = NULL;
+        m_maxSize = START_SIZE;
+        m_nObjects = 0;
+        m_array = NULL;
 
-		Preallocate(m_maxSize);
+        Preallocate(m_maxSize);
 
-	}
+    }
 
-	~ysDynamicArray()
-	{
+    ~ysDynamicArray()
+    {
 
-		Clear();
-		delete [] m_array;
+        Clear();
+        delete [] m_array;
 
-	}
+    }
 
-	void Preallocate(int nObjects)
-	{
+    void Preallocate(int nObjects)
+    {
 
-		if (!nObjects) return;
-		if (m_array) return;
+        if (!nObjects) return;
+        if (m_array) return;
 
-		m_array = new TYPE *[nObjects];
+        m_array = new TYPE *[nObjects];
 
-	}
-	
-	TYPE *New()
-	{
+    }
+    
+    TYPE *New()
+    {
 
-		if (m_nObjects >= m_maxSize) Extend();
+        if (m_nObjects >= m_maxSize) Extend();
 
-		m_array[m_nObjects] = new TYPE;
+        m_array[m_nObjects] = new TYPE;
 
-		// Cast to a standard array element
-		ysDynamicArrayElement *sElement = static_cast<ysDynamicArrayElement *>(m_array[m_nObjects]);
-		sElement->SetAlignment(0);
-		sElement->SetIndex(m_nObjects);
+        // Cast to a standard array element
+        ysDynamicArrayElement *sElement = static_cast<ysDynamicArrayElement *>(m_array[m_nObjects]);
+        sElement->SetAlignment(0);
+        sElement->SetIndex(m_nObjects);
 
-		return m_array[m_nObjects++];
+        return m_array[m_nObjects++];
 
-	}
+    }
 
-	void Add(TYPE *type)
-	{
+    void Add(TYPE *type)
+    {
 
-		if (m_nObjects >= m_maxSize) Extend();
+        if (m_nObjects >= m_maxSize) Extend();
 
-		m_array[m_nObjects] = type;
+        m_array[m_nObjects] = type;
 
-		// Cast to a standard array element
-		ysDynamicArrayElement *sElement = static_cast<ysDynamicArrayElement *>(m_array[m_nObjects]);
-		sElement->SetIndex(m_nObjects);
+        // Cast to a standard array element
+        ysDynamicArrayElement *sElement = static_cast<ysDynamicArrayElement *>(m_array[m_nObjects]);
+        sElement->SetIndex(m_nObjects);
 
-		m_nObjects++;
+        m_nObjects++;
 
-	}
+    }
 
-	void Add(TYPE *type, int offset)
-	{
+    void Add(TYPE *type, int offset)
+    {
 
-		if (m_nObjects >= m_maxSize) Extend();
+        if (m_nObjects >= m_maxSize) Extend();
 
-		// Make room
-		for (int i=m_nObjects; i > offset; i--)
-		{
+        // Make room
+        for (int i=m_nObjects; i > offset; i--)
+        {
 
-			m_array[i] = m_array[i-1];
+            m_array[i] = m_array[i-1];
 
-		}
+        }
 
-		m_array[offset] = type;
+        m_array[offset] = type;
 
-		// Cast to a standard array element
-		ysDynamicArrayElement *sElement = static_cast<ysDynamicArrayElement *>(m_array[offset]);
-		sElement->SetIndex(offset);
+        // Cast to a standard array element
+        ysDynamicArrayElement *sElement = static_cast<ysDynamicArrayElement *>(m_array[offset]);
+        sElement->SetIndex(offset);
 
-		m_nObjects++;
+        m_nObjects++;
 
-	}
+    }
 
-	template<typename DYN_TYPE>
-	DYN_TYPE *NewGeneric(int alignment=0)
-	{
+    template<typename DYN_TYPE>
+    DYN_TYPE *NewGeneric(int alignment=0)
+    {
 
-		if (m_nObjects >= m_maxSize) Extend();
+        if (m_nObjects >= m_maxSize) Extend();
 
-		if (alignment != 0)
-		{
+        if (alignment != 0)
+        {
 
-			void *memory = _aligned_malloc(sizeof(DYN_TYPE), alignment);
-			m_array[m_nObjects] = static_cast<TYPE *>(new (memory) DYN_TYPE);
+            void *memory = _aligned_malloc(sizeof(DYN_TYPE), alignment);
+            m_array[m_nObjects] = static_cast<TYPE *>(new (memory) DYN_TYPE);
 
-		}
+        }
 
-		else m_array[m_nObjects] = static_cast<TYPE *>(new DYN_TYPE);
+        else m_array[m_nObjects] = static_cast<TYPE *>(new DYN_TYPE);
 
-		// Cast to a standard array element
-		ysDynamicArrayElement *sElement = static_cast<ysDynamicArrayElement *>(m_array[m_nObjects]);
-		sElement->SetAlignment(alignment);
-		sElement->SetIndex(m_nObjects);
+        // Cast to a standard array element
+        ysDynamicArrayElement *sElement = static_cast<ysDynamicArrayElement *>(m_array[m_nObjects]);
+        sElement->SetAlignment(alignment);
+        sElement->SetIndex(m_nObjects);
 
-		return static_cast<DYN_TYPE *>(m_array[m_nObjects++]);
+        return static_cast<DYN_TYPE *>(m_array[m_nObjects++]);
 
-	}
+    }
 
-	ysError Delete(int index, bool destroy=true, TYPE *replacement=NULL, bool preserveOrder=false)
-	{
+    ysError Delete(int index, bool destroy=true, TYPE *replacement=NULL, bool preserveOrder=false)
+    {
 
-		if (index >= m_nObjects || index < 0) return ysError::YDS_OUT_OF_BOUNDS;
+        if (index >= m_nObjects || index < 0) return ysError::OutOfBounds;
 
-		if (m_nObjects <= m_maxSize / 2) Condense();
+        if (m_nObjects <= m_maxSize / 2) Condense();
 
-		ysDynamicArrayElement *target = static_cast<ysDynamicArrayElement *>(m_array[index]);
+        ysDynamicArrayElement *target = static_cast<ysDynamicArrayElement *>(m_array[index]);
 
-		if (destroy)
-		{
+        if (destroy)
+        {
 
-			if (target->GetAlignment() == 0)
-			{
+            if (target->GetAlignment() == 0)
+            {
 
-				delete m_array[index];
+                delete m_array[index];
 
-			}
+            }
 
-			else
-			{
+            else
+            {
 
-				m_array[index]->~TYPE();
-				_aligned_free(m_array[index]);
+                m_array[index]->~TYPE();
+                _aligned_free(m_array[index]);
 
-			}
+            }
 
-		}
+        }
 
-		if (replacement == NULL)
-		{
+        if (replacement == NULL)
+        {
 
-			if (!preserveOrder)
-			{
+            if (!preserveOrder)
+            {
 
-				m_array[index] = m_array[m_nObjects-1];
-				m_array[m_nObjects - 1] = NULL;
+                m_array[index] = m_array[m_nObjects-1];
+                m_array[m_nObjects - 1] = NULL;
 
-			}
+            }
 
-			else
-			{
+            else
+            {
 
-				for (int i=index; i < m_nObjects - 1; i++)
-				{
+                for (int i=index; i < m_nObjects - 1; i++)
+                {
 
-					m_array[i] = m_array[i + 1];
+                    m_array[i] = m_array[i + 1];
 
-					ysDynamicArrayElement *sElement = static_cast<ysDynamicArrayElement *>(m_array[i]);
-					sElement->SetIndex(i);
+                    ysDynamicArrayElement *sElement = static_cast<ysDynamicArrayElement *>(m_array[i]);
+                    sElement->SetIndex(i);
 
-				}
+                }
 
-				// Just as a precaution
-				m_array[m_nObjects - 1] = NULL;
+                // Just as a precaution
+                m_array[m_nObjects - 1] = NULL;
 
-			}
+            }
 
-		}
+        }
 
-		else
-		{
+        else
+        {
 
-			m_array[index] = replacement;
+            m_array[index] = replacement;
 
-		}
+        }
 
-		// Cast to a standard array element
-		if (m_array[index])
-		{
+        // Cast to a standard array element
+        if (m_array[index])
+        {
 
-			ysDynamicArrayElement *sElement = static_cast<ysDynamicArrayElement *>(m_array[index]);
-			sElement->SetIndex(index);
+            ysDynamicArrayElement *sElement = static_cast<ysDynamicArrayElement *>(m_array[index]);
+            sElement->SetIndex(index);
 
-		}
+        }
 
-		if (replacement == NULL)
-		{
+        if (replacement == NULL)
+        {
 
-			m_nObjects--;
+            m_nObjects--;
 
-		}
+        }
 
-		return ysError::YDS_NO_ERROR;
+        return ysError::None;
 
-	}
+    }
 
-	inline TYPE * Get(int index) const
-	{
+    inline TYPE * Get(int index) const
+    {
 
-		return m_array[index];
+        return m_array[index];
 
-	}
+    }
 
-	inline TYPE **GetBuffer()
-	{
+    inline TYPE **GetBuffer()
+    {
 
-		return m_array;
+        return m_array;
 
-	}
+    }
 
-	int GetNumObjects() const
-	{
+    int GetNumObjects() const
+    {
 
-		return m_nObjects;
+        return m_nObjects;
 
-	}
+    }
 
-	void Clear(bool destroy=true)
-	{
+    void Clear(bool destroy=true)
+    {
 
-		if (destroy)
-		{
+        if (destroy)
+        {
 
-			int nObjects = m_nObjects;
-			for(int i = nObjects-1; i >= 0; i--)
-			{
+            int nObjects = m_nObjects;
+            for(int i = nObjects-1; i >= 0; i--)
+            {
 
-				Delete(i);
+                Delete(i);
 
-			}
+            }
 
-		}
+        }
 
-		m_nObjects = 0;
+        m_nObjects = 0;
 
-	}
+    }
 
 protected:
 
-	void Extend()
-	{
+    void Extend()
+    {
 
-		TYPE **newArray = new TYPE *[m_maxSize * 2 + 1];
-		memcpy(newArray, m_array, sizeof(TYPE *) * m_nObjects);
+        TYPE **newArray = new TYPE *[m_maxSize * 2 + 1];
+        memcpy(newArray, m_array, sizeof(TYPE *) * m_nObjects);
 
-		delete [] m_array;
+        delete [] m_array;
 
-		m_array = newArray;
-		m_maxSize *= 2;
-		m_maxSize++;
+        m_array = newArray;
+        m_maxSize *= 2;
+        m_maxSize++;
 
-	}
+    }
 
-	void Condense()
-	{
+    void Condense()
+    {
 
-		TYPE **newArray = new TYPE *[m_maxSize / 2 + 1];
-		memcpy(newArray, m_array, sizeof(TYPE *) * m_nObjects);
+        TYPE **newArray = new TYPE *[m_maxSize / 2 + 1];
+        memcpy(newArray, m_array, sizeof(TYPE *) * m_nObjects);
 
-		delete [] m_array;
+        delete [] m_array;
 
-		m_array = newArray;
-		m_maxSize /= 2;
-		m_maxSize++;
+        m_array = newArray;
+        m_maxSize /= 2;
+        m_maxSize++;
 
-	}
+    }
 
 protected:
 
-	TYPE **m_array;
-	int m_maxSize;
-	int m_nObjects;
+    TYPE **m_array;
+    int m_maxSize;
+    int m_nObjects;
 
 };
 

@@ -14,7 +14,7 @@ ysError ysAudioBuffer::Initialize(SampleOffset samples, const ysAudioParameters 
     m_audioParameters = parameters;
     m_samples = samples;
 
-    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+    return YDS_ERROR_RETURN(ysError::None);
 }
 
 ysError ysAudioBuffer::EditBuffer(void *data) {
@@ -22,7 +22,7 @@ ysError ysAudioBuffer::EditBuffer(void *data) {
 
     /* void */
 
-    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+    return YDS_ERROR_RETURN(ysError::None);
 }
 
 ysError ysAudioBuffer::EditBufferSegment(void *data, SampleOffset samples, SampleOffset offset) {
@@ -30,7 +30,7 @@ ysError ysAudioBuffer::EditBufferSegment(void *data, SampleOffset samples, Sampl
 
     /* void */
 
-    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+    return YDS_ERROR_RETURN(ysError::None);
 }
 
 ysError ysAudioBuffer::Destroy() {
@@ -38,5 +38,5 @@ ysError ysAudioBuffer::Destroy() {
 
     /* void */
 
-    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+    return YDS_ERROR_RETURN(ysError::None);
 }

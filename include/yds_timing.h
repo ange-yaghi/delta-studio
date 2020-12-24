@@ -8,50 +8,50 @@ uint64_t SystemTime();
 
 class ysTimingSystem {
 public:
-	enum class Precision {
-		Microsecond,
-		Millisecond
-	};
+    enum class Precision {
+        Microsecond,
+        Millisecond
+    };
 
 protected:
-	static ysTimingSystem *g_instance;
+    static ysTimingSystem *g_instance;
 
 public:
-	ysTimingSystem();
-	~ysTimingSystem();
+    ysTimingSystem();
+    ~ysTimingSystem();
 
-	static ysTimingSystem *Get() { 
-		if (g_instance == nullptr) {
-			g_instance = new ysTimingSystem;
-		}
+    static ysTimingSystem *Get() { 
+        if (g_instance == nullptr) {
+            g_instance = new ysTimingSystem;
+        }
 
-		return g_instance;
-	}
+        return g_instance;
+    }
 
-	void Update();
+    void Update();
     void Initialize();
 
-	double GetFrameDuration();
-	uint64_t GetFrameDuration_us();
+    double GetFrameDuration();
+    uint64_t GetFrameDuration_us();
 
     uint64_t GetTime();
     unsigned __int64 GetClock();
 
-	void SetPrecisionMode(Precision mode);
-	Precision GetPrecisionMode() const { return m_precisionMode; }
+    void SetPrecisionMode(Precision mode);
+    Precision GetPrecisionMode() const { return m_precisionMode; }
 
-	double ConvertToSeconds(uint64_t t_u);
+    double ConvertToSeconds(uint64_t t_u);
 
-	float GetFPS() const { return m_fps; }
+    float GetFPS() const { return m_fps; }
 
 protected:
-	Precision m_precisionMode;
-	double m_div;
+    Precision m_precisionMode;
+    double m_div;
 
     unsigned m_frameNumber;
 
-	uint64_t m_lastFrameTimestamp;
-	uint64_t m_lastFrameDuration;
+    uint64_t m_lastFrameTimestamp;
+    uint64_t m_lastFrameDuration;
 
     unsigned long long m_lastFrameClockstamp;
     unsigned long long m_lastFrameClockTicks;

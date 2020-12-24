@@ -1,9 +1,9 @@
 #include "../include/yds_linked_list.h"
 
 ysLink::ysLink() {
-	Next = NULL;
-	Previous = NULL;
-	Data= NULL;
+    Next = NULL;
+    Previous = NULL;
+    Data= NULL;
 }
 
 ysLink::~ysLink() {
@@ -11,12 +11,12 @@ ysLink::~ysLink() {
 }
 
 ysLinkedListIterator::ysLinkedListIterator(ysLink *start) {
-	SetStart(start);
-	Reset();
+    SetStart(start);
+    Reset();
 }
 
 ysLinkedListIterator::ysLinkedListIterator() {
-	Reset(NULL);
+    Reset(NULL);
 }
 
 ysLinkedListIterator::~ysLinkedListIterator() {
@@ -24,7 +24,7 @@ ysLinkedListIterator::~ysLinkedListIterator() {
 }
 
 ysLinkedList::ysLinkedList() {
-	m_head = NULL;
+    m_head = NULL;
 }
 
 ysLinkedList::~ysLinkedList() {
@@ -32,28 +32,28 @@ ysLinkedList::~ysLinkedList() {
 }
 
 void ysLinkedList::AppendLink(ysLink *link) {
-	if (!m_head) {
-		m_head = link;
-		link->Next = link;
-		link->Previous = link;
-	}
-	else {
-		m_head->Previous->Next = link;
-		m_head->Previous = link;
+    if (!m_head) {
+        m_head = link;
+        link->Next = link;
+        link->Previous = link;
+    }
+    else {
+        m_head->Previous->Next = link;
+        m_head->Previous = link;
 
-		link->Previous = m_head->Previous;
-		link->Next = m_head;
-	}
+        link->Previous = m_head->Previous;
+        link->Next = m_head;
+    }
 }
 
 void ysLinkedList::PrependLink(ysLink *link) {
-	link->Next = m_head;
-	link->Previous = m_head->Previous;
+    link->Next = m_head;
+    link->Previous = m_head->Previous;
 
-	m_head->Previous->Next = link;
-	m_head->Previous = link;
+    m_head->Previous->Next = link;
+    m_head->Previous = link;
 
-	m_head = link;
+    m_head = link;
 }
 
 void ysLinkedList::DeleteLink(ysLink* link) {
@@ -68,9 +68,9 @@ void ysLinkedList::DeleteLink(ysLink* link) {
 }
 
 ysLink *ysLinkedList::GetHead() {
-	return m_head;
+    return m_head;
 }
 
 ysLink *ysLinkedList::GetTail() {
-	return m_head->Previous;
+    return m_head->Previous;
 }

@@ -56,7 +56,7 @@ public:
     ysError Remove(int index) {
         YDS_ERROR_DECLARE("Delete");
 
-        if (index >= m_nObjects || index < 0) return YDS_ERROR_RETURN(ysError::YDS_OUT_OF_BOUNDS);
+        if (index >= m_nObjects || index < 0) return YDS_ERROR_RETURN(ysError::OutOfBounds);
 
         if (m_nObjects <= m_maxSize / 2) Condense();
 
@@ -73,7 +73,7 @@ public:
 
         m_nObjects--;
 
-        return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+        return YDS_ERROR_RETURN(ysError::None);
     }
 
     inline TYPE *Get(int index) {

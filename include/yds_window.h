@@ -41,10 +41,10 @@ public:
 
     void RestoreWindow();
 
-    int GetWidth()			const { return m_width; }
-    int GetHeight()			const { return m_height; }
-    int GetScreenWidth()	const { return m_width - m_frameWidthOffset; }
-    int GetScreenHeight()	const { return m_height - m_frameHeightOffset; }
+    int GetWidth()            const { return m_width; }
+    int GetHeight()            const { return m_height; }
+    int GetScreenWidth()    const { return m_width - m_frameWidthOffset; }
+    int GetScreenHeight()    const { return m_height - m_frameHeightOffset; }
     WindowStyle GetStyle() const { return m_windowStyle; }
     ysMonitor *GetMonitor() const { return m_monitor; }
 
@@ -53,7 +53,7 @@ public:
 
     virtual void ScreenToLocal(int &x, int &y) { /* void */ }
 
-    bool IsOpen();
+    bool IsOpen() const;
     virtual bool IsActive();
     virtual bool IsVisible();
 

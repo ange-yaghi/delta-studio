@@ -26,14 +26,14 @@ public:
 
     const char *GetCall() const { return (m_stackLevel > 0) ? m_callStack[m_stackLevel - 1] : "<NO CALL>"; }
 
-    template<typename ERROR_HANDLER_TYPE>
-    ysError AttachErrorHandler(ERROR_HANDLER_TYPE **handler) {
-        if (handler == NULL) return ysError::YDS_INVALID_PARAMETER;
+    template<typename T_ErrorHandler>
+    ysError AttachErrorHandler(T_ErrorHandler **handler) {
+        if (handler == nullptr) return ysError::InvalidParameter;
 
         // Create the new handler
-        *handler = m_errorHandlers.NewGeneric<ERROR_HANDLER_TYPE>();
+        *handler = m_errorHandlers.NewGeneric<T_ErrorHandler>();
 
-        return ysError::YDS_NO_ERROR;
+        return ysError::None;
     }
 
     ysError DetachErrorHandler(ysErrorHandler *handler);
@@ -50,8 +50,8 @@ protected:
 
 #define YDS_ERROR_RETURN(error) ysErrorSystem::GetInstance()->RaiseError(error, __LINE__, this, __FILE__, "")
 
-#define YDS_ERROR_RETURN_MANUAL()				\
-	ysErrorSystem::GetInstance()->StackDescend()
+#define YDS_ERROR_RETURN_MANUAL()                \
+    ysErrorSystem::GetInstance()->StackDescend()
 
 #define YDS_ERROR_RETURN_STATIC(error) ysErrorSystem::GetInstance()->RaiseError(error, __LINE__, NULL, __FILE__, "")
 
@@ -59,19 +59,19 @@ protected:
 
 #define YDS_ERROR_RETURN_MSG(error, msg) ysErrorSystem::GetInstance()->RaiseError(error, __LINE__, this, __FILE__, msg)
 
-#define YDS_NESTED_ERROR_CALL(call)						\
-{														\
-														\
-	ysError code = (call);					\
-	if (code != ysError::YDS_NO_ERROR)					\
-	{													\
-		ysErrorSystem::GetInstance()->StackDescend();	\
-		return code;									\
-	}													\
-														\
+#define YDS_NESTED_ERROR_CALL(call)                     \
+{                                                       \
+                                                        \
+    ysError code = (call);                              \
+    if (code != ysError::None)                  \
+    {                                                   \
+        ysErrorSystem::GetInstance()->StackDescend();   \
+        return code;                                    \
+    }                                                   \
+                                                        \
 }
 
 #define YDS_ERROR_DECLARE(call) \
-	ysErrorSystem::GetInstance()->StackRaise(call)
+    ysErrorSystem::GetInstance()->StackRaise(call)
 
 #endif /* YDS_ERROR_SYSTEM_H */

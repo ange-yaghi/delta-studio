@@ -31,10 +31,10 @@ public:
     ysQuaternion WorldToLocalOrientation(const ysQuaternion &q);
     ysQuaternion WorldToParentOrientation(const ysQuaternion &q);
 
-    ysQuaternion GetLocalOrientation() const;
+    ysQuaternion GetOrientationParentSpace() const;
     ysQuaternion GetWorldOrientation();
 
-    ysVector GetLocalPosition() const;
+    ysVector GetPositionParentSpace() const;
     ysVector GetWorldPosition();
 
     void SetParent(ysTransform *parent);

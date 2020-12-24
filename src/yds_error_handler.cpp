@@ -11,8 +11,8 @@ ysErrorHandler::~ysErrorHandler() {
 }
 
 void ysErrorHandler::OnError(ysError error, unsigned int line, ysObject *object, const char *file) {
-	(void)error;
-	(void)line;
-	(void)object;
-	(void)file;
+    (void)error;
+    (void)line;
+    (void)object;
+    (void)file;
 }

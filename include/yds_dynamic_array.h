@@ -133,7 +133,7 @@ public:
     }
 
     ysError Delete(int index, bool destroy = true, TYPE *replacement = nullptr, bool preserveOrder = false) {
-        if (index >= m_nObjects || index < 0) return ysError::YDS_OUT_OF_BOUNDS;
+        if (index >= m_nObjects || index < 0) return ysError::OutOfBounds;
 
         if (m_nObjects <= m_maxSize / 2) Condense();
 
@@ -174,7 +174,7 @@ public:
             m_nObjects--;
         }
 
-        return ysError::YDS_NO_ERROR;
+        return ysError::None;
     }
 
     inline TYPE *Get(int index) const {

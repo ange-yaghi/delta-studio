@@ -4,36 +4,36 @@
 #include <stdio.h>
 
 ysObject::ysObject() {
-	m_typeID = "YS_OBJECT";
+    m_typeID = "YS_OBJECT";
 }
 
 ysObject::ysObject(const char *typeID) {
-	m_typeID = typeID;
+    m_typeID = typeID;
 }
 
 ysObject::~ysObject() {
-	/* void */
+    /* void */
 }
 
 //#ifdef _DEBUG
 //void ysObject::RaiseError(bool condition, const char *format, ...)
 //{
 //
-//	if (!condition)
-//	{
+//    if (!condition)
+//    {
 //
-//		va_list argptr;
-//    	va_start(argptr, format);
+//        va_list argptr;
+//        va_start(argptr, format);
 //
-//		char intermediateBuffer[1024];
-//		vsprintf_s(intermediateBuffer, 1024, format, argptr);
+//        char intermediateBuffer[1024];
+//        vsprintf_s(intermediateBuffer, 1024, format, argptr);
 //
-//		char errorBuffer[2048];
-//		sprintf_s(errorBuffer, 2048, "Type: %s\nName: %s\n--------------------\n%s", m_typeID, m_debugName, intermediateBuffer);
+//        char errorBuffer[2048];
+//        sprintf_s(errorBuffer, 2048, "Type: %s\nName: %s\n--------------------\n%s", m_typeID, m_debugName, intermediateBuffer);
 //
-//		//yds_assert(condition, errorBuffer);
+//        //yds_assert(condition, errorBuffer);
 //
-//	}
+//    }
 //
 //}
 //#endif

@@ -8,8 +8,8 @@ class ysWindowsMonitor : public ysMonitor
 
 public:
 
-	ysWindowsMonitor();
-	~ysWindowsMonitor();
+    ysWindowsMonitor();
+    ~ysWindowsMonitor();
 
 };
 

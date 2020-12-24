@@ -502,11 +502,11 @@ void dphysics::RigidBodySystem::ResolveCollision(Collision *collision, ysVector 
             velocityChange[b] = collision->m_normal;
             velocityChange[b] = ysMath::Mul(velocityChange[b], ysMath::LoadScalar(linearMove[b] / rotationAmount[b]));
 
-            ysVector pos = body->Transform.GetLocalPosition();
+            ysVector pos = body->Transform.GetPositionParentSpace();
             pos = ysMath::Add(pos, ysMath::Mul(collision->m_normal, ysMath::LoadScalar(linearMove[b])));
             body->Transform.SetPosition(pos);
 
-            ysQuaternion q = body->Transform.GetLocalOrientation();
+            ysQuaternion q = body->Transform.GetOrientationParentSpace();
             q = ysMath::QuatAddScaled(q, rotationDirection[b], rotationAmount[b] * 0.5f);
             body->Transform.SetOrientation(q);
         }

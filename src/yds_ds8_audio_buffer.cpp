@@ -15,7 +15,7 @@ ysError ysDS8AudioBuffer::Initialize(SampleOffset samples, const ysAudioParamete
 
     m_buffer = malloc(parameters.GetSizeFromSamples(samples));
 
-    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+    return YDS_ERROR_RETURN(ysError::None);
 }
 
 ysError ysDS8AudioBuffer::EditBuffer(void *data) {
@@ -23,7 +23,7 @@ ysError ysDS8AudioBuffer::EditBuffer(void *data) {
 
     memcpy(m_buffer, data, m_audioParameters.GetSizeFromSamples(m_samples));
 
-    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+    return YDS_ERROR_RETURN(ysError::None);
 }
 
 ysError ysDS8AudioBuffer::EditBufferSegment(void *data, SampleOffset samples, SampleOffset offset) {
@@ -34,7 +34,7 @@ ysError ysDS8AudioBuffer::EditBufferSegment(void *data, SampleOffset samples, Sa
 
     memcpy((char *)data + offsetBytes, data, samples);
 
-    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+    return YDS_ERROR_RETURN(ysError::None);
 }
 
 ysError ysDS8AudioBuffer::Destroy() {
@@ -43,5 +43,5 @@ ysError ysDS8AudioBuffer::Destroy() {
     free(m_buffer);
     m_buffer = nullptr;
 
-    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+    return YDS_ERROR_RETURN(ysError::None);
 }

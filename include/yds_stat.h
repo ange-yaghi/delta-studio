@@ -3,16 +3,15 @@
 
 #include "yds_math.h"
 
-namespace ysStat
-{
+namespace ysStat {
 
-	float RandomNumber();
-	bool Decide(float probability);
-	bool Decide(float frequency, float timePassed);
+    float RandomNumber();
+    bool Decide(float probability);
+    bool Decide(float frequency, float timePassed);
 
-	float NormalRandomNumber(float variance);
-	float NormalRandomNumber(float mean, float variance);
+    float NormalRandomNumber(float variance);
+    float NormalRandomNumber(float mean, float variance);
 
-};
+} /* namespace ysStat */
 
-#endif
+#endif /* YDS_STAT_H */

@@ -86,7 +86,7 @@ namespace dbasic {
 
         void SubmitSkeleton(Skeleton *skeleton);
 
-        bool IsOpen() { return m_gameWindow->IsOpen(); }
+        bool IsOpen() const { return m_gameWindow->IsOpen(); }
 
         void SetWindowSize(int width, int height);
 

@@ -407,7 +407,7 @@ ysMatrix ysMath::LoadMatrix(const ysQuaternion &quat, const ysVector &origin) {
 
     // Stage 3
 
-    ysGeneric calc3 = _mm_sub_ps(i1, i2);	// [2xz - 2yw, 2xy - 2zy, 2xy + 2zw, 2yz + 2xw]
+    ysGeneric calc3 = _mm_sub_ps(i1, i2);    // [2xz - 2yw, 2xy - 2zy, 2xy + 2zw, 2yz + 2xw]
 
     // Assembly
 
@@ -456,7 +456,7 @@ void ysMath::LoadMatrix(const ysQuaternion &quat, const ysVector &origin, ysMatr
 
     // Stage 3
 
-    ysGeneric calc3 = _mm_sub_ps(i1, i2);	// [2xz - 2yw, 2xy - 2zy, 2xy + 2zw, 2yz + 2xw]
+    ysGeneric calc3 = _mm_sub_ps(i1, i2);    // [2xz - 2yw, 2xy - 2zy, 2xy + 2zw, 2yz + 2xw]
 
     // Assembly
 

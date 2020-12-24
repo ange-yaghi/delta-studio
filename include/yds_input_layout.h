@@ -7,19 +7,19 @@
 #include "yds_shader.h"
 
 class ysInputLayout : public ysContextObject {
-	friend class ysDevice;
+    friend class ysDevice;
 
 public:
-	ysInputLayout();
-	ysInputLayout(DeviceAPI API);
-	virtual ~ysInputLayout();
+    ysInputLayout();
+    ysInputLayout(DeviceAPI API);
+    virtual ~ysInputLayout();
 
 protected:
-	// The format used to create this input layout
-	ysRenderGeometryFormat *m_format;
+    // The format used to create this input layout
+    ysRenderGeometryFormat *m_format;
 
-	// The shader used to create this input layout
-	ysShader *m_shader;
+    // The shader used to create this input layout
+    ysShader *m_shader;
 };
 
 #endif /* YDS_INPUT_LAYOUT_H */

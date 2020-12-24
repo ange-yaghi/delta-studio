@@ -19,14 +19,14 @@ ysError ysAnimationInterchangeFile::Open(const char *fname) {
     YDS_ERROR_DECLARE("Open");
 
     m_file.open(fname, std::ios::binary | std::ios::in | std::ios::out);
-    if (!m_file.is_open()) return YDS_ERROR_RETURN_MSG(ysError::YDS_COULD_NOT_OPEN_FILE, fname);
+    if (!m_file.is_open()) return YDS_ERROR_RETURN_MSG(ysError::CouldNotOpenFile, fname);
 
     IdHeader idHeader;
     m_file.read((char *)&idHeader, sizeof(IdHeader));
 
     if (idHeader.MagicNumber != MAGIC_NUMBER) {
         m_file.close();
-        return YDS_ERROR_RETURN(ysError::YDS_INVALID_FILE_TYPE);
+        return YDS_ERROR_RETURN(ysError::InvalidFileType);
     }
 
     m_reader = nullptr;
@@ -41,7 +41,7 @@ ysError ysAnimationInterchangeFile::Open(const char *fname) {
 
     if (m_reader == nullptr) {
         m_file.close();
-        return YDS_ERROR_RETURN(ysError::YDS_UNSUPPORTED_FILE_VERSION);
+        return YDS_ERROR_RETURN(ysError::UnsupportedFileVersion);
     }
 
     m_compilationStatus = idHeader.CompilationStatus == 0x0;
@@ -49,7 +49,7 @@ ysError ysAnimationInterchangeFile::Open(const char *fname) {
 
     m_reader->ReadHeader(m_file);
 
-    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+    return YDS_ERROR_RETURN(ysError::None);
 }
 
 ysError ysAnimationInterchangeFile::Close() {
@@ -62,7 +62,7 @@ ysError ysAnimationInterchangeFile::Close() {
 
     delete m_reader;
 
-    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+    return YDS_ERROR_RETURN(ysError::None);
 }
 
 unsigned int ysAnimationInterchangeFile::GetActionCount() const {
@@ -74,5 +74,5 @@ ysError ysAnimationInterchangeFile::ReadAction(ysAnimationAction *action) {
 
     YDS_NESTED_ERROR_CALL(m_reader->ReadAction(m_file, action));
 
-    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+    return YDS_ERROR_RETURN(ysError::None);
 }

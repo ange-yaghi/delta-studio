@@ -38,7 +38,7 @@ ysError ysAnimationInterchangeFileReader_0_0::Open(const char *fname) {
 
     m_actionCount = fileHeader.ActionCount;
 
-    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+    return YDS_ERROR_RETURN(ysError::None);
 }
 
 ysError ysAnimationInterchangeFile0_0::Close() {
@@ -49,7 +49,7 @@ ysError ysAnimationInterchangeFile0_0::Close() {
     m_majorVersion = -1;
     m_minorVersion = -1;
 
-    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+    return YDS_ERROR_RETURN(ysError::None);
 }*/
 
 ysAnimationCurve::CurveType ysAnimationInterchangeFileReader_0_0::InterpretCurveType(unsigned int curveType) {
@@ -76,7 +76,7 @@ ysError ysAnimationInterchangeFileReader_0_0::ReadHeader(std::fstream &f) {
 
     m_actionCount = fileHeader.ActionCount;
 
-    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+    return YDS_ERROR_RETURN(ysError::None);
 }
 
 ysError ysAnimationInterchangeFileReader_0_0::ReadAction(std::fstream &f, ysAnimationAction *action) {
@@ -114,5 +114,5 @@ ysError ysAnimationInterchangeFileReader_0_0::ReadAction(std::fstream &f, ysAnim
         }
     }
 
-    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+    return YDS_ERROR_RETURN(ysError::None);
 }

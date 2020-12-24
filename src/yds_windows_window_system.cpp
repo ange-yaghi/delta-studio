@@ -15,15 +15,15 @@ ysWindowsWindowSystem::~ysWindowsWindowSystem() {
 ysError ysWindowsWindowSystem::NewWindow(ysWindow **newWindow) {
     YDS_ERROR_DECLARE("NewWindow");
 
-    if (newWindow == nullptr) return YDS_ERROR_RETURN(ysError::YDS_INVALID_PARAMETER);
-    if (m_instance == NULL) return YDS_ERROR_RETURN(ysError::YDS_NO_CONTEXT);
+    if (newWindow == nullptr) return YDS_ERROR_RETURN(ysError::InvalidParameter);
+    if (m_instance == NULL) return YDS_ERROR_RETURN(ysError::NoContext);
 
     ysWindowsWindow *windowsWindow = m_windowArray.NewGeneric<ysWindowsWindow>();
     windowsWindow->SetInstance(m_instance);
 
     *newWindow = static_cast<ysWindow *>(windowsWindow);
 
-    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+    return YDS_ERROR_RETURN(ysError::None);
 }
 
 ysMonitor *ysWindowsWindowSystem::NewMonitor() {

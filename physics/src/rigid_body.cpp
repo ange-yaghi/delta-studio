@@ -42,8 +42,8 @@ void dphysics::RigidBody::Integrate(float timeStep) {
 
     ysVector vTimeStep = ysMath::LoadScalar(timeStep);
 
-    ysQuaternion orientation = Transform.GetLocalOrientation();
-    ysVector position = Transform.GetLocalPosition();
+    ysQuaternion orientation = Transform.GetOrientationParentSpace();
+    ysVector position = Transform.GetPositionParentSpace();
     orientation = ysMath::QuatAddScaled(orientation, m_angularVelocity, timeStep);
     position = ysMath::Add(position, ysMath::Mul(m_velocity, vTimeStep));
 

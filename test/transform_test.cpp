@@ -11,7 +11,7 @@ TEST(TransformTest, BasicTransform) {
     transform.SetOrientation(ysMath::LoadQuaternion(ysMath::Constants::PI / 2, ysMath::Constants::ZAxis));
     transform.SetPosition(ysMath::LoadVector(1.0f, 1.0f, 0.0f, 0.0f));
 
-    VecEq(transform.WorldToLocalSpace(transform.GetLocalPosition()), ysMath::Constants::Zero);
+    VecEq(transform.WorldToLocalSpace(transform.GetPositionParentSpace()), ysMath::Constants::Zero);
     VecEq(transform.WorldToLocalSpace(ysMath::Constants::Zero), ysMath::LoadVector(-1.0f, 1.0f, 0.0f, 0.0f));
 }
 
@@ -47,9 +47,9 @@ TEST(TransformTest, ParentTestDeepTranslationOnly) {
     t2.SetPosition(ysMath::LoadVector(-13.0f, 25.0f, 33.0f, 1.0f));
     t2.SetOrientation(ysMath::Constants::QuatIdentity);
 
-    ysMatrix m0 = ysMath::LoadMatrix(t0.GetLocalOrientation(), t0.GetLocalPosition());
-    ysMatrix m1 = ysMath::LoadMatrix(t1.GetLocalOrientation(), t1.GetLocalPosition());
-    ysMatrix m2 = ysMath::LoadMatrix(t2.GetLocalOrientation(), t2.GetLocalPosition());
+    ysMatrix m0 = ysMath::LoadMatrix(t0.GetOrientationParentSpace(), t0.GetPositionParentSpace());
+    ysMatrix m1 = ysMath::LoadMatrix(t1.GetOrientationParentSpace(), t1.GetPositionParentSpace());
+    ysMatrix m2 = ysMath::LoadMatrix(t2.GetOrientationParentSpace(), t2.GetPositionParentSpace());
 
     ysMatrix world0 = m0;
     ysMatrix world1 = ysMath::MatMult(world0, m1);
@@ -84,9 +84,9 @@ TEST(TransformTest, ParentTestDeepRotationOnly) {
     t2.SetPosition(ysMath::LoadVector(-13.0f, 25.0f, 33.0f, 1.0f));
     t2.SetOrientation(ysMath::Constants::Zero3);
 
-    ysMatrix m0 = ysMath::LoadMatrix(t0.GetLocalOrientation(), t0.GetLocalPosition());
-    ysMatrix m1 = ysMath::LoadMatrix(t1.GetLocalOrientation(), t1.GetLocalPosition());
-    ysMatrix m2 = ysMath::LoadMatrix(t2.GetLocalOrientation(), t2.GetLocalPosition());
+    ysMatrix m0 = ysMath::LoadMatrix(t0.GetOrientationParentSpace(), t0.GetPositionParentSpace());
+    ysMatrix m1 = ysMath::LoadMatrix(t1.GetOrientationParentSpace(), t1.GetPositionParentSpace());
+    ysMatrix m2 = ysMath::LoadMatrix(t2.GetOrientationParentSpace(), t2.GetPositionParentSpace());
 
     ysMatrix world0 = m0;
     ysMatrix world1 = ysMath::MatMult(world0, m1);
@@ -121,9 +121,9 @@ TEST(TransformTest, ParentTestDeep) {
     t2.SetPosition(ysMath::LoadVector(-13.0f, 25.0f, 33.0f, 1.0f));
     t2.SetOrientation(ysMath::LoadVector(51.0f, -45.0f, 75.0f, 35.0f));
 
-    ysMatrix m0 = ysMath::LoadMatrix(t0.GetLocalOrientation(), t0.GetLocalPosition());
-    ysMatrix m1 = ysMath::LoadMatrix(t1.GetLocalOrientation(), t1.GetLocalPosition());
-    ysMatrix m2 = ysMath::LoadMatrix(t2.GetLocalOrientation(), t2.GetLocalPosition());
+    ysMatrix m0 = ysMath::LoadMatrix(t0.GetOrientationParentSpace(), t0.GetPositionParentSpace());
+    ysMatrix m1 = ysMath::LoadMatrix(t1.GetOrientationParentSpace(), t1.GetPositionParentSpace());
+    ysMatrix m2 = ysMath::LoadMatrix(t2.GetOrientationParentSpace(), t2.GetPositionParentSpace());
 
     ysMatrix world0 = m0;
     ysMatrix world1 = ysMath::MatMult(world0, m1);
@@ -186,9 +186,9 @@ TEST(TransformTest, WorldSpaceConversion) {
     t2.SetPosition(ysMath::LoadVector(-13.0f, 25.0f, 33.0f, 1.0f));
     t2.SetOrientation(ysMath::LoadVector(51.0f, -45.0f, 75.0f, 35.0f));
 
-    ysMatrix m0 = ysMath::LoadMatrix(t0.GetLocalOrientation(), t0.GetLocalPosition());
-    ysMatrix m1 = ysMath::LoadMatrix(t1.GetLocalOrientation(), t1.GetLocalPosition());
-    ysMatrix m2 = ysMath::LoadMatrix(t2.GetLocalOrientation(), t2.GetLocalPosition());
+    ysMatrix m0 = ysMath::LoadMatrix(t0.GetOrientationParentSpace(), t0.GetPositionParentSpace());
+    ysMatrix m1 = ysMath::LoadMatrix(t1.GetOrientationParentSpace(), t1.GetPositionParentSpace());
+    ysMatrix m2 = ysMath::LoadMatrix(t2.GetOrientationParentSpace(), t2.GetPositionParentSpace());
 
     ysMatrix world0 = m0;
     ysMatrix world1 = ysMath::MatMult(world0, m1);

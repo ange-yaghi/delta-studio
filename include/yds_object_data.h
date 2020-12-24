@@ -55,7 +55,7 @@ public:
     };
 
     struct AnimationKey {
-        int Time;	// ie frame
+        int Time;    // ie frame
         float Value;
     };
 

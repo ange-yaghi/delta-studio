@@ -5,19 +5,19 @@
 
 class ysTimeTagData {
 public:
-	struct TimeTag {
-		char Name[64];
-		int Frame;
-	};
+    struct TimeTag {
+        char Name[64];
+        int Frame;
+    };
 
 public:
-	ysTimeTagData();
-	~ysTimeTagData();
+    ysTimeTagData();
+    ~ysTimeTagData();
 
-	void Clear();
+    void Clear();
 
-	int m_timeTagCount;
-	ysExpandingArray<TimeTag, 1> m_timeTags;
+    int m_timeTagCount;
+    ysExpandingArray<TimeTag, 1> m_timeTags;
 };
 
 #endif /* YDS_TIME_TAG_DATA_H */

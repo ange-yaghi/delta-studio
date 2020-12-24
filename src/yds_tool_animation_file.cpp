@@ -19,7 +19,7 @@ ysError ysToolAnimationFile::Open(const char *fname) {
 
     m_file.open(fname, std::ios::binary | std::ios::in | std::ios::out);
 
-    if (!m_file.is_open()) return YDS_ERROR_RETURN_MSG(ysError::YDS_COULD_NOT_OPEN_FILE, fname);
+    if (!m_file.is_open()) return YDS_ERROR_RETURN_MSG(ysError::CouldNotOpenFile, fname);
 
     // Read magic number
     unsigned int magicNumber = 0;
@@ -27,7 +27,7 @@ ysError ysToolAnimationFile::Open(const char *fname) {
 
     if (magicNumber != MAGIC_NUMBER) {
         m_file.close();
-        return YDS_ERROR_RETURN(ysError::YDS_INVALID_FILE_TYPE);
+        return YDS_ERROR_RETURN(ysError::InvalidFileType);
     }
 
     // Read File Version
@@ -36,7 +36,7 @@ ysError ysToolAnimationFile::Open(const char *fname) {
 
     if (fileVersion > CURRENT_FILE_VERSION) {
         m_file.close();
-        return YDS_ERROR_RETURN(ysError::YDS_UNSUPPORTED_FILE_VERSION);
+        return YDS_ERROR_RETURN(ysError::UnsupportedFileVersion);
     }
 
     // Read Last Editor
@@ -47,7 +47,7 @@ ysError ysToolAnimationFile::Open(const char *fname) {
         m_lastEditor = EditorId::UNDEFINED;
 
         m_file.close();
-        return YDS_ERROR_RETURN(ysError::YDS_CORRUPTED_FILE);
+        return YDS_ERROR_RETURN(ysError::CorruptedFile);
     }
     else {
         m_lastEditor = (EditorId)(lastEditor);
@@ -61,7 +61,7 @@ ysError ysToolAnimationFile::Open(const char *fname) {
         m_compilationStatus = CompilationStatus::UNDEFINED;
 
         m_file.close();
-        return YDS_ERROR_RETURN(ysError::YDS_CORRUPTED_FILE);
+        return YDS_ERROR_RETURN(ysError::CorruptedFile);
     }
     else {
         m_compilationStatus = (CompilationStatus)compilationStatus;
@@ -71,7 +71,7 @@ ysError ysToolAnimationFile::Open(const char *fname) {
 
     m_fileVersion = fileVersion;
 
-    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+    return YDS_ERROR_RETURN(ysError::None);
 }
 
 ysError ysToolAnimationFile::Close() {
@@ -84,7 +84,7 @@ ysError ysToolAnimationFile::Close() {
     m_header = NULL;
     m_fileVersion = -1;
 
-    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+    return YDS_ERROR_RETURN(ysError::None);
 }
 
 ysError ysToolAnimationFile::ReadHeader(int fileVersion) {
@@ -103,10 +103,10 @@ ysError ysToolAnimationFile::ReadHeader(int fileVersion) {
         free(m_header);
         m_header = NULL;
 
-        return YDS_ERROR_RETURN(ysError::YDS_CORRUPTED_FILE);
+        return YDS_ERROR_RETURN(ysError::CorruptedFile);
     }
 
-    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+    return YDS_ERROR_RETURN(ysError::None);
 }
 
 int ysToolAnimationFile::GetObjectCount() const {
@@ -123,10 +123,10 @@ int ysToolAnimationFile::GetObjectCount() const {
 ysError ysToolAnimationFile::ReadObjectAnimation(ysObjectAnimationData **newObject) {
     YDS_ERROR_DECLARE("ReadObjectAnimation");
 
-    if (newObject == NULL) return YDS_ERROR_RETURN(ysError::YDS_INVALID_PARAMETER);
+    if (newObject == NULL) return YDS_ERROR_RETURN(ysError::InvalidParameter);
     *newObject = NULL;
 
-    if (!m_file.is_open()) return YDS_ERROR_RETURN(ysError::YDS_NO_FILE);
+    if (!m_file.is_open()) return YDS_ERROR_RETURN(ysError::NoFile);
 
     ysObjectAnimationData *object = new ysObjectAnimationData;
     object->Clear();
@@ -137,7 +137,7 @@ ysError ysToolAnimationFile::ReadObjectAnimation(ysObjectAnimationData **newObje
         error = ReadObjectAnimationVersion000(object);
     }
 
-    if (error != ysError::YDS_NO_ERROR) {
+    if (error != ysError::None) {
         DestroyMemory();
         delete[] object;
 
@@ -148,7 +148,7 @@ ysError ysToolAnimationFile::ReadObjectAnimation(ysObjectAnimationData **newObje
     ReleaseMemory();
     *newObject = object;
 
-    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+    return YDS_ERROR_RETURN(ysError::None);
 }
 
 ysError ysToolAnimationFile::ReadObjectAnimationVersion000(ysObjectAnimationData *object) {
@@ -158,41 +158,41 @@ ysError ysToolAnimationFile::ReadObjectAnimationVersion000(ysObjectAnimationData
 
     // Read position keys
     m_file.read((char *)&object->m_positionKeys.Type, sizeof(ysObjectAnimationData::ANIMATION_KEY));
-    if (!m_file) return YDS_ERROR_RETURN(ysError::YDS_CORRUPTED_FILE);
+    if (!m_file) return YDS_ERROR_RETURN(ysError::CorruptedFile);
 
     m_file.read((char *)&object->m_positionKeys.NumKeys, sizeof(int));
-    if (!m_file) return YDS_ERROR_RETURN(ysError::YDS_CORRUPTED_FILE);
+    if (!m_file) return YDS_ERROR_RETURN(ysError::CorruptedFile);
 
     if (object->m_positionKeys.NumKeys > 0) {
         object->m_positionKeys.Keys.Allocate(object->m_positionKeys.NumKeys);
         m_file.read((char *)object->m_positionKeys.Keys.GetBuffer(), sizeof(ysObjectAnimationData::PositionKey) * object->m_positionKeys.NumKeys);
-        if (!m_file) return YDS_ERROR_RETURN(ysError::YDS_CORRUPTED_FILE);
+        if (!m_file) return YDS_ERROR_RETURN(ysError::CorruptedFile);
     }
 
 
     // Read rotation keys
     m_file.read((char *)&object->m_rotationKeys.Type, sizeof(ysObjectAnimationData::ANIMATION_KEY));
-    if (!m_file) return YDS_ERROR_RETURN(ysError::YDS_CORRUPTED_FILE);
+    if (!m_file) return YDS_ERROR_RETURN(ysError::CorruptedFile);
 
     m_file.read((char *)&object->m_rotationKeys.NumKeys, sizeof(int));
-    if (!m_file) return YDS_ERROR_RETURN(ysError::YDS_CORRUPTED_FILE);
+    if (!m_file) return YDS_ERROR_RETURN(ysError::CorruptedFile);
 
     if (object->m_positionKeys.NumKeys > 0) {
         object->m_rotationKeys.Keys.Allocate(object->m_rotationKeys.NumKeys);
         m_file.read((char *)object->m_rotationKeys.Keys.GetBuffer(), sizeof(ysObjectAnimationData::RotationKey) * object->m_rotationKeys.NumKeys);
-        if (!m_file) return YDS_ERROR_RETURN(ysError::YDS_CORRUPTED_FILE);
+        if (!m_file) return YDS_ERROR_RETURN(ysError::CorruptedFile);
     }
 
-    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+    return YDS_ERROR_RETURN(ysError::None);
 }
 
 ysError ysToolAnimationFile::ReadTimeTagData(ysTimeTagData **newTimeTagData) {
     YDS_ERROR_DECLARE("ReadTimeTagData");
 
-    if (newTimeTagData == NULL) return YDS_ERROR_RETURN(ysError::YDS_INVALID_PARAMETER);
+    if (newTimeTagData == NULL) return YDS_ERROR_RETURN(ysError::InvalidParameter);
     *newTimeTagData = NULL;
 
-    if (!m_file.is_open()) return YDS_ERROR_RETURN(ysError::YDS_NO_FILE);
+    if (!m_file.is_open()) return YDS_ERROR_RETURN(ysError::NoFile);
 
     ysTimeTagData *timeTagData = new ysTimeTagData;
     timeTagData->Clear();
@@ -203,7 +203,7 @@ ysError ysToolAnimationFile::ReadTimeTagData(ysTimeTagData **newTimeTagData) {
         error = ReadTimeTagDataVersion000(timeTagData);
     }
 
-    if (error != ysError::YDS_NO_ERROR) {
+    if (error != ysError::None) {
         DestroyMemory();
         delete timeTagData;
 
@@ -214,14 +214,14 @@ ysError ysToolAnimationFile::ReadTimeTagData(ysTimeTagData **newTimeTagData) {
     ReleaseMemory();
     *newTimeTagData = timeTagData;
 
-    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+    return YDS_ERROR_RETURN(ysError::None);
 }
 
 ysError ysToolAnimationFile::ReadTimeTagDataVersion000(ysTimeTagData *timeTagData) {
     YDS_ERROR_DECLARE("ReadTimeTagDataVersion000");
 
     m_file.read((char *)&timeTagData->m_timeTagCount, sizeof(int));
-    if (!m_file) return YDS_ERROR_RETURN(ysError::YDS_CORRUPTED_FILE);
+    if (!m_file) return YDS_ERROR_RETURN(ysError::CorruptedFile);
 
     for (int i = 0; i < timeTagData->m_timeTagCount; i++) {
         ysTimeTagData::TimeTag *newTimeTag = &timeTagData->m_timeTags.New();
@@ -229,10 +229,10 @@ ysError ysToolAnimationFile::ReadTimeTagDataVersion000(ysTimeTagData *timeTagDat
         YDS_NESTED_ERROR_CALL(ReadString(newTimeTag->Name));
 
         m_file.read((char *)&newTimeTag->Frame, sizeof(int));
-        if (!m_file) return YDS_ERROR_RETURN(ysError::YDS_CORRUPTED_FILE);
+        if (!m_file) return YDS_ERROR_RETURN(ysError::CorruptedFile);
     }
 
-    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+    return YDS_ERROR_RETURN(ysError::None);
 }
 
 void ysToolAnimationFile::DestroyMemory() {
@@ -258,10 +258,10 @@ ysError ysToolAnimationFile::ReadString(char *dest) {
 
     do {
         m_file.read(&c, sizeof(char));
-        if (!m_file) return YDS_ERROR_RETURN(ysError::YDS_CORRUPTED_FILE);
+        if (!m_file) return YDS_ERROR_RETURN(ysError::CorruptedFile);
 
         dest[i++] = c;
     } while (c);
 
-    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+    return YDS_ERROR_RETURN(ysError::None);
 }

@@ -10,5 +10,5 @@ ysD3D11ShaderProgram::~ysD3D11ShaderProgram() {
 }
 
 ysD3D11Shader *ysD3D11ShaderProgram::GetShader(ysShader::ShaderType type) {
-	return static_cast<ysD3D11Shader *>(m_shaderSlots[(int)type]);
+    return static_cast<ysD3D11Shader *>(m_shaderSlots[(int)type]);
 }

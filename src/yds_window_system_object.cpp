@@ -5,7 +5,7 @@ ysWindowSystemObject::ysWindowSystemObject() : ysObject("WINDOW_SYSTEM_OBJECT") 
 
     m_platform = Platform::Unknown;
 
-    YDS_ERROR_RETURN(ysError::YDS_NO_PLATFORM);
+    YDS_ERROR_RETURN(ysError::NoPlatform);
 }
 
 ysWindowSystemObject::ysWindowSystemObject(const char *typeID, Platform platform) : ysObject(typeID) {

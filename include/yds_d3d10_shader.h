@@ -8,25 +8,25 @@
 class ysD3D10Shader : public ysShader
 {
 
-	friend class ysD3D10Device;
+    friend class ysD3D10Device;
 
 public:
 
-	ysD3D10Shader();
-	virtual ~ysD3D10Shader();
+    ysD3D10Shader();
+    virtual ~ysD3D10Shader();
 
 protected:
 
-	ID3D10Blob *m_shaderBlob;
+    ID3D10Blob *m_shaderBlob;
 
-	union
-	{
+    union
+    {
 
-		ID3D10VertexShader *	m_vertexShader;
-		ID3D10PixelShader *		m_pixelShader;
-		ID3D10GeometryShader *	m_geometryShader;
+        ID3D10VertexShader *    m_vertexShader;
+        ID3D10PixelShader *        m_pixelShader;
+        ID3D10GeometryShader *    m_geometryShader;
 
-	};
+    };
 
 };
 

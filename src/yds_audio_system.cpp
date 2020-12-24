@@ -18,10 +18,10 @@ ysAudioSystem::~ysAudioSystem() {
 ysError ysAudioSystem::CreateAudioSystem(ysAudioSystem **newAudioSystem, API api) {
     YDS_ERROR_DECLARE("CreateAudioSystem");
 
-    if (newAudioSystem == nullptr) return YDS_ERROR_RETURN_STATIC(ysError::YDS_INVALID_PARAMETER);
+    if (newAudioSystem == nullptr) return YDS_ERROR_RETURN_STATIC(ysError::InvalidParameter);
     *newAudioSystem = nullptr;
 
-    if (api == API::Undefined) return YDS_ERROR_RETURN_STATIC(ysError::YDS_INVALID_PARAMETER);
+    if (api == API::Undefined) return YDS_ERROR_RETURN_STATIC(ysError::InvalidParameter);
 
     switch (api) {
     case API::DirectSound8:
@@ -32,18 +32,18 @@ ysError ysAudioSystem::CreateAudioSystem(ysAudioSystem **newAudioSystem, API api
         break;
     }
 
-    return YDS_ERROR_RETURN_STATIC(ysError::YDS_NO_ERROR);
+    return YDS_ERROR_RETURN_STATIC(ysError::None);
 }
 
 ysError ysAudioSystem::DestroyAudioSystem(ysAudioSystem **audioSystem) {
     YDS_ERROR_DECLARE("DestroyAudioSystem");
 
-    if (audioSystem == nullptr) return YDS_ERROR_RETURN_STATIC(ysError::YDS_INVALID_PARAMETER);
+    if (audioSystem == nullptr) return YDS_ERROR_RETURN_STATIC(ysError::InvalidParameter);
 
     delete *audioSystem;
     *audioSystem = nullptr;
 
-    return YDS_ERROR_RETURN_STATIC(ysError::YDS_NO_ERROR);
+    return YDS_ERROR_RETURN_STATIC(ysError::None);
 }
 
 void ysAudioSystem::EnumerateDevices() {

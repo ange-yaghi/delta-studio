@@ -8,16 +8,16 @@
 class ysD3D10GPUBuffer : public ysGPUBuffer
 {
 
-	friend class ysD3D10Device;
+    friend class ysD3D10Device;
 
 public:
 
-	ysD3D10GPUBuffer();
-	virtual ~ysD3D10GPUBuffer();
+    ysD3D10GPUBuffer();
+    virtual ~ysD3D10GPUBuffer();
 
 protected:
 
-	ID3D10Buffer *m_buffer;
+    ID3D10Buffer *m_buffer;
 
 };
 

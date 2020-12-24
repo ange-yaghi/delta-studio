@@ -4,15 +4,15 @@
 #include "../include/yds_audio_source.h"
 
 ysAudioDevice::ysAudioDevice() : ysAudioSystemObject("AUDIO_DEVICE", API::Undefined) {
-	m_deviceName[0] = '\0';
-	m_connected = false;
-	m_windowAssociation = 0;
+    m_deviceName[0] = '\0';
+    m_connected = false;
+    m_windowAssociation = 0;
 }
 
 ysAudioDevice::ysAudioDevice(API api) : ysAudioSystemObject("ysAudioDevice", api) {
-	m_deviceName[0] = '\0';
-	m_connected = false;
-	m_windowAssociation = 0;
+    m_deviceName[0] = '\0';
+    m_connected = false;
+    m_windowAssociation = 0;
 }
 
 ysAudioDevice::~ysAudioDevice() {
@@ -20,40 +20,40 @@ ysAudioDevice::~ysAudioDevice() {
 }
 
 ysError ysAudioDevice::DestroyAudioBuffer(ysAudioBuffer *&buffer) {
-	YDS_ERROR_DECLARE("DestroyaAudioBuffer");
+    YDS_ERROR_DECLARE("DestroyaAudioBuffer");
 
-	if (buffer == nullptr) return YDS_ERROR_RETURN(ysError::YDS_INVALID_PARAMETER);
+    if (buffer == nullptr) return YDS_ERROR_RETURN(ysError::InvalidParameter);
 
-	buffer->Destroy();
+    buffer->Destroy();
 
-	m_audioBuffers.Delete(buffer->GetIndex());
-	buffer = nullptr;
+    m_audioBuffers.Delete(buffer->GetIndex());
+    buffer = nullptr;
 
-	return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+    return YDS_ERROR_RETURN(ysError::None);
 }
 
 ysError ysAudioDevice::DestroyAudioSource(ysAudioSource *&source) {
-	YDS_ERROR_DECLARE("DestroyAudioSource");
+    YDS_ERROR_DECLARE("DestroyAudioSource");
 
-	if (source == nullptr) return YDS_ERROR_RETURN(ysError::YDS_INVALID_PARAMETER);
+    if (source == nullptr) return YDS_ERROR_RETURN(ysError::InvalidParameter);
 
-	source->Destroy();
+    source->Destroy();
 
-	m_audioBuffers.Delete(source->GetIndex());
-	source = nullptr;
+    m_audioBuffers.Delete(source->GetIndex());
+    source = nullptr;
 
-	return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+    return YDS_ERROR_RETURN(ysError::None);
 }
 
 ysError ysAudioDevice::DestroyAudioBuffers() {
-	YDS_ERROR_DECLARE("DestroyAudioBuffers");
+    YDS_ERROR_DECLARE("DestroyAudioBuffers");
 
-	int count = m_audioBuffers.GetNumObjects();
+    int count = m_audioBuffers.GetNumObjects();
 
-	for(int i = count - 1; i >= 0; i--) {
-		ysAudioBuffer *buffer = m_audioBuffers.Get(i);
-		YDS_NESTED_ERROR_CALL(DestroyAudioBuffer(buffer));
-	}
+    for(int i = count - 1; i >= 0; i--) {
+        ysAudioBuffer *buffer = m_audioBuffers.Get(i);
+        YDS_NESTED_ERROR_CALL(DestroyAudioBuffer(buffer));
+    }
 
-	return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+    return YDS_ERROR_RETURN(ysError::None);
 }

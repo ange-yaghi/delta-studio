@@ -8,27 +8,27 @@ ysWindowSystem *ysWindowSystem::g_instance = nullptr;
 ysWindowSystem::ysWindowSystem() : ysWindowSystemObject("WINDOW_SYSTEM", Platform::Unknown) {
     YDS_ERROR_DECLARE("ysWindowSystem");
 
-    if (g_instance != nullptr) YDS_ERROR_RETURN(ysError::YDS_MULTIPLE_SYSTEMS);
+    if (g_instance != nullptr) YDS_ERROR_RETURN(ysError::MultipleSystems);
     g_instance = this;
 
     m_inputSystem = nullptr;
     m_cursorVisible = true;
     m_cursorConfined = false;
 
-    YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+    YDS_ERROR_RETURN(ysError::None);
 }
 
 ysWindowSystem::ysWindowSystem(Platform platform) : ysWindowSystemObject("WINDOW_SYSTEM", platform) {
     YDS_ERROR_DECLARE("ysWindowSystem");
 
-    if (g_instance != nullptr) YDS_ERROR_RETURN(ysError::YDS_MULTIPLE_SYSTEMS);
+    if (g_instance != nullptr) YDS_ERROR_RETURN(ysError::MultipleSystems);
     g_instance = this;
 
     m_cursorVisible = true;
     m_cursorConfined = false;
     m_inputSystem = nullptr;
 
-    YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+    YDS_ERROR_RETURN(ysError::None);
 }
 
 ysWindowSystem::~ysWindowSystem() {
@@ -38,11 +38,11 @@ ysWindowSystem::~ysWindowSystem() {
 ysError ysWindowSystem::CreateWindowSystem(ysWindowSystem **newSystem, Platform platform) {
     YDS_ERROR_DECLARE("CreateWindowSystem");
 
-    if (newSystem == nullptr) return YDS_ERROR_RETURN_STATIC(ysError::YDS_INVALID_PARAMETER);
+    if (newSystem == nullptr) return YDS_ERROR_RETURN_STATIC(ysError::InvalidParameter);
     *newSystem = nullptr;
 
-    if (platform == Platform::Unknown) return YDS_ERROR_RETURN_STATIC(ysError::YDS_INVALID_PARAMETER);
-    if (g_instance) return YDS_ERROR_RETURN_STATIC(ysError::YDS_MULTIPLE_ERROR_SYSTEMS);
+    if (platform == Platform::Unknown) return YDS_ERROR_RETURN_STATIC(ysError::InvalidParameter);
+    if (g_instance != nullptr) return YDS_ERROR_RETURN_STATIC(ysError::MultipleErrorSystems);
 
     switch (platform) {
     case Platform::Windows:
@@ -52,7 +52,7 @@ ysError ysWindowSystem::CreateWindowSystem(ysWindowSystem **newSystem, Platform 
         break;
     }
 
-    return YDS_ERROR_RETURN_STATIC(ysError::YDS_NO_ERROR);
+    return YDS_ERROR_RETURN_STATIC(ysError::None);
 }
 
 ysError ysWindowSystem::DestroyWindowSystem(ysWindowSystem *&system) {
@@ -61,7 +61,7 @@ ysError ysWindowSystem::DestroyWindowSystem(ysWindowSystem *&system) {
     delete system;
     system = nullptr;
 
-    return YDS_ERROR_RETURN_STATIC(ysError::YDS_NO_ERROR);
+    return YDS_ERROR_RETURN_STATIC(ysError::None);
 }
 
 ysWindowSystem *ysWindowSystem::Get() {
@@ -131,10 +131,10 @@ void ysWindowSystem::SurveyMonitors() {
 ysError ysWindowSystem::AssignInputSystem(ysInputSystem *system) {
     YDS_ERROR_DECLARE("AssignInputSystem");
 
-    if (!CheckCompatibility(system)) return YDS_ERROR_RETURN(ysError::YDS_INCOMPATIBLE_PLATFORMS);
+    if (!CheckCompatibility(system)) return YDS_ERROR_RETURN(ysError::IncompatiblePlatforms);
 
     system->AssignWindowSystem(this);
     m_inputSystem = system;
 
-    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+    return YDS_ERROR_RETURN(ysError::None);
 }

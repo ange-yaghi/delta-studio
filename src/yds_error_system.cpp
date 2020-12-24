@@ -11,14 +11,14 @@
 ysErrorSystem *ysErrorSystem::g_instance = nullptr;
 
 ysErrorSystem::ysErrorSystem() {
-	if (g_instance != nullptr) {
-		YDS_ERROR_RAISE(ysError::YDS_MULTIPLE_ERROR_SYSTEMS);
-	}
+    if (g_instance != nullptr) {
+        YDS_ERROR_RAISE(ysError::MultipleErrorSystems);
+    }
 
-	g_instance = this;
+    g_instance = this;
 
     memset((void *)m_callStack, 0, sizeof(m_callStack));
-	m_stackLevel = 0;
+    m_stackLevel = 0;
 }
 
 ysErrorSystem::~ysErrorSystem() {
@@ -26,37 +26,37 @@ ysErrorSystem::~ysErrorSystem() {
 }
 
 ysErrorSystem *ysErrorSystem::GetInstance() {
-	if (g_instance == nullptr) g_instance = new ysErrorSystem;
-	return g_instance;
+    if (g_instance == nullptr) g_instance = new ysErrorSystem;
+    return g_instance;
 }
 
 void ysErrorSystem::Destroy() {
-	delete [] g_instance;
+    delete [] g_instance;
 }
 
 ysError ysErrorSystem::RaiseError(ysError error, unsigned int line, ysObject *object, const char *file, const char *msg, bool affectStack) {
-	if (error != ysError::YDS_NO_ERROR) {
-		for (int i = 0; i < m_errorHandlers.GetNumObjects(); i++) {
-			m_errorHandlers.Get(i)->OnError(error, line, object, file);
-		}
-	}
+    if (error != ysError::None) {
+        for (int i = 0; i < m_errorHandlers.GetNumObjects(); i++) {
+            m_errorHandlers.Get(i)->OnError(error, line, object, file);
+        }
+    }
 
-	if (affectStack) {
-		m_stackLevel--;
-	}
+    if (affectStack) {
+        StackDescend();
+    }
 
-	assert(m_stackLevel >= 0);
+    assert(m_stackLevel >= 0);
 
-	return error;
+    return error;
 }
 
 void ysErrorSystem::StackRaise(const char *callName) {
-	assert(m_stackLevel >= 0);
+    assert(m_stackLevel >= 0);
 
-	m_callStack[m_stackLevel] = callName;
-	m_stackLevel++;
+    m_callStack[m_stackLevel] = callName;
+    m_stackLevel++;
 }
 
 void ysErrorSystem::StackDescend() {
-    m_stackLevel--;
+    --m_stackLevel;
 }

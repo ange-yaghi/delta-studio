@@ -9,19 +9,19 @@
 // Extra Definitions
 
 #define _mm_replicate_x_ps(v) \
-	_mm_shuffle_ps((v), (v), _MM_SHUFFLE(0, 0, 0, 0))
+    _mm_shuffle_ps((v), (v), _MM_SHUFFLE(0, 0, 0, 0))
 
 #define _mm_replicate_y_ps(v) \
-	_mm_shuffle_ps((v), (v), _MM_SHUFFLE(1, 1, 1, 1))
+    _mm_shuffle_ps((v), (v), _MM_SHUFFLE(1, 1, 1, 1))
 
 #define _mm_replicate_z_ps(v) \
-	_mm_shuffle_ps((v), (v), _MM_SHUFFLE(2, 2, 2, 2))
+    _mm_shuffle_ps((v), (v), _MM_SHUFFLE(2, 2, 2, 2))
 
 #define _mm_replicate_w_ps(v) \
-	_mm_shuffle_ps((v), (v), _MM_SHUFFLE(3, 3, 3, 3))
+    _mm_shuffle_ps((v), (v), _MM_SHUFFLE(3, 3, 3, 3))
 
 #define _mm_madd_ps(a, b, c) \
-	_mm_add_ps(_mm_mul_ps((a), (b)), (c));
+    _mm_add_ps(_mm_mul_ps((a), (b)), (c));
 
 // Main Arithmetic Data Types
 typedef __m128 ysVector;

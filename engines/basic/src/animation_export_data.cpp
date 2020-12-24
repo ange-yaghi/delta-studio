@@ -58,7 +58,7 @@ dbasic::MotionExport *dbasic::AnimationExportData::GetMotion(char *name) {
 ysError dbasic::AnimationExportData::LoadToolObjectData(ysObjectAnimationData *objectAnimationData) {
     YDS_ERROR_DECLARE("LoadToolObjectData");
 
-    if (objectAnimationData == NULL) return YDS_ERROR_RETURN(ysError::YDS_INVALID_PARAMETER);
+    if (objectAnimationData == NULL) return YDS_ERROR_RETURN(ysError::InvalidParameter);
 
     int positionKeyCount = objectAnimationData->m_positionKeys.NumKeys;
     int rotationKeyCount = objectAnimationData->m_rotationKeys.NumKeys;
@@ -81,13 +81,13 @@ ysError dbasic::AnimationExportData::LoadToolObjectData(ysObjectAnimationData *o
 
     }
 
-    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+    return YDS_ERROR_RETURN(ysError::None);
 }
 
 ysError dbasic::AnimationExportData::LoadTimeTagData(ysTimeTagData *timeTagData) {
     YDS_ERROR_DECLARE("LoadTimeTagData");
 
-    if (timeTagData == NULL) return YDS_ERROR_RETURN(ysError::YDS_INVALID_PARAMETER);
+    if (timeTagData == NULL) return YDS_ERROR_RETURN(ysError::InvalidParameter);
 
     int tagCount = timeTagData->m_timeTagCount;
 
@@ -114,7 +114,7 @@ ysError dbasic::AnimationExportData::LoadTimeTagData(ysTimeTagData *timeTagData)
         }
     }
 
-    return YDS_ERROR_RETURN(ysError::YDS_NO_ERROR);
+    return YDS_ERROR_RETURN(ysError::None);
 }
 
 bool dbasic::AnimationExportData::ParseMotionTag(const char *tag, char *name, bool &start) {
