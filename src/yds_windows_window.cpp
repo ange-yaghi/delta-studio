@@ -42,7 +42,9 @@ ysError ysWindowsWindow::InitializeWindow(ysWindow *parent, const char *title, W
     ysWindowsWindow *parentWindow = static_cast<ysWindowsWindow *>(parent);
 
     const int win32Style = GetWindowsStyle();
-    HWND parentHandle = (parentWindow) ? parentWindow->m_hwnd : NULL;
+    HWND parentHandle = (parentWindow) 
+        ? parentWindow->m_hwnd 
+        : NULL;
 
     RegisterWindowsClass();
 
@@ -79,11 +81,17 @@ bool ysWindowsWindow::SetWindowStyle(WindowStyle style) {
     if (!ysWindow::SetWindowStyle(style)) return false;
 
     if (style == WindowStyle::Windowed) {
+        const int width = GetScreenWidth();
+        const int height = GetScreenHeight();
+
+        const int x = GetPositionX();
+        const int y = GetPositionY();
+
         SetWindowLongPtr(m_hwnd, GWL_STYLE, GetWindowsStyle());
         SetWindowPos(m_hwnd, NULL, 0, 0, 0, 0, SWP_FRAMECHANGED);
 
-        SetLocation(m_monitor->GetOriginX(), m_monitor->GetOriginY());
-        SetWindowSize(m_monitor->GetPhysicalWidth(), m_monitor->GetPhysicalHeight());
+        SetLocation(x, y);
+        SetWindowSize(width, height);
 
         ShowWindow(m_hwnd, SW_SHOW);
         SetForegroundWindow(m_hwnd);
@@ -99,11 +107,17 @@ bool ysWindowsWindow::SetWindowStyle(WindowStyle style) {
         SetForegroundWindow(m_hwnd);
     }
     else if (style == WindowStyle::Popup) {
+        const int width = GetScreenWidth();
+        const int height = GetScreenHeight();
+
+        const int x = GetPositionX();
+        const int y = GetPositionY();
+
         SetWindowLongPtr(m_hwnd, GWL_STYLE, GetWindowsStyle());
         SetWindowPos(m_hwnd, NULL, 0, 0, 0, 0, SWP_FRAMECHANGED);
 
-        SetLocation(m_monitor->GetOriginX(), m_monitor->GetOriginY());
-        SetWindowSize(m_monitor->GetPhysicalWidth(), m_monitor->GetPhysicalHeight());
+        SetLocation(x, y);
+        SetWindowSize(width, height);
 
         ShowWindow(m_hwnd, SW_SHOW);
         SetForegroundWindow(m_hwnd);

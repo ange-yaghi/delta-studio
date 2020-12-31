@@ -178,7 +178,7 @@ ysError ysD3D11Device::CreateRenderingContext(ysRenderingContext **context, ysWi
     swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
     swapChainDesc.BufferCount = 2;
     swapChainDesc.OutputWindow = windowsWindow->GetWindowHandle();
-    swapChainDesc.Windowed = window->GetStyle() != ysWindow::WindowStyle::Fullscreen;
+    swapChainDesc.Windowed = window->GetWindowStyle() != ysWindow::WindowStyle::Fullscreen;
     swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
     swapChainDesc.Flags = 0;
 

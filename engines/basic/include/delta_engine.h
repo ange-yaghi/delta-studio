@@ -45,6 +45,7 @@ namespace dbasic {
         struct GameEngineSettings {
             const char *WindowTitle = "Delta_GameWindow";
             void *Instance = nullptr;
+            ysWindow::WindowStyle WindowStyle = ysWindow::WindowStyle::Windowed;
             ysContextObject::DeviceAPI API = ysContextObject::DeviceAPI::DirectX11;
             const char *ShaderDirectory = "../DeltaEngineTullahoma/Shaders/";
             const char *LoggingDirectory = "";

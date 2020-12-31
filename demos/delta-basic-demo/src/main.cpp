@@ -7,8 +7,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     (void)lpCmdLine;
     (void)hPrevInstance;
 
-    dbasic_demo::DeltaBasicDemoApplication app; 
-    app.Initialize((void *)&hInstance, ysContextObject::DeviceAPI::OpenGL4_0); 
+    dbasic_demo::DeltaBasicDemoApplication app;
+    app.Initialize((void *)&hInstance, ysContextObject::DeviceAPI::DirectX11); 
     app.Run();
 
     return 0;

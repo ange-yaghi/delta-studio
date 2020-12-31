@@ -8,6 +8,8 @@
 
 ysWindowsWindowSystem::ysWindowsWindowSystem() : ysWindowSystem(Platform::Windows) {
     m_instance = NULL;
+    m_oldCursor = NULL;
+    m_oldCursorClip = RECT();
 }
 
 ysWindowsWindowSystem::~ysWindowsWindowSystem() {
@@ -90,7 +92,7 @@ void ysWindowsWindowSystem::ConnectInstance(void *genericInstanceConnection) {
 }
 
 LRESULT WINAPI ysWindowsWindowSystem::WinProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
-    int id = GetCurrentThreadId();
+    const DWORD id = GetCurrentThreadId();
 
     ysWindowSystem *system = ysWindowSystem::Get();
 

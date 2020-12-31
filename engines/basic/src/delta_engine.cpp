@@ -133,7 +133,7 @@ ysError dbasic::DeltaEngine::CreateGameWindow(const GameEngineSettings &settings
     YDS_NESTED_ERROR_CALL(m_gameWindow->InitializeWindow(
         nullptr,
         settings.WindowTitle,
-        ysWindow::WindowStyle::Windowed,
+        settings.WindowStyle,
         settings.WindowPositionX, settings.WindowPositionY,
         settings.WindowWidth, settings.WindowHeight,
         mainMonitor));

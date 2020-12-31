@@ -45,7 +45,7 @@ public:
     int GetHeight() const { return m_height; }
     virtual int GetScreenWidth() const { return m_width; }
     virtual int GetScreenHeight() const { return m_height; }
-    WindowStyle GetStyle() const { return m_windowStyle; }
+    WindowStyle GetWindowStyle() const { return m_windowStyle; }
     ysMonitor *GetMonitor() const { return m_monitor; }
 
     const int GetGameWidth() const;

@@ -20,6 +20,9 @@ void dbasic_demo::DeltaBasicDemoApplication::Initialize(void *instance, ysContex
     settings.Instance = instance;
     settings.ShaderDirectory = "../../engines/basic/shaders/";
     settings.WindowTitle = "Delta Basic Engine - Demo Application";
+    settings.WindowPositionX = 0;
+    settings.WindowPositionY = 0;
+    settings.WindowStyle = ysWindow::WindowStyle::Windowed;
 
     m_engine.CreateGameWindow(settings); // TODO: path should be relative to exe
     m_engine.SetClearColor(ysColor::srgbiToLinear(0x34, 0x98, 0xdb));
@@ -29,7 +32,6 @@ void dbasic_demo::DeltaBasicDemoApplication::Initialize(void *instance, ysContex
 
     ysWindow *window = m_engine.GetGameWindow();
     window->SetWindowSize(monitor->GetPhysicalWidth(), monitor->GetPhysicalHeight());
-    window->SetLocation(0, 0);
 
     dbasic::Material *lightFill = m_assetManager.NewMaterial();
     lightFill->SetName("LightFill");
@@ -197,6 +199,20 @@ void dbasic_demo::DeltaBasicDemoApplication::Render() {
         m_engine.GetGameWindow()->SetGameResolutionScale(0.2222f);
     }
 
+    if (m_engine.ProcessKeyDown(ysKey::Code::F)) {
+        switch (m_engine.GetGameWindow()->GetWindowStyle()) {
+        case ysWindow::WindowStyle::Windowed:
+            m_engine.GetGameWindow()->SetWindowStyle(ysWindow::WindowStyle::Popup);
+            break;
+        case ysWindow::WindowStyle::Popup:
+            m_engine.GetGameWindow()->SetWindowStyle(ysWindow::WindowStyle::Fullscreen);
+            break;
+        case ysWindow::WindowStyle::Fullscreen:
+            m_engine.GetGameWindow()->SetWindowStyle(ysWindow::WindowStyle::Windowed);
+            break;
+        }
+    }
+
     std::stringstream msg;
     msg << "FPS " << m_engine.GetAverageFramerate() << "\n";
     msg << screenWidth << "x" << screenHeight << "\n";
@@ -206,6 +222,10 @@ void dbasic_demo::DeltaBasicDemoApplication::Render() {
 void dbasic_demo::DeltaBasicDemoApplication::Run() {
     while (m_engine.IsOpen()) {
         m_engine.StartFrame();
+
+        if (m_engine.IsKeyDown(ysKey::Code::Escape)) {
+            break;
+        }
 
         Process();
         Render();
