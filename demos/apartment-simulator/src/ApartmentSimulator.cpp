@@ -288,20 +288,20 @@ std::string ApartmentSimulator::GetAssetPath(const char *relativePath) const {
     return "../../demos/apartment-simulator/assets/" + std::string(relativePath);
 }
 
-void ApartmentSimulator::Initialize(ysDevice::DEVICE_API API, void *instance) {
+void ApartmentSimulator::Initialize(ysDevice::DeviceAPI API, void *instance) {
     // Create Window System
-    ysWindowSystem::CreateWindowSystem(&m_windowSystem, ysWindowSystem::Platform::WINDOWS);
+    ysWindowSystem::CreateWindowSystem(&m_windowSystem, ysWindowSystem::Platform::Windows);
     m_windowSystem->ConnectInstance(instance); // Connect the window system to this instance
 
     // Create Audio System
-    ysAudioSystem::CreateAudioSystem(&m_audioSystem, ysAudioSystem::API_DIRECT_SOUND8);
+    ysAudioSystem::CreateAudioSystem(&m_audioSystem, ysAudioSystem::API::DirectSound8);
     m_audioSystem->EnumerateDevices();
     m_audioDevice = m_audioSystem->GetPrimaryDevice();
 
     // Create Input System
-    ysInputSystem::CreateInputSystem(&m_inputSystem, ysWindowSystem::Platform::WINDOWS);
+    ysInputSystem::CreateInputSystem(&m_inputSystem, ysWindowSystem::Platform::Windows);
     m_windowSystem->AssignInputSystem(m_inputSystem); // Attach input system to window system
-    m_inputSystem->CreateDevices(false);
+    m_inputSystem->Initialize();
 
     // Get Main Monitor
     m_windowSystem->SurveyMonitors();
@@ -315,7 +315,7 @@ void ApartmentSimulator::Initialize(ysDevice::DEVICE_API API, void *instance) {
     m_titleWindow->InitializeWindow(
         NULL,
         "Apartment Simulator | 2014",
-        ysWindow::WindowStyle::POPUP,
+        ysWindow::WindowStyle::Popup,
         m_mainMonitor->GetOriginX() + m_mainMonitor->GetWidth() / 2 - splashWidth / 2,
         m_mainMonitor->GetOriginY() + m_mainMonitor->GetHeight() / 2 - splashHeight / 2,
         splashWidth,
@@ -331,10 +331,10 @@ void ApartmentSimulator::Initialize(ysDevice::DEVICE_API API, void *instance) {
     m_mainWindow->InitializeWindow(
         NULL,
         "Apartment Simulator | 2014",
-        ysWindow::WindowStyle::WINDOWED,
+        ysWindow::WindowStyle::Windowed,
         m_mainMonitor);
 
-    m_mainWindow->SetState(ysWindow::WindowState::MAXIMIZED);
+    m_mainWindow->SetState(ysWindow::WindowState::Maximized);
     m_mainWindow->AttachEventHandler(windowHandler);
 
     m_audioSystem->ConnectDevice(m_audioDevice, m_mainWindow); // Attach sound device to main window
@@ -373,7 +373,7 @@ void ApartmentSimulator::Initialize(ysDevice::DEVICE_API API, void *instance) {
 
     // Shaders
 
-    if (API == ysContextObject::DIRECTX11 || API == ysContextObject::DIRECTX10) {
+    if (API == ysContextObject::DeviceAPI::DirectX10 || API == ysContextObject::DeviceAPI::DirectX11) {
         m_device->CreateVertexShader(&m_vertexShader, GetAssetPath("shaders/shader_simple.fx").c_str(), "VS");
         m_device->CreatePixelShader(&m_pixelShader, GetAssetPath("shaders/shader_simple.fx").c_str(), "PS");
 
@@ -383,7 +383,7 @@ void ApartmentSimulator::Initialize(ysDevice::DEVICE_API API, void *instance) {
         m_device->CreateVertexShader(&m_titleVertexShader, GetAssetPath("shaders/title_shader.fx").c_str(), "VS");
         m_device->CreatePixelShader(&m_titlePixelShader, GetAssetPath("shaders/title_shader.fx").c_str(), "PS");
     }
-    else if (API == ysContextObject::OPENGL4_0) {
+    else if (API == ysContextObject::DeviceAPI::OpenGL4_0) {
         m_device->CreateVertexShader(&m_vertexShader, GetAssetPath("shaders/shader_simple.glvs").c_str(), "VS");
         m_device->CreatePixelShader(&m_pixelShader, GetAssetPath("shaders/shader_simple.glfs").c_str(), "PS");
 
@@ -427,7 +427,7 @@ void ApartmentSimulator::Initialize(ysDevice::DEVICE_API API, void *instance) {
     m_device->CreateVertexBuffer(&m_genericPlane, sizeof(fullPlane), (char *)fullPlane);
     m_device->CreateIndexBuffer(&m_genericPlaneIndices, sizeof(indices), (char *)indices);
 
-    m_mainWindow->SetState(ysWindow::WindowState::HIDDEN);
+    m_mainWindow->SetState(ysWindow::WindowState::Hidden);
     UpdateTitleScreen(0);
 
     // Constant Buffer
@@ -435,7 +435,7 @@ void ApartmentSimulator::Initialize(ysDevice::DEVICE_API API, void *instance) {
     memcpy(m_constantData.Offset, black, sizeof(float) * 4);
     m_constantData.Scale = 1.0;
 
-    m_keyboard = m_inputSystem->GetMainDevice(ysInputDevice::InputDeviceType::KEYBOARD);
+    m_keyboard = m_inputSystem->GetKeyboardAggregator();
     m_keyboard->AttachDependency();
 
     CreateSceneView();

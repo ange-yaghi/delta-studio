@@ -174,8 +174,8 @@ ysError ysOpenGLWindowsContext::SetContextMode(ContextMode mode) {
         DEVMODE dmScreenSettings;
         memset(&dmScreenSettings, 0, sizeof(dmScreenSettings));
         dmScreenSettings.dmSize = sizeof(dmScreenSettings);
-        dmScreenSettings.dmPelsWidth = monitor->GetWidth();
-        dmScreenSettings.dmPelsHeight = monitor->GetHeight();
+        dmScreenSettings.dmPelsWidth = monitor->GetPhysicalWidth();
+        dmScreenSettings.dmPelsHeight = monitor->GetPhysicalHeight();
         dmScreenSettings.dmBitsPerPel = 32;
         dmScreenSettings.dmFields = DM_BITSPERPEL | DM_PELSWIDTH | DM_PELSHEIGHT;
 

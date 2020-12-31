@@ -32,6 +32,9 @@ public:
     int GetWidth() const { return m_width; }
     int GetHeight() const { return m_height; }
 
+    int GetPhysicalWidth() const { return m_physicalWidth; }
+    int GetPhysicalHeight() const { return m_physicalHeight; }
+
     int GetPosX() const { return m_posX; }
     int GetPosY() const { return m_posY; }
 
@@ -55,6 +58,9 @@ protected:
 
     int m_width;
     int m_height;
+
+    int m_physicalWidth;
+    int m_physicalHeight;
 
     Type m_type;
     Format m_format;

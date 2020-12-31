@@ -79,8 +79,13 @@ ysError ysOpenGLDevice::UpdateRenderingContext(ysRenderingContext *context) {
     ysRenderTarget *target = context->GetAttachedRenderTarget();
     ysOpenGLVirtualContext *openglContext = static_cast<ysOpenGLVirtualContext *>(context);
 
+    const int width = context->GetWindow()->GetGameWidth();
+    const int height = context->GetWindow()->GetGameHeight();
+    const int pwidth = context->GetWindow()->GetScreenWidth();
+    const int pheight = context->GetWindow()->GetScreenHeight();
+
     if (target != nullptr) {
-        YDS_NESTED_ERROR_CALL(ResizeRenderTarget(target, context->GetWindow()->GetScreenWidth(), context->GetWindow()->GetScreenHeight()));
+        YDS_NESTED_ERROR_CALL(ResizeRenderTarget(target, width, height, pwidth, pheight));
     }
 
     return YDS_ERROR_RETURN(ysError::None);
@@ -167,8 +172,10 @@ ysError ysOpenGLDevice::CreateOnScreenRenderTarget(ysRenderTarget **newTarget, y
     newRenderTarget->m_type = ysRenderTarget::Type::OnScreen;
     newRenderTarget->m_posX = 0;
     newRenderTarget->m_posY = 0;
-    newRenderTarget->m_width = context->GetWindow()->GetScreenWidth();
-    newRenderTarget->m_height = context->GetWindow()->GetScreenHeight();
+    newRenderTarget->m_width = context->GetWindow()->GetGameWidth();
+    newRenderTarget->m_height = context->GetWindow()->GetGameHeight();
+    newRenderTarget->m_physicalWidth = context->GetWindow()->GetScreenWidth();
+    newRenderTarget->m_physicalHeight = context->GetWindow()->GetScreenHeight();
     newRenderTarget->m_format = ysRenderTarget::Format::R8G8B8A8_UNORM;
     newRenderTarget->m_hasDepthBuffer = depthBuffer;
     newRenderTarget->m_associatedContext = context;
@@ -211,6 +218,8 @@ ysError ysOpenGLDevice::CreateSubRenderTarget(ysRenderTarget **newTarget, ysRend
     newRenderTarget->m_posY = y;
     newRenderTarget->m_width = width;
     newRenderTarget->m_height = height;
+    newRenderTarget->m_physicalWidth = width;
+    newRenderTarget->m_physicalHeight = height;
     newRenderTarget->m_format = ysRenderTarget::Format::R8G8B8A8_UNORM;
     newRenderTarget->m_hasDepthBuffer = parent->HasDepthBuffer();
     newRenderTarget->m_associatedContext = parent->GetAssociatedContext();
@@ -221,12 +230,12 @@ ysError ysOpenGLDevice::CreateSubRenderTarget(ysRenderTarget **newTarget, ysRend
     return YDS_ERROR_RETURN(ysError::None);
 }
 
-ysError ysOpenGLDevice::ResizeRenderTarget(ysRenderTarget *target, int width, int height) {
+ysError ysOpenGLDevice::ResizeRenderTarget(ysRenderTarget *target, int width, int height, int pwidth, int pheight) {
     YDS_ERROR_DECLARE("ResizeRenderTarget");
 
     if (target == nullptr) return YDS_ERROR_RETURN(ysError::InvalidParameter);
 
-    YDS_NESTED_ERROR_CALL(ysDevice::ResizeRenderTarget(target, width, height));
+    YDS_NESTED_ERROR_CALL(ysDevice::ResizeRenderTarget(target, width, height, pwidth, pheight));
 
     ysRenderTarget *prevTarget = m_activeRenderTarget;
     if (target == m_activeRenderTarget) {
@@ -275,12 +284,13 @@ ysError ysOpenGLDevice::SetRenderTarget(ysRenderTarget *target) {
         if (target->HasDepthBuffer() && target->IsDepthTestEnabled()) glEnable(GL_DEPTH_TEST);
         else glDisable(GL_DEPTH_TEST);
 
-        int refw, refh;
+        const int refw = realTarget->GetPhysicalWidth();
+        const int refh = realTarget->GetPhysicalHeight();
 
-        refw = realTarget->GetWidth();
-        refh = realTarget->GetHeight();
+        const int pwidth = target->GetPhysicalWidth();
+        const int pheight = target->GetPhysicalHeight();
 
-        glViewport(target->GetPosX(), refh - target->GetPosY() - target->GetHeight(), target->GetWidth(), target->GetHeight());
+        glViewport(target->GetPosX(), refh - target->GetPosY() - pheight, pwidth, pheight);
     }
 
     YDS_NESTED_ERROR_CALL(ysDevice::SetRenderTarget(target));
@@ -1128,6 +1138,8 @@ ysError ysOpenGLDevice::CreateOpenGLOffScreenRenderTarget(ysRenderTarget *target
     newRenderTarget->m_posY = 0;
     newRenderTarget->m_width = width;
     newRenderTarget->m_height = height;
+    newRenderTarget->m_physicalWidth = width;
+    newRenderTarget->m_physicalHeight = height;
     newRenderTarget->m_format = format;
     newRenderTarget->m_hasDepthBuffer = depthBuffer;
     newRenderTarget->m_associatedContext = NULL;

@@ -3,6 +3,8 @@
 #include "../include/yds_window_event_handler.h"
 #include "../include/yds_window_system.h"
 
+#include <cmath>
+
 ysWindow::ysWindow() : ysWindowSystemObject("WINDOW", Platform::Unknown) {
     m_title[0] = '\0';
 
@@ -10,10 +12,6 @@ ysWindow::ysWindow() : ysWindowSystemObject("WINDOW", Platform::Unknown) {
 
     m_width = 0;
     m_height = 0;
-    m_frameHeightOffset = 0;
-    m_frameWidthOffset = 0;
-    m_frameOriginXOffset = 0;
-    m_frameOriginYOffset = 0;
 
     m_locationx = 0;
     m_locationy = 0;
@@ -26,6 +24,8 @@ ysWindow::ysWindow() : ysWindowSystemObject("WINDOW", Platform::Unknown) {
     m_resizing = false;
 
     m_eventHandler = nullptr;
+
+    m_gameResolutionScaleHorizontal = m_gameResolutionScaleVertical = 1.0f;
 }
 
 ysWindow::ysWindow(Platform platform) : ysWindowSystemObject("WINDOW", platform) {
@@ -35,10 +35,6 @@ ysWindow::ysWindow(Platform platform) : ysWindowSystemObject("WINDOW", platform)
 
     m_width = 0;
     m_height = 0;
-    m_frameHeightOffset = 0;
-    m_frameWidthOffset = 0;
-    m_frameOriginXOffset = 0;
-    m_frameOriginYOffset = 0;
 
     m_locationx = 0;
     m_locationy = 0;
@@ -51,6 +47,8 @@ ysWindow::ysWindow(Platform platform) : ysWindowSystemObject("WINDOW", platform)
     m_resizing = false;
 
     m_eventHandler = nullptr;
+
+    m_gameResolutionScaleHorizontal = m_gameResolutionScaleVertical = 1.0f;
 }
 
 ysWindow::~ysWindow() {
@@ -81,9 +79,9 @@ ysError ysWindow::InitializeWindow(ysWindow *parent, const char *title, WindowSt
 
     YDS_NESTED_ERROR_CALL(
         InitializeWindow(
-            parent, title, style, 
-            monitor->GetOriginX(), monitor->GetOriginY(), 
-            monitor->GetWidth(), monitor->GetHeight(), monitor));
+            parent, title, style,
+            monitor->GetOriginX(), monitor->GetOriginY(),
+            monitor->GetPhysicalWidth(), monitor->GetPhysicalHeight(), monitor));
 
     return YDS_ERROR_RETURN(ysError::None);
 }
@@ -93,6 +91,14 @@ void ysWindow::RestoreWindow() {
 
     InitializeWindow(m_parent, m_title, m_windowStyle, m_locationx, m_locationy, m_width, m_height, m_monitor);
     SetState(prevWindowState);
+}
+
+const int ysWindow::GetGameWidth() const {
+    return std::round(m_gameResolutionScaleHorizontal * GetScreenWidth());
+}
+
+const int ysWindow::GetGameHeight() const {
+    return std::round(m_gameResolutionScaleVertical * GetScreenHeight());
 }
 
 bool ysWindow::IsOpen() const {
@@ -107,7 +113,7 @@ bool ysWindow::IsVisible() {
     return false;
 }
 
-void ysWindow::SetSize(int width, int height) {
+void ysWindow::SetScreenSize(int width, int height) {
     OnResizeWindow(width, height);
     AL_SetSize(width, height);
 }
@@ -115,6 +121,11 @@ void ysWindow::SetSize(int width, int height) {
 void ysWindow::SetLocation(int x, int y) {
     OnMoveWindow(x, y);
     AL_SetLocation(x, y);
+}
+
+void ysWindow::SetWindowSize(int width, int height) {
+    OnResizeWindow(width, height);
+    AL_SetSize(width, height);
 }
 
 void ysWindow::SetTitle(const char *title) {
@@ -147,16 +158,31 @@ void ysWindow::AttachEventHandler(ysWindowEventHandler *handler) {
     m_eventHandler = handler;
 }
 
+void ysWindow::SetGameResolutionScale(float scale) {
+    SetGameResolutionScaleHorizontal(scale);
+    SetGameResolutionScaleVertical(scale);
+}
+
+void ysWindow::SetGameResolutionScaleHorizontal(float scale) {
+    m_gameResolutionScaleHorizontal = scale;
+    SetWindowSize(m_width, m_height);
+}
+
+void ysWindow::SetGameResolutionScaleVertical(float scale) {
+    m_gameResolutionScaleVertical = scale;
+    SetWindowSize(m_width, m_height);
+}
+
 void ysWindow::OnMoveWindow(int x, int y) {
-    m_locationx = x + m_frameOriginXOffset;
-    m_locationy = y + m_frameOriginYOffset;
+    m_locationx = x;
+    m_locationy = y;
 
     if (m_eventHandler != nullptr) m_eventHandler->OnMoveWindow(x, y);
 }
 
 void ysWindow::OnResizeWindow(int w, int h) {
-    m_width = w + m_frameWidthOffset;
-    m_height = h + m_frameHeightOffset;
+    m_width = w;
+    m_height = h;
 
     if (m_eventHandler != nullptr) m_eventHandler->OnResizeWindow(w, h);
 }

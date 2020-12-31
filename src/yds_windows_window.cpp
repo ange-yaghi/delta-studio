@@ -1,4 +1,5 @@
 #include "../include/yds_windows_window.h"
+
 #include "../include/yds_windows_window_system.h"
 
 ysWindowsWindow::ysWindowsWindow() : ysWindow(Platform::Windows) {
@@ -40,13 +41,10 @@ ysError ysWindowsWindow::InitializeWindow(ysWindow *parent, const char *title, W
 
     ysWindowsWindow *parentWindow = static_cast<ysWindowsWindow *>(parent);
 
-    int win32Style = GetWindowsStyle();
+    const int win32Style = GetWindowsStyle();
     HWND parentHandle = (parentWindow) ? parentWindow->m_hwnd : NULL;
 
     RegisterWindowsClass();
-
-    RECT rc = { 0, 0, width, height };
-    AdjustWindowRect(&rc, win32Style, FALSE);
 
     m_hwnd = CreateWindow(
         "GAME_ENGINE_WINDOW",
@@ -61,18 +59,6 @@ ysError ysWindowsWindow::InitializeWindow(ysWindow *parent, const char *title, W
         m_instance,
         NULL);
 
-    m_frameOriginXOffset = rc.left;
-    m_frameOriginYOffset = rc.top;
-
-    m_frameWidthOffset = rc.right - rc.left - width;
-    m_frameHeightOffset = rc.bottom - rc.top - height;
-
-    RECT rect;
-    GetClientRect(m_hwnd, &rect);
-
-    m_width = rect.right - rect.left + m_frameWidthOffset;
-    m_height = rect.bottom - rect.top + m_frameHeightOffset;
-
     m_locationx = x;
     m_locationy = y;
 
@@ -84,7 +70,7 @@ ysError ysWindowsWindow::InitializeWindow(ysWindow *parent, const char *title, W
 ysError ysWindowsWindow::InitializeWindow(ysWindow *parent, const char *title, WindowStyle style, ysMonitor *monitor) {
     YDS_ERROR_DECLARE("InitializeWindow");
 
-    YDS_NESTED_ERROR_CALL(InitializeWindow(parent, title, style, monitor->GetOriginX(), monitor->GetOriginY(), monitor->GetWidth(), monitor->GetHeight(), monitor));
+    YDS_NESTED_ERROR_CALL(InitializeWindow(parent, title, style, monitor->GetOriginX(), monitor->GetOriginY(), monitor->GetPhysicalWidth(), monitor->GetPhysicalHeight(), monitor));
 
     return YDS_ERROR_RETURN(ysError::None);
 }
@@ -96,11 +82,8 @@ bool ysWindowsWindow::SetWindowStyle(WindowStyle style) {
         SetWindowLongPtr(m_hwnd, GWL_STYLE, GetWindowsStyle());
         SetWindowPos(m_hwnd, NULL, 0, 0, 0, 0, SWP_FRAMECHANGED);
 
-        m_frameWidthOffset = 0;
-        m_frameHeightOffset = 0;
-
         SetLocation(m_monitor->GetOriginX(), m_monitor->GetOriginY());
-        SetSize(m_monitor->GetWidth(), m_monitor->GetHeight());
+        SetWindowSize(m_monitor->GetPhysicalWidth(), m_monitor->GetPhysicalHeight());
 
         ShowWindow(m_hwnd, SW_SHOW);
         SetForegroundWindow(m_hwnd);
@@ -109,11 +92,8 @@ bool ysWindowsWindow::SetWindowStyle(WindowStyle style) {
         SetWindowLongPtr(m_hwnd, GWL_STYLE, GetWindowsStyle());
         SetWindowPos(m_hwnd, NULL, 0, 0, 0, 0, SWP_FRAMECHANGED);
 
-        m_frameWidthOffset = 0;
-        m_frameHeightOffset = 0;
-
         SetLocation(m_monitor->GetOriginX(), m_monitor->GetOriginY());
-        SetSize(m_monitor->GetWidth(), m_monitor->GetHeight());
+        SetWindowSize(m_monitor->GetPhysicalWidth(), m_monitor->GetPhysicalHeight());
 
         ShowWindow(m_hwnd, SW_SHOW);
         SetForegroundWindow(m_hwnd);
@@ -122,11 +102,8 @@ bool ysWindowsWindow::SetWindowStyle(WindowStyle style) {
         SetWindowLongPtr(m_hwnd, GWL_STYLE, GetWindowsStyle());
         SetWindowPos(m_hwnd, NULL, 0, 0, 0, 0, SWP_FRAMECHANGED);
 
-        m_frameWidthOffset = 0;
-        m_frameHeightOffset = 0;
-
         SetLocation(m_monitor->GetOriginX(), m_monitor->GetOriginY());
-        SetSize(m_monitor->GetWidth(), m_monitor->GetHeight());
+        SetWindowSize(m_monitor->GetPhysicalWidth(), m_monitor->GetPhysicalHeight());
 
         ShowWindow(m_hwnd, SW_SHOW);
         SetForegroundWindow(m_hwnd);
@@ -140,7 +117,7 @@ void ysWindowsWindow::ScreenToLocal(int &x, int &y) {
     ScreenToClient(m_hwnd, &p);
 
     x = p.x;
-    y = (m_height - m_frameHeightOffset) - p.y;
+    y = m_height - p.y;
 }
 
 bool ysWindowsWindow::IsVisible() {
@@ -155,6 +132,20 @@ bool ysWindowsWindow::IsVisible() {
     default:
         return true;
     }
+}
+
+int ysWindowsWindow::GetScreenWidth() const {
+    RECT rect;
+    GetClientRect(m_hwnd, &rect);
+
+    return rect.right - rect.left;
+}
+
+int ysWindowsWindow::GetScreenHeight() const {
+    RECT rect;
+    GetClientRect(m_hwnd, &rect);
+
+    return rect.bottom - rect.top;
 }
 
 int ysWindowsWindow::GetWindowsStyle() const {
@@ -210,7 +201,7 @@ void ysWindowsWindow::SetState(WindowState state) {
 void ysWindowsWindow::AL_SetSize(int width, int height) {
     ysWindow::AL_SetSize(width, height);
 
-    SetWindowPos(m_hwnd, NULL, 0, 0, m_width, m_height, SWP_NOMOVE | SWP_NOZORDER);
+    SetWindowPos(m_hwnd, NULL, 0, 0, width, height, SWP_NOMOVE | SWP_NOZORDER);
 }
 
 void ysWindowsWindow::AL_SetLocation(int x, int y) {

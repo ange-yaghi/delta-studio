@@ -24,6 +24,13 @@ void dbasic_demo::DeltaBasicDemoApplication::Initialize(void *instance, ysContex
     m_engine.CreateGameWindow(settings); // TODO: path should be relative to exe
     m_engine.SetClearColor(ysColor::srgbiToLinear(0x34, 0x98, 0xdb));
 
+    ysWindowSystem *windowSystem = m_engine.GetWindowSystem();
+    ysMonitor *monitor = windowSystem->GetPrimaryMonitor();
+
+    ysWindow *window = m_engine.GetGameWindow();
+    window->SetWindowSize(monitor->GetPhysicalWidth(), monitor->GetPhysicalHeight());
+    window->SetLocation(0, 0);
+
     dbasic::Material *lightFill = m_assetManager.NewMaterial();
     lightFill->SetName("LightFill");
     lightFill->SetDiffuseColor(ysColor::srgbiToLinear(0xEF, 0x38, 0x37));
@@ -123,12 +130,12 @@ void dbasic_demo::DeltaBasicDemoApplication::Render() {
     blinkSpeed.Speed = 1.0f;
     blinkSpeed.FadeIn = 2.0f;
 
-    if (m_engine.IsKeyDown(ysKeyboard::KEY_W)) {
+    if (m_engine.IsKeyDown(ysKey::Code::W)) {
         ysAnimationChannel::ActionSettings *speed = &normalSpeed;
-        if (m_engine.IsKeyDown(ysKeyboard::KEY_UP)) {
+        if (m_engine.IsKeyDown(ysKey::Code::Up)) {
             speed = &fastSpeed;
         }
-        else if (m_engine.IsKeyDown(ysKeyboard::KEY_DOWN)) {
+        else if (m_engine.IsKeyDown(ysKey::Code::Down)) {
             speed = &backwardsSpeed;
         }
 
@@ -156,7 +163,7 @@ void dbasic_demo::DeltaBasicDemoApplication::Render() {
         }
     }
 
-    if (m_engine.ProcessKeyDown(ysKeyboard::KEY_B) || m_blinkTimer <= 0) {
+    if (m_engine.ProcessKeyDown(ysKey::Code::B) || m_blinkTimer <= 0) {
         m_blinkTimer = ((rand() % 201 - 100) / 100.0f) * 1.0f + 4.0f;
         m_channel2->AddSegment(&m_blink, blinkSpeed);
     }
@@ -177,8 +184,22 @@ void dbasic_demo::DeltaBasicDemoApplication::Render() {
     console->Clear();
     console->MoveToOrigin();
 
+    const int screenWidth = m_engine.GetGameWindow()->GetGameWidth();
+    const int screenHeight = m_engine.GetGameWindow()->GetGameHeight();
+
+    if (m_engine.IsKeyDown(ysKey::Code::N1)) {
+        m_engine.GetGameWindow()->SetGameResolutionScale(1.0f);
+    }
+    else if (m_engine.IsKeyDown(ysKey::Code::N2)) {
+        m_engine.GetGameWindow()->SetGameResolutionScale(0.5f);
+    }
+    else if (m_engine.IsKeyDown(ysKey::Code::N3)) {
+        m_engine.GetGameWindow()->SetGameResolutionScale(0.2222f);
+    }
+
     std::stringstream msg;
     msg << "FPS " << m_engine.GetAverageFramerate() << "\n";
+    msg << screenWidth << "x" << screenHeight << "\n";
     console->DrawGeneralText(msg.str().c_str());
 }
 

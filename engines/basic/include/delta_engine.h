@@ -50,6 +50,10 @@ namespace dbasic {
             const char *LoggingDirectory = "";
             bool DepthBuffer = true;
             bool FrameLogging = false;
+            int WindowWidth = 1920;
+            int WindowHeight = 1080;
+            int WindowPositionX = 0;
+            int WindowPositionY = 0;
         };
 
         static const GameEngineSettings DefaultSettings;
@@ -177,6 +181,9 @@ namespace dbasic {
 
         ysAudioDevice *GetAudioDevice() const { return m_audioDevice; }
         ysBreakdownTimer &GetBreakdownTimer() { return m_breakdownTimer; }
+
+        ysWindowSystem *GetWindowSystem() const { return m_windowSystem; }
+        ysWindow *GetGameWindow() const { return m_gameWindow; }
 
     protected:
         float m_cameraAngle;

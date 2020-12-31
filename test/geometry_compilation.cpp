@@ -5,7 +5,7 @@
 TEST(GeometryCompilation, HierarchyTest) {
     dbasic::AssetManager assetManager;
     ysError err = assetManager.CompileInterchangeFile("../../../test/geometry_files/instance_test", 1.0f, true);
-    EXPECT_EQ(err, ysError::YDS_NO_ERROR);
+    EXPECT_EQ(err, ysError::None);
 
     assetManager.LoadSceneFile("../../../test/geometry_files/instance_test", false);
     assetManager.ResolveNodeHierarchy();
@@ -32,7 +32,7 @@ TEST(GeometryCompilation, HierarchyTest) {
 TEST(GeometryCompilation, ArmatureTest) {
     dbasic::AssetManager assetManager;
     ysError err = assetManager.CompileInterchangeFile("../../../test/geometry_files/armature_test", 1.0f, true);
-    EXPECT_EQ(err, ysError::YDS_NO_ERROR);
+    EXPECT_EQ(err, ysError::None);
 
     assetManager.LoadSceneFile("../../../test/geometry_files/armature_test", false);
     assetManager.ResolveNodeHierarchy();
@@ -43,5 +43,5 @@ TEST(GeometryCompilation, ArmatureTest) {
 TEST(GeometryCompilation, FullModelTest) {    
     dbasic::AssetManager assetManager;
     ysError err = assetManager.CompileInterchangeFile("../../../test/geometry_files/ant", 1.0f, true);
-    EXPECT_EQ(err, ysError::YDS_NO_ERROR);
+    EXPECT_EQ(err, ysError::None);
 }
