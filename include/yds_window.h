@@ -41,12 +41,15 @@ public:
 
     void RestoreWindow();
 
-    int GetWidth()            const { return m_width; }
-    int GetHeight()            const { return m_height; }
-    int GetScreenWidth()    const { return m_width - m_frameWidthOffset; }
-    int GetScreenHeight()    const { return m_height - m_frameHeightOffset; }
-    WindowStyle GetStyle() const { return m_windowStyle; }
+    int GetWidth() const { return m_width; }
+    int GetHeight() const { return m_height; }
+    virtual int GetScreenWidth() const { return m_width; }
+    virtual int GetScreenHeight() const { return m_height; }
+    WindowStyle GetWindowStyle() const { return m_windowStyle; }
     ysMonitor *GetMonitor() const { return m_monitor; }
+
+    const int GetGameWidth() const;
+    const int GetGameHeight() const;
 
     int GetPositionX() const { return m_locationx; }
     int GetPositionY() const { return m_locationy; }
@@ -57,7 +60,8 @@ public:
     virtual bool IsActive();
     virtual bool IsVisible();
 
-    virtual void SetSize(int width, int height);
+    virtual void SetScreenSize(int width, int height);
+    virtual void SetWindowSize(int width, int height);
     virtual void SetLocation(int x, int y);
     virtual void SetTitle(const char *title);
 
@@ -68,6 +72,14 @@ public:
     virtual bool SetWindowStyle(WindowStyle style);
 
     void AttachEventHandler(ysWindowEventHandler *handler);
+
+    void SetGameResolutionScale(float scale);
+
+    void SetGameResolutionScaleHorizontal(float scale);
+    float GetGameResolutionScaleHorizontal() const { return m_gameResolutionScaleHorizontal; }
+
+    void SetGameResolutionScaleVertical(float scale);
+    float GetGameResolutionScaleVertical() const { return m_gameResolutionScaleVertical; }
 
 public:
     // Handlers
@@ -98,18 +110,6 @@ protected:
     // Location y
     int m_locationy;
 
-    // Frame Origin Offset
-    int m_frameOriginXOffset;
-
-    // Frame Origin Offset
-    int m_frameOriginYOffset;
-
-    // Frame Width Offset
-    int m_frameWidthOffset;
-
-    // Frame Height Offset
-    int m_frameHeightOffset;
-
     // Title
     char m_title[MAX_NAME_LENGTH];
 
@@ -130,6 +130,9 @@ protected:
 
     // Status flag indicating whether the window is resizing
     bool m_resizing;
+
+    float m_gameResolutionScaleHorizontal;
+    float m_gameResolutionScaleVertical;
 
 protected:
     // Event handler

@@ -11,12 +11,12 @@ public:
     ysWindowEventHandler();
     virtual ~ysWindowEventHandler();
 
-    virtual void OnMoveWindow(int x, int y)        { (void)x; (void)y; }
-    virtual void OnResizeWindow(int w, int h)    { (void)w; (void)h; }
-    virtual void OnActivate()                    { /* void */ }
-    virtual void OnDeactivate()                    { /* void */ }
-    virtual void OnCloseWindow()                { /* void */ }
-    virtual void OnKeyDown(int key)                { (void)key; }
+    virtual void OnMoveWindow(int x, int y) { (void)x; (void)y; }
+    virtual void OnResizeWindow(int w, int h) { (void)w; (void)h; }
+    virtual void OnActivate() { /* void */ }
+    virtual void OnDeactivate() { /* void */ }
+    virtual void OnCloseWindow() { /* void */ }
+    virtual void OnKeyDown(int key) { (void)key; }
 
 protected:
     inline ysWindow *GetWindow() { return m_window; }

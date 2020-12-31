@@ -124,7 +124,7 @@ ysError ysDevice::CreateOffScreenRenderTarget(ysRenderTarget **newTarget, const 
     return YDS_ERROR_RETURN(ysError::None);
 }
 
-ysError ysDevice::ResizeRenderTarget(ysRenderTarget* target, int width, int height) {
+ysError ysDevice::ResizeRenderTarget(ysRenderTarget *target, int width, int height, int pwidth, int pheight) {
     YDS_ERROR_DECLARE("ResizeRenderTarget");
 
     if (target == nullptr) return YDS_ERROR_RETURN(ysError::InvalidParameter);
@@ -133,16 +133,18 @@ ysError ysDevice::ResizeRenderTarget(ysRenderTarget* target, int width, int heig
         // This is an on-screen render target so the width and height must match
         // the requirements of the parent context.
 
-        int reqWidth = target->m_associatedContext->GetWindow()->GetScreenWidth();
-        int reqHeight = target->m_associatedContext->GetWindow()->GetScreenHeight();
+        const int reqWidth = target->m_associatedContext->GetWindow()->GetGameWidth();
+        const int reqHeight = target->m_associatedContext->GetWindow()->GetGameHeight();
 
         if (reqWidth != width || reqHeight != height){
-            return YDS_ERROR_RETURN_MSG(ysError::InvalidParameter, "On-screen render target size must match window size.");
+            //return YDS_ERROR_RETURN_MSG(ysError::InvalidParameter, "On-screen render target size must match window size.");
         }
     }
 
     target->m_width = width;
     target->m_height = height;
+    target->m_physicalWidth = pwidth;
+    target->m_physicalHeight = pheight;
 
     return YDS_ERROR_RETURN(ysError::None);
 }

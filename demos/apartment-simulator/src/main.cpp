@@ -12,11 +12,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
     ApartmentSimulator apartmentSimulator;
 
-    apartmentSimulator.Initialize(ysDevice::DIRECTX11, (void *)&hInstance);
+    apartmentSimulator.Initialize(ysDevice::DeviceAPI::DirectX11, (void *)&hInstance);
     apartmentSimulator.GameLoop();
     apartmentSimulator.Destroy();
 
-    YDS_ERROR_RETURN_STATIC(ysError::YDS_NO_ERROR);
+    YDS_ERROR_RETURN_STATIC(ysError::None);
 
     return 0;
 }

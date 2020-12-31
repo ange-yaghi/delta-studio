@@ -4,8 +4,12 @@
 #include "../include/yds_windows_monitor.h"
 #include "../include/yds_windows_input_system.h"
 
+#include <shellscalingapi.h>
+
 ysWindowsWindowSystem::ysWindowsWindowSystem() : ysWindowSystem(Platform::Windows) {
     m_instance = NULL;
+    m_oldCursor = NULL;
+    m_oldCursorClip = RECT();
 }
 
 ysWindowsWindowSystem::~ysWindowsWindowSystem() {
@@ -39,9 +43,17 @@ BOOL CALLBACK MonitorEnum(HMONITOR hMonitor, HDC hdcMonitor, LPRECT lprcMonitor,
     GetMonitorInfo(hMonitor, &info);
 
     newMonitor->SetOrigin(lprcMonitor->left, lprcMonitor->top);
-    newMonitor->SetSize(lprcMonitor->right - lprcMonitor->left,
+    newMonitor->SetLogicalSize(lprcMonitor->right - lprcMonitor->left,
         lprcMonitor->bottom - lprcMonitor->top);
     newMonitor->SetDeviceName(info.szDevice);
+
+    DEVMODE devMode;
+    devMode.dmSize = sizeof(devMode);
+    devMode.dmDriverExtra = 0;
+    EnumDisplaySettings(info.szDevice, ENUM_CURRENT_SETTINGS, &devMode);
+    
+    newMonitor->SetPhysicalSize(devMode.dmPelsWidth, devMode.dmPelsHeight);
+    newMonitor->CalculateScaling();
 
     return TRUE;
 }
@@ -74,11 +86,13 @@ ysWindow *ysWindowsWindowSystem::FindWindowFromHandle(HWND handle) {
 void ysWindowsWindowSystem::ConnectInstance(void *genericInstanceConnection) {
     HINSTANCE *instance = static_cast<HINSTANCE *>(genericInstanceConnection);
 
+    SetProcessDPIAware();
+
     m_instance = *instance;
 }
 
 LRESULT WINAPI ysWindowsWindowSystem::WinProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
-    int id = GetCurrentThreadId();
+    const DWORD id = GetCurrentThreadId();
 
     ysWindowSystem *system = ysWindowSystem::Get();
 

@@ -35,7 +35,7 @@ public:
     virtual ysError CreateOnScreenRenderTarget(ysRenderTarget **newTarget, ysRenderingContext *context, bool depthBuffer);
     virtual ysError CreateOffScreenRenderTarget(ysRenderTarget **newTarget, int width, int height, ysRenderTarget::Format format, bool colorData, bool depthBuffer);
     virtual ysError CreateSubRenderTarget(ysRenderTarget **newTarget, ysRenderTarget *parent, int x, int y, int width, int height);
-    virtual ysError ResizeRenderTarget(ysRenderTarget *target, int width, int height);
+    virtual ysError ResizeRenderTarget(ysRenderTarget *target, int width, int height, int pwidth, int pheight);
     virtual ysError DestroyRenderTarget(ysRenderTarget *&target);
     virtual ysError SetRenderTarget(ysRenderTarget *target);
     virtual ysError SetDepthTestEnabled(ysRenderTarget *target, bool enable);

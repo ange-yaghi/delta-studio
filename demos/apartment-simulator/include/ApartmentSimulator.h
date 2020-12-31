@@ -93,7 +93,7 @@ public:
     ApartmentSimulator();
     ~ApartmentSimulator();
 
-    void Initialize(ysDevice::DEVICE_API API, void *instance);
+    void Initialize(ysDevice::DeviceAPI API, void *instance);
     void GameLoop();
     void Destroy();
 

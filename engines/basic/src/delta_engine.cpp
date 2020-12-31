@@ -130,7 +130,13 @@ ysError dbasic::DeltaEngine::CreateGameWindow(const GameEngineSettings &settings
 
     // Create the game window
     YDS_NESTED_ERROR_CALL(m_windowSystem->NewWindow(&m_gameWindow));
-    YDS_NESTED_ERROR_CALL(m_gameWindow->InitializeWindow(nullptr, settings.WindowTitle, ysWindow::WindowStyle::Windowed, 0, 0, 1920, 1080, mainMonitor));
+    YDS_NESTED_ERROR_CALL(m_gameWindow->InitializeWindow(
+        nullptr,
+        settings.WindowTitle,
+        settings.WindowStyle,
+        settings.WindowPositionX, settings.WindowPositionY,
+        settings.WindowWidth, settings.WindowHeight,
+        mainMonitor));
     m_gameWindow->AttachEventHandler(&m_windowHandler);
 
     // Create the graphics device
@@ -568,7 +574,7 @@ void dbasic::DeltaEngine::SetCameraFov(float fov) {
 }
 
 float dbasic::DeltaEngine::GetCameraAspect() const {
-    return m_gameWindow->GetScreenWidth() / (float)m_gameWindow->GetScreenHeight();
+    return m_gameWindow->GetGameWidth() / (float)m_gameWindow->GetGameHeight();
 }
 
 void dbasic::DeltaEngine::SetCameraAltitude(float altitude) {
@@ -759,11 +765,11 @@ void dbasic::DeltaEngine::SetFogColor(const ysVector &color) {
 }
 
 int dbasic::DeltaEngine::GetScreenWidth() const {
-    return m_gameWindow->GetScreenWidth();
+    return m_gameWindow->GetGameWidth();
 }
 
 int dbasic::DeltaEngine::GetScreenHeight() const {
-    return m_gameWindow->GetScreenHeight();
+    return m_gameWindow->GetGameHeight();
 }
 
 ysError dbasic::DeltaEngine::DrawImage(ysTexture *image, int layer, float scaleX, float scaleY, float texOffsetU, float texOffsetV, float texScaleU, float texScaleV) {
@@ -941,7 +947,7 @@ ysError dbasic::DeltaEngine::ExecuteDrawQueue(DrawTarget target) {
     YDS_NESTED_ERROR_CALL(m_device->EditBufferData(m_lightingControlBuffer, (char *)(&m_lightingControls)));
 
     if (!m_shaderScreenVariablesSync) {
-        const float aspect = m_gameWindow->GetScreenWidth() / (float)m_gameWindow->GetScreenHeight();
+        const float aspect = m_gameWindow->GetGameWidth() / (float)m_gameWindow->GetGameHeight();
 
         if (target == DrawTarget::Main) {
             m_shaderScreenVariables.Projection = ysMath::Transpose(ysMath::FrustrumPerspective(m_cameraFov, aspect, m_nearClip, m_farClip));
@@ -949,8 +955,8 @@ ysError dbasic::DeltaEngine::ExecuteDrawQueue(DrawTarget target) {
         else if (target == DrawTarget::Gui) {
             m_shaderScreenVariables.Projection = ysMath::Transpose(
                 ysMath::OrthographicProjection(
-                    (float)m_gameWindow->GetScreenWidth(), 
-                    (float)m_gameWindow->GetScreenHeight(), 
+                    (float)m_gameWindow->GetGameWidth(), 
+                    (float)m_gameWindow->GetGameHeight(), 
                     0.001f, 
                     500.0f));
         }

@@ -70,7 +70,7 @@ public:
     virtual ysError CreateSubRenderTarget(ysRenderTarget **newTarget, ysRenderTarget *parent, int x, int y, int width, int height) = 0;
 
     // Resize a render target
-    virtual ysError ResizeRenderTarget(ysRenderTarget *target, int width, int height);
+    virtual ysError ResizeRenderTarget(ysRenderTarget *target, int width, int height, int pwidth, int pheight);
 
     // Enable/disable depth testing
     virtual ysError SetDepthTestEnabled(ysRenderTarget *target, bool enable);

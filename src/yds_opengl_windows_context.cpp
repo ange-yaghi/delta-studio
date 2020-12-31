@@ -79,15 +79,14 @@ ysError ysOpenGLWindowsContext::CreateRenderingContext(ysOpenGLDevice *device, y
 
         LoadContextCreationExtension();
 
-        int contextAttribs[] =
-        {
+        const int contextAttribs[] = {
             WGL_CONTEXT_MAJOR_VERSION_ARB, major,
             WGL_CONTEXT_MINOR_VERSION_ARB, minor,
             WGL_CONTEXT_PROFILE_MASK_ARB, WGL_CONTEXT_CORE_PROFILE_BIT_ARB,
             0
         };
 
-        int pixelFormatAttributes[] = {
+        const int pixelFormatAttributes[] = {
             WGL_DRAW_TO_WINDOW_ARB, GL_TRUE,
             WGL_SUPPORT_OPENGL_ARB, GL_TRUE,
             WGL_DOUBLE_BUFFER_ARB, GL_TRUE,
@@ -174,8 +173,8 @@ ysError ysOpenGLWindowsContext::SetContextMode(ContextMode mode) {
         DEVMODE dmScreenSettings;
         memset(&dmScreenSettings, 0, sizeof(dmScreenSettings));
         dmScreenSettings.dmSize = sizeof(dmScreenSettings);
-        dmScreenSettings.dmPelsWidth = monitor->GetWidth();
-        dmScreenSettings.dmPelsHeight = monitor->GetHeight();
+        dmScreenSettings.dmPelsWidth = monitor->GetPhysicalWidth();
+        dmScreenSettings.dmPelsHeight = monitor->GetPhysicalHeight();
         dmScreenSettings.dmBitsPerPel = 32;
         dmScreenSettings.dmFields = DM_BITSPERPEL | DM_PELSWIDTH | DM_PELSHEIGHT;
 
