@@ -21,6 +21,7 @@
   <ItemGroup>
     <ClInclude Include="..\..\engines\basic\include\animation.h" />
     <ClInclude Include="..\..\engines\basic\include\audio_asset.h" />
+    <ClInclude Include="..\..\engines\basic\include\default_shaders.h" />
     <ClInclude Include="..\..\engines\basic\include\delta_basic_engine.h" />
     <ClInclude Include="..\..\engines\basic\include\delta_core.h" />
     <ClInclude Include="..\..\engines\basic\include\animation_export_data.h" />
@@ -37,6 +38,8 @@
     <ClInclude Include="..\..\engines\basic\include\font.h" />
     <ClInclude Include="..\..\engines\basic\include\os_utilities.h" />
     <ClInclude Include="..\..\engines\basic\include\path.h" />
+    <ClInclude Include="..\..\engines\basic\include\shader_set.h" />
+    <ClInclude Include="..\..\engines\basic\include\shader_stage.h" />
     <ClInclude Include="..\..\engines\basic\include\texture_asset.h" />
     <ClInclude Include="..\..\engines\basic\include\text_renderer.h" />
     <ClInclude Include="..\..\engines\basic\include\ui_renderer.h" />
@@ -64,10 +67,13 @@
     <ClCompile Include="..\..\engines\basic\src\character.cpp" />
     <ClCompile Include="..\..\engines\basic\src\color_scale.cpp" />
     <ClCompile Include="..\..\engines\basic\src\console.cpp" />
+    <ClCompile Include="..\..\engines\basic\src\default_shaders.cpp" />
     <ClCompile Include="..\..\engines\basic\src\delta_engine.cpp" />
     <ClCompile Include="..\..\engines\basic\src\font.cpp" />
     <ClCompile Include="..\..\engines\basic\src\os_utilities.cpp" />
     <ClCompile Include="..\..\engines\basic\src\path.cpp" />
+    <ClCompile Include="..\..\engines\basic\src\shader_set.cpp" />
+    <ClCompile Include="..\..\engines\basic\src\shader_stage.cpp" />
     <ClCompile Include="..\..\engines\basic\src\texture_asset.cpp" />
     <ClCompile Include="..\..\engines\basic\src\text_renderer.cpp" />
     <ClCompile Include="..\..\engines\basic\src\ui_renderer.cpp" />

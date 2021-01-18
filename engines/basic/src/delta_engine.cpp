@@ -59,9 +59,6 @@ dbasic::DeltaEngine::DeltaEngine() {
     m_shaderObjectVariables.Scale[0] = 1.0f;
     m_shaderObjectVariables.Scale[1] = 1.0f;
     m_shaderObjectVariables.Scale[2] = 1.0f;
-    m_shaderObjectVariablesSync = false;
-
-    m_shaderScreenVariablesSync = false;
 
     // Camera
     m_nearClip = 2.0f;
@@ -260,6 +257,8 @@ ysError dbasic::DeltaEngine::Destroy() {
     YDS_NESTED_ERROR_CALL(GetConsole()->Destroy());
     YDS_NESTED_ERROR_CALL(GetUiRenderer()->Destroy());
 
+    YDS_NESTED_ERROR_CALL(m_shaders.Destroy());
+
     YDS_NESTED_ERROR_CALL(m_device->DestroyGPUBuffer(m_mainIndexBuffer));
     YDS_NESTED_ERROR_CALL(m_device->DestroyGPUBuffer(m_mainVertexBuffer));
     YDS_NESTED_ERROR_CALL(m_device->DestroyGPUBuffer(m_shaderObjectVariablesBuffer));
@@ -318,6 +317,8 @@ ysError dbasic::DeltaEngine::UseMaterial(Material *material) {
 }
 
 void dbasic::DeltaEngine::ResetLights() {
+    m_shaders.ResetLights();
+
     m_lightCount = 0;
     for (int i = 0; i < LightingControls::MaxLights; ++i) {
         m_lightingControls.Lights[i].Active = 0;
@@ -416,6 +417,8 @@ ysError dbasic::DeltaEngine::InitializeShaders(const char *shaderDirectory) {
     YDS_NESTED_ERROR_CALL(m_device->CreateConstantBuffer(&m_lightingControlBuffer, sizeof(LightingControls), nullptr));
     YDS_NESTED_ERROR_CALL(m_device->CreateConstantBuffer(&m_consoleShaderObjectVariablesBuffer, 
         sizeof(ConsoleShaderObjectVariables), nullptr));
+
+    YDS_NESTED_ERROR_CALL(m_shaders.Initialize(m_device, m_mainRenderTarget, m_shaderProgram, m_inputLayout));
 
     return YDS_ERROR_RETURN(ysError::None);
 }
@@ -524,13 +527,10 @@ void dbasic::DeltaEngine::SubmitSkeleton(Skeleton *skeleton) {
 void dbasic::DeltaEngine::SetCameraPosition(float x, float y) {
     const ysVector3 p = ysMath::GetVector3(m_cameraPosition);
     m_cameraPosition = ysMath::LoadVector(x, y, p.z, 1.0f);
-
-    m_shaderScreenVariablesSync = false;
 }
 
 void dbasic::DeltaEngine::SetCameraPosition(const ysVector &pos) {
     m_cameraPosition = pos;
-    m_shaderObjectVariablesSync = false;
 }
 
 ysVector dbasic::DeltaEngine::GetCameraPosition() const {
@@ -552,17 +552,14 @@ ysVector dbasic::DeltaEngine::GetCameraUp() const {
 
 void dbasic::DeltaEngine::SetCameraTarget(const ysVector &target) {
     m_cameraTarget = target;
-    m_shaderScreenVariablesSync = false;
 }
 
 void dbasic::DeltaEngine::SetCameraMode(CameraMode mode) {
     m_cameraMode = mode;
-    m_shaderScreenVariablesSync = false;
 }
 
 void dbasic::DeltaEngine::SetCameraAngle(float angle) {
     m_cameraAngle = angle;
-    m_shaderScreenVariablesSync = false;
 }
 
 float dbasic::DeltaEngine::GetCameraFov() const {
@@ -580,8 +577,6 @@ float dbasic::DeltaEngine::GetCameraAspect() const {
 void dbasic::DeltaEngine::SetCameraAltitude(float altitude) {
     const ysVector3 p = ysMath::GetVector3(m_cameraPosition);
     m_cameraPosition = ysMath::LoadVector(p.x, p.y, altitude, 1.0f);
-
-    m_shaderScreenVariablesSync = false;
 }
 
 float dbasic::DeltaEngine::GetCameraAltitude() const {
@@ -589,18 +584,18 @@ float dbasic::DeltaEngine::GetCameraAltitude() const {
 }
 
 void dbasic::DeltaEngine::SetObjectTransform(const ysMatrix &mat) {
-    m_shaderObjectVariablesSync = false;
     m_shaderObjectVariables.Transform = mat;
+    m_shaders.SetObjectTransform(mat);
 }
 
 void dbasic::DeltaEngine::SetPositionOffset(const ysVector &position) {
-    m_shaderObjectVariablesSync = false;
     m_shaderObjectVariables.Transform = 
         ysMath::MatMult(m_shaderObjectVariables.Transform, ysMath::TranslationTransform(position));
+    m_shaders.SetPositionOffset(position);
 }
 
 void dbasic::DeltaEngine::SetWindowSize(int width, int height) {
-    m_shaderScreenVariablesSync = false;
+    /* void */
 }
 
 void dbasic::DeltaEngine::SetConsoleColor(const ysVector &v) {
@@ -706,62 +701,77 @@ float dbasic::DeltaEngine::GetAverageFramerate() {
 
 void dbasic::DeltaEngine::ResetBrdfParameters() {
     m_shaderObjectVariables = ShaderObjectVariables();
+    m_shaders.ResetBrdfParameters();
 }
 
 void dbasic::DeltaEngine::SetBaseColor(const ysVector &color) {
     m_shaderObjectVariables.BaseColor = ysMath::GetVector4(color);
+    m_shaders.SetBaseColor(color);
 }
 
 void dbasic::DeltaEngine::ResetBaseColor() {
     m_shaderObjectVariables.BaseColor = ysVector4(1.0f, 1.0f, 1.0f, 1.0f);
+    m_shaders.ResetBaseColor();
 }
 
 void dbasic::DeltaEngine::SetLit(bool lit) {
     m_shaderObjectVariables.Lit = (lit) ? 1 : 0;
+    m_shaders.SetLit(lit);
 }
 
 void dbasic::DeltaEngine::SetEmission(const ysVector &emission) {
     m_shaderObjectVariables.Emission = ysMath::GetVector4(emission);
+    m_shaders.SetEmission(emission);
 }
 
 void dbasic::DeltaEngine::SetSpecularMix(float specularMix) {
     m_shaderObjectVariables.SpecularMix = specularMix;
+    m_shaders.SetSpecularMix(specularMix);
 }
 
 void dbasic::DeltaEngine::SetDiffuseMix(float diffuseMix) {
     m_shaderObjectVariables.DiffuseMix = diffuseMix;
+    m_shaders.SetDiffuseMix(diffuseMix);
 }
 
 void dbasic::DeltaEngine::SetMetallic(float metallic) {
     m_shaderObjectVariables.Metallic = metallic;
+    m_shaders.SetMetallic(metallic);
 }
 
 void dbasic::DeltaEngine::SetDiffuseRoughness(float diffuseRoughness) {
     m_shaderObjectVariables.DiffuseRoughness = diffuseRoughness;
+    m_shaders.SetDiffuseRoughness(diffuseRoughness);
 }
 
 void dbasic::DeltaEngine::SetSpecularRoughness(float specularRoughness) { 
     m_shaderObjectVariables.SpecularPower = ::pow(2.0f, 12.0f * (1.0f - specularRoughness));
+    m_shaders.SetSpecularRoughness(specularRoughness);
 }
 
 void dbasic::DeltaEngine::SetSpecularPower(float power) {
     m_shaderObjectVariables.SpecularPower = power;
+    m_shaders.SetSpecularPower(power);
 }
 
 void dbasic::DeltaEngine::SetIncidentSpecular(float incidentSpecular) {
     m_shaderObjectVariables.IncidentSpecular = incidentSpecular;
+    m_shaders.SetIncidentSpecular(incidentSpecular);
 }
 
 void dbasic::DeltaEngine::SetFogNear(float fogNear) {
     m_shaderScreenVariables.FogNear = fogNear;
+    m_shaders.SetFogNear(fogNear);
 }
 
 void dbasic::DeltaEngine::SetFogFar(float fogFar) {
     m_shaderScreenVariables.FogFar = fogFar;
+    m_shaders.SetFogFar(fogFar);
 }
 
 void dbasic::DeltaEngine::SetFogColor(const ysVector &color) {
     m_shaderScreenVariables.FogColor = ysMath::GetVector4(color);
+    m_shaders.SetFogColor(color);
 }
 
 int dbasic::DeltaEngine::GetScreenWidth() const {
@@ -775,20 +785,24 @@ int dbasic::DeltaEngine::GetScreenHeight() const {
 ysError dbasic::DeltaEngine::DrawImage(ysTexture *image, int layer, float scaleX, float scaleY, float texOffsetU, float texOffsetV, float texScaleU, float texScaleV) {
     YDS_ERROR_DECLARE("DrawImage");
 
-    if (!m_shaderObjectVariablesSync) {
-        m_shaderObjectVariables.Scale[0] = scaleX;
-        m_shaderObjectVariables.Scale[1] = scaleY;
-        m_shaderObjectVariables.Scale[2] = 1.0f;
+    m_shaderObjectVariables.Scale[0] = scaleX;
+    m_shaderObjectVariables.Scale[1] = scaleY;
+    m_shaderObjectVariables.Scale[2] = 1.0f;
+    m_shaders.SetScale(scaleX, scaleY, 1.0f);
 
-        m_shaderObjectVariables.TexOffset[0] = texOffsetU;
-        m_shaderObjectVariables.TexOffset[1] = texOffsetV;
+    m_shaderObjectVariables.TexOffset[0] = texOffsetU;
+    m_shaderObjectVariables.TexOffset[1] = texOffsetV;
+    m_shaders.SetTexOffset(texOffsetU, texOffsetV);
 
-        m_shaderObjectVariables.TexScale[0] = texScaleU;
-        m_shaderObjectVariables.TexScale[1] = texScaleV;
+    m_shaderObjectVariables.TexScale[0] = texScaleU;
+    m_shaderObjectVariables.TexScale[1] = texScaleV;
+    m_shaders.SetTexScale(texScaleU, texScaleV);
 
-        m_shaderObjectVariables.ColorReplace = 0;
-        m_shaderObjectVariables.Lit = 1;
-    }
+    m_shaderObjectVariables.ColorReplace = 0;
+    m_shaderObjectVariables.Lit = 1;
+
+    m_shaders.SetColorReplace(false);
+    m_shaders.SetLit(true);
 
     DrawCall *newCall = nullptr;
     if (m_currentTarget == DrawTarget::Main) {
@@ -800,6 +814,7 @@ ysError dbasic::DeltaEngine::DrawImage(ysTexture *image, int layer, float scaleX
 
     if (newCall != nullptr) {
         newCall->ObjectVariables = m_shaderObjectVariables;
+        m_shaders.GetShaderSet()->CacheObjectData(&newCall->ObjectVariables, sizeof(newCall->ObjectVariables));
         newCall->Texture = image;
         newCall->Model = nullptr;
     }
@@ -815,6 +830,7 @@ ysError dbasic::DeltaEngine::AddLight(const Light &light) {
     m_lightingControls.Lights[m_lightCount].Active = 1;
     ++m_lightCount;
 
+    m_shaders.AddLight(light);
 
     return YDS_ERROR_RETURN(ysError::None);
 }
@@ -824,25 +840,29 @@ ysError dbasic::DeltaEngine::SetAmbientLight(const ysVector4 &ambient) {
 
     m_lightingControls.AmbientLighting = ambient;
 
+    m_shaders.SetAmbientLight(ambient);
+
     return YDS_ERROR_RETURN(ysError::None);
 }
 
 ysError dbasic::DeltaEngine::DrawBox(float width, float height, int layer) {
     YDS_ERROR_DECLARE("DrawBox");
 
-    if (!m_shaderObjectVariablesSync) {
-        m_shaderObjectVariables.Scale[0] = (float)width / 2.0f;
-        m_shaderObjectVariables.Scale[1] = (float)height / 2.0f;
-        m_shaderObjectVariables.Scale[2] = 1.0f;
+    m_shaderObjectVariables.Scale[0] = width / 2.0f;
+    m_shaderObjectVariables.Scale[1] = height / 2.0f;
+    m_shaderObjectVariables.Scale[2] = 1.0f;
+    m_shaders.SetScale(width / 2.0f, height / 2.0f);
 
-        m_shaderObjectVariables.TexOffset[0] = 0.0f;
-        m_shaderObjectVariables.TexOffset[1] = 0.0f;
+    m_shaderObjectVariables.TexOffset[0] = 0.0f;
+    m_shaderObjectVariables.TexOffset[1] = 0.0f;
+    m_shaders.SetTexOffset(0.0f, 0.0f);
 
-        m_shaderObjectVariables.TexScale[0] = 1.0f;
-        m_shaderObjectVariables.TexScale[1] = 1.0f;
+    m_shaderObjectVariables.TexScale[0] = 1.0f;
+    m_shaderObjectVariables.TexScale[1] = 1.0f;
+    m_shaders.SetTexScale(1.0f, 1.0f);
 
-        m_shaderObjectVariables.ColorReplace = 1;
-    }
+    m_shaderObjectVariables.ColorReplace = 1;
+    m_shaders.SetColorReplace(true);
 
     DrawCall *newCall = nullptr;
     if (m_currentTarget == DrawTarget::Main) {
@@ -854,6 +874,7 @@ ysError dbasic::DeltaEngine::DrawBox(float width, float height, int layer) {
 
     if (newCall != nullptr) {
         newCall->ObjectVariables = m_shaderObjectVariables;
+        m_shaders.GetShaderSet()->CacheObjectData(&newCall->ObjectVariables, sizeof(newCall->ObjectVariables));
         newCall->Texture = nullptr;
         newCall->Model = nullptr;
     }
@@ -883,19 +904,21 @@ ysError dbasic::DeltaEngine::DrawAxis(const ysVector &position, const ysVector &
 ysError dbasic::DeltaEngine::DrawModel(ModelAsset *model, float scale, ysTexture *texture, int layer) {
     YDS_ERROR_DECLARE("DrawModel");
 
-    if (!m_shaderObjectVariablesSync) {
-        m_shaderObjectVariables.Scale[0] = scale;
-        m_shaderObjectVariables.Scale[1] = scale;
-        m_shaderObjectVariables.Scale[2] = scale;
+    m_shaderObjectVariables.Scale[0] = scale;
+    m_shaderObjectVariables.Scale[1] = scale;
+    m_shaderObjectVariables.Scale[2] = scale;
+    m_shaders.SetScale(scale, scale, scale);
 
-        m_shaderObjectVariables.TexOffset[0] = 0.0f;
-        m_shaderObjectVariables.TexOffset[1] = 0.0f;
+    m_shaderObjectVariables.TexOffset[0] = 0.0f;
+    m_shaderObjectVariables.TexOffset[1] = 0.0f;
+    m_shaders.SetTexOffset(0.0f, 0.0f);
 
-        m_shaderObjectVariables.TexScale[0] = 1.0f;
-        m_shaderObjectVariables.TexScale[1] = 1.0f;
+    m_shaderObjectVariables.TexScale[0] = 1.0f;
+    m_shaderObjectVariables.TexScale[1] = 1.0f;
+    m_shaders.SetTexScale(1.0f, 1.0f);
 
-        m_shaderObjectVariables.ColorReplace = 1;
-    }
+    m_shaderObjectVariables.ColorReplace = 1;
+    m_shaders.SetColorReplace(true);
 
     DrawCall *newCall = nullptr;
     if (m_currentTarget == DrawTarget::Main) {
@@ -907,6 +930,7 @@ ysError dbasic::DeltaEngine::DrawModel(ModelAsset *model, float scale, ysTexture
 
     if (newCall != nullptr) {
         newCall->ObjectVariables = m_shaderObjectVariables;
+        m_shaders.GetShaderSet()->CacheObjectData(&newCall->ObjectVariables, sizeof(newCall->ObjectVariables));
         newCall->Texture = texture;
         newCall->Model = model;
     }
@@ -946,69 +970,67 @@ ysError dbasic::DeltaEngine::ExecuteDrawQueue(DrawTarget target) {
     YDS_NESTED_ERROR_CALL(m_device->EditBufferData(m_shaderSkinningControlsBuffer, (char *)(&m_shaderSkinningControls)));
     YDS_NESTED_ERROR_CALL(m_device->EditBufferData(m_lightingControlBuffer, (char *)(&m_lightingControls)));
 
-    if (!m_shaderScreenVariablesSync) {
-        const float aspect = m_gameWindow->GetGameWidth() / (float)m_gameWindow->GetGameHeight();
+    const float aspect = m_gameWindow->GetGameWidth() / (float)m_gameWindow->GetGameHeight();
 
-        if (target == DrawTarget::Main) {
-            m_shaderScreenVariables.Projection = ysMath::Transpose(ysMath::FrustrumPerspective(m_cameraFov, aspect, m_nearClip, m_farClip));
-        }
-        else if (target == DrawTarget::Gui) {
-            m_shaderScreenVariables.Projection = ysMath::Transpose(
-                ysMath::OrthographicProjection(
-                    (float)m_gameWindow->GetGameWidth(), 
-                    (float)m_gameWindow->GetGameHeight(), 
-                    0.001f, 
-                    500.0f));
-        }
+    if (target == DrawTarget::Main) {
+        m_shaderScreenVariables.Projection = ysMath::Transpose(ysMath::FrustrumPerspective(m_cameraFov, aspect, m_nearClip, m_farClip));
+        m_shaders.SetProjection(ysMath::Transpose(ysMath::FrustrumPerspective(m_cameraFov, aspect, m_nearClip, m_farClip)));
+    }
+    else if (target == DrawTarget::Gui) {
+        m_shaderScreenVariables.Projection = ysMath::Transpose(
+            ysMath::OrthographicProjection(
+                (float)m_gameWindow->GetGameWidth(), 
+                (float)m_gameWindow->GetGameHeight(), 
+                0.001f, 
+                500.0f));
 
-        const float sinRot = sin(m_cameraAngle * ysMath::Constants::PI / 180.0f);
-        const float cosRot = cos(m_cameraAngle * ysMath::Constants::PI / 180.0f);
+        m_shaders.SetProjection(ysMath::Transpose(
+            ysMath::OrthographicProjection(
+            (float)m_gameWindow->GetGameWidth(),
+                (float)m_gameWindow->GetGameHeight(),
+                0.001f,
+                500.0f)));
+    }
 
-        ysVector cameraEye;
-        ysVector cameraTarget;
-        ysVector up;
+    const float sinRot = sin(m_cameraAngle * ysMath::Constants::PI / 180.0f);
+    const float cosRot = cos(m_cameraAngle * ysMath::Constants::PI / 180.0f);
 
-        if (target == DrawTarget::Main) {
-            cameraEye = m_cameraPosition;
-        }
-        else if (target == DrawTarget::Gui) {
-            cameraEye = ysMath::LoadVector(0.0f, 0.0f, 10.0f, 1.0f);
-        }
+    ysVector cameraEye;
+    ysVector cameraTarget;
+    ysVector up;
 
-        if (target == DrawTarget::Main) {
-            if (m_cameraMode == CameraMode::Flat) {
-                cameraTarget = ysMath::Mask(cameraEye, ysMath::Constants::MaskOffZ);
-                up = ysMath::LoadVector(-sinRot, cosRot);
-            }
-            else {
-                cameraTarget = m_cameraTarget;
-                ysVector cameraDir = ysMath::Sub(cameraTarget, cameraEye);
-                ysVector right = ysMath::Cross(cameraDir, m_cameraUp);
-                up = ysMath::Normalize(ysMath::Cross(right, cameraDir));
-            }
-        }
-        else if (target == DrawTarget::Gui) {
-            cameraTarget = ysMath::LoadVector(0.0f, 0.0f, 0.0f, 1.0f);
+    if (target == DrawTarget::Main) {
+        cameraEye = m_cameraPosition;
+    }
+    else if (target == DrawTarget::Gui) {
+        cameraEye = ysMath::LoadVector(0.0f, 0.0f, 10.0f, 1.0f);
+    }
+
+    if (target == DrawTarget::Main) {
+        if (m_cameraMode == CameraMode::Flat) {
+            cameraTarget = ysMath::Mask(cameraEye, ysMath::Constants::MaskOffZ);
             up = ysMath::LoadVector(-sinRot, cosRot);
         }
-
-        m_shaderScreenVariables.CameraView = ysMath::Transpose(ysMath::CameraTarget(cameraEye, cameraTarget, up));
-        m_shaderScreenVariables.Eye = ysMath::GetVector4(cameraEye);
-
-        ysMatrix proj = m_shaderScreenVariables.Projection;
-        ysMatrix cam = m_shaderScreenVariables.CameraView;
-
-        ysVector v = ysMath::LoadVector(19.3632f, 9.74805f, 0.0f, 1.0f);
-        v = ysMath::MatMult(cam, v);
-        v = ysMath::MatMult(proj, v);
-        v = ysMath::Div(v, ysMath::LoadScalar(ysMath::GetW(v)));
-
-        YDS_NESTED_ERROR_CALL(m_device->EditBufferData(m_shaderScreenVariablesBuffer, (char *)(&m_shaderScreenVariables)));
-
-        // NOTE - Update the screen variables each frame so sync is not set to true
-        // after the update happens.
-        m_shaderScreenVariablesSync = false;
+        else {
+            cameraTarget = m_cameraTarget;
+            const ysVector cameraDir = ysMath::Sub(cameraTarget, cameraEye);
+            const ysVector right = ysMath::Cross(cameraDir, m_cameraUp);
+            up = ysMath::Normalize(ysMath::Cross(right, cameraDir));
+        }
     }
+    else if (target == DrawTarget::Gui) {
+        cameraTarget = ysMath::LoadVector(0.0f, 0.0f, 0.0f, 1.0f);
+        up = ysMath::LoadVector(-sinRot, cosRot);
+    }
+
+    m_shaderScreenVariables.CameraView = ysMath::Transpose(ysMath::CameraTarget(cameraEye, cameraTarget, up));
+    m_shaderScreenVariables.Eye = ysMath::GetVector4(cameraEye);
+
+    m_shaders.SetCameraView(ysMath::Transpose(ysMath::CameraTarget(cameraEye, cameraTarget, up)));
+    m_shaders.SetEye(cameraEye);
+
+    YDS_NESTED_ERROR_CALL(m_device->EditBufferData(m_shaderScreenVariablesBuffer, (char *)(&m_shaderScreenVariables)));
+    m_shaders.GetShaderSet()->GetStage(0)->BindScene();
 
     for (int i = 0; i < MaxLayers; i++) {
         int objectsAtLayer = 0;
@@ -1024,23 +1046,25 @@ ysError dbasic::DeltaEngine::ExecuteDrawQueue(DrawTarget target) {
             if (call == nullptr) continue;
 
             m_device->EditBufferData(m_shaderObjectVariablesBuffer, (char *)(&call->ObjectVariables));
+            m_shaders.GetShaderSet()->ReadObjectData(&call->ObjectVariables, 0, sizeof(call->ObjectVariables));
+            m_shaders.GetShaderSet()->GetStage(0)->BindObject();
 
             if (call->Model != nullptr) {
                 m_device->SetDepthTestEnabled(m_mainRenderTarget, true);
 
                 if (call->Model->GetBoneCount() <= 0) {
-                    m_device->UseShaderProgram(m_shaderProgram);
-                    m_device->UseInputLayout(m_inputLayout);
+                    //m_device->UseShaderProgram(m_shaderProgram);
+                    //m_device->UseInputLayout(m_inputLayout);
                 }
                 else {
-                    m_device->UseShaderProgram(m_skinnedShaderProgram);
-                    m_device->UseInputLayout(m_skinnedInputLayout);
+                    //m_device->UseShaderProgram(m_skinnedShaderProgram);
+                    //m_device->UseInputLayout(m_skinnedInputLayout);
                 }
 
-                m_device->UseConstantBuffer(m_shaderScreenVariablesBuffer, 0);
-                m_device->UseConstantBuffer(m_shaderObjectVariablesBuffer, 1);
-                m_device->UseConstantBuffer(m_shaderSkinningControlsBuffer, 2);
-                m_device->UseConstantBuffer(m_lightingControlBuffer, 3);
+                //m_device->UseConstantBuffer(m_shaderScreenVariablesBuffer, 0);
+                //m_device->UseConstantBuffer(m_shaderObjectVariablesBuffer, 1);
+                //m_device->UseConstantBuffer(m_shaderSkinningControlsBuffer, 2);
+                //m_device->UseConstantBuffer(m_lightingControlBuffer, 3);
 
                 m_device->UseTexture(call->Texture, 0);
 
@@ -1052,13 +1076,13 @@ ysError dbasic::DeltaEngine::ExecuteDrawQueue(DrawTarget target) {
             else {
                 m_device->SetDepthTestEnabled(m_mainRenderTarget, false);
 
-                m_device->UseInputLayout(m_inputLayout);
-                m_device->UseShaderProgram(m_shaderProgram);
+                //m_device->UseInputLayout(m_inputLayout);
+                //m_device->UseShaderProgram(m_shaderProgram);
 
-                m_device->UseConstantBuffer(m_shaderScreenVariablesBuffer, 0);
-                m_device->UseConstantBuffer(m_shaderObjectVariablesBuffer, 1);
-                m_device->UseConstantBuffer(m_shaderSkinningControlsBuffer, 2);
-                m_device->UseConstantBuffer(m_lightingControlBuffer, 3);
+                //m_device->UseConstantBuffer(m_shaderScreenVariablesBuffer, 0);
+                //m_device->UseConstantBuffer(m_shaderObjectVariablesBuffer, 1);
+                //m_device->UseConstantBuffer(m_shaderSkinningControlsBuffer, 2);
+                //m_device->UseConstantBuffer(m_lightingControlBuffer, 3);
 
                 m_device->UseIndexBuffer(m_mainIndexBuffer, 0);
                 m_device->UseVertexBuffer(m_mainVertexBuffer, sizeof(Vertex), 0);

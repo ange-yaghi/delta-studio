@@ -561,7 +561,7 @@ ysError ysD3D10Device::CreateConstantBuffer(ysGPUBuffer **newBuffer, int size, c
     ZeroMemory(&InitData, sizeof(InitData));
     InitData.pSysMem = data;
 
-    if (data) pInitData = &InitData;
+    if (data != nullptr) pInitData = &InitData;
     else pInitData = nullptr;
 
     HRESULT result;

@@ -10,6 +10,7 @@
 #include "audio_asset.h"
 #include "console.h"
 #include "font.h"
+#include "default_shaders.h"
 
 #include "../../../physics/include/mass_spring_system.h"
 #include "../../../physics/include/rigid_body_system.h"
@@ -222,9 +223,10 @@ namespace dbasic {
         ysMouse *m_mainMouse;
 
         // Shader Controls
+        DefaultShaders m_shaders;
+
         ysGPUBuffer *m_shaderObjectVariablesBuffer;
         ShaderObjectVariables m_shaderObjectVariables;
-        bool m_shaderObjectVariablesSync;
 
         ysGPUBuffer *m_consoleShaderObjectVariablesBuffer;
         ConsoleShaderObjectVariables m_consoleShaderObjectVariables;
@@ -235,7 +237,6 @@ namespace dbasic {
 
         ysGPUBuffer *m_shaderScreenVariablesBuffer;
         ShaderScreenVariables m_shaderScreenVariables;
-        bool m_shaderScreenVariablesSync;
 
         ysGPUBuffer *m_shaderSkinningControlsBuffer;
         ShaderSkinningControls m_shaderSkinningControls;

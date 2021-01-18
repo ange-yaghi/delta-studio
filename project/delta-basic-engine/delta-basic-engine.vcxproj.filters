@@ -85,6 +85,15 @@
     <Filter Include="Source Files\audio">
       <UniqueIdentifier>{0107f92a-005c-44af-9c1a-9d209abe6878}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\shaders">
+      <UniqueIdentifier>{c4ddf3be-c4b4-481d-a813-fa5759fce71a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\shaders\builtin">
+      <UniqueIdentifier>{dad747df-f4d2-43a2-b1a1-780a441f3baf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\shaders\builtin">
+      <UniqueIdentifier>{78762025-5bbc-4acf-8765-924d7748fd83}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\engines\basic\include\animation.h">
@@ -138,9 +147,6 @@
     <ClInclude Include="..\..\engines\basic\include\window_handler.h">
       <Filter>Header Files\os</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\engines\basic\include\shader_controls.h">
-      <Filter>Header Files\shaders</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\engines\basic\include\character.h">
       <Filter>Header Files\animation</Filter>
     </ClInclude>
@@ -182,6 +188,18 @@
     </ClInclude>
     <ClInclude Include="..\..\engines\basic\include\text_renderer.h">
       <Filter>Header Files\ui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\engines\basic\include\shader_stage.h">
+      <Filter>Header Files\shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\engines\basic\include\shader_set.h">
+      <Filter>Header Files\shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\engines\basic\include\default_shaders.h">
+      <Filter>Header Files\shaders\builtin</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\engines\basic\include\shader_controls.h">
+      <Filter>Header Files\shaders\builtin</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -268,6 +286,15 @@
     </ClCompile>
     <ClCompile Include="..\..\engines\basic\src\text_renderer.cpp">
       <Filter>Source Files\ui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\engines\basic\src\shader_stage.cpp">
+      <Filter>Source Files\shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\engines\basic\src\shader_set.cpp">
+      <Filter>Source Files\shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\engines\basic\src\default_shaders.cpp">
+      <Filter>Source Files\shaders\builtin</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
