@@ -5,6 +5,7 @@ ysGPUBuffer::ysGPUBuffer() : ysContextObject("GPU_BUFFER", DeviceAPI::Unknown) {
 
     m_RAMMirror = nullptr;
     m_size = 0;
+    m_currentStride = 0;
 
     m_mirrorToRAM = false;
 }
@@ -14,6 +15,7 @@ ysGPUBuffer::ysGPUBuffer(DeviceAPI API) : ysContextObject("GPU_BUFFER", API) {
 
     m_RAMMirror = nullptr;
     m_size = 0;
+    m_currentStride = 0;
 
     m_mirrorToRAM = false;
 }

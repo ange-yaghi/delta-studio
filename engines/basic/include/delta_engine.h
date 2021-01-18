@@ -224,22 +224,10 @@ namespace dbasic {
 
         // Shader Controls
         DefaultShaders m_shaders;
-
-        ysGPUBuffer *m_shaderObjectVariablesBuffer;
-        ShaderObjectVariables m_shaderObjectVariables;
+        ShaderSet *m_shaderSet;
 
         ysGPUBuffer *m_consoleShaderObjectVariablesBuffer;
         ConsoleShaderObjectVariables m_consoleShaderObjectVariables;
-
-        ysGPUBuffer *m_lightingControlBuffer;
-        LightingControls m_lightingControls;
-        int m_lightCount;
-
-        ysGPUBuffer *m_shaderScreenVariablesBuffer;
-        ShaderScreenVariables m_shaderScreenVariables;
-
-        ysGPUBuffer *m_shaderSkinningControlsBuffer;
-        ShaderSkinningControls m_shaderSkinningControls;
 
         ysShader *m_vertexShader;
         ysShader *m_vertexSkinnedShader;
