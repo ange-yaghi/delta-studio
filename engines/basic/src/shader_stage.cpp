@@ -39,6 +39,10 @@ ysError dbasic::ShaderStage::Destroy() {
 	return YDS_ERROR_RETURN(ysError::None);
 }
 
+bool dbasic::ShaderStage::DependsOn(ysRenderTarget *target) const {
+    return false;
+}
+
 void dbasic::ShaderStage::CacheObjectData(void *target) {
 	const int bufferCount = GetBufferCount();
 	char *writeBuffer = reinterpret_cast<char *>(target);
@@ -50,9 +54,9 @@ void dbasic::ShaderStage::CacheObjectData(void *target) {
 	}
 }
 
-void dbasic::ShaderStage::ReadObjectData(void *source) {
+void dbasic::ShaderStage::ReadObjectData(const void *source) {
 	const int bufferCount = GetBufferCount();
-	char *readBuffer = reinterpret_cast<char *>(source);
+	const char *readBuffer = reinterpret_cast<const char *>(source);
 	for (int i = 0; i < bufferCount; ++i) {
 		if (m_bufferBindings[i].Type == ConstantBufferBinding::BufferType::ObjectData) {
 			memcpy(m_bufferBindings[i].Memory, readBuffer, m_bufferBindings[i].Size);
@@ -61,11 +65,11 @@ void dbasic::ShaderStage::ReadObjectData(void *source) {
 	}
 }
 
-ysError dbasic::ShaderStage::AddInput(ShaderStage *stage, int slot) {
+ysError dbasic::ShaderStage::AddInput(ysRenderTarget *inputData, int slot) {
 	YDS_ERROR_DECLARE("AddInput");
 
 	Input &input = m_inputs.New();
-	input.Stage = stage;
+	input.InputData = inputData;
 	input.Slot = slot;
 
 	return YDS_ERROR_RETURN(ysError::None);
@@ -82,11 +86,7 @@ ysError dbasic::ShaderStage::BindScene() {
 	for (int i = 0; i < inputCount; ++i) {
 		const Input &input = m_inputs[i];
 
-		if (!input.Stage->IsComplete()) {
-			YDS_ERROR_RETURN_MSG(ysError::InvalidOperation, "Shader stage binding before dependency has rendered");
-		}
-
-		ysRenderTarget *inputRenderTarget = input.Stage->GetRenderTarget();
+		ysRenderTarget *inputRenderTarget = input.InputData;
 		if (inputRenderTarget->GetType() != ysRenderTarget::Type::OffScreen) {
 			YDS_ERROR_RETURN_MSG(ysError::InvalidOperation, "Attempting to use a non-offscreen render target as an input to another stage");
 		}
@@ -121,4 +121,8 @@ ysError dbasic::ShaderStage::BindObject() {
 	}
 
 	return YDS_ERROR_RETURN(ysError::None);
+}
+
+bool dbasic::ShaderStage::CheckFlag(StageEnableFlags flags) const {
+	return (((StageEnableFlags)0x1 << m_flagBit) | flags) > 0;
 }

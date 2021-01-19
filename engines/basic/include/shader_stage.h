@@ -7,6 +7,8 @@
 
 namespace dbasic {
 
+    typedef unsigned long long StageEnableFlags;
+
     class ShaderStage : public ysObject {
     public:
         struct ConstantBufferBinding {
@@ -25,7 +27,7 @@ namespace dbasic {
         };
 
         struct Input {
-            ShaderStage *Stage;
+            ysRenderTarget *InputData;
             int Slot;
         };
 
@@ -86,10 +88,12 @@ namespace dbasic {
                 : reinterpret_cast<T_ConstantData *>(m_bufferBindings[index].Memory);
         }
 
-        void CacheObjectData(void *target);
-        void ReadObjectData(void *source);
+        bool DependsOn(ysRenderTarget *renderTarget) const;
 
-        ysError AddInput(ShaderStage *stage, int slot);
+        void CacheObjectData(void *target);
+        void ReadObjectData(const void *source);
+
+        ysError AddInput(ysRenderTarget *renderTarget, int slot);
         int GetInputCount() const { return m_inputs.GetNumObjects(); }  
 
         ysError BindScene();
@@ -113,6 +117,11 @@ namespace dbasic {
 
         int GetObjectDataSize() const { return m_objectDataSize; }
 
+        void SetFlagBit(int flagBit) { m_flagBit = flagBit; }
+        int GetFlagBit() const { return m_flagBit; }
+
+        bool CheckFlag(StageEnableFlags flags) const;
+
     protected:
         ysDevice *m_device;
         ysRenderTarget *m_renderTarget;
@@ -127,6 +136,7 @@ namespace dbasic {
         Type m_type;
 
         int m_objectDataSize;
+        int m_flagBit;
 
         bool m_complete;
     };

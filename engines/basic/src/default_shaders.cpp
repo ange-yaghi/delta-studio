@@ -2,6 +2,20 @@
 
 dbasic::DefaultShaders::DefaultShaders() {
     m_lightCount = 0;
+
+    m_cameraPosition = ysMath::LoadVector(0.0f, 0.0f, 10.0f);
+    m_cameraTarget = ysMath::Constants::Zero3;
+    m_cameraMode = CameraMode::Flat;
+    m_cameraAngle = 0.0f;
+
+    m_cameraFov = ysMath::Constants::PI / 3.0f;
+
+    m_cameraUp = ysMath::Constants::ZAxis;
+    m_screenHeight = 1.0f;
+    m_screenWidth = 1.0f;
+
+    m_nearClip = 2.0f;
+    m_farClip = 100.0f;
 }
 
 dbasic::DefaultShaders::~DefaultShaders() {
@@ -34,7 +48,20 @@ ysError dbasic::DefaultShaders::Initialize(ysDevice *device, ysRenderTarget *ren
 ysError dbasic::DefaultShaders::Destroy() {
     YDS_ERROR_DECLARE("Destroy");
 
-    m_shaderSet.Destroy();
+    YDS_NESTED_ERROR_CALL(m_shaderSet.Destroy());
+
+    return YDS_ERROR_RETURN(ysError::None);
+}
+
+ysError dbasic::DefaultShaders::UseMaterial(Material *material) {
+    YDS_ERROR_DECLARE("UseMaterial");
+
+    if (material == nullptr) {
+        SetBaseColor(ysMath::LoadVector(1.0f, 0.0f, 1.0f, 1.0f));
+    }
+    else {
+        SetBaseColor(material->GetDiffuseColor());
+    }
 
     return YDS_ERROR_RETURN(ysError::None);
 }
@@ -166,4 +193,147 @@ ysError dbasic::DefaultShaders::SetAmbientLight(const ysVector4 &ambient) {
     m_lightingControls.AmbientLighting = ambient;
 
     return YDS_ERROR_RETURN(ysError::None);
+}
+
+void dbasic::DefaultShaders::SetCameraPosition(float x, float y) {
+    const ysVector3 p = ysMath::GetVector3(m_cameraPosition);
+    m_cameraPosition = ysMath::LoadVector(x, y, p.z, 1.0f);
+}
+
+void dbasic::DefaultShaders::SetCameraPosition(const ysVector &pos) {
+    m_cameraPosition = pos;
+}
+
+ysVector dbasic::DefaultShaders::GetCameraPosition() const {
+    return m_cameraPosition;
+}
+
+void dbasic::DefaultShaders::GetCameraPosition(float *x, float *y) const {
+    *x = ysMath::GetX(m_cameraPosition);
+    *y = ysMath::GetY(m_cameraPosition);
+}
+
+void dbasic::DefaultShaders::SetCameraUp(const ysVector &up) {
+    m_cameraUp = up;
+}
+
+ysVector dbasic::DefaultShaders::GetCameraUp() const {
+    return m_cameraUp;
+}
+
+void dbasic::DefaultShaders::SetCameraTarget(const ysVector &target) {
+    m_cameraTarget = target;
+}
+
+void dbasic::DefaultShaders::SetCameraMode(CameraMode mode) {
+    m_cameraMode = mode;
+}
+
+void dbasic::DefaultShaders::SetCameraAngle(float angle) {
+    m_cameraAngle = angle;
+}
+
+float dbasic::DefaultShaders::GetCameraFov() const {
+    return m_cameraFov;
+}
+
+void dbasic::DefaultShaders::SetCameraFov(float fov) {
+    m_cameraFov = fov;
+}
+
+float dbasic::DefaultShaders::GetCameraAspect() const {
+    return m_screenWidth / m_screenHeight;
+}
+
+void dbasic::DefaultShaders::SetCameraAltitude(float altitude) {
+    const ysVector3 p = ysMath::GetVector3(m_cameraPosition);
+    m_cameraPosition = ysMath::LoadVector(p.x, p.y, altitude, 1.0f);
+}
+
+float dbasic::DefaultShaders::GetCameraAltitude() const {
+    return ysMath::GetZ(m_cameraPosition);
+}
+
+void dbasic::DefaultShaders::SetScreenDimensions(float width, float height) {
+    m_screenWidth = width;
+    m_screenHeight = height;
+}
+
+void dbasic::DefaultShaders::CalculateCamera() {
+    const float aspect = GetCameraAspect();
+    const float sinRot = sin(m_cameraAngle * ysMath::Constants::PI / 180.0f);
+    const float cosRot = cos(m_cameraAngle * ysMath::Constants::PI / 180.0f);
+
+    SetProjection(ysMath::Transpose(ysMath::FrustrumPerspective(m_cameraFov, aspect, m_nearClip, m_farClip)));
+
+    const ysVector cameraEye = m_cameraPosition;
+    ysVector cameraTarget;
+    ysVector up;
+
+    if (m_cameraMode == CameraMode::Flat) {
+        cameraTarget = ysMath::Mask(cameraEye, ysMath::Constants::MaskOffZ);
+        up = ysMath::LoadVector(-sinRot, cosRot);
+    }
+    else {
+        cameraTarget = m_cameraTarget;
+        const ysVector cameraDir = ysMath::Sub(cameraTarget, cameraEye);
+        const ysVector right = ysMath::Cross(cameraDir, m_cameraUp);
+        up = ysMath::Normalize(ysMath::Cross(right, cameraDir));
+    }
+
+    SetCameraView(ysMath::Transpose(ysMath::CameraTarget(cameraEye, cameraTarget, up)));
+    SetEye(cameraEye);
+}
+
+void dbasic::DefaultShaders::ConfigureFlags(int regularFlag, int riggedFlag) {
+    m_shaderSet.GetStage(0)->SetFlagBit(regularFlag);
+}
+
+int dbasic::DefaultShaders::GetRegularFlag() const {
+    return m_shaderSet.GetStage(0)->GetFlagBit();
+}
+
+int dbasic::DefaultShaders::GetRiggedFlag() const {
+    return -1;
+}
+
+void dbasic::DefaultShaders::ConfigureImage(
+    float scaleX, float scaleY, 
+    float texOffsetU, float texOffsetV, 
+    float texScaleU, float texScaleV) 
+{
+    SetScale(scaleX, scaleY);
+    SetTexOffset(texOffsetU, texOffsetV);
+    SetTexScale(texScaleU, texScaleV);
+    SetColorReplace(false);
+    SetLit(true);
+}
+
+void dbasic::DefaultShaders::ConfigureBox(float width, float height) {
+    SetScale(width / 2.0f, height / 2.0f);
+    SetTexOffset(0.0f, 0.0f);
+    SetTexScale(1.0f, 1.0f);
+    SetColorReplace(true);
+}
+
+void dbasic::DefaultShaders::ConfigureAxis(
+    const ysVector &position, const ysVector &direction, float length) 
+{
+    ysMatrix trans = ysMath::TranslationTransform(position);
+    ysMatrix offset = ysMath::TranslationTransform(ysMath::LoadVector(0, length / 2.0f));
+
+    ysVector orth = ysMath::Cross(direction, ysMath::Constants::ZAxis);
+    ysMatrix dir = ysMath::LoadMatrix(orth, direction, ysMath::Constants::ZAxis, ysMath::Constants::IdentityRow4);
+    dir = ysMath::Transpose(dir);
+
+    ysMatrix transform = ysMath::MatMult(trans, dir);
+    transform = ysMath::MatMult(transform, offset);
+    SetObjectTransform(transform);
+}
+
+void dbasic::DefaultShaders::ConfigureModel(float scale) {
+    SetScale(scale, scale, scale);
+    SetTexOffset(0.0f, 0.0f);
+    SetTexScale(1.0f, 1.0f);
+    SetColorReplace(true);
 }

@@ -201,6 +201,9 @@
     <ClInclude Include="..\..\engines\basic\include\shader_controls.h">
       <Filter>Header Files\shaders\builtin</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\engines\basic\include\default_ui_shaders.h">
+      <Filter>Header Files\shaders\builtin</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\engines\basic\src\animation.cpp">
@@ -294,6 +297,9 @@
       <Filter>Source Files\shaders</Filter>
     </ClCompile>
     <ClCompile Include="..\..\engines\basic\src\default_shaders.cpp">
+      <Filter>Source Files\shaders\builtin</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\engines\basic\src\default_ui_shaders.cpp">
       <Filter>Source Files\shaders\builtin</Filter>
     </ClCompile>
   </ItemGroup>

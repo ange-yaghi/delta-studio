@@ -20,13 +20,20 @@ namespace dbasic {
         int GetObjectDataSize() const;
 
         ysError CacheObjectData(void *memory, int size);
-        ysError ReadObjectData(void *memory, int size);
-        ysError ReadObjectData(void *memory, int stageIndex, int size);
+        ysError ReadObjectData(const void *memory, int size);
+        ysError ReadObjectData(const void *memory, int stageIndex, int size);
         void Reset();
 
         int GetStageCacheOffset(int index) const;
-        ShaderStage *GetStage(int index) { return m_stages[index]; }
+        ShaderStage *GetStage(int index) const { return m_stages[index]; }
         int GetStageCount() const { return m_stages.GetNumObjects(); }
+
+        ysError MergeAndClear(ShaderSet *shaderSet);
+
+    protected:
+        ysError ShallowDestroy();
+
+        int GetLargestPossibleIndex(const ShaderStage *stage) const;
 
     protected:
         ysExpandingArray<ShaderStage *> m_stages;

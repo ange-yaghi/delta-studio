@@ -22,22 +22,12 @@ namespace dbasic {
     class DeltaEngine : public ysObject {
     public:
         static const std::string FrameBreakdownFull;
-        static const std::string FrameBreakdownRenderUI;
         static const std::string FrameBreakdownRenderScene;
 
         static const int MaxLayers = 256;
 
-        enum class DrawTarget {
-            Gui,
-            Main
-        };
-
-        enum class CameraMode {
-            Target,
-            Flat
-        };
-
         struct DrawCall {
+            StageEnableFlags Flags = 0;
             ShaderObjectVariables ObjectVariables;
             ysTexture *Texture = nullptr;
             ModelAsset *Model = nullptr;
@@ -73,17 +63,16 @@ namespace dbasic {
         ysError EndFrame();
         ysError Destroy();
 
-        ysError UseMaterial(Material *material);
+        ysError InitializeDefaultShaderSet(DefaultShaders *shaders);
+        void SetShaderSet(ShaderSet *shaderSet) { m_shaderSet = shaderSet; }
+        ShaderSet *GetShaderSet() const { return m_shaderSet; }
 
-        ysError AddLight(const Light &light);
-        void ResetLights();
-        ysError SetAmbientLight(const ysVector4 &ambient);
-
-        ysError DrawImage(ysTexture *image, int layer = 0, float scaleX = 1.0f, float scaleY = 1.0f, float texOffsetU = 0.0f, float texOffsetV = 0.0f, float texScaleX = 1.0f, float texScaleY = 1.0f);
-        ysError DrawBox(float width, float height, int layer = 0);
-        ysError DrawAxis(const ysVector &position, const ysVector &direction, float width, float length, int layer = 0);
-        ysError DrawModel(ModelAsset *model, float scale, ysTexture *texture, int layer = 0);
-        ysError DrawRenderSkeleton(RenderSkeleton *skeleton, float scale, int layer);
+        ysError DrawImage(StageEnableFlags flags, ysTexture *image, int layer = 0);
+        ysError DrawBox(StageEnableFlags flags, int layer = 0);
+        ysError DrawAxis(StageEnableFlags flags, int layer = 0);
+        ysError DrawModel(StageEnableFlags flags, ModelAsset *model, ysTexture *texture, int layer = 0);
+        ysError DrawRenderSkeleton(
+            StageEnableFlags flags, RenderSkeleton *skeleton, float scale, DefaultShaders *shaders, int layer);
         ysError LoadTexture(ysTexture **image, const char *fname);
         ysError LoadAnimation(Animation **animation, const char *path, int start, int end);
         ysError LoadFont(Font **font, const char *path, int size=4096);
@@ -98,34 +87,6 @@ namespace dbasic {
 
         void SetConsoleColor(const ysVector &v);
         void SetClearColor(const ysVector &v);
-
-        // Shader Controls
-        void SetCameraPosition(float x, float y);
-        void SetCameraPosition(const ysVector &pos);
-        ysVector GetCameraPosition() const;
-        void GetCameraPosition(float *x, float *y) const;
-
-        void SetCameraUp(const ysVector &up);
-        ysVector GetCameraUp() const;
-
-        void SetCameraTarget(const ysVector &target);
-        ysVector GetCameraTarget() const { return m_cameraTarget; }
-
-        void SetCameraMode(CameraMode mode);
-        CameraMode GetCameraMode() const { return m_cameraMode; }
-
-        void SetCameraAngle(float angle);
-
-        float GetCameraFov() const;
-        void SetCameraFov(float fov);
-
-        float GetCameraAspect() const;
-
-        void SetCameraAltitude(float altitude);
-        float GetCameraAltitude() const;
-
-        void SetObjectTransform(const ysMatrix &mat);
-        void SetPositionOffset(const ysVector &position);
 
         // Input Device
         bool IsKeyDown(ysKey::Code key);
@@ -148,32 +109,7 @@ namespace dbasic {
         float GetFrameLength();
         float GetAverageFramerate();
 
-        void ResetBrdfParameters();
-        void SetBaseColor(const ysVector &color);
-        void ResetBaseColor();
-
-        void SetLit(bool lit);
-        void SetEmission(const ysVector &emission);
-        void SetSpecularMix(float specularMix);
-        void SetDiffuseMix(float diffuseMix);
-        void SetMetallic(float metallic);
-        void SetDiffuseRoughness(float diffuseRoughness);
-        void SetSpecularRoughness(float specularRoughness);
-        void SetSpecularPower(float power);
-        void SetIncidentSpecular(float incidentSpecular);
-        void SetFogNear(float fogNear);
-        void SetFogFar(float fogFar);
-        void SetFogColor(const ysVector &color);
-
-        void SetNearClip(float nearClip) { m_nearClip = nearClip; }
-        float GetNearClip() const { return m_nearClip; }
-
-        void SetFarClip(float farClip) { m_farClip = farClip; }
-        float GetFarClip() const { return m_farClip; }
-
         ysDevice *GetDevice() { return m_device; }
-
-        void SetDrawTarget(DrawTarget target) { m_currentTarget = target; }
 
         int GetScreenWidth() const;
         int GetScreenHeight() const;
@@ -186,20 +122,6 @@ namespace dbasic {
 
         ysWindowSystem *GetWindowSystem() const { return m_windowSystem; }
         ysWindow *GetGameWindow() const { return m_gameWindow; }
-
-    protected:
-        float m_cameraAngle;
-        float m_cameraFov;
-
-        float m_nearClip;
-        float m_farClip;
-
-        ysVector m_cameraPosition;
-        ysVector m_cameraTarget;
-        ysVector m_cameraUp;
-
-        ysMatrix m_perspectiveProjection;
-        ysMatrix m_orthographicProjection;
 
     protected:
         ysDevice *m_device;
@@ -223,7 +145,6 @@ namespace dbasic {
         ysMouse *m_mainMouse;
 
         // Shader Controls
-        DefaultShaders m_shaders;
         ShaderSet *m_shaderSet;
 
         ysGPUBuffer *m_consoleShaderObjectVariablesBuffer;
@@ -251,9 +172,6 @@ namespace dbasic {
 
         bool m_initialized;
 
-        DrawTarget m_currentTarget;
-        CameraMode m_cameraMode;
-
         // Timing
         ysTimingSystem *m_timingSystem;
         ysBreakdownTimer m_breakdownTimer;
@@ -276,8 +194,8 @@ namespace dbasic {
     protected:
         // Drawing queues
         ysExpandingArray<DrawCall, 256> *m_drawQueue;
-        ysExpandingArray<DrawCall, 256> *m_drawQueueGui;
-        ysError ExecuteDrawQueue(DrawTarget target);
+        ysError ExecuteDrawQueue();
+        ysError ExecuteShaderStage(int stageIndex);
     };
 
 } /* namesapce dbasic */

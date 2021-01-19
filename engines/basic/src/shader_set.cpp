@@ -5,7 +5,7 @@ dbasic::ShaderSet::ShaderSet() {
 }
 
 dbasic::ShaderSet::~ShaderSet() {
-    /* void */
+    assert(m_stages.GetNumObjects() == 0);
 }
 
 ysError dbasic::ShaderSet::Initialize(ysDevice *device) {
@@ -73,7 +73,7 @@ ysError dbasic::ShaderSet::CacheObjectData(void *memory, int size) {
     return YDS_ERROR_RETURN(ysError::None);
 }
 
-ysError dbasic::ShaderSet::ReadObjectData(void *memory, int size) {
+ysError dbasic::ShaderSet::ReadObjectData(const void *memory, int size) {
     YDS_ERROR_DECLARE("ReadObjectData");
 
     if (GetObjectDataSize() > size) {
@@ -82,7 +82,7 @@ ysError dbasic::ShaderSet::ReadObjectData(void *memory, int size) {
             "Buffer is not big enough for all object data");
     }
 
-    char *readBuffer = reinterpret_cast<char *>(memory);
+    const char *readBuffer = reinterpret_cast<const char *>(memory);
 
     const int stageCount = GetStageCount();
     for (int i = 0; i < stageCount; ++i) {
@@ -93,7 +93,7 @@ ysError dbasic::ShaderSet::ReadObjectData(void *memory, int size) {
     return YDS_ERROR_RETURN(ysError::None);
 }
 
-ysError dbasic::ShaderSet::ReadObjectData(void *memory, int stageIndex, int size) {
+ysError dbasic::ShaderSet::ReadObjectData(const void *memory, int stageIndex, int size) {
     YDS_ERROR_DECLARE("ReadObjectData");
 
     ShaderStage *stage = m_stages[stageIndex];
@@ -105,7 +105,7 @@ ysError dbasic::ShaderSet::ReadObjectData(void *memory, int stageIndex, int size
     }
 
     stage->ReadObjectData(
-        reinterpret_cast<char *>(memory) + GetStageCacheOffset(stageIndex));
+        reinterpret_cast<const char *>(memory) + GetStageCacheOffset(stageIndex));
 
     return YDS_ERROR_RETURN(ysError::None);
 }
@@ -125,4 +125,40 @@ int dbasic::ShaderSet::GetStageCacheOffset(int index) const {
     }
 
     return offset;
+}
+
+ysError dbasic::ShaderSet::MergeAndClear(ShaderSet *shaderSet) {
+    YDS_ERROR_DECLARE("Merge");
+
+    const int stageCount = shaderSet->GetStageCount();
+    for (int i = 0; i < stageCount; ++i) {
+        ShaderStage *stage = shaderSet->GetStage(i);
+        const int index = GetLargestPossibleIndex(stage);
+
+        m_stages.Insert(index) = stage;
+    }
+
+    shaderSet->ShallowDestroy();
+
+    return YDS_ERROR_RETURN(ysError::None);
+}
+
+ysError dbasic::ShaderSet::ShallowDestroy() {
+    YDS_ERROR_DECLARE("ShallowDestroy");
+
+    m_stages.Clear();
+
+    return YDS_ERROR_RETURN(ysError::None);
+}
+
+int dbasic::ShaderSet::GetLargestPossibleIndex(const ShaderStage *stage) const {
+    const int stageCount = m_stages.GetNumObjects();
+    int largestPossibleIndex = stageCount;
+    for (int i = stageCount; i >= 0; --i) {
+        if (m_stages[i]->DependsOn(stage->GetRenderTarget())) {
+            largestPossibleIndex = i;
+        }
+    }
+
+    return largestPossibleIndex;
 }
