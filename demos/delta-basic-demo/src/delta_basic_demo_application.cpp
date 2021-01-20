@@ -3,7 +3,6 @@
 #include <sstream>
 
 dbasic_demo::DeltaBasicDemoApplication::DeltaBasicDemoApplication() {
-    m_currentAngle = 0.0f;
     m_demoTexture = nullptr;
 }
 
@@ -75,8 +74,6 @@ void dbasic_demo::DeltaBasicDemoApplication::Initialize(void *instance, ysContex
     m_renderSkeleton->BindAction(m_idleAction, &m_idle);
     m_renderSkeleton->BindAction(m_walkAction, &m_walk);
 
-    m_currentAngle = 0.0f;
-
     m_channel1 = m_renderSkeleton->AnimationMixer.NewChannel();
     m_channel2 = m_renderSkeleton->AnimationMixer.NewChannel();
 
@@ -87,6 +84,9 @@ void dbasic_demo::DeltaBasicDemoApplication::Initialize(void *instance, ysContex
     m_channel2->AddSegment(&m_blink, paused);
 
     m_blinkTimer = 4.0f;
+
+    m_engine.InitializeDefaultShaderSet(&m_shaders);
+    m_engine.SetShaderSet(m_shaders.GetShaderSet());
 }
 
 void dbasic_demo::DeltaBasicDemoApplication::Process() {
@@ -94,27 +94,13 @@ void dbasic_demo::DeltaBasicDemoApplication::Process() {
 }
 
 void dbasic_demo::DeltaBasicDemoApplication::Render() {
-    m_engine.SetCameraPosition(0.0f, 0.0f);
-    m_engine.SetCameraAltitude(20.0f);
-
-    m_currentAngle += 1.0f;
-    if (m_currentAngle > 360.0f) m_currentAngle -= 360.0f;
-
-    m_engine.SetBaseColor(ysColor::srgbiToLinear(0xe7, 0x4c, 0x3c));
-
-    ysQuaternion q = ysMath::Constants::QuatIdentity;
-    q = ysMath::LoadQuaternion(45 * ysMath::Constants::PI / 180.0f, ysMath::LoadVector(1.0f, 0.0f, 0.0f));
-    //m_skeletonBase.SetOrientation(q);
-
-    q = ysMath::LoadQuaternion(m_currentAngle * ysMath::Constants::PI / 180.0f, ysMath::LoadVector(0.0f, 0.0f, 1.0f));
-    //m_skeletonBase.SetOrientation(q);
+    m_shaders.SetCameraPosition(0.0f, 0.0f);
+    m_shaders.SetCameraAltitude(20.0f);
 
     m_renderSkeleton->UpdateAnimation(m_engine.GetFrameLength() * 60);
-    //m_renderSkeleton->GetNode()
 
-    //m_skeletonBase.UpdateDerivedData(true);
-    int color[] = { 0xff, 0x0, 0x0 };
-    m_engine.DrawRenderSkeleton(m_renderSkeleton, 1.0f, 0);
+    m_shaders.SetBaseColor(ysColor::srgbiToLinear(0xe7, 0x4c, 0x3c));
+    m_engine.DrawRenderSkeleton(m_shaders.GetRegularFlag(), m_renderSkeleton, 1.0f, &m_shaders, 0);
 
     ysAnimationChannel::ActionSettings normalSpeed;
     normalSpeed.Speed = 1.0f;
@@ -172,7 +158,7 @@ void dbasic_demo::DeltaBasicDemoApplication::Render() {
 
     m_blinkTimer -= m_engine.GetFrameLength();
 
-    m_engine.SetAmbientLight(ysVector4(0.5, 0.5, 0.5, 1.0f));
+    m_shaders.SetAmbientLight(ysVector4(0.5, 0.5, 0.5, 1.0f));
 
     dbasic::Light light;
     light.Position = ysVector4(0.0f, 0.0f, 2.0f, 0.0f);
@@ -180,7 +166,7 @@ void dbasic_demo::DeltaBasicDemoApplication::Render() {
     light.Direction = ysMath::GetVector4(ysMath::Normalize(ysMath::LoadVector(1.0f, 0.0f, -1.0f)));
     light.Attenuation0 = 0.9f;
     light.Attenuation1 = 0.89f;
-    m_engine.AddLight(light);
+    m_shaders.AddLight(light);
 
     dbasic::Console *console = m_engine.GetConsole();
     console->Clear();
@@ -188,6 +174,9 @@ void dbasic_demo::DeltaBasicDemoApplication::Render() {
 
     const int screenWidth = m_engine.GetGameWindow()->GetGameWidth();
     const int screenHeight = m_engine.GetGameWindow()->GetGameHeight();
+
+    m_shaders.SetScreenDimensions((float)screenWidth, (float)screenHeight);
+    m_shaders.CalculateCamera();
 
     if (m_engine.IsKeyDown(ysKey::Code::N1)) {
         m_engine.GetGameWindow()->SetGameResolutionScale(1.0f);
@@ -233,6 +222,7 @@ void dbasic_demo::DeltaBasicDemoApplication::Run() {
         m_engine.EndFrame();
     }
 
+    m_shaders.Destroy();
     m_assetManager.Destroy();
     m_engine.Destroy();
 }

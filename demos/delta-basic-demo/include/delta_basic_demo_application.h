@@ -13,14 +13,13 @@ namespace dbasic_demo {
         void Initialize(void *instance, ysContextObject::DeviceAPI api);
         void Run();
 
-        float m_currentAngle;
-
     protected:
         void Process();
         void Render();
 
         dbasic::DeltaEngine m_engine;
         dbasic::AssetManager m_assetManager;
+        dbasic::DefaultShaders m_shaders;
 
         dbasic::RenderSkeleton *m_renderSkeleton;
         ysTransform m_skeletonBase;
