@@ -465,7 +465,7 @@ ysError dbasic::AssetManager::LoadAnimationFile(const char *fname) {
     ysAnimationInterchangeFile animationFile;
     animationFile.Open(fname);
 
-    int actionCount = animationFile.GetActionCount();
+    const int actionCount = animationFile.GetActionCount();
     for (int i = 0; i < actionCount; ++i) {
         ysAnimationAction *newAction = m_actions.New();
         animationFile.ReadAction(newAction);
@@ -477,7 +477,7 @@ ysError dbasic::AssetManager::LoadAnimationFile(const char *fname) {
 }
 
 ysAnimationAction *dbasic::AssetManager::GetAction(const char *name) {
-    int actionCount = GetActionCount();
+    const int actionCount = GetActionCount();
     for (int i = 0; i < actionCount; ++i) {
         if (m_actions.Get(i)->GetName() == name) {
             return m_actions.Get(i);
@@ -501,7 +501,7 @@ ysError dbasic::AssetManager::LoadTexture(const char *fname, const char *name) {
 }
 
 dbasic::TextureAsset *dbasic::AssetManager::GetTexture(const char *name) {
-    int textureCount = GetTextureCount();
+    const int textureCount = GetTextureCount();
     for (int i = 0; i < textureCount; ++i) {
         if (m_textures.Get(i)->GetName() == name) {
             return m_textures.Get(i);
@@ -533,7 +533,7 @@ ysError dbasic::AssetManager::LoadAudioFile(const char *fname, const char *name)
 }
 
 dbasic::AudioAsset *dbasic::AssetManager::GetAudioAsset(const char *name) {
-    int assetCount = m_audioAssets.GetNumObjects();
+    const int assetCount = m_audioAssets.GetNumObjects();
     for (int i = 0; i < assetCount; ++i) {
         if (m_audioAssets.Get(i)->GetName() == name) {
             return m_audioAssets.Get(i);
@@ -580,7 +580,6 @@ dbasic::Skeleton *dbasic::AssetManager::BuildSkeleton(ModelAsset *model) {
     }
 
     nBones = newSkeleton->GetBoneCount();
-
     for (int i = 0; i < nBones; i++) {
         bone = newSkeleton->GetBone(i);
         boneReference = GetSceneObject(bone->GetAssetID());
@@ -632,7 +631,7 @@ dbasic::RenderSkeleton *dbasic::AssetManager::BuildRenderSkeleton(ysTransform *r
 }
 
 void dbasic::AssetManager::ProcessRenderNode(SceneObjectAsset *object, RenderSkeleton *skeleton, RenderNode *parent, RenderNode *top) {
-    int nChildren = object->GetChildrenCount();
+    const int nChildren = object->GetChildrenCount();
     RenderNode *newNode = nullptr;
 
     if (parent == nullptr) {
@@ -661,8 +660,7 @@ void dbasic::AssetManager::ProcessRenderNode(SceneObjectAsset *object, RenderSke
 dbasic::AnimationObjectController *dbasic::AssetManager::
     BuildAnimationObjectController(const char *name, ysTransform *transform)
 {
-    int nAnimationData = m_animationExportData.GetNumObjects();
-
+    const int nAnimationData = m_animationExportData.GetNumObjects();
     for (int i = 0; i < nAnimationData; i++) {
         int nObjects = m_animationExportData.Get(i)->GetKeyCount();
 

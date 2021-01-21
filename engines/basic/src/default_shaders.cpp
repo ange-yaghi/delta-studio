@@ -22,24 +22,21 @@ dbasic::DefaultShaders::~DefaultShaders() {
     /* void */
 }
 
-ysError dbasic::DefaultShaders::Initialize(ysDevice *device, ysRenderTarget *renderTarget, ysShaderProgram *shaderProgram, ysInputLayout *inputLayout) {
+ysError dbasic::DefaultShaders::Initialize(ShaderSet *shaderSet, ysRenderTarget *renderTarget, ysShaderProgram *shaderProgram, ysInputLayout *inputLayout) {
     YDS_ERROR_DECLARE("Initialize");
 
-    m_shaderSet.Initialize(device);
+    YDS_NESTED_ERROR_CALL(shaderSet->NewStage("ShaderStage::Main", &m_mainStage));
 
-    ShaderStage *mainStage = nullptr;
-    YDS_NESTED_ERROR_CALL(m_shaderSet.NewStage("ShaderStage::Main", &mainStage));
+    m_mainStage->SetInputLayout(inputLayout);
+    m_mainStage->SetRenderTarget(renderTarget);
+    m_mainStage->SetShaderProgram(shaderProgram);
+    m_mainStage->SetType(ShaderStage::Type::FullPass);
 
-    mainStage->SetInputLayout(inputLayout);
-    mainStage->SetRenderTarget(renderTarget);
-    mainStage->SetShaderProgram(shaderProgram);
-    mainStage->SetType(ShaderStage::Type::FullPass);
-
-    mainStage->NewConstantBuffer<ShaderScreenVariables>(
+    m_mainStage->NewConstantBuffer<ShaderScreenVariables>(
         "Buffer::ScreenData", 0, ShaderStage::ConstantBufferBinding::BufferType::SceneData, &m_shaderScreenVariables);
-    mainStage->NewConstantBuffer<ShaderObjectVariables>(
+    m_mainStage->NewConstantBuffer<ShaderObjectVariables>(
         "Buffer::ObjectData", 1, ShaderStage::ConstantBufferBinding::BufferType::ObjectData, &m_shaderObjectVariables);
-    mainStage->NewConstantBuffer<LightingControls>(
+    m_mainStage->NewConstantBuffer<LightingControls>(
         "Buffer::LightingData", 3, ShaderStage::ConstantBufferBinding::BufferType::SceneData, &m_lightingControls);
 
     return YDS_ERROR_RETURN(ysError::None);
@@ -48,7 +45,7 @@ ysError dbasic::DefaultShaders::Initialize(ysDevice *device, ysRenderTarget *ren
 ysError dbasic::DefaultShaders::Destroy() {
     YDS_ERROR_DECLARE("Destroy");
 
-    YDS_NESTED_ERROR_CALL(m_shaderSet.Destroy());
+    /* void */
 
     return YDS_ERROR_RETURN(ysError::None);
 }
@@ -285,15 +282,15 @@ void dbasic::DefaultShaders::CalculateCamera() {
     SetEye(cameraEye);
 }
 
-void dbasic::DefaultShaders::ConfigureFlags(int regularFlag, int riggedFlag) {
-    m_shaderSet.GetStage(0)->SetFlagBit(regularFlag);
+void dbasic::DefaultShaders::ConfigureFlags(int regularFlagIndex, int riggedFlagIndex) {
+    m_mainStage->SetFlagBit(regularFlagIndex);
 }
 
-int dbasic::DefaultShaders::GetRegularFlag() const {
-    return m_shaderSet.GetStage(0)->GetFlagBit();
+dbasic::StageEnableFlags dbasic::DefaultShaders::GetRegularFlags() const {
+    return m_mainStage->GetFlags();
 }
 
-int dbasic::DefaultShaders::GetRiggedFlag() const {
+dbasic::StageEnableFlags dbasic::DefaultShaders::GetRiggedFlags() const {
     return -1;
 }
 

@@ -63,7 +63,7 @@ ysError dbasic::Console::Destroy() {
 }
 
 ysError dbasic::Console::UpdateGeometry() {
-    YDS_ERROR_DECLARE("UpdateDisplay");
+    YDS_ERROR_DECLARE("UpdateGeometry");
 
     m_renderer->SetFont(m_font);
 

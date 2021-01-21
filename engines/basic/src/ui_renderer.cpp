@@ -20,10 +20,15 @@ ysError dbasic::UiRenderer::Initialize(int bufferSize) {
     return YDS_ERROR_RETURN(ysError::None);
 }
 
-ysError dbasic::UiRenderer::Update() {
+ysError dbasic::UiRenderer::UpdateDisplay() {
     YDS_ERROR_DECLARE("UpdateDisplay");
 
     if (m_vertexOffset == 0) return YDS_ERROR_RETURN(ysError::None);
+
+    m_shaders.SetScreenDimensions(
+        m_engine->GetScreenWidth(),
+        m_engine->GetScreenHeight());
+    m_shaders.CalculateCamera();
 
     m_engine->GetDevice()->EditBufferDataRange(
         m_mainVertexBuffer,
@@ -36,12 +41,15 @@ ysError dbasic::UiRenderer::Update() {
         sizeof(unsigned short) * m_indexOffset,
         0);
 
-    m_engine->GetDevice()->UseIndexBuffer(m_mainIndexBuffer, 0);
-    m_engine->GetDevice()->UseVertexBuffer(m_mainVertexBuffer, sizeof(ConsoleVertex), 0);
-
-    m_engine->GetDevice()->UseTexture(m_font->GetTexture(), 0);
-
-    m_engine->GetDevice()->Draw(m_indexOffset / 3, 0, 0);
+    m_engine->DrawGeneric(
+        m_shaders.GetFlags(),
+        m_mainIndexBuffer,
+        m_mainVertexBuffer,
+        sizeof(ConsoleVertex),
+        0,
+        0,
+        m_indexOffset / 3,
+        m_font->GetTexture());
 
     return YDS_ERROR_RETURN(ysError::None);
 }

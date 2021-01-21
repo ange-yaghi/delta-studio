@@ -47,7 +47,7 @@ int dbasic::ShaderSet::GetObjectDataSize() const {
     const int stageCount = GetStageCount();
     int totalSize = 0;
     for (int i = 0; i < stageCount; ++i) {
-        totalSize = m_stages[i]->GetObjectDataSize();
+        totalSize += m_stages[i]->GetObjectDataSize();
     }
 
     return totalSize;
@@ -97,7 +97,6 @@ ysError dbasic::ShaderSet::ReadObjectData(const void *memory, int stageIndex, in
     YDS_ERROR_DECLARE("ReadObjectData");
 
     ShaderStage *stage = m_stages[stageIndex];
-
     if (stage->GetObjectDataSize() > size) {
         YDS_ERROR_RETURN_MSG(
             ysError::InvalidOperation,

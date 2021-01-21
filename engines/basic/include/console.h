@@ -1,10 +1,12 @@
 #ifndef DELTA_BASIC_CONSOLE_H
 #define DELTA_BASIC_CONSOLE_H
 
-#include "font.h"
 #include "delta_core.h"
+
+#include "font.h"
 #include "shader_controls.h"
 #include "ui_renderer.h"
+#include "console_shaders.h"
 
 #include <string>
 

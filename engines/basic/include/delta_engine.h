@@ -28,9 +28,15 @@ namespace dbasic {
 
         struct DrawCall {
             StageEnableFlags Flags = 0;
-            ShaderObjectVariables ObjectVariables;
+            void *ObjectData;
+            int ObjectDataSize;
             ysTexture *Texture = nullptr;
-            ModelAsset *Model = nullptr;
+            ysGPUBuffer *IndexBuffer = nullptr;
+            ysGPUBuffer *VertexBuffer = nullptr;
+            int VertexSize = 0;
+            int BaseIndex = 0;
+            int BaseVertex = 0;
+            int FaceCount = 0;
         };
 
         struct GameEngineSettings {
@@ -63,7 +69,9 @@ namespace dbasic {
         ysError EndFrame();
         ysError Destroy();
 
-        ysError InitializeDefaultShaderSet(DefaultShaders *shaders);
+        ysError InitializeShaderSet(ShaderSet *shaderSet);
+        ysError InitializeDefaultShaders(DefaultShaders *shaders, ShaderSet *shaderSet);
+        ysError InitializeConsoleShaders(ShaderSet *shaderSet);
         void SetShaderSet(ShaderSet *shaderSet) { m_shaderSet = shaderSet; }
         ShaderSet *GetShaderSet() const { return m_shaderSet; }
 
@@ -73,6 +81,9 @@ namespace dbasic {
         ysError DrawModel(StageEnableFlags flags, ModelAsset *model, ysTexture *texture, int layer = 0);
         ysError DrawRenderSkeleton(
             StageEnableFlags flags, RenderSkeleton *skeleton, float scale, DefaultShaders *shaders, int layer);
+        ysError DrawGeneric(
+            StageEnableFlags flags, ysGPUBuffer *indexBuffer, ysGPUBuffer *vertexBuffer, int vertexSize, 
+            int baseIndex, int baseVertex, int faceCount, ysTexture *texture = nullptr, int layer = 0);
         ysError LoadTexture(ysTexture **image, const char *fname);
         ysError LoadAnimation(Animation **animation, const char *path, int start, int end);
         ysError LoadFont(Font **font, const char *path, int size=4096);
@@ -176,6 +187,8 @@ namespace dbasic {
         ysTimingSystem *m_timingSystem;
         ysBreakdownTimer m_breakdownTimer;
 
+        DrawCall *NewDrawCall(int layer, int objectDataSize);
+
     protected:
         // Settings
         float m_clearColor[4];
@@ -196,6 +209,8 @@ namespace dbasic {
         ysExpandingArray<DrawCall, 256> *m_drawQueue;
         ysError ExecuteDrawQueue();
         ysError ExecuteShaderStage(int stageIndex);
+
+        void ClearDrawQueue();
     };
 
 } /* namesapce dbasic */

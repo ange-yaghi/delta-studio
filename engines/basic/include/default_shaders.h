@@ -20,10 +20,8 @@ namespace dbasic {
         DefaultShaders();
         virtual ~DefaultShaders();
 
-        ysError Initialize(ysDevice *device, ysRenderTarget *renderTarget, ysShaderProgram *shaderProgram, ysInputLayout *inputLayout);
+        ysError Initialize(ShaderSet *shaderSet, ysRenderTarget *renderTarget, ysShaderProgram *shaderProgram, ysInputLayout *inputLayout);
         ysError Destroy();
-
-        ShaderSet *GetShaderSet() { return &m_shaderSet; }
 
         ysError UseMaterial(Material *material);
 
@@ -95,9 +93,9 @@ namespace dbasic {
         void SetFarClip(float farClip) { m_farClip = farClip; }
         float GetFarClip() const { return m_farClip; }
 
-        void ConfigureFlags(int regularFlag, int riggedFlag);
-        int GetRegularFlag() const;
-        int GetRiggedFlag() const;
+        void ConfigureFlags(int regularFlagIndex, int riggedFlagIndex);
+        StageEnableFlags GetRegularFlags() const;
+        StageEnableFlags GetRiggedFlags() const;
 
         void ConfigureImage(
             float scaleX, float scaleY, 
@@ -126,9 +124,10 @@ namespace dbasic {
         float m_screenWidth;
         float m_screenHeight;
 
-    protected:
-        ShaderSet m_shaderSet;
         CameraMode m_cameraMode;
+
+    protected:
+        ShaderStage *m_mainStage;
     };
 
 } /* namespace dbasic */

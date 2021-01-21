@@ -21,6 +21,7 @@
   <ItemGroup>
     <ClInclude Include="..\..\engines\basic\include\animation.h" />
     <ClInclude Include="..\..\engines\basic\include\audio_asset.h" />
+    <ClInclude Include="..\..\engines\basic\include\console_shaders.h" />
     <ClInclude Include="..\..\engines\basic\include\default_shaders.h" />
     <ClInclude Include="..\..\engines\basic\include\default_ui_shaders.h" />
     <ClInclude Include="..\..\engines\basic\include\delta_basic_engine.h" />
@@ -68,6 +69,7 @@
     <ClCompile Include="..\..\engines\basic\src\character.cpp" />
     <ClCompile Include="..\..\engines\basic\src\color_scale.cpp" />
     <ClCompile Include="..\..\engines\basic\src\console.cpp" />
+    <ClCompile Include="..\..\engines\basic\src\console_shaders.cpp" />
     <ClCompile Include="..\..\engines\basic\src\default_shaders.cpp" />
     <ClCompile Include="..\..\engines\basic\src\default_ui_shaders.cpp" />
     <ClCompile Include="..\..\engines\basic\src\delta_engine.cpp" />

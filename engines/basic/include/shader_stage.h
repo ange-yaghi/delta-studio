@@ -119,8 +119,9 @@ namespace dbasic {
 
         void SetFlagBit(int flagBit) { m_flagBit = flagBit; }
         int GetFlagBit() const { return m_flagBit; }
+        StageEnableFlags GetFlags() const;
 
-        bool CheckFlag(StageEnableFlags flags) const;
+        bool CheckFlags(StageEnableFlags flags) const;
 
     protected:
         ysDevice *m_device;

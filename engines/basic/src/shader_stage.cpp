@@ -123,6 +123,10 @@ ysError dbasic::ShaderStage::BindObject() {
 	return YDS_ERROR_RETURN(ysError::None);
 }
 
-bool dbasic::ShaderStage::CheckFlag(StageEnableFlags flags) const {
-	return (((StageEnableFlags)0x1 << m_flagBit) | flags) > 0;
+dbasic::StageEnableFlags dbasic::ShaderStage::GetFlags() const {
+	return (StageEnableFlags)0x1 << m_flagBit;
+}
+
+bool dbasic::ShaderStage::CheckFlags(StageEnableFlags flags) const {
+	return (((StageEnableFlags)0x1 << m_flagBit) & flags) > 0;
 }

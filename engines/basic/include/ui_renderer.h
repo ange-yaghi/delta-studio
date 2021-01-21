@@ -2,8 +2,10 @@
 #define DELTA_BASIC_UI_RENDERER_H
 
 #include "delta_core.h"
+
 #include "shader_controls.h"
 #include "font.h"
+#include "console_shaders.h"
 
 namespace dbasic {
 
@@ -52,7 +54,7 @@ namespace dbasic {
 
         ysError Initialize(int bufferSize);
         ysError Reset();
-        ysError Update();
+        ysError UpdateDisplay();
         ysError Destroy();
 
         void SetEngine(DeltaEngine *engine) { m_engine = engine; }
@@ -64,11 +66,14 @@ namespace dbasic {
         ConsoleVertex *AllocateQuads(int n);
         ConsoleVertex *AllocateTriangles(int n);  
 
+        ConsoleShaders *GetShaders() { return &m_shaders; }
+
     protected:
         ysError InitializeGeometry(int bufferSize);
 
     protected:
         DeltaEngine *m_engine;
+        ConsoleShaders m_shaders;
 
         ysGPUBuffer *m_mainVertexBuffer;
         ysGPUBuffer *m_mainIndexBuffer;
