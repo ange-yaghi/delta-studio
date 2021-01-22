@@ -52,6 +52,12 @@ void dbasic::ShaderStage::CacheObjectData(void *target) {
 			writeBuffer += m_bufferBindings[i].Size;
 		}
 	}
+
+	const int textureCount = GetTextureInputCount();
+	for (int i = 0; i < textureCount; ++i) {
+		memcpy(writeBuffer, &m_textureInputs[i].Texture, sizeof(ysTexture *));
+		writeBuffer += sizeof(ysTexture *);
+	}
 }
 
 void dbasic::ShaderStage::ReadObjectData(const void *source) {
@@ -63,6 +69,12 @@ void dbasic::ShaderStage::ReadObjectData(const void *source) {
 			readBuffer += m_bufferBindings[i].Size;
 		}
 	}
+
+	const int textureCount = GetTextureInputCount();
+	for (int i = 0; i < textureCount; ++i) {
+		memcpy(&m_textureInputs[i].Texture, readBuffer, sizeof(ysTexture *));
+		readBuffer += sizeof(ysTexture *);
+	}
 }
 
 ysError dbasic::ShaderStage::AddInput(ysRenderTarget *inputData, int slot) {
@@ -71,6 +83,27 @@ ysError dbasic::ShaderStage::AddInput(ysRenderTarget *inputData, int slot) {
 	Input &input = m_inputs.New();
 	input.InputData = inputData;
 	input.Slot = slot;
+
+	return YDS_ERROR_RETURN(ysError::None);
+}
+
+ysError dbasic::ShaderStage::AddTextureInput(int slot, TextureHandle *handle) {
+	YDS_ERROR_DECLARE("AddTextureInput");
+
+	*handle = m_textureInputs.GetNumObjects();
+	TextureInput &input = m_textureInputs.New();
+	input.Texture = nullptr;
+	input.Slot = slot;
+
+	m_objectDataSize += sizeof(ysTexture *);
+
+	return YDS_ERROR_RETURN(ysError::None);
+}
+
+ysError dbasic::ShaderStage::BindTexture(ysTexture *texture, TextureHandle handle) {
+	YDS_ERROR_DECLARE("BindTexture");
+
+	m_textureInputs[handle].Texture = texture;
 
 	return YDS_ERROR_RETURN(ysError::None);
 }
@@ -118,6 +151,12 @@ ysError dbasic::ShaderStage::BindObject() {
 			YDS_NESTED_ERROR_CALL(m_device->EditBufferData(binding.Buffer, reinterpret_cast<char *>(binding.Memory)));
 			YDS_NESTED_ERROR_CALL(m_device->UseConstantBuffer(binding.Buffer, binding.Slot));
 		}
+	}
+
+	const int textureCount = GetTextureInputCount();
+	for (int i = 0; i < textureCount; ++i) {
+		const TextureInput &textureInput = m_textureInputs[i];
+		YDS_NESTED_ERROR_CALL(m_device->UseTexture(textureInput.Texture, textureInput.Slot));
 	}
 
 	return YDS_ERROR_RETURN(ysError::None);

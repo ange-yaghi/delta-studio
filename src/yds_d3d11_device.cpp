@@ -300,13 +300,11 @@ ysError ysD3D11Device::UpdateRenderingContext(ysRenderingContext *context) {
     }
 
     // Destroy render target first
-
     if (attachedTarget != nullptr) {
         YDS_NESTED_ERROR_CALL(DestroyD3D11RenderTarget(attachedTarget));
     }
 
     HRESULT result = d3d11Context->m_swapChain->ResizeBuffers(1, width, height, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH);
-
     if (FAILED(result)) {
         return YDS_ERROR_RETURN(ysError::ApiError);
     }

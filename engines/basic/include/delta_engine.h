@@ -30,13 +30,13 @@ namespace dbasic {
             StageEnableFlags Flags = 0;
             void *ObjectData;
             int ObjectDataSize;
-            ysTexture *Texture = nullptr;
             ysGPUBuffer *IndexBuffer = nullptr;
             ysGPUBuffer *VertexBuffer = nullptr;
             int VertexSize = 0;
             int BaseIndex = 0;
             int BaseVertex = 0;
             int FaceCount = 0;
+            bool DepthTest = true;
         };
 
         struct GameEngineSettings {
@@ -75,18 +75,19 @@ namespace dbasic {
         void SetShaderSet(ShaderSet *shaderSet) { m_shaderSet = shaderSet; }
         ShaderSet *GetShaderSet() const { return m_shaderSet; }
 
+        ysError DrawSaq(StageEnableFlags flags);
         ysError DrawImage(StageEnableFlags flags, ysTexture *image, int layer = 0);
         ysError DrawBox(StageEnableFlags flags, int layer = 0);
         ysError DrawAxis(StageEnableFlags flags, int layer = 0);
-        ysError DrawModel(StageEnableFlags flags, ModelAsset *model, ysTexture *texture, int layer = 0);
+        ysError DrawModel(StageEnableFlags flags, ModelAsset *model, int layer = 0);
         ysError DrawRenderSkeleton(
             StageEnableFlags flags, RenderSkeleton *skeleton, float scale, DefaultShaders *shaders, int layer);
         ysError DrawGeneric(
-            StageEnableFlags flags, ysGPUBuffer *indexBuffer, ysGPUBuffer *vertexBuffer, int vertexSize, 
-            int baseIndex, int baseVertex, int faceCount, ysTexture *texture = nullptr, int layer = 0);
+            StageEnableFlags flags, ysGPUBuffer *indexBuffer, ysGPUBuffer *vertexBuffer, int vertexSize,
+            int baseIndex, int baseVertex, int faceCount, bool depthTest = true, int layer = 0);
         ysError LoadTexture(ysTexture **image, const char *fname);
         ysError LoadAnimation(Animation **animation, const char *path, int start, int end);
-        ysError LoadFont(Font **font, const char *path, int size=4096);
+        ysError LoadFont(Font **font, const char *path, int size = 4096);
 
         ysError PlayAudio(AudioAsset *audio);
 
@@ -134,6 +135,18 @@ namespace dbasic {
         ysWindowSystem *GetWindowSystem() const { return m_windowSystem; }
         ysWindow *GetGameWindow() const { return m_gameWindow; }
 
+        ysShader *GetSaqPixelShader() const { return m_saqPixelShader; }
+        ysShader *GetSaqVertexShader() const { return m_saqVertexShader; }
+
+        ysShaderProgram *GetDefaultShaderProgram() const { return m_shaderProgram; }
+        ysShaderProgram *GetConsoleShaderProgram() const { return m_consoleProgram; }
+
+        ysInputLayout *GetSaqInputLayout() const { return m_saqInputLayout; }
+        ysInputLayout *GetDefaultInputLayout() const { return m_inputLayout; }
+        ysInputLayout *GetConsoleInputLayout() const { return m_consoleInputLayout; }
+
+        ysRenderTarget *GetScreenRenderTarget() const { return m_mainRenderTarget; }
+
     protected:
         ysDevice *m_device;
 
@@ -166,6 +179,9 @@ namespace dbasic {
         ysShader *m_pixelShader;
         ysShader *m_consoleVertexShader;
         ysShader *m_consolePixelShader;
+        ysShader *m_saqVertexShader;
+        ysShader *m_saqPixelShader;
+
         ysShaderProgram *m_shaderProgram;
         ysShaderProgram *m_skinnedShaderProgram;
         ysShaderProgram *m_consoleProgram;
@@ -176,6 +192,7 @@ namespace dbasic {
         ysInputLayout *m_skinnedInputLayout;
         ysInputLayout *m_inputLayout;
         ysInputLayout *m_consoleInputLayout;
+        ysInputLayout *m_saqInputLayout;
 
         // Text Support
         UiRenderer m_uiRenderer;

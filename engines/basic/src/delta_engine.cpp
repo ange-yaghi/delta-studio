@@ -19,6 +19,8 @@ const dbasic::DeltaEngine::GameEngineSettings dbasic::DeltaEngine::DefaultSettin
 dbasic::DeltaEngine::DeltaEngine() {
     m_device = nullptr;
 
+    m_audioDevice = nullptr;
+
     m_windowSystem = nullptr;
     m_gameWindow = nullptr;
 
@@ -37,9 +39,14 @@ dbasic::DeltaEngine::DeltaEngine() {
 
     m_consolePixelShader = nullptr;
     m_consoleVertexShader = nullptr;
-    m_consoleProgram = nullptr;
 
+    m_consoleProgram = nullptr;
+    m_skinnedShaderProgram = nullptr;
+
+    m_skinnedInputLayout = nullptr;
     m_inputLayout = nullptr;
+    m_consoleInputLayout = nullptr;
+    m_saqInputLayout = nullptr;
 
     m_initialized = false;
 
@@ -54,6 +61,10 @@ dbasic::DeltaEngine::DeltaEngine() {
     m_mainMouse = nullptr;
 
     m_drawQueue = new ysExpandingArray<DrawCall, 256>[MaxLayers];
+
+    m_cursorHidden = false;
+    m_cursorPositionLocked = false;
+
 }
 
 dbasic::DeltaEngine::~DeltaEngine() {
@@ -66,7 +77,9 @@ dbasic::DeltaEngine::~DeltaEngine() {
     assert(m_vertexShader == nullptr);
     assert(m_vertexSkinnedShader == nullptr);
     assert(m_consoleVertexShader == nullptr);
+    assert(m_saqVertexShader == nullptr);
     assert(m_pixelShader == nullptr);
+    assert(m_saqPixelShader == nullptr);
     assert(m_consolePixelShader == nullptr);
     assert(m_shaderProgram == nullptr);
     assert(m_consoleProgram == nullptr);
@@ -74,6 +87,7 @@ dbasic::DeltaEngine::~DeltaEngine() {
     assert(m_inputLayout == nullptr);
     assert(m_skinnedInputLayout == nullptr);
     assert(m_consoleInputLayout == nullptr);
+    assert(m_saqInputLayout == nullptr);
     assert(m_mainKeyboard == nullptr);
     assert(m_inputSystem == nullptr);
     assert(m_mainMouse == nullptr);
@@ -235,8 +249,12 @@ ysError dbasic::DeltaEngine::Destroy() {
     YDS_NESTED_ERROR_CALL(m_device->DestroyShader(m_vertexShader));
     YDS_NESTED_ERROR_CALL(m_device->DestroyShader(m_vertexSkinnedShader));
     YDS_NESTED_ERROR_CALL(m_device->DestroyShader(m_consoleVertexShader));
+    YDS_NESTED_ERROR_CALL(m_device->DestroyShader(m_saqVertexShader));
+
     YDS_NESTED_ERROR_CALL(m_device->DestroyShader(m_pixelShader));
+    YDS_NESTED_ERROR_CALL(m_device->DestroyShader(m_saqPixelShader));
     YDS_NESTED_ERROR_CALL(m_device->DestroyShader(m_consolePixelShader));
+
     YDS_NESTED_ERROR_CALL(m_device->DestroyShaderProgram(m_shaderProgram));
     YDS_NESTED_ERROR_CALL(m_device->DestroyShaderProgram(m_consoleProgram));
     YDS_NESTED_ERROR_CALL(m_device->DestroyShaderProgram(m_skinnedShaderProgram));
@@ -244,6 +262,7 @@ ysError dbasic::DeltaEngine::Destroy() {
     YDS_NESTED_ERROR_CALL(m_device->DestroyInputLayout(m_inputLayout));
     YDS_NESTED_ERROR_CALL(m_device->DestroyInputLayout(m_skinnedInputLayout));
     YDS_NESTED_ERROR_CALL(m_device->DestroyInputLayout(m_consoleInputLayout));
+    YDS_NESTED_ERROR_CALL(m_device->DestroyInputLayout(m_saqInputLayout));
 
     YDS_NESTED_ERROR_CALL(m_device->DestroyRenderTarget(m_mainRenderTarget));
     YDS_NESTED_ERROR_CALL(m_device->DestroyRenderingContext(m_renderingContext));
@@ -330,28 +349,38 @@ ysError dbasic::DeltaEngine::InitializeShaders(const char *shaderDirectory) {
     if (m_device->GetAPI() == ysContextObject::DeviceAPI::DirectX11 ||
         m_device->GetAPI() == ysContextObject::DeviceAPI::DirectX10)
     {
-        sprintf_s(buffer, "%s%s", shaderDirectory, "delta_engine_shader.fx");
+        sprintf_s(buffer, "%s%s", shaderDirectory, "/hlsl/delta_engine_shader.fx");
         YDS_NESTED_ERROR_CALL(m_device->CreateVertexShader(&m_vertexShader, buffer, "VS_STANDARD")); 
         YDS_NESTED_ERROR_CALL(m_device->CreateVertexShader(&m_vertexSkinnedShader, buffer, "VS_SKINNED"));
         YDS_NESTED_ERROR_CALL(m_device->CreatePixelShader(&m_pixelShader, buffer, "PS"));
 
-        sprintf_s(buffer, "%s%s", shaderDirectory, "delta_console_shader.fx");
+        sprintf_s(buffer, "%s%s", shaderDirectory, "/hlsl/delta_console_shader.fx");
         YDS_NESTED_ERROR_CALL(m_device->CreateVertexShader(&m_consoleVertexShader, buffer, "VS_CONSOLE"));
         YDS_NESTED_ERROR_CALL(m_device->CreatePixelShader(&m_consolePixelShader, buffer, "PS_CONSOLE"));
+
+        sprintf_s(buffer, "%s%s", shaderDirectory, "/hlsl/delta_saq_shader.fx");
+        YDS_NESTED_ERROR_CALL(m_device->CreateVertexShader(&m_saqVertexShader, buffer, "VS_SAQ"));
+        YDS_NESTED_ERROR_CALL(m_device->CreatePixelShader(&m_saqPixelShader, buffer, "PS_SAQ"));
     }
     else if (m_device->GetAPI() == ysContextObject::DeviceAPI::OpenGL4_0) {
-        sprintf_s(buffer, "%s%s", shaderDirectory, "delta_engine_shader.glvs");
+        sprintf_s(buffer, "%s%s", shaderDirectory, "/glsl/delta_engine_shader.vert");
         YDS_NESTED_ERROR_CALL(m_device->CreateVertexShader(&m_vertexShader, buffer, "VS"));
         YDS_NESTED_ERROR_CALL(m_device->CreateVertexShader(&m_vertexSkinnedShader, buffer, "VS"));
 
-        sprintf_s(buffer, "%s%s", shaderDirectory, "delta_engine_shader.glfs");
+        sprintf_s(buffer, "%s%s", shaderDirectory, "/glsl/delta_engine_shader.frag");
         YDS_NESTED_ERROR_CALL(m_device->CreatePixelShader(&m_pixelShader, buffer, "PS"));
 
-        sprintf_s(buffer, "%s%s", shaderDirectory, "delta_console_shader.glvs");
+        sprintf_s(buffer, "%s%s", shaderDirectory, "/glsl/delta_console_shader.vert");
         YDS_NESTED_ERROR_CALL(m_device->CreateVertexShader(&m_consoleVertexShader, buffer, "VS"));
 
-        sprintf_s(buffer, "%s%s", shaderDirectory, "delta_console_shader.glfs");
+        sprintf_s(buffer, "%s%s", shaderDirectory, "/glsl/delta_console_shader.frag");
         YDS_NESTED_ERROR_CALL(m_device->CreatePixelShader(&m_consolePixelShader, buffer, "PS"));
+
+        sprintf_s(buffer, "%s%s", shaderDirectory, "/glsl/delta_saq_shader.vert");
+        YDS_NESTED_ERROR_CALL(m_device->CreateVertexShader(&m_saqVertexShader, buffer, "VS"));
+
+        sprintf_s(buffer, "%s%s", shaderDirectory, "/glsl/delta_saq_shader.frag");
+        YDS_NESTED_ERROR_CALL(m_device->CreatePixelShader(&m_saqPixelShader, buffer, "PS"));
     }
 
     m_skinnedFormat.AddChannel("POSITION", 0, ysRenderGeometryChannel::ChannelFormat::R32G32B32A32_FLOAT);
@@ -370,6 +399,7 @@ ysError dbasic::DeltaEngine::InitializeShaders(const char *shaderDirectory) {
     YDS_NESTED_ERROR_CALL(m_device->CreateInputLayout(&m_inputLayout, m_vertexShader, &m_standardFormat));
     YDS_NESTED_ERROR_CALL(m_device->CreateInputLayout(&m_skinnedInputLayout, m_vertexSkinnedShader, &m_skinnedFormat));
     YDS_NESTED_ERROR_CALL(m_device->CreateInputLayout(&m_consoleInputLayout, m_consoleVertexShader, &m_consoleVertexFormat));
+    YDS_NESTED_ERROR_CALL(m_device->CreateInputLayout(&m_saqInputLayout, m_saqVertexShader, &m_standardFormat));
 
     YDS_NESTED_ERROR_CALL(m_device->CreateShaderProgram(&m_shaderProgram));
     YDS_NESTED_ERROR_CALL(m_device->AttachShader(m_shaderProgram, m_vertexShader));
@@ -606,14 +636,27 @@ int dbasic::DeltaEngine::GetScreenHeight() const {
     return m_gameWindow->GetGameHeight();
 }
 
+ysError dbasic::DeltaEngine::DrawSaq(StageEnableFlags flags) {
+    YDS_ERROR_DECLARE("DrawSaq");
+
+    DrawCall *newCall = NewDrawCall(0, m_shaderSet->GetObjectDataSize());
+    if (newCall != nullptr) {
+        YDS_NESTED_ERROR_CALL(m_shaderSet->CacheObjectData(newCall->ObjectData, m_shaderSet->GetObjectDataSize()));
+        newCall->Flags = flags;
+        newCall->DepthTest = false;
+    }
+
+    return YDS_ERROR_RETURN(ysError::None);
+}
+
 ysError dbasic::DeltaEngine::DrawImage(StageEnableFlags flags, ysTexture *image, int layer) {
     YDS_ERROR_DECLARE("DrawImage");
 
     DrawCall *newCall = NewDrawCall(layer, m_shaderSet->GetObjectDataSize());
     if (newCall != nullptr) {
         YDS_NESTED_ERROR_CALL(m_shaderSet->CacheObjectData(newCall->ObjectData, m_shaderSet->GetObjectDataSize()));
-        newCall->Texture = image;
         newCall->Flags = flags;
+        newCall->DepthTest = false;
     }
 
     return YDS_ERROR_RETURN(ysError::None);
@@ -625,8 +668,8 @@ ysError dbasic::DeltaEngine::DrawBox(StageEnableFlags flags, int layer) {
     DrawCall *newCall = NewDrawCall(layer, m_shaderSet->GetObjectDataSize());
     if (newCall != nullptr) {
         YDS_NESTED_ERROR_CALL(m_shaderSet->CacheObjectData(newCall->ObjectData, m_shaderSet->GetObjectDataSize()));
-        newCall->Texture = nullptr;
         newCall->Flags = flags;
+        newCall->DepthTest = false;
     }
 
     return YDS_ERROR_RETURN(ysError::None);
@@ -640,13 +683,12 @@ ysError dbasic::DeltaEngine::DrawAxis(StageEnableFlags flags, int layer) {
     return YDS_ERROR_RETURN(ysError::None);
 }
 
-ysError dbasic::DeltaEngine::DrawModel(StageEnableFlags flags, ModelAsset *model, ysTexture *texture, int layer) {
+ysError dbasic::DeltaEngine::DrawModel(StageEnableFlags flags, ModelAsset *model, int layer) {
     YDS_ERROR_DECLARE("DrawModel");
 
     DrawCall *newCall = NewDrawCall(layer, m_shaderSet->GetObjectDataSize());
     if (newCall != nullptr) {
         YDS_NESTED_ERROR_CALL(m_shaderSet->CacheObjectData(newCall->ObjectData, m_shaderSet->GetObjectDataSize()));
-        newCall->Texture = texture;
         newCall->VertexSize = model->GetVertexSize();
         newCall->IndexBuffer = model->GetIndexBuffer();
         newCall->VertexBuffer = model->GetVertexBuffer();
@@ -677,10 +719,10 @@ ysError dbasic::DeltaEngine::DrawRenderSkeleton(
 
             shaders->SetObjectTransform(node->Transform.GetWorldTransform());
             shaders->ConfigureModel(scale);
+            shaders->SetDiffuseTexture(diffuseMap);
             DrawModel(
                 flags,
                 node->GetModelAsset(),
-                diffuseMap,
                 layer);
         }
     }
@@ -690,14 +732,13 @@ ysError dbasic::DeltaEngine::DrawRenderSkeleton(
 
 ysError dbasic::DeltaEngine::DrawGeneric(
     StageEnableFlags flags, ysGPUBuffer *indexBuffer, ysGPUBuffer *vertexBuffer, 
-    int vertexSize, int baseIndex, int baseVertex, int faceCount, ysTexture *texture, int layer)
+    int vertexSize, int baseIndex, int baseVertex, int faceCount, bool depthTest, int layer)
 {
     YDS_ERROR_DECLARE("DrawGeneric");
 
     DrawCall *newCall = NewDrawCall(layer, m_shaderSet->GetObjectDataSize());
     if (newCall != nullptr) {
         YDS_NESTED_ERROR_CALL(m_shaderSet->CacheObjectData(newCall->ObjectData, m_shaderSet->GetObjectDataSize()));
-        newCall->Texture = texture;
         newCall->VertexSize = vertexSize;
         newCall->IndexBuffer = indexBuffer;
         newCall->VertexBuffer = vertexBuffer;
@@ -705,6 +746,7 @@ ysError dbasic::DeltaEngine::DrawGeneric(
         newCall->BaseIndex = baseIndex;
         newCall->FaceCount = faceCount;
         newCall->Flags = flags;
+        newCall->DepthTest = depthTest;
     }
 
     return YDS_ERROR_RETURN(ysError::None);
@@ -727,41 +769,43 @@ ysError dbasic::DeltaEngine::ExecuteShaderStage(int stageIndex) {
     ShaderStage *stage = m_shaderSet->GetStage(stageIndex);
     stage->BindScene();
 
-    for (int i = 0; i < MaxLayers; i++) {
-        const int objectsAtLayer = m_drawQueue[i].GetNumObjects();;
-        for (int j = 0; j < objectsAtLayer; j++) {
-            const DrawCall *call = &m_drawQueue[i][j];
-            if (call == nullptr) continue;
-            if (!stage->CheckFlags(call->Flags)) continue;
+    if (stage->GetType() == ShaderStage::Type::FullPass) {
+        for (int i = 0; i < MaxLayers; i++) {
+            const int objectsAtLayer = m_drawQueue[i].GetNumObjects();;
+            for (int j = 0; j < objectsAtLayer; j++) {
+                const DrawCall *call = &m_drawQueue[i][j];
+                if (call == nullptr) continue;
+                if (!stage->CheckFlags(call->Flags)) continue;
 
-            m_shaderSet->ReadObjectData(call->ObjectData, stageIndex, call->ObjectDataSize);
-            stage->BindObject();
+                m_shaderSet->ReadObjectData(call->ObjectData, stageIndex, call->ObjectDataSize);
+                stage->BindObject();
 
-            if (call->IndexBuffer != nullptr) {
-                if (stageIndex == 1) {
-                    int a = 0;
+                if (call->IndexBuffer != nullptr) {
+                    m_device->SetDepthTestEnabled(stage->GetRenderTarget(), call->DepthTest);
+
+                    m_device->UseIndexBuffer(call->IndexBuffer, 0);
+                    m_device->UseVertexBuffer(call->VertexBuffer, call->VertexSize, 0);
+
+                    m_device->Draw(call->FaceCount, call->BaseIndex, call->BaseVertex);
                 }
+                else {
+                    m_device->SetDepthTestEnabled(stage->GetRenderTarget(), call->DepthTest);
 
-                m_device->SetDepthTestEnabled(m_mainRenderTarget, true);
+                    m_device->UseIndexBuffer(m_mainIndexBuffer, 0);
+                    m_device->UseVertexBuffer(m_mainVertexBuffer, sizeof(Vertex), 0);
 
-                m_device->UseTexture(call->Texture, 0);
-
-                m_device->UseIndexBuffer(call->IndexBuffer, 0);
-                m_device->UseVertexBuffer(call->VertexBuffer, call->VertexSize, 0);
-
-                m_device->Draw(call->FaceCount, call->BaseIndex, call->BaseVertex);
-            }
-            else {
-                m_device->SetDepthTestEnabled(m_mainRenderTarget, false);
-
-                m_device->UseIndexBuffer(m_mainIndexBuffer, 0);
-                m_device->UseVertexBuffer(m_mainVertexBuffer, sizeof(Vertex), 0);
-
-                m_device->UseTexture(call->Texture, 0);
-
-                m_device->Draw(2, 0, 0);
+                    m_device->Draw(2, 0, 0);
+                }
             }
         }
+    }
+    else if (stage->GetType() == ShaderStage::Type::PostProcessing) {
+        m_device->SetDepthTestEnabled(stage->GetRenderTarget(), false);
+
+        m_device->UseIndexBuffer(m_mainIndexBuffer, 0);
+        m_device->UseVertexBuffer(m_mainVertexBuffer, sizeof(Vertex), 0);
+
+        m_device->Draw(2, 0, 0);
     }
 
     return YDS_ERROR_RETURN(ysError::None);

@@ -246,6 +246,7 @@ ysError ysOpenGLDevice::ResizeRenderTarget(ysRenderTarget *target, int width, in
         // Nothing needs to be done
     }
     else if (target->GetType() == ysRenderTarget::Type::OffScreen) {
+        YDS_NESTED_ERROR_CALL(DestroyOpenGLRenderTarget(target));
         YDS_NESTED_ERROR_CALL(CreateOpenGLOffScreenRenderTarget(
             target, width, height, target->GetFormat(), target->HasColorData(), target->HasDepthBuffer()));
     }
@@ -301,7 +302,7 @@ ysError ysOpenGLDevice::SetRenderTarget(ysRenderTarget *target) {
 ysError ysOpenGLDevice::SetDepthTestEnabled(ysRenderTarget *target, bool enable) {
     YDS_ERROR_DECLARE("SetDepthTestEnabled");
 
-    bool previousState = target->IsDepthTestEnabled();
+    const bool previousState = target->IsDepthTestEnabled();
     YDS_NESTED_ERROR_CALL(ysDevice::SetDepthTestEnabled(target, enable));
 
     if (target == GetActiveRenderTarget() && previousState != enable) {
@@ -315,20 +316,12 @@ ysError ysOpenGLDevice::DestroyRenderTarget(ysRenderTarget *&target) {
     YDS_ERROR_DECLARE("DestroyRenderTarget");
 
     if (target == nullptr) return YDS_ERROR_RETURN(ysError::InvalidParameter);
-
-    if (target == m_activeRenderTarget) {
-        YDS_NESTED_ERROR_CALL(SetRenderTarget(NULL));
+    else if (target == m_activeRenderTarget) {
+        YDS_NESTED_ERROR_CALL(SetRenderTarget(nullptr));
     }
 
     ysOpenGLRenderTarget *openglTarget = static_cast<ysOpenGLRenderTarget *>(target);
-
-    if (target->GetType() == ysRenderTarget::Type::OffScreen) {
-        unsigned int buffers[] = { openglTarget->GetFramebuffer(), openglTarget->GetDepthBuffer() };
-        m_realContext->glDeleteRenderbuffers(2, buffers);
-
-        unsigned int texture = openglTarget->GetTexture();
-        glDeleteTextures(1, &texture);
-    }
+    DestroyOpenGLRenderTarget(openglTarget);
 
     YDS_NESTED_ERROR_CALL(ysDevice::DestroyRenderTarget(target));
 
@@ -834,7 +827,6 @@ ysError ysOpenGLDevice::DestroyInputLayout(ysInputLayout *&layout) {
 
 unsigned int ysOpenGLDevice::GetPixel(SDL_Surface *surface, int x, int y) {
     const int bpp = surface->format->BytesPerPixel;
-    /* Here p is the address to the pixel we want to retrieve */
     Uint8 *p = (Uint8 *)surface->pixels + y * surface->pitch + x * bpp;
 
     switch (bpp) {
@@ -854,7 +846,7 @@ unsigned int ysOpenGLDevice::GetPixel(SDL_Surface *surface, int x, int y) {
         return *(Uint32 *)p;
         break; 
     default:
-        return 0;    // Avoid warnings
+        return 0; // Avoid warnings
     }
 }
 
@@ -1114,22 +1106,20 @@ ysError ysOpenGLDevice::CreateOpenGLOffScreenRenderTarget(ysRenderTarget *target
 
     glTexImage2D(GL_TEXTURE_2D, 0, glFormat, width, height, 0, GL_RGBA, glType, NULL);
 
-    // Create a depth buffer
-    unsigned int depthBufferHandle = 0;
-
-    if (depthBuffer) {
-        m_realContext->glGenRenderbuffers(1, &depthBufferHandle);
-        m_realContext->glBindRenderbuffer(GL_RENDERBUFFER, depthBufferHandle);
-        m_realContext->glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, width, height);
-    }
-
     // Create a framebuffer
     unsigned int framebuffer;
     m_realContext->glGenFramebuffers(1, &framebuffer);
     m_realContext->glBindFramebuffer(GL_DRAW_FRAMEBUFFER, framebuffer);
     m_realContext->glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, newTexture, 0);
 
-    if (depthBuffer) m_realContext->glFramebufferRenderbuffer(GL_DRAW_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthBufferHandle);
+    // Create a depth buffer
+    unsigned int depthBufferHandle = 0;
+    if (depthBuffer) {
+        m_realContext->glGenRenderbuffers(1, &depthBufferHandle);
+        m_realContext->glBindRenderbuffer(GL_RENDERBUFFER, depthBufferHandle);
+        m_realContext->glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, width, height);
+        m_realContext->glFramebufferRenderbuffer(GL_DRAW_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthBufferHandle);
+    }
 
     ysOpenGLRenderTarget *newRenderTarget = static_cast<ysOpenGLRenderTarget *>(target);
 
@@ -1142,7 +1132,7 @@ ysError ysOpenGLDevice::CreateOpenGLOffScreenRenderTarget(ysRenderTarget *target
     newRenderTarget->m_physicalHeight = height;
     newRenderTarget->m_format = format;
     newRenderTarget->m_hasDepthBuffer = depthBuffer;
-    newRenderTarget->m_associatedContext = NULL;
+    newRenderTarget->m_associatedContext = nullptr;
 
     newRenderTarget->m_textureHandle = newTexture;
     newRenderTarget->m_depthBufferHandle = depthBufferHandle;
@@ -1157,8 +1147,13 @@ ysError ysOpenGLDevice::DestroyOpenGLRenderTarget(ysRenderTarget *target) {
     ysOpenGLRenderTarget *openglTarget = static_cast<ysOpenGLRenderTarget *>(target);
 
     if (target->GetType() == ysRenderTarget::Type::OffScreen) {
-        unsigned int buffers[] = { openglTarget->GetFramebuffer(), openglTarget->GetDepthBuffer() };
-        m_realContext->glDeleteRenderbuffers(2, buffers);
+        if (target->HasDepthBuffer()) {
+            unsigned int depthBuffer[] = { openglTarget->GetDepthBuffer() };
+            m_realContext->glDeleteRenderbuffers(1, depthBuffer);
+        }
+
+        unsigned int frameBuffer[] = { openglTarget->GetFramebuffer() };
+        m_realContext->glDeleteFramebuffers(1, frameBuffer);
 
         unsigned int texture = openglTarget->GetTexture();
         glDeleteTextures(1, &texture);

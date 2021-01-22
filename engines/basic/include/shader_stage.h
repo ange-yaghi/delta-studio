@@ -8,6 +8,7 @@
 namespace dbasic {
 
     typedef unsigned long long StageEnableFlags;
+    typedef int TextureHandle;
 
     class ShaderStage : public ysObject {
     public:
@@ -28,6 +29,11 @@ namespace dbasic {
 
         struct Input {
             ysRenderTarget *InputData;
+            int Slot;
+        };
+
+        struct TextureInput {
+            ysTexture *Texture;
             int Slot;
         };
 
@@ -94,7 +100,11 @@ namespace dbasic {
         void ReadObjectData(const void *source);
 
         ysError AddInput(ysRenderTarget *renderTarget, int slot);
-        int GetInputCount() const { return m_inputs.GetNumObjects(); }  
+        int GetInputCount() const { return m_inputs.GetNumObjects(); }
+
+        ysError AddTextureInput(int slot, TextureHandle *handle);
+        ysError BindTexture(ysTexture *texture, TextureHandle handle);
+        int GetTextureInputCount() const { return m_textureInputs.GetNumObjects(); }
 
         ysError BindScene();
         ysError BindObject();
@@ -132,6 +142,7 @@ namespace dbasic {
 
         ysExpandingArray<ConstantBufferBinding> m_bufferBindings;
         ysExpandingArray<Input> m_inputs;
+        ysExpandingArray<TextureInput> m_textureInputs;
 
         std::string m_name;
         Type m_type;

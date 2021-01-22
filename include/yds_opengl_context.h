@@ -93,6 +93,7 @@ public:
 
     // Textures
 
+    PFNGLTEXIMAGE2DMULTISAMPLEPROC glTexImage2DMultisample = nullptr;
     PFNGLACTIVETEXTUREPROC glActiveTexture = nullptr;
     PFNGLGENERATEMIPMAPPROC glGenerateMipmap = nullptr;
 
@@ -103,14 +104,16 @@ public:
     PFNGLUNMAPBUFFERPROC glUnmapBuffer = nullptr;
 
     PFNGLGENRENDERBUFFERSPROC glGenRenderbuffers = nullptr;
+    PFNGLDELETERENDERBUFFERSPROC glDeleteRenderbuffers = nullptr;
     PFNGLBINDRENDERBUFFERPROC glBindRenderbuffer = nullptr;
     PFNGLRENDERBUFFERSTORAGEPROC glRenderbufferStorage = nullptr;
+    PFNGLRENDERBUFFERSTORAGEMULTISAMPLEPROC glRenderbufferStorageMultisample = nullptr;
 
     PFNGLCOPYBUFFERSUBDATAPROC glCopyBufferSubData = nullptr;
     PFNGLBUFFERSUBDATAPROC glBufferSubData = nullptr;
 
     PFNGLGENFRAMEBUFFERSPROC glGenFramebuffers = nullptr;
-    PFNGLDELETERENDERBUFFERSPROC glDeleteRenderbuffers = nullptr;
+    PFNGLDELETEFRAMEBUFFERSPROC glDeleteFramebuffers = nullptr;
     PFNGLBINDFRAMEBUFFERPROC glBindFramebuffer = nullptr;
     PFNGLFRAMEBUFFERTEXTURE2DPROC glFramebufferTexture2D = nullptr;
     PFNGLFRAMEBUFFERRENDERBUFFERPROC glFramebufferRenderbuffer = nullptr;

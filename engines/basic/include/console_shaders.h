@@ -28,6 +28,8 @@ namespace dbasic {
 
         StageEnableFlags GetFlags() const;
 
+        void SetTexture(ysTexture *texture);
+
     protected:
         ConsoleShaderObjectVariables m_shaderObjectVariables;
         ShaderScreenVariables m_shaderScreenVariables;
@@ -36,6 +38,8 @@ namespace dbasic {
 
         float m_screenWidth;
         float m_screenHeight;
+
+        TextureHandle m_textureHandle;
 
     protected:
         ShaderStage *m_mainStage;

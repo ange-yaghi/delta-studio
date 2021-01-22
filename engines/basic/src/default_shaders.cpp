@@ -16,6 +16,8 @@ dbasic::DefaultShaders::DefaultShaders() {
 
     m_nearClip = 2.0f;
     m_farClip = 100.0f;
+
+    m_mainStage = nullptr;
 }
 
 dbasic::DefaultShaders::~DefaultShaders() {
@@ -38,6 +40,8 @@ ysError dbasic::DefaultShaders::Initialize(ShaderSet *shaderSet, ysRenderTarget 
         "Buffer::ObjectData", 1, ShaderStage::ConstantBufferBinding::BufferType::ObjectData, &m_shaderObjectVariables);
     m_mainStage->NewConstantBuffer<LightingControls>(
         "Buffer::LightingData", 3, ShaderStage::ConstantBufferBinding::BufferType::SceneData, &m_lightingControls);
+
+    m_mainStage->AddTextureInput(0, &m_mainStageDiffuseTexture);
 
     return YDS_ERROR_RETURN(ysError::None);
 }
@@ -291,13 +295,13 @@ dbasic::StageEnableFlags dbasic::DefaultShaders::GetRegularFlags() const {
 }
 
 dbasic::StageEnableFlags dbasic::DefaultShaders::GetRiggedFlags() const {
-    return -1;
+    return 0;
 }
 
 void dbasic::DefaultShaders::ConfigureImage(
-    float scaleX, float scaleY, 
-    float texOffsetU, float texOffsetV, 
-    float texScaleU, float texScaleV) 
+    float scaleX, float scaleY,
+    float texOffsetU, float texOffsetV,
+    float texScaleU, float texScaleV)
 {
     SetScale(scaleX, scaleY);
     SetTexOffset(texOffsetU, texOffsetV);
@@ -314,7 +318,7 @@ void dbasic::DefaultShaders::ConfigureBox(float width, float height) {
 }
 
 void dbasic::DefaultShaders::ConfigureAxis(
-    const ysVector &position, const ysVector &direction, float length) 
+    const ysVector &position, const ysVector &direction, float length)
 {
     ysMatrix trans = ysMath::TranslationTransform(position);
     ysMatrix offset = ysMath::TranslationTransform(ysMath::LoadVector(0, length / 2.0f));
@@ -333,4 +337,8 @@ void dbasic::DefaultShaders::ConfigureModel(float scale) {
     SetTexOffset(0.0f, 0.0f);
     SetTexScale(1.0f, 1.0f);
     SetColorReplace(true);
+}
+
+void dbasic::DefaultShaders::SetDiffuseTexture(ysTexture *texture) {
+    m_mainStage->BindTexture(texture, m_mainStageDiffuseTexture);
 }

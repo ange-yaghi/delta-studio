@@ -6,10 +6,18 @@ dbasic::UiRenderer::UiRenderer() {
     m_engine = nullptr;
     m_bufferSize = 0;
     m_vertexOffset = 0;
+
+    m_font = nullptr;
+    m_indexBuffer = nullptr;
+    m_vertexBuffer = nullptr;
+    m_mainIndexBuffer = nullptr;
+    m_mainVertexBuffer = nullptr;
+    m_indexOffset = 0;
 }
 
 dbasic::UiRenderer::~UiRenderer() {
-    /* void */
+    assert(m_mainIndexBuffer == nullptr);
+    assert(m_mainVertexBuffer == nullptr);
 }
 
 ysError dbasic::UiRenderer::Initialize(int bufferSize) {
@@ -41,6 +49,7 @@ ysError dbasic::UiRenderer::UpdateDisplay() {
         sizeof(unsigned short) * m_indexOffset,
         0);
 
+    m_shaders.SetTexture(m_font->GetTexture());
     m_engine->DrawGeneric(
         m_shaders.GetFlags(),
         m_mainIndexBuffer,
@@ -49,7 +58,7 @@ ysError dbasic::UiRenderer::UpdateDisplay() {
         0,
         0,
         m_indexOffset / 3,
-        m_font->GetTexture());
+        false);
 
     return YDS_ERROR_RETURN(ysError::None);
 }

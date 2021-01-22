@@ -5,6 +5,8 @@ dbasic::ConsoleShaders::ConsoleShaders() {
     m_screenWidth = 1.0f;
     m_screenHeight = 1.0f;
 
+    m_textureHandle = 0;
+
     m_mainStage = nullptr;
 }
 
@@ -29,6 +31,8 @@ ysError dbasic::ConsoleShaders::Initialize(
         "DefaultUiShaders::ScreenData", 0, ShaderStage::ConstantBufferBinding::BufferType::SceneData, &m_shaderScreenVariables);
     m_mainStage->NewConstantBuffer<ConsoleShaderObjectVariables>(
         "DefaultUiShaders::ObjectData", 1, ShaderStage::ConstantBufferBinding::BufferType::ObjectData, &m_shaderObjectVariables);
+
+    m_mainStage->AddTextureInput(0, &m_textureHandle);
 
     return YDS_ERROR_RETURN(ysError::None);
 }
@@ -75,4 +79,8 @@ int dbasic::ConsoleShaders::GetFlagBit() const {
 
 dbasic::StageEnableFlags dbasic::ConsoleShaders::GetFlags() const {
     return m_mainStage->GetFlags();
+}
+
+void dbasic::ConsoleShaders::SetTexture(ysTexture *texture) {
+    m_mainStage->BindTexture(texture, m_textureHandle);
 }

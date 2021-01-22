@@ -105,6 +105,8 @@ namespace dbasic {
         void ConfigureAxis(const ysVector &position, const ysVector &direction, float length);
         void ConfigureModel(float scale);
 
+        void SetDiffuseTexture(ysTexture *texture);
+
     protected:
         ShaderScreenVariables m_shaderScreenVariables;
         ShaderObjectVariables m_shaderObjectVariables;
@@ -125,6 +127,8 @@ namespace dbasic {
         float m_screenHeight;
 
         CameraMode m_cameraMode;
+
+        TextureHandle m_mainStageDiffuseTexture;
 
     protected:
         ShaderStage *m_mainStage;
