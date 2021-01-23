@@ -710,16 +710,8 @@ ysError dbasic::DeltaEngine::DrawRenderSkeleton(
     for (int i = 0; i < nodeCount; ++i) {
         RenderNode *node = skeleton->GetNode(i);
         if (node->GetModelAsset() != nullptr) {
-            Material *material = node->GetModelAsset()->GetMaterial();
-            shaders->UseMaterial(material);
-
-            ysTexture *diffuseMap = (material == nullptr)
-                ? nullptr
-                : material->GetDiffuseMap();
-
             shaders->SetObjectTransform(node->Transform.GetWorldTransform());
-            shaders->ConfigureModel(scale);
-            shaders->SetDiffuseTexture(diffuseMap);
+            shaders->ConfigureModel(scale, node->GetModelAsset());
             DrawModel(
                 flags,
                 node->GetModelAsset(),

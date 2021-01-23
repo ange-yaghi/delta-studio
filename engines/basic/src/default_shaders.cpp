@@ -59,9 +59,18 @@ ysError dbasic::DefaultShaders::UseMaterial(Material *material) {
 
     if (material == nullptr) {
         SetBaseColor(ysMath::LoadVector(1.0f, 0.0f, 1.0f, 1.0f));
+        SetColorReplace(true);
     }
     else {
         SetBaseColor(material->GetDiffuseColor());
+
+        if (material->GetDiffuseMap() != nullptr) {
+            SetColorReplace(false);
+            SetDiffuseTexture(material->GetDiffuseMap());
+        }
+        else {
+            SetColorReplace(true);
+        }
     }
 
     return YDS_ERROR_RETURN(ysError::None);
@@ -332,11 +341,11 @@ void dbasic::DefaultShaders::ConfigureAxis(
     SetObjectTransform(transform);
 }
 
-void dbasic::DefaultShaders::ConfigureModel(float scale) {
+void dbasic::DefaultShaders::ConfigureModel(float scale, ModelAsset *model) {
     SetScale(scale, scale, scale);
     SetTexOffset(0.0f, 0.0f);
     SetTexScale(1.0f, 1.0f);
-    SetColorReplace(true);
+    UseMaterial(model->GetMaterial());
 }
 
 void dbasic::DefaultShaders::SetDiffuseTexture(ysTexture *texture) {

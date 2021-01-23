@@ -6,6 +6,7 @@
 #include "shader_controls.h"
 #include "shader_set.h"
 #include "material.h"
+#include "model_asset.h"
 
 namespace dbasic {
 
@@ -103,7 +104,7 @@ namespace dbasic {
             float texScaleU = 1.0f, float texScaleV = 1.0f);
         void ConfigureBox(float width, float height);
         void ConfigureAxis(const ysVector &position, const ysVector &direction, float length);
-        void ConfigureModel(float scale);
+        void ConfigureModel(float scale, ModelAsset *model);
 
         void SetDiffuseTexture(ysTexture *texture);
 
