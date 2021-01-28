@@ -59,7 +59,7 @@ public:
     virtual ysError UseShaderProgram(ysShaderProgram *);
 
     // Input Layouts 
-    virtual ysError CreateInputLayout(ysInputLayout **newLayout, ysShader *shader, ysRenderGeometryFormat *format);
+    virtual ysError CreateInputLayout(ysInputLayout **newLayout, ysShader *shader, const ysRenderGeometryFormat *format);
     virtual ysError UseInputLayout(ysInputLayout *layout);
     virtual ysError DestroyInputLayout(ysInputLayout *&layout);
 
@@ -68,7 +68,7 @@ public:
     virtual ysError CreateAlphaTexture(ysTexture **texture, int width, int height, const unsigned char *buffer);
     virtual ysError DestroyTexture(ysTexture *&texture);
     virtual ysError UseTexture(ysTexture *texture, int slot);
-    virtual ysError UseRenderTargetAsTexture(ysRenderTarget *texture, int slot);
+    virtual ysError UseRenderTargetAsTexture(ysRenderTarget *renderTarget, int slot);
 
     virtual void Draw(int numFaces, int indexOffset, int vertexOffset);
 

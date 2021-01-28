@@ -12,3 +12,9 @@ ysContextObject::ysContextObject(const char *typeID, DeviceAPI API) : ysObject(t
 ysContextObject::~ysContextObject() {
     /* void */
 }
+
+bool ysContextObject::CheckCompatibility(const ysContextObject *object) const {
+    return (object != nullptr)
+        ? object->m_api == m_api
+        : true;
+}

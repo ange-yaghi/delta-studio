@@ -40,6 +40,7 @@
     <ClInclude Include="..\..\engines\basic\include\font.h" />
     <ClInclude Include="..\..\engines\basic\include\os_utilities.h" />
     <ClInclude Include="..\..\engines\basic\include\path.h" />
+    <ClInclude Include="..\..\engines\basic\include\shader_base.h" />
     <ClInclude Include="..\..\engines\basic\include\shader_set.h" />
     <ClInclude Include="..\..\engines\basic\include\shader_stage.h" />
     <ClInclude Include="..\..\engines\basic\include\texture_asset.h" />
@@ -76,6 +77,7 @@
     <ClCompile Include="..\..\engines\basic\src\font.cpp" />
     <ClCompile Include="..\..\engines\basic\src\os_utilities.cpp" />
     <ClCompile Include="..\..\engines\basic\src\path.cpp" />
+    <ClCompile Include="..\..\engines\basic\src\shader_base.cpp" />
     <ClCompile Include="..\..\engines\basic\src\shader_set.cpp" />
     <ClCompile Include="..\..\engines\basic\src\shader_stage.cpp" />
     <ClCompile Include="..\..\engines\basic\src\texture_asset.cpp" />

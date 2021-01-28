@@ -26,6 +26,8 @@ enum class ysError {
 
     // Shaders
     ProgramAlreadyLinked,
+    ProgramNotLinked,
+    ProgramLinkError,
 
     // Contexts
     ContextAlreadyHasRenderTarget,
@@ -33,7 +35,6 @@ enum class ysError {
     NoDevice,
     NoRenderTarget,
     NoContext,
-
 
     // ------------------------------------------------------------------------------
     // API Errors

@@ -8,6 +8,9 @@ dbasic::Material::Material() : ysObject("Material") {
     m_diffuseMap = nullptr;
     m_normalMap = nullptr;
     m_specularMap = nullptr;
+    m_aoMap = nullptr;
+
+    m_lit = true;
 
     m_diffuseColor = ysVector4();
 }

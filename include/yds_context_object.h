@@ -21,7 +21,7 @@ public:
 
     DeviceAPI GetAPI() const { return m_api; }
 
-    bool CheckCompatibility(ysContextObject *object) const { return (object) ? object->m_api == m_api : true; }
+    bool CheckCompatibility(const ysContextObject *object) const;
 
     virtual void SetDebugName(const std::string &debugName) { m_debugName = debugName; }
     std::string GetDebugName() const { return m_debugName; }

@@ -11,6 +11,7 @@
 #include "console.h"
 #include "font.h"
 #include "default_shaders.h"
+#include "shader_base.h"
 
 #include "../../../physics/include/mass_spring_system.h"
 #include "../../../physics/include/rigid_body_system.h"
@@ -81,7 +82,7 @@ namespace dbasic {
         ysError DrawAxis(StageEnableFlags flags, int layer = 0);
         ysError DrawModel(StageEnableFlags flags, ModelAsset *model, int layer = 0);
         ysError DrawRenderSkeleton(
-            StageEnableFlags flags, RenderSkeleton *skeleton, float scale, DefaultShaders *shaders, int layer);
+            StageEnableFlags flags, RenderSkeleton *skeleton, float scale, ShaderBase *shaders, int layer);
         ysError DrawGeneric(
             StageEnableFlags flags, ysGPUBuffer *indexBuffer, ysGPUBuffer *vertexBuffer, int vertexSize,
             int baseIndex, int baseVertex, int faceCount, bool depthTest = true, int layer = 0);
@@ -144,6 +145,8 @@ namespace dbasic {
         ysInputLayout *GetSaqInputLayout() const { return m_saqInputLayout; }
         ysInputLayout *GetDefaultInputLayout() const { return m_inputLayout; }
         ysInputLayout *GetConsoleInputLayout() const { return m_consoleInputLayout; }
+
+        const ysRenderGeometryFormat *GetGeometryFormat() const { return &m_standardFormat; }
 
         ysRenderTarget *GetScreenRenderTarget() const { return m_mainRenderTarget; }
 

@@ -331,6 +331,12 @@ ysError ysDevice::LinkProgram(ysShaderProgram *program) {
 ysError ysDevice::UseShaderProgram(ysShaderProgram *program) {
     YDS_ERROR_DECLARE("UseShaderProgram");
 
+    if (!CheckCompatibility(program)) return YDS_ERROR_RETURN(ysError::IncompatiblePlatforms);
+
+    if (program != nullptr) {
+        if (!program->m_isLinked) return YDS_ERROR_RETURN(ysError::ProgramNotLinked);
+    }
+
     m_activeShaderProgram = program;
 
     return YDS_ERROR_RETURN(ysError::None);
@@ -369,7 +375,7 @@ ysError ysDevice::UseTexture(ysTexture *texture, int slot) {
 }
 
 ysError ysDevice::UseRenderTargetAsTexture(ysRenderTarget *texture, int slot) {
-    YDS_ERROR_DECLARE("UseTexture");
+    YDS_ERROR_DECLARE("UseRenderTargetAsTexture");
 
     if (!CheckCompatibility(texture)) return YDS_ERROR_RETURN(ysError::IncompatiblePlatforms);
     if (slot < 0 || slot >= this->m_maxTextureSlots) return YDS_ERROR_RETURN(ysError::OutOfBounds);

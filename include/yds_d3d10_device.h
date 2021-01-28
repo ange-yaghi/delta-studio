@@ -62,7 +62,7 @@ public:
     virtual ysError UseShaderProgram(ysShaderProgram *);
 
     // Input Layouts 
-    virtual ysError CreateInputLayout(ysInputLayout **newLayout, ysShader *shader, ysRenderGeometryFormat *format);
+    virtual ysError CreateInputLayout(ysInputLayout **newLayout, ysShader *shader, const ysRenderGeometryFormat *format);
     virtual ysError UseInputLayout(ysInputLayout *layout);
     virtual ysError DestroyInputLayout(ysInputLayout *&layout);
 

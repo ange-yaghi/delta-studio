@@ -207,6 +207,9 @@
     <ClInclude Include="..\..\engines\basic\include\console_shaders.h">
       <Filter>Header Files\shaders\builtin</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\engines\basic\include\shader_base.h">
+      <Filter>Header Files\shaders</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\engines\basic\src\animation.cpp">
@@ -307,6 +310,9 @@
     </ClCompile>
     <ClCompile Include="..\..\engines\basic\src\console_shaders.cpp">
       <Filter>Source Files\shaders\builtin</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\engines\basic\src\shader_base.cpp">
+      <Filter>Source Files\shaders</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

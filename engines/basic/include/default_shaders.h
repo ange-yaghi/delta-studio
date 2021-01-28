@@ -1,7 +1,7 @@
 #ifndef DELTA_BASIC_DEFAULT_SHADERS_H
 #define DELTA_BASIC_DEFAULT_SHADERS_H
 
-#include "delta_core.h"
+#include "shader_base.h"
 
 #include "shader_controls.h"
 #include "shader_set.h"
@@ -10,7 +10,7 @@
 
 namespace dbasic {
 
-    class DefaultShaders : public ysObject {
+    class DefaultShaders : public ShaderBase {
     public:
         enum class CameraMode {
             Target,
@@ -24,7 +24,7 @@ namespace dbasic {
         ysError Initialize(ShaderSet *shaderSet, ysRenderTarget *renderTarget, ysShaderProgram *shaderProgram, ysInputLayout *inputLayout);
         ysError Destroy();
 
-        ysError UseMaterial(Material *material);
+        virtual ysError UseMaterial(Material *material);
 
         void ResetBrdfParameters();
         void SetBaseColor(const ysVector &color);
@@ -48,7 +48,7 @@ namespace dbasic {
         void SetFogFar(float fogFar);
         void SetFogColor(const ysVector &color);
 
-        void SetObjectTransform(const ysMatrix &mat);
+        virtual void SetObjectTransform(const ysMatrix &mat);
         void SetPositionOffset(const ysVector &position);
 
         void SetProjection(const ysMatrix &mat);
@@ -104,7 +104,7 @@ namespace dbasic {
             float texScaleU = 1.0f, float texScaleV = 1.0f);
         void ConfigureBox(float width, float height);
         void ConfigureAxis(const ysVector &position, const ysVector &direction, float length);
-        void ConfigureModel(float scale, ModelAsset *model);
+        virtual void ConfigureModel(float scale, ModelAsset *model);
 
         void SetDiffuseTexture(ysTexture *texture);
 

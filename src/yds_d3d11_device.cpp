@@ -1075,7 +1075,7 @@ ysError ysD3D11Device::UseShaderProgram(ysShaderProgram *program) {
     return YDS_ERROR_RETURN(ysError::None);
 }
 
-ysError ysD3D11Device::CreateInputLayout(ysInputLayout **newInputLayout, ysShader *shader, ysRenderGeometryFormat *format) {
+ysError ysD3D11Device::CreateInputLayout(ysInputLayout **newInputLayout, ysShader *shader, const ysRenderGeometryFormat *format) {
     YDS_ERROR_DECLARE("CreateInputLayout");
 
     if (newInputLayout == nullptr) return YDS_ERROR_RETURN(ysError::InvalidParameter);
@@ -1279,19 +1279,24 @@ ysError ysD3D11Device::UseTexture(ysTexture *texture, int slot) {
     return YDS_ERROR_RETURN(ysError::None);
 }
 
-ysError ysD3D11Device::UseRenderTargetAsTexture(ysRenderTarget *texture, int slot) {
-    YDS_ERROR_DECLARE("UseTexture");
+ysError ysD3D11Device::UseRenderTargetAsTexture(ysRenderTarget *renderTarget, int slot) {
+    YDS_ERROR_DECLARE("UseRenderTargetAsTexture");
 
     if (slot >= m_maxTextureSlots) return YDS_ERROR_RETURN(ysError::OutOfBounds);
 
-    ysD3D11RenderTarget *d3d11Texture = static_cast<ysD3D11RenderTarget *>(texture);
+    ysD3D11RenderTarget *d3d11RenderTarget = static_cast<ysD3D11RenderTarget *>(renderTarget);
 
-    if (texture != m_activeTextures[slot].RenderTarget) {
+    if (renderTarget != m_activeTextures[slot].RenderTarget) {
         ID3D11ShaderResourceView *nullView = nullptr;
-        GetImmediateContext()->PSSetShaderResources(slot, 1, (texture) ? &d3d11Texture->m_resourceView : &nullView);
+        GetImmediateContext()->PSSetShaderResources(
+            slot,
+            1,
+            (d3d11RenderTarget != nullptr)
+                ? &d3d11RenderTarget->m_resourceView
+                : &nullView);
     }
 
-    YDS_NESTED_ERROR_CALL(ysDevice::UseRenderTargetAsTexture(texture, slot));
+    YDS_NESTED_ERROR_CALL(ysDevice::UseRenderTargetAsTexture(renderTarget, slot));
 
     return YDS_ERROR_RETURN(ysError::None);
 }

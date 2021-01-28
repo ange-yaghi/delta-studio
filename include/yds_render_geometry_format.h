@@ -13,9 +13,8 @@ public:
 
     void AddChannel(const char *name, int offset, ysRenderGeometryChannel::ChannelFormat format);
 
-    const ysRenderGeometryChannel *GetChannel(int index) {
-        ysRenderGeometryChannel *channel = m_channels.Get(index); 
-        return (const ysRenderGeometryChannel *)channel;
+    const ysRenderGeometryChannel *GetChannel(int index) const {
+        return m_channels.Get(index); 
     }
 
 protected:

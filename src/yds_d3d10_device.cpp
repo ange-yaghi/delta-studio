@@ -916,7 +916,7 @@ ysError ysD3D10Device::UseShaderProgram(ysShaderProgram *program) {
     return YDS_ERROR_RETURN(ysError::None);
 }
 
-ysError ysD3D10Device::CreateInputLayout(ysInputLayout **newInputLayout, ysShader *shader, ysRenderGeometryFormat *format) {
+ysError ysD3D10Device::CreateInputLayout(ysInputLayout **newInputLayout, ysShader *shader, const ysRenderGeometryFormat *format) {
     YDS_ERROR_DECLARE("CreateInputLayout");
 
     if (newInputLayout == nullptr) return YDS_ERROR_RETURN(ysError::InvalidParameter);

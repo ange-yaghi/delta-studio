@@ -156,7 +156,7 @@ public:
     /* Input Layouts */
 
     // Create an input layout for a shader and format
-    virtual ysError CreateInputLayout(ysInputLayout **newLayout, ysShader *shader, ysRenderGeometryFormat *format) = 0;
+    virtual ysError CreateInputLayout(ysInputLayout **newLayout, ysShader *shader, const ysRenderGeometryFormat *format) = 0;
 
     // Enable an input layout
     virtual ysError UseInputLayout(ysInputLayout *layout);

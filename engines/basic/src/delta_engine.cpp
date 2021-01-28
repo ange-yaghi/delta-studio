@@ -702,7 +702,7 @@ ysError dbasic::DeltaEngine::DrawModel(StageEnableFlags flags, ModelAsset *model
 }
 
 ysError dbasic::DeltaEngine::DrawRenderSkeleton(
-    StageEnableFlags flags, RenderSkeleton *skeleton, float scale, DefaultShaders *shaders, int layer) 
+    StageEnableFlags flags, RenderSkeleton *skeleton, float scale, ShaderBase *shaders, int layer) 
 {
     YDS_ERROR_DECLARE("DrawRenderSkeleton");
 

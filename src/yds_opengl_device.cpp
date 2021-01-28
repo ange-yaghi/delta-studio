@@ -734,25 +734,31 @@ ysError ysOpenGLDevice::LinkProgram(ysShaderProgram *program) {
     ysOpenGLShaderProgram *openglProgram = static_cast<ysOpenGLShaderProgram *>(program);
     m_realContext->glLinkProgram(openglProgram->m_handle);
 
+    GLint status;
+    m_realContext->glGetProgramiv(openglProgram->m_handle, GL_LINK_STATUS, &status);
+
+    if (status == GL_FALSE) {
+        return YDS_ERROR_RETURN(ysError::ProgramLinkError);
+    }
+
     return YDS_ERROR_RETURN(ysError::None);
 }
 
 ysError ysOpenGLDevice::UseShaderProgram(ysShaderProgram *program) {
     YDS_ERROR_DECLARE("UseShaderProgram");
 
-    if (!CheckCompatibility(program)) return YDS_ERROR_RETURN(ysError::IncompatiblePlatforms);
+    ysShaderProgram *previousShaderProgram = m_activeShaderProgram;
+    YDS_NESTED_ERROR_CALL(ysDevice::UseShaderProgram(program));
 
-    if (m_activeShaderProgram == program) return YDS_ERROR_RETURN(ysError::None);
+    if (previousShaderProgram == program) return YDS_ERROR_RETURN(ysError::None);
 
-    if (program) {
+    if (program != nullptr) {
         ysOpenGLShaderProgram *openglProgram = static_cast<ysOpenGLShaderProgram *>(program);
         m_realContext->glUseProgram(openglProgram->m_handle);
     }
     else {
         m_realContext->glUseProgram(NULL);
     }
-
-    YDS_NESTED_ERROR_CALL(ysDevice::UseShaderProgram(program));
 
     return YDS_ERROR_RETURN(ysError::None);
 }
@@ -771,7 +777,7 @@ ysError ysOpenGLDevice::CreateShaderProgram(ysShaderProgram **program) {
 }
 
 // Input Layouts
-ysError ysOpenGLDevice::CreateInputLayout(ysInputLayout **newInputLayout, ysShader *shader, ysRenderGeometryFormat *format) {
+ysError ysOpenGLDevice::CreateInputLayout(ysInputLayout **newInputLayout, ysShader *shader, const ysRenderGeometryFormat *format) {
     YDS_ERROR_DECLARE("CreateInputLayout");
 
     ysOpenGLInputLayout *newLayout = m_inputLayouts.NewGeneric<ysOpenGLInputLayout>();
@@ -874,6 +880,9 @@ ysError ysOpenGLDevice::CreateTexture(ysTexture **texture, const char *fname) {
     glGenTextures(1, &newTexture->m_handle);
     glBindTexture(GL_TEXTURE_2D, newTexture->m_handle);
 
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
     newTexture->m_width = pTexSurface->w;
     newTexture->m_height = pTexSurface->h;
 
@@ -956,7 +965,7 @@ ysError ysOpenGLDevice::UseTexture(ysTexture *texture, int slot) {
     YDS_ERROR_DECLARE("UseTexture");
     YDS_NESTED_ERROR_CALL(ysDevice::UseTexture(texture, slot));
 
-    if (texture) {
+    if (texture != nullptr) {
         ysOpenGLTexture *openglTexture = static_cast<ysOpenGLTexture *>(texture);
 
         m_realContext->glActiveTexture(slot + GL_TEXTURE0);
@@ -971,15 +980,15 @@ ysError ysOpenGLDevice::UseTexture(ysTexture *texture, int slot) {
     return YDS_ERROR_RETURN(ysError::None);
 }
 
-ysError ysOpenGLDevice::UseRenderTargetAsTexture(ysRenderTarget *texture, int slot) {
-    YDS_ERROR_DECLARE("UseTexture");
-    YDS_NESTED_ERROR_CALL(ysDevice::UseRenderTargetAsTexture(texture, slot));
+ysError ysOpenGLDevice::UseRenderTargetAsTexture(ysRenderTarget *renderTarget, int slot) {
+    YDS_ERROR_DECLARE("UseRenderTargetAsTexture");
+    YDS_NESTED_ERROR_CALL(ysDevice::UseRenderTargetAsTexture(renderTarget, slot));
 
-    if (texture != nullptr) {
-        ysOpenGLRenderTarget *openglTexture = static_cast<ysOpenGLRenderTarget *>(texture);
+    if (renderTarget != nullptr) {
+        ysOpenGLRenderTarget *openglRenderTarget = static_cast<ysOpenGLRenderTarget *>(renderTarget);
 
         m_realContext->glActiveTexture(slot + GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, openglTexture->GetTexture());
+        glBindTexture(GL_TEXTURE_2D, openglRenderTarget->GetTexture());
     }
     else {
         m_realContext->glActiveTexture(slot + GL_TEXTURE0);
