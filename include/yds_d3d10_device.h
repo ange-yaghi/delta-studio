@@ -22,6 +22,10 @@ public:
     virtual ysError DestroyDevice();
     virtual bool CheckSupport();
 
+    // State
+    virtual ysError SetFaceCulling(bool faceCulling);
+    virtual ysError SetFaceCullingMode(CullMode cullMode);
+
     // Rendering Contexts
     virtual ysError CreateRenderingContext(ysRenderingContext **renderingContext, ysWindow *window);
     virtual ysError UpdateRenderingContext(ysRenderingContext *context);

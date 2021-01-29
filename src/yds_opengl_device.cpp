@@ -51,8 +51,8 @@ bool ysOpenGLDevice::CheckSupport() {
 ysError ysOpenGLDevice::CreateRenderingContext(ysRenderingContext **context, ysWindow *window) {
     YDS_ERROR_DECLARE("CreateRenderingContext");
 
-    if (context == NULL) return YDS_ERROR_RETURN(ysError::InvalidParameter);
-    *context = NULL;
+    if (context == nullptr) return YDS_ERROR_RETURN(ysError::InvalidParameter);
+    *context = nullptr;
 
     if (window->GetPlatform() == ysWindowSystemObject::Platform::Windows) {
         ysOpenGLWindowsContext *newContext;
@@ -61,8 +61,9 @@ ysError ysOpenGLDevice::CreateRenderingContext(ysRenderingContext **context, ysW
 
         // TEMP
         glFrontFace(GL_CCW);
-        glEnable(GL_CULL_FACE);
-        glCullFace(GL_BACK);
+
+        SetFaceCulling(true);
+        SetFaceCullingMode(CullMode::Back);
 
         *context = static_cast<ysRenderingContext *>(newContext);
 
@@ -354,6 +355,32 @@ ysError ysOpenGLDevice::Present() {
 
     ysOpenGLVirtualContext *currentContext = static_cast<ysOpenGLVirtualContext *>(m_activeContext);
     currentContext->Present();
+
+    return YDS_ERROR_RETURN(ysError::None);
+}
+
+ysError ysOpenGLDevice::SetFaceCulling(bool faceCulling) {
+    YDS_ERROR_DECLARE("SetFaceCulling");
+
+    if (faceCulling) glEnable(GL_CULL_FACE);
+    else glDisable(GL_CULL_FACE);
+
+    return YDS_ERROR_RETURN(ysError::None);
+}
+
+ysError ysOpenGLDevice::SetFaceCullingMode(CullMode cullMode) {
+    YDS_ERROR_DECLARE("SetFaceCullingMode");
+
+    switch (cullMode) {
+    case CullMode::Front:
+        glCullFace(GL_FRONT);
+        break;
+    case CullMode::Back:
+        glCullFace(GL_BACK);
+        break;
+    default:
+        return YDS_ERROR_RETURN(ysError::InvalidParameter);
+    }
 
     return YDS_ERROR_RETURN(ysError::None);
 }
@@ -1097,8 +1124,15 @@ ysError ysOpenGLDevice::CreateOpenGLOffScreenRenderTarget(ysRenderTarget *target
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
-    int glFormat;
-    int glType;
+    if (!colorData) {
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_REF_TO_TEXTURE);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    }
+
+    GLint glFormat;
+    GLint glType;
+    GLint pixelFormat;
 
     switch (format) {
     case ysRenderTarget::Format::R8G8B8A8_UNORM:
@@ -1109,25 +1143,35 @@ ysError ysOpenGLDevice::CreateOpenGLOffScreenRenderTarget(ysRenderTarget *target
         glFormat = GL_RGBA32F_ARB;
         glType = GL_FLOAT;
         break;
+    case ysRenderTarget::Format::R32_FLOAT:
+        glFormat = GL_DEPTH_COMPONENT;
+        glType = GL_FLOAT;
+        break;
     default:
         return YDS_ERROR_RETURN(ysError::InvalidParameter);
     }
 
-    glTexImage2D(GL_TEXTURE_2D, 0, glFormat, width, height, 0, GL_RGBA, glType, NULL);
+    pixelFormat = colorData
+        ? GL_RGBA
+        : GL_DEPTH_COMPONENT;
+
+    glTexImage2D(GL_TEXTURE_2D, 0, glFormat, width, height, 0, pixelFormat, glType, nullptr);
 
     // Create a framebuffer
     unsigned int framebuffer;
     m_realContext->glGenFramebuffers(1, &framebuffer);
     m_realContext->glBindFramebuffer(GL_DRAW_FRAMEBUFFER, framebuffer);
-    m_realContext->glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, newTexture, 0);
+    if (colorData) m_realContext->glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, newTexture, 0);
 
     // Create a depth buffer
     unsigned int depthBufferHandle = 0;
     if (depthBuffer) {
         m_realContext->glGenRenderbuffers(1, &depthBufferHandle);
         m_realContext->glBindRenderbuffer(GL_RENDERBUFFER, depthBufferHandle);
-        m_realContext->glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, width, height);
+        m_realContext->glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT32, width, height);
         m_realContext->glFramebufferRenderbuffer(GL_DRAW_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthBufferHandle);
+
+        if (!colorData) m_realContext->glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, newTexture, 0);
     }
 
     ysOpenGLRenderTarget *newRenderTarget = static_cast<ysOpenGLRenderTarget *>(target);

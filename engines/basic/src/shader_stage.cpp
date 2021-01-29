@@ -8,6 +8,9 @@ dbasic::ShaderStage::ShaderStage() {
 	m_type = Type::FullPass;
 	m_name = "";
 	m_objectDataSize = 0;
+	m_clearColor = {0.0f, 0.0f, 0.0f, 1.0f};
+	m_clearTarget = true;
+	m_cullMode = ysDevice::CullMode::Back;
 }
 
 dbasic::ShaderStage::~ShaderStage() {
@@ -115,6 +118,10 @@ ysError dbasic::ShaderStage::BindScene() {
 	m_device->UseShaderProgram(m_shaderProgram);
 	m_device->UseInputLayout(m_inputLayout);
 
+	if (m_clearTarget) {
+		m_device->ClearBuffers(m_clearColor.vec);
+	}
+
 	const int inputCount = GetInputCount();
 	for (int i = 0; i < inputCount; ++i) {
 		const Input &input = m_inputs[i];
@@ -136,6 +143,9 @@ ysError dbasic::ShaderStage::BindScene() {
 			YDS_NESTED_ERROR_CALL(m_device->UseConstantBuffer(binding.Buffer, binding.Slot));
 		}
 	}
+
+	m_device->SetFaceCulling(true);
+	m_device->SetFaceCullingMode(m_cullMode);
 
 	return YDS_ERROR_RETURN(ysError::None);
 }
@@ -168,4 +178,12 @@ dbasic::StageEnableFlags dbasic::ShaderStage::GetFlags() const {
 
 bool dbasic::ShaderStage::CheckFlags(StageEnableFlags flags) const {
 	return (((StageEnableFlags)0x1 << m_flagBit) & flags) > 0;
+}
+
+ysVector dbasic::ShaderStage::GetClearColor() const {
+	return ysMath::LoadVector(m_clearColor);
+}
+
+void dbasic::ShaderStage::SetClearColor(const ysVector &vector) {
+	m_clearColor = ysMath::GetVector4(vector);
 }

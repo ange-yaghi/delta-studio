@@ -26,6 +26,7 @@ ysError dbasic::ConsoleShaders::Initialize(
     m_mainStage->SetShaderProgram(shaderProgram);
     m_mainStage->SetType(ShaderStage::Type::FullPass);
     m_mainStage->SetFlagBit(3);
+    m_mainStage->SetClearTarget(false);
 
     m_mainStage->NewConstantBuffer<ShaderScreenVariables>(
         "DefaultUiShaders::ScreenData", 0, ShaderStage::ConstantBufferBinding::BufferType::SceneData, &m_shaderScreenVariables);

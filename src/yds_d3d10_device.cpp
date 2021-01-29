@@ -75,6 +75,16 @@ bool ysD3D10Device::CheckSupport() {
     return true;
 }
 
+ysError ysD3D10Device::SetFaceCulling(bool faceCulling)
+{
+    return ysError();
+}
+
+ysError ysD3D10Device::SetFaceCullingMode(CullMode cullMode)
+{
+    return ysError();
+}
+
 ysError ysD3D10Device::CreateRenderingContext(ysRenderingContext **context, ysWindow *window) {
     YDS_ERROR_DECLARE("CreateRenderingContext");
 

@@ -35,6 +35,10 @@ public:
     virtual ysError ClearBuffers(const float *clearColor);
     virtual ysError Present();
 
+    // State
+    virtual ysError SetFaceCulling(bool faceCulling);
+    virtual ysError SetFaceCullingMode(CullMode cullMode);
+
     // GPU Buffers
     virtual ysError CreateVertexBuffer(ysGPUBuffer **newBuffer, int size, char *data, bool mirrorToRam = false);
     virtual ysError CreateIndexBuffer(ysGPUBuffer **newBuffer, int size, char *data, bool mirrorToRam = false);

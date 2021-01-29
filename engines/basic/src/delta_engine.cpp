@@ -64,7 +64,6 @@ dbasic::DeltaEngine::DeltaEngine() {
 
     m_cursorHidden = false;
     m_cursorPositionLocked = false;
-
 }
 
 dbasic::DeltaEngine::~DeltaEngine() {
@@ -199,11 +198,6 @@ ysError dbasic::DeltaEngine::StartFrame() {
     else {
         m_windowSystem->SetCursorVisible(true);
         m_windowSystem->ReleaseCursor();
-    }
-
-    if (IsOpen()) {
-        m_device->SetRenderTarget(m_mainRenderTarget);
-        m_device->ClearBuffers(m_clearColor);
     }
 
     return YDS_ERROR_RETURN(ysError::None);

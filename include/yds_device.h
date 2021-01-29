@@ -23,6 +23,12 @@ protected:
     virtual ~ysDevice();
 
 public:
+    enum class CullMode {
+        Front,
+        Back
+    };
+
+public:
     static ysError CreateDevice(ysDevice **device, DeviceAPI API);
 
     /* Main Device Interface */
@@ -53,6 +59,15 @@ public:
 
     // Get the number of created rendering contexts
     int GetRenderingContextCount() { return m_renderingContexts.GetNumObjects(); }
+
+
+    /* State */
+
+    // Enable/disable face culling
+    virtual ysError SetFaceCulling(bool faceCulling) = 0;
+
+    // Set face culling mode
+    virtual ysError SetFaceCullingMode(CullMode cullMode) = 0;
 
 
     /* Render Targets */
@@ -226,7 +241,7 @@ protected:
     unsigned int m_debugFlags;
 
     // Platform Dependant Constants
-    int    m_maxTextureSlots;
+    int m_maxTextureSlots;
 };
 
 #endif /* YDS_DEVICE_H */

@@ -133,6 +133,15 @@ namespace dbasic {
 
         bool CheckFlags(StageEnableFlags flags) const;
 
+        ysVector GetClearColor() const;
+        void SetClearColor(const ysVector &vector);
+
+        bool GetClearTarget() const { return m_clearTarget; }
+        void SetClearTarget(bool clearTarget) { m_clearTarget = clearTarget; }
+
+        void SetCullMode(ysDevice::CullMode cullMode) { m_cullMode = cullMode; }
+        ysDevice::CullMode GetCullMode() const { return m_cullMode; }
+
     protected:
         ysDevice *m_device;
         ysRenderTarget *m_renderTarget;
@@ -151,6 +160,11 @@ namespace dbasic {
         int m_flagBit;
 
         bool m_complete;
+
+        bool m_clearTarget;
+        ysVector4 m_clearColor;
+
+        ysDevice::CullMode m_cullMode;
     };
 
 } /* namespace dbasic */
