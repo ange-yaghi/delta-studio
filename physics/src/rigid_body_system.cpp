@@ -15,6 +15,8 @@ dphysics::RigidBodySystem::RigidBodySystem() : ysObject("RigidBodySystem") {
 
     m_defaultDynamicFriction = 0.5f;
     m_defaultStaticFriction = 0.5f;
+
+    m_breakdownTimer = nullptr;
 }
 
 dphysics::RigidBodySystem::~RigidBodySystem() {
@@ -135,8 +137,7 @@ void dphysics::RigidBodySystem::CloseReplayFile() {
 void dphysics::RigidBodySystem::GenerateCollisions(int start, int count) {
     const int REQUEST_THRESHOLD = 0;
 
-    int rigidBodyCount = m_rigidBodyRegistry.GetNumObjects();
-    //std::vector<std::vector<bool>> visited(rigidBodyCount, std::vector<bool>(rigidBodyCount, false));
+    const int rigidBodyCount = m_rigidBodyRegistry.GetNumObjects();
     bool **visited = new bool *[rigidBodyCount];
     for (int i = 0; i < rigidBodyCount; ++i) {
         visited[i] = new bool[rigidBodyCount];
@@ -201,8 +202,8 @@ void dphysics::RigidBodySystem::WriteFrameToReplayFile() {
 void dphysics::RigidBodySystem::GenerateCollisions(RigidBody *body1, RigidBody *body2) {
     if (!body1->IsAwake() && !body2->IsAwake()) return;
 
-    int nPrim1 = body1->CollisionGeometry.GetNumObjects();
-    int nPrim2 = body2->CollisionGeometry.GetNumObjects();
+    const int nPrim1 = body1->CollisionGeometry.GetNumObjects();
+    const int nPrim2 = body2->CollisionGeometry.GetNumObjects();
 
     RigidBody *body1Ord = nullptr;
     RigidBody *body2Ord = nullptr;
@@ -802,14 +803,14 @@ void dphysics::RigidBodySystem::Integrate(float timeStep) {
 }
 
 void dphysics::RigidBodySystem::UpdateDerivedData() {
-    int nObjects = m_rigidBodyRegistry.GetNumObjects();
+    const int nObjects = m_rigidBodyRegistry.GetNumObjects();
     for (int i = 0; i < nObjects; i++) {
         m_rigidBodyRegistry.Get(i)->UpdateDerivedData();
     }
 }
 
 void dphysics::RigidBodySystem::CheckAwake() {
-    int nObjects = m_rigidBodyRegistry.GetNumObjects();
+    const int nObjects = m_rigidBodyRegistry.GetNumObjects();
     for (int i = 0; i < nObjects; i++) {
         m_rigidBodyRegistry.Get(i)->CheckAwake();
     }
@@ -832,10 +833,9 @@ void dphysics::RigidBodySystem::Update(float timestep) {
 }
 
 bool dphysics::RigidBodySystem::CheckState() {
-    int nBodies = m_rigidBodyRegistry.GetNumObjects();
-
+    const int nBodies = m_rigidBodyRegistry.GetNumObjects();
     for (int i = 0; i < nBodies; ++i) {
-        bool valid = m_rigidBodyRegistry.Get(i)->CheckState();
+        const bool valid = m_rigidBodyRegistry.Get(i)->CheckState();
         if (!valid) return false;
     }
 

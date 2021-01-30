@@ -14,7 +14,7 @@ ysBreakdownTimer::~ysBreakdownTimer() {
 }
 
 void ysBreakdownTimer::ResetChannels() {
-    int n = GetChannelCount();
+    const int n = GetChannelCount();
     for (int i = 0; i < n; ++i) {
         ysBreakdownTimerChannel *channel = m_channels.Get(i);
         channel->Reset();
@@ -93,7 +93,7 @@ void ysBreakdownTimer::WriteLastFrameToLogFile() {
 
     m_logFile << m_frameCount;
 
-    int n = GetChannelCount();
+    const int n = GetChannelCount();
     for (int i = 0; i < n; ++i) {
         ysBreakdownTimerChannel *channel = m_channels.Get(i);
         assert(!channel->IsMidMeasurement());
@@ -110,7 +110,7 @@ void ysBreakdownTimer::CloseLogFile() {
 }
 
 ysBreakdownTimerChannel *ysBreakdownTimer::FindChannel(const std::string &s) {
-    int n = GetChannelCount();
+    const int n = GetChannelCount();
     for (int i = 0; i < n; ++i) {
         if (m_channels.Get(i)->GetName() == s) {
             return m_channels.Get(i);

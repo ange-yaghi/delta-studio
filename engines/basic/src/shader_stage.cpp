@@ -11,6 +11,7 @@ dbasic::ShaderStage::ShaderStage() {
 	m_clearColor = {0.0f, 0.0f, 0.0f, 1.0f};
 	m_clearTarget = true;
 	m_cullMode = ysDevice::CullMode::Back;
+	m_enabled = true;
 }
 
 dbasic::ShaderStage::~ShaderStage() {

@@ -87,6 +87,8 @@ namespace dphysics {
 
         void WriteFrameToReplayFile();
 
+        void AttachBreakdownTimer(ysBreakdownTimer *breakdownTimer) { m_breakdownTimer = breakdownTimer; }
+
     protected:
         ysRegistry<RigidBody, 512> m_rigidBodyRegistry;
 
@@ -104,6 +106,8 @@ namespace dphysics {
         int m_lastLoadMeasurement;
         int m_loadMeasurement;
         float m_currentStep;
+
+        ysBreakdownTimer *m_breakdownTimer;
 
         // TEST
         GridPartitionSystem m_gridPartitionSystem;

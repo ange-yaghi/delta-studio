@@ -142,6 +142,9 @@ namespace dbasic {
         void SetCullMode(ysDevice::CullMode cullMode) { m_cullMode = cullMode; }
         ysDevice::CullMode GetCullMode() const { return m_cullMode; }
 
+        bool IsEnabled() const { return m_enabled; }
+        void SetEnabled(bool enabled) { m_enabled = enabled; }
+
     protected:
         ysDevice *m_device;
         ysRenderTarget *m_renderTarget;
@@ -160,7 +163,7 @@ namespace dbasic {
         int m_flagBit;
 
         bool m_complete;
-
+        bool m_enabled;
         bool m_clearTarget;
         ysVector4 m_clearColor;
 
