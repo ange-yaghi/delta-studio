@@ -525,15 +525,6 @@ void dbasic::DeltaEngine::SetConsoleColor(const ysVector &v) {
     m_consoleShaderObjectVariables.MulCol = ysMath::GetVector4(v);
 }
 
-void dbasic::DeltaEngine::SetClearColor(const ysVector &v) {
-    const ysVector4 v4 = ysMath::GetVector4(ysColor::linearToSrgb(v));
-
-    m_clearColor[0] = v4.x;
-    m_clearColor[1] = v4.y;
-    m_clearColor[2] = v4.z;
-    m_clearColor[3] = v4.w;
-}
-
 bool dbasic::DeltaEngine::IsKeyDown(ysKey::Code key) {
     if (m_mainKeyboard != nullptr) {
         return m_mainKeyboard->IsKeyDown(key);

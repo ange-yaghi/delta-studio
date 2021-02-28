@@ -71,6 +71,8 @@ ysError dbasic::DefaultShaders::UseMaterial(Material *material) {
         else {
             SetColorReplace(true);
         }
+
+        SetLit(material->IsLit());
     }
 
     return YDS_ERROR_RETURN(ysError::None);
@@ -154,6 +156,10 @@ void dbasic::DefaultShaders::SetFogFar(float fogFar) {
 
 void dbasic::DefaultShaders::SetFogColor(const ysVector &color) {
     m_shaderScreenVariables.FogColor = ysMath::GetVector4(color);
+}
+
+void dbasic::DefaultShaders::SetClearColor(const ysVector &color) {
+    m_mainStage->SetClearColor(color);
 }
 
 void dbasic::DefaultShaders::SetObjectTransform(const ysMatrix &mat) {

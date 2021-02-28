@@ -47,6 +47,7 @@ namespace dbasic {
         void SetFogNear(float fogNear);
         void SetFogFar(float fogFar);
         void SetFogColor(const ysVector &color);
+        void SetClearColor(const ysVector &color);
 
         virtual void SetObjectTransform(const ysMatrix &mat);
         void SetPositionOffset(const ysVector &position);

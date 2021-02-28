@@ -24,7 +24,6 @@ void dbasic_demo::DeltaBasicDemoApplication::Initialize(void *instance, ysContex
     settings.WindowStyle = ysWindow::WindowStyle::Windowed;
 
     m_engine.CreateGameWindow(settings); // TODO: path should be relative to exe
-    m_engine.SetClearColor(ysColor::srgbiToLinear(0x34, 0x98, 0xdb));
 
     ysWindowSystem *windowSystem = m_engine.GetWindowSystem();
     ysMonitor *monitor = windowSystem->GetPrimaryMonitor();
@@ -35,18 +34,22 @@ void dbasic_demo::DeltaBasicDemoApplication::Initialize(void *instance, ysContex
     dbasic::Material *lightFill = m_assetManager.NewMaterial();
     lightFill->SetName("LightFill");
     lightFill->SetDiffuseColor(ysColor::srgbiToLinear(0xEF, 0x38, 0x37));
+    lightFill->SetLit(false);
 
     dbasic::Material *lineColor = m_assetManager.NewMaterial();
     lineColor->SetName("LineColor");
     lineColor->SetDiffuseColor(ysColor::srgbiToLinear(0x91, 0x1A, 0x1D));
+    lineColor->SetLit(false);
 
     dbasic::Material *darkFill = m_assetManager.NewMaterial();
     darkFill->SetName("DarkFill");
     darkFill->SetDiffuseColor(ysColor::srgbiToLinear(0xC4, 0x21, 0x26));
+    darkFill->SetLit(false);
 
     dbasic::Material *highlight = m_assetManager.NewMaterial();
     highlight->SetName("Highlight");
     highlight->SetDiffuseColor(ysColor::srgbToLinear(1.0f, 1.0f, 1.0f, 1.0f - 0.941667f));
+    highlight->SetLit(false);
 
     m_assetManager.SetEngine(&m_engine);
     m_assetManager.CompileInterchangeFile("../../test/geometry_files/ant_rigged", 1.0f, true);
@@ -85,8 +88,12 @@ void dbasic_demo::DeltaBasicDemoApplication::Initialize(void *instance, ysContex
 
     m_blinkTimer = 4.0f;
 
-    m_engine.InitializeDefaultShaderSet(&m_shaders);
-    m_engine.SetShaderSet(m_shaders.GetShaderSet());
+    m_engine.InitializeShaderSet(&m_shaderSet);
+    m_engine.InitializeDefaultShaders(&m_shaders, &m_shaderSet);
+    m_engine.InitializeConsoleShaders(&m_shaderSet);
+    m_engine.SetShaderSet(&m_shaderSet);
+
+    m_shaders.SetClearColor(ysColor::srgbiToLinear(0xadd8e6));
 }
 
 void dbasic_demo::DeltaBasicDemoApplication::Process() {
@@ -98,9 +105,7 @@ void dbasic_demo::DeltaBasicDemoApplication::Render() {
     m_shaders.SetCameraAltitude(20.0f);
 
     m_renderSkeleton->UpdateAnimation(m_engine.GetFrameLength() * 60);
-
-    m_shaders.SetBaseColor(ysColor::srgbiToLinear(0xe7, 0x4c, 0x3c));
-    m_engine.DrawRenderSkeleton(m_shaders.GetRegularFlag(), m_renderSkeleton, 1.0f, &m_shaders, 0);
+    m_engine.DrawRenderSkeleton(m_shaders.GetRegularFlags(), m_renderSkeleton, 1.0f, &m_shaders, 0);
 
     ysAnimationChannel::ActionSettings normalSpeed;
     normalSpeed.Speed = 1.0f;
@@ -158,15 +163,7 @@ void dbasic_demo::DeltaBasicDemoApplication::Render() {
 
     m_blinkTimer -= m_engine.GetFrameLength();
 
-    m_shaders.SetAmbientLight(ysVector4(0.5, 0.5, 0.5, 1.0f));
-
-    dbasic::Light light;
-    light.Position = ysVector4(0.0f, 0.0f, 2.0f, 0.0f);
-    light.Color = ysVector4(1.0f, 1.0f, 1.0f, 0.0f);
-    light.Direction = ysMath::GetVector4(ysMath::Normalize(ysMath::LoadVector(1.0f, 0.0f, -1.0f)));
-    light.Attenuation0 = 0.9f;
-    light.Attenuation1 = 0.89f;
-    m_shaders.AddLight(light);
+    m_shaders.SetAmbientLight(ysVector4(0.0, 0.0, 0.0, 1.0f));
 
     dbasic::Console *console = m_engine.GetConsole();
     console->Clear();
@@ -222,6 +219,7 @@ void dbasic_demo::DeltaBasicDemoApplication::Run() {
         m_engine.EndFrame();
     }
 
+    m_shaderSet.Destroy();
     m_shaders.Destroy();
     m_assetManager.Destroy();
     m_engine.Destroy();

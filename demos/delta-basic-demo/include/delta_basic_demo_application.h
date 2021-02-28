@@ -19,6 +19,8 @@ namespace dbasic_demo {
 
         dbasic::DeltaEngine m_engine;
         dbasic::AssetManager m_assetManager;
+
+        dbasic::ShaderSet m_shaderSet;
         dbasic::DefaultShaders m_shaders;
 
         dbasic::RenderSkeleton *m_renderSkeleton;
