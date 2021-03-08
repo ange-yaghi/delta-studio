@@ -963,6 +963,31 @@ ysError ysOpenGLDevice::CreateTexture(ysTexture **texture, const char *fname) {
     return YDS_ERROR_RETURN(ysError::None);
 }
 
+ysError ysOpenGLDevice::CreateTexture(ysTexture **texture, int width, int height, const unsigned char *buffer) {
+    YDS_ERROR_DECLARE("CreateTexture");
+
+    if (texture == nullptr) return YDS_ERROR_RETURN(ysError::InvalidParameter);
+    *texture = nullptr;
+
+    ysOpenGLTexture *newTexture = m_textures.NewGeneric<ysOpenGLTexture>();
+    strcpy_s(newTexture->m_filename, 257, "");
+
+    glGenTextures(1, &newTexture->m_handle);
+    glBindTexture(GL_TEXTURE_2D, newTexture->m_handle);
+
+    newTexture->m_width = width;
+    newTexture->m_height = height;
+
+    glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
+    glPixelStorei(GL_PACK_ALIGNMENT, 4);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, newTexture->m_width, newTexture->m_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, buffer);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+
+    *texture = static_cast<ysTexture *>(newTexture);
+
+    return YDS_ERROR_RETURN(ysError::None);
+}
+
 ysError ysOpenGLDevice::CreateAlphaTexture(ysTexture **texture, int width, int height, const unsigned char *buffer) {
     YDS_ERROR_DECLARE("CreateTexture");
 

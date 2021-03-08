@@ -75,14 +75,12 @@ bool ysD3D10Device::CheckSupport() {
     return true;
 }
 
-ysError ysD3D10Device::SetFaceCulling(bool faceCulling)
-{
-    return ysError();
+ysError ysD3D10Device::SetFaceCulling(bool faceCulling) {
+    return ysError::NotImplemented;
 }
 
-ysError ysD3D10Device::SetFaceCullingMode(CullMode cullMode)
-{
-    return ysError();
+ysError ysD3D10Device::SetFaceCullingMode(CullMode cullMode) {
+    return ysError::NotImplemented;
 }
 
 ysError ysD3D10Device::CreateRenderingContext(ysRenderingContext **context, ysWindow *window) {
@@ -1055,6 +1053,14 @@ ysError ysD3D10Device::CreateTexture(ysTexture **newTexture, const char *fname) 
     newD3DTexture->Release();
 
     return YDS_ERROR_RETURN(ysError::None);
+}
+
+ysError ysD3D10Device::CreateTexture(ysTexture **texture, int width, int height, const unsigned char *buffer) {
+    YDS_ERROR_DECLARE("CreateTexture");
+
+    *texture = nullptr;
+
+    return YDS_ERROR_RETURN(ysError::NotImplemented);
 }
 
 ysError ysD3D10Device::CreateAlphaTexture(ysTexture **texture, int width, int height, const unsigned char *buffer) {

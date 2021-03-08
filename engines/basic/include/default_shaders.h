@@ -88,6 +88,7 @@ namespace dbasic {
         void SetScreenDimensions(float width, float height);
 
         void CalculateCamera();
+        void CalculateUiCamera();
 
         void SetNearClip(float nearClip) { m_nearClip = nearClip; }
         float GetNearClip() const { return m_nearClip; }

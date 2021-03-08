@@ -185,6 +185,9 @@ public:
     // Create a texture from a file
     virtual ysError CreateTexture(ysTexture **texture, const char *fname) = 0;
 
+    // Create an rgb texture from an in-memory buffer
+    virtual ysError CreateTexture(ysTexture **texture, int width, int height, const unsigned char *buffer) = 0;
+
     // Create an alpha texture from an in-memory buffer
     virtual ysError CreateAlphaTexture(ysTexture **texture, int width, int height, const unsigned char *buffer) = 0;
 

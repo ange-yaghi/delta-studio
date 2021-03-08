@@ -301,6 +301,25 @@ void dbasic::DefaultShaders::CalculateCamera() {
     SetEye(cameraEye);
 }
 
+void dbasic::DefaultShaders::CalculateUiCamera() {
+    m_shaderScreenVariables.Projection = ysMath::Transpose(
+        ysMath::OrthographicProjection(
+            m_screenWidth,
+            m_screenHeight,
+            0.001f,
+            500.0f));
+
+    const float sinRot = sin(m_cameraAngle * ysMath::Constants::PI / 180.0f);
+    const float cosRot = cos(m_cameraAngle * ysMath::Constants::PI / 180.0f);
+
+    const ysVector cameraEye = ysMath::LoadVector(0.0f, 0.0f, 10.0f, 1.0f);
+    const ysVector cameraTarget = ysMath::LoadVector(0.0f, 0.0f, 0.0f, 1.0f);
+    const ysVector up = ysMath::LoadVector(-sinRot, cosRot);
+
+    m_shaderScreenVariables.CameraView = ysMath::Transpose(ysMath::CameraTarget(cameraEye, cameraTarget, up));
+    m_shaderScreenVariables.Eye = ysMath::LoadVector(cameraEye);
+}
+
 void dbasic::DefaultShaders::ConfigureFlags(int regularFlagIndex, int riggedFlagIndex) {
     m_mainStage->SetFlagBit(regularFlagIndex);
 }

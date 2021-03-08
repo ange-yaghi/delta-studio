@@ -1219,8 +1219,61 @@ ysError ysD3D11Device::CreateTexture(ysTexture **newTexture, const char *fname) 
     return YDS_ERROR_RETURN(ysError::None);
 }
 
-ysError ysD3D11Device::CreateAlphaTexture(ysTexture **texture, int width, int height, const unsigned char *buffer) {
+ysError ysD3D11Device::CreateTexture(ysTexture **texture, int width, int height, const unsigned char *buffer) {
     YDS_ERROR_DECLARE("CreateTexture");
+
+    D3D11_TEXTURE2D_DESC desc;
+    desc.Width = width;
+    desc.Height = height;
+    desc.MipLevels = desc.ArraySize = 1;
+    desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+    desc.SampleDesc.Count = 1;
+    desc.SampleDesc.Quality = 0;
+    desc.Usage = D3D11_USAGE_DYNAMIC;
+    desc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+    desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+    desc.MiscFlags = 0;
+
+    D3D11_SUBRESOURCE_DATA data;
+    data.pSysMem = reinterpret_cast<const void *>(buffer);
+    data.SysMemPitch = width * sizeof(unsigned char) * 4;
+    data.SysMemSlicePitch = 0;
+
+    HRESULT result;
+
+    ID3D11Texture2D *newD3DTexture = nullptr;
+    result = m_device->CreateTexture2D(&desc, &data, &newD3DTexture);
+
+    if (FAILED(result)) {
+        return YDS_ERROR_RETURN(ysError::InvalidOperation);
+    }
+
+    D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc;
+    ZeroMemory(&srvDesc, sizeof(srvDesc));
+    srvDesc.Format = desc.Format;
+    srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+    srvDesc.Texture2D.MostDetailedMip = 0;
+    srvDesc.Texture2D.MipLevels = desc.MipLevels;
+
+    ID3D11ShaderResourceView *resourceView = nullptr;
+    result = m_device->CreateShaderResourceView(newD3DTexture, &srvDesc, &resourceView);
+    if (FAILED(result)) {
+        return YDS_ERROR_RETURN(ysError::CouldNotMakeShaderResourceView);
+    }
+
+    ysD3D11Texture *newD3D11Texture = m_textures.NewGeneric<ysD3D11Texture>();
+    newD3D11Texture->m_resourceView = resourceView;
+    newD3D11Texture->m_width = desc.Width;
+    newD3D11Texture->m_height = desc.Height;
+    *texture = newD3D11Texture;
+
+    newD3DTexture->Release();
+
+    return YDS_ERROR_RETURN(ysError::None);
+}
+
+ysError ysD3D11Device::CreateAlphaTexture(ysTexture **texture, int width, int height, const unsigned char *buffer) {
+    YDS_ERROR_DECLARE("CreateAlphaTexture");
 
     D3D11_TEXTURE2D_DESC desc;
     desc.Width = width;

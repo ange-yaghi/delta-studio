@@ -75,9 +75,9 @@ public:
     virtual ysError UseInputLayout(ysInputLayout *layout);
     virtual ysError DestroyInputLayout(ysInputLayout *&layout);
 
-
     // Textures 
     virtual ysError CreateTexture(ysTexture **texture, const char *fname);
+    virtual ysError CreateTexture(ysTexture **texture, int width, int height, const unsigned char *buffer);
     virtual ysError CreateAlphaTexture(ysTexture **texture, int width, int height, const unsigned char *buffer);
     virtual ysError DestroyTexture(ysTexture *&texture);
     virtual ysError UseTexture(ysTexture *texture, int slot);
