@@ -207,7 +207,10 @@ ysError dbasic::DeltaEngine::EndFrame() {
     YDS_ERROR_DECLARE("EndFrame");
 
     if (IsOpen()) {
-        YDS_NESTED_ERROR_CALL(m_console.UpdateGeometry());
+        if (IsConsoleEnabled()) {
+            YDS_NESTED_ERROR_CALL(m_console.UpdateGeometry());
+        }
+
         YDS_NESTED_ERROR_CALL(m_uiRenderer.UpdateDisplay());
 
         m_breakdownTimer.StartMeasurement(FrameBreakdownRenderScene);
@@ -389,6 +392,7 @@ ysError dbasic::DeltaEngine::InitializeShaders(const char *shaderDirectory) {
 
     m_consoleVertexFormat.AddChannel("POSITION", 0, ysRenderGeometryChannel::ChannelFormat::R32G32_FLOAT);
     m_consoleVertexFormat.AddChannel("TEXCOORD", sizeof(float) * 2, ysRenderGeometryChannel::ChannelFormat::R32G32_FLOAT);
+    m_consoleVertexFormat.AddChannel("COLOR", sizeof(float) * (2 + 2), ysRenderGeometryChannel::ChannelFormat::R32G32B32A32_FLOAT);
 
     YDS_NESTED_ERROR_CALL(m_device->CreateInputLayout(&m_inputLayout, m_vertexShader, &m_standardFormat));
     YDS_NESTED_ERROR_CALL(m_device->CreateInputLayout(&m_skinnedInputLayout, m_vertexSkinnedShader, &m_skinnedFormat));
@@ -460,7 +464,7 @@ ysError dbasic::DeltaEngine::LoadAnimation(Animation **animation, const char *pa
     return YDS_ERROR_RETURN(ysError::None);
 }
 
-ysError dbasic::DeltaEngine::LoadFont(Font **font, const char *path, int size) {
+ysError dbasic::DeltaEngine::LoadFont(Font **font, const char *path, int size, int fontSize) {
     YDS_ERROR_DECLARE("LoadFont");
 
     unsigned char *ttfBuffer = new unsigned char[1 << 20];
@@ -480,7 +484,7 @@ ysError dbasic::DeltaEngine::LoadFont(Font **font, const char *path, int size) {
     int result = 0;
     stbtt_pack_context context;
     result = stbtt_PackBegin(&context, bitmapData, size, size, 0, 16, nullptr);
-    result = stbtt_PackFontRange(&context, ttfBuffer, 0,  64.0f, 32, 96, cdata);
+    result = stbtt_PackFontRange(&context, ttfBuffer, 0, (float)fontSize, 32, 96, cdata);
     stbtt_PackEnd(&context);
     delete[] ttfBuffer;
 
@@ -490,7 +494,7 @@ ysError dbasic::DeltaEngine::LoadFont(Font **font, const char *path, int size) {
     ysTexture *texture = nullptr;
     YDS_NESTED_ERROR_CALL(m_device->CreateAlphaTexture(&texture, size, size, bitmapData));
 
-    newFont->Initialize(32, 96, cdata, 64.0f, texture);
+    newFont->Initialize(32, 96, cdata, (float)fontSize, texture);
 
     delete[] cdata;
 

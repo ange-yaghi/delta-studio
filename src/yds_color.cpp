@@ -57,3 +57,11 @@ ysVector ysColor::srgbiToLinear(unsigned int rgb, float a) {
         b / 255.0f, 
         a);
 }
+
+ysVector ysColor::srgbiToSrgb(unsigned int rgb, float a) {
+    int b = rgb & 0xFF; rgb >>= 8;
+    int g = rgb & 0xFF; rgb >>= 8;
+    int r = rgb & 0xFF; rgb >>= 8;
+
+    return ysMath::LoadVector(r / 255.0f, g / 255.0f, b / 255.0f, a);
+}
