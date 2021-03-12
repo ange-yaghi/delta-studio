@@ -1,10 +1,11 @@
 #include "../include/yds_windows_input_system.h"
-#include "../include/yds_windows_input_device.h"
 
+#include "../include/yds_windows_input_device.h"
+#include "../include/yds_windows_window_system.h"
+#include "../include/yds_windows_window.h"
 #include "../include/yds_key_maps.h"
 
 #include <Windows.h>
-//#include <strsafe.h>
 
 ysWindowsInputSystem::ysWindowsInputSystem() : ysInputSystem(Platform::Windows) {
     /* void */
@@ -28,19 +29,17 @@ ysInputDevice::InputDeviceType ysWindowsInputSystem::TranslateType(int type) {
 }
 
 ysWindowsInputDevice *ysWindowsInputSystem::DeviceLookup(HANDLE hDevice) {
-    int n = m_inputDeviceArray.GetNumObjects();
-
+    const int n = m_inputDeviceArray.GetNumObjects();
     for (int i = 0; i < n; i++) {
         ysWindowsInputDevice *windowsDevice = static_cast<ysWindowsInputDevice *>(m_inputDeviceArray.Get(i));
         if (windowsDevice->m_deviceHandle == hDevice) return windowsDevice;
     }
 
-    return NULL;
+    return nullptr;
 }
 
 ysWindowsInputDevice *ysWindowsInputSystem::SystemNameDeviceLookup(char *systemName) {
-    int n = m_inputDeviceArray.GetNumObjects();
-
+    const int n = m_inputDeviceArray.GetNumObjects();
     for (int i = 0; i < n; i++) {
         ysWindowsInputDevice *windowsDevice = static_cast<ysWindowsInputDevice *>(m_inputDeviceArray.Get(i));
         if (strcmp(systemName, windowsDevice->m_systemName) == 0) return windowsDevice;
@@ -125,16 +124,24 @@ ysError ysWindowsInputSystem::CreateDevices() {
     YDS_ERROR_DECLARE("CreateDevices");
 
     RAWINPUTDEVICE deviceList[2];
+    
+    ysWindowsWindow *primaryWindow = m_windowSystem->GetWindowCount() > 0
+        ? static_cast<ysWindowsWindow *>(m_windowSystem->GetWindow(0))
+        : nullptr;
 
     deviceList[0].usUsagePage = 0x01;
     deviceList[0].usUsage = 0x02;
-    deviceList[0].dwFlags = 0; // RIDEV_NOLEGACY;   // adds HID mouse and also ignores legacy mouse messages
-    deviceList[0].hwndTarget = 0;
+    deviceList[0].dwFlags = RIDEV_INPUTSINK;
+    deviceList[0].hwndTarget = primaryWindow != nullptr
+        ? primaryWindow->GetWindowHandle()
+        : NULL;
 
     deviceList[1].usUsagePage = 0x01;
     deviceList[1].usUsage = 0x06;
-    deviceList[1].dwFlags = 0; //RIDEV_NOLEGACY;   // adds HID keyboard and also ignores legacy keyboard messages
-    deviceList[1].hwndTarget = 0;
+    deviceList[1].dwFlags = RIDEV_INPUTSINK;
+    deviceList[1].hwndTarget = primaryWindow != nullptr
+        ? primaryWindow->GetWindowHandle()
+        : NULL;
 
     if (RegisterRawInputDevices(deviceList, 2, sizeof(RAWINPUTDEVICE)) == FALSE) {
         return YDS_ERROR_RETURN(ysError::CouldNotRegisterForInput);
@@ -229,7 +236,10 @@ int ysWindowsInputSystem::ProcessInputMessage(HRAWINPUT lparam) {
     lpb = new BYTE[dwSize];
     if (lpb == nullptr) return 0;
 
-    if (GetRawInputData(lparam, RID_INPUT, lpb, &dwSize, sizeof(RAWINPUTHEADER)) != dwSize) return 0;
+    if (GetRawInputData(lparam, RID_INPUT, lpb, &dwSize, sizeof(RAWINPUTHEADER)) != dwSize) {
+        delete[] lpb;
+        return 0;
+    }
 
     RAWINPUT *raw = (RAWINPUT *)lpb;
 

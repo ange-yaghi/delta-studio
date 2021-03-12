@@ -54,8 +54,8 @@ bool ysMouse::ProcessMouseButton(Button button, ButtonState state) {
 
     if (currentState != state) return false;
 
-    if (currentState == ButtonState::UpTransition) currentState = ButtonState::UpTransition;
-    if (currentState == ButtonState::DownTransition) currentState = ButtonState::DownTransition;
+    if (currentState == ButtonState::UpTransition) currentState = ButtonState::Up;
+    if (currentState == ButtonState::DownTransition) currentState = ButtonState::Down;
 
     return true;
 }

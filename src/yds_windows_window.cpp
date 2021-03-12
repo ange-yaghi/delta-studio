@@ -126,7 +126,7 @@ bool ysWindowsWindow::SetWindowStyle(WindowStyle style) {
     return true;
 }
 
-void ysWindowsWindow::ScreenToLocal(int &x, int &y) {
+void ysWindowsWindow::ScreenToLocal(int &x, int &y) const {
     POINT p = { x, y };
     ScreenToClient(m_hwnd, &p);
 

@@ -106,13 +106,6 @@ ysError dbasic::DeltaEngine::CreateGameWindow(const GameEngineSettings &settings
     m_windowSystem->SurveyMonitors();
     ysMonitor *mainMonitor = m_windowSystem->GetMonitor(0);
 
-    YDS_NESTED_ERROR_CALL(ysInputSystem::CreateInputSystem(&m_inputSystem, ysWindowSystemObject::Platform::Windows));
-    m_windowSystem->AssignInputSystem(m_inputSystem);
-    m_inputSystem->Initialize();
-
-    m_mainKeyboard = m_inputSystem->GetKeyboardAggregator();
-    m_mainMouse = m_inputSystem->GetMouseAggregator();
-
     // Create the game window
     YDS_NESTED_ERROR_CALL(m_windowSystem->NewWindow(&m_gameWindow));
     YDS_NESTED_ERROR_CALL(m_gameWindow->InitializeWindow(
@@ -123,6 +116,13 @@ ysError dbasic::DeltaEngine::CreateGameWindow(const GameEngineSettings &settings
         settings.WindowWidth, settings.WindowHeight,
         mainMonitor));
     m_gameWindow->AttachEventHandler(&m_windowHandler);
+
+    YDS_NESTED_ERROR_CALL(ysInputSystem::CreateInputSystem(&m_inputSystem, ysWindowSystemObject::Platform::Windows));
+    m_windowSystem->AssignInputSystem(m_inputSystem);
+    m_inputSystem->Initialize();
+
+    m_mainKeyboard = m_inputSystem->GetKeyboardAggregator();
+    m_mainMouse = m_inputSystem->GetMouseAggregator();
 
     // Create the graphics device
     YDS_NESTED_ERROR_CALL(ysDevice::CreateDevice(&m_device, settings.API));

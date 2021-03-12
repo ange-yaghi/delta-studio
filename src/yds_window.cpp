@@ -101,6 +101,13 @@ const int ysWindow::GetGameHeight() const {
     return std::round(m_gameResolutionScaleVertical * GetScreenHeight());
 }
 
+bool ysWindow::IsOnScreen(int x, int y) const {
+    ScreenToLocal(x, y);
+    return
+        (x >= 0 && x <= GetScreenWidth()) &&
+        (y >= 0 && y <= GetScreenHeight());
+}
+
 bool ysWindow::IsOpen() const {
     return m_windowState != WindowState::Closed;
 }

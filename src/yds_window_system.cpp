@@ -68,6 +68,14 @@ ysWindowSystem *ysWindowSystem::Get() {
     return g_instance;
 }
 
+int ysWindowSystem::GetWindowCount() const {
+    return m_windowArray.GetNumObjects();
+}
+
+ysWindow *ysWindowSystem::GetWindow(int index) {
+    return m_windowArray.Get(index);
+}
+
 void ysWindowSystem::CloseWindow(ysWindow *window) {
     window->Close();
 }
@@ -77,7 +85,7 @@ void ysWindowSystem::DeleteWindow(ysWindow *window) {
 }
 
 void ysWindowSystem::CloseAllWindows() {
-    int nWindows = m_windowArray.GetNumObjects();
+    const int nWindows = m_windowArray.GetNumObjects();
     for (int i = 0; i < nWindows; i++) {
         m_windowArray.Get(i)->Close();
     }
