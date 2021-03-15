@@ -12,8 +12,6 @@ ysWindowsWindow::~ysWindowsWindow() {
 }
 
 ATOM ysWindowsWindow::RegisterWindowsClass() {
-    //RaiseError(m_instance != NULL, "Window instance not set.");
-
     WNDCLASSEX wc;
     wc.cbSize = sizeof(WNDCLASSEX);
 
@@ -78,6 +76,8 @@ ysError ysWindowsWindow::InitializeWindow(ysWindow *parent, const char *title, W
 }
 
 bool ysWindowsWindow::SetWindowStyle(WindowStyle style) {
+    if (m_hwnd == NULL) return false;
+
     if (!ysWindow::SetWindowStyle(style)) return false;
 
     if (style == WindowStyle::Windowed) {
@@ -127,16 +127,29 @@ bool ysWindowsWindow::SetWindowStyle(WindowStyle style) {
 }
 
 void ysWindowsWindow::ScreenToLocal(int &x, int &y) const {
+    if (m_hwnd == NULL) {
+        x = y = 0;
+        return;
+    }
+
     POINT p = { x, y };
-    ScreenToClient(m_hwnd, &p);
+    BOOL result = ScreenToClient(m_hwnd, &p);
+
+    if (result == FALSE) {
+        x = y = 0;
+        return;
+    }
 
     x = p.x;
     y = m_height - p.y;
 }
 
 bool ysWindowsWindow::IsVisible() {
+    if (m_hwnd == NULL) return 0;
+
     WINDOWPLACEMENT placement;
-    GetWindowPlacement(m_hwnd, &placement);
+    BOOL result = GetWindowPlacement(m_hwnd, &placement);
+    if (result == FALSE) return false;
 
     switch (placement.showCmd) {
     case SW_HIDE:
@@ -149,17 +162,25 @@ bool ysWindowsWindow::IsVisible() {
 }
 
 int ysWindowsWindow::GetScreenWidth() const {
-    RECT rect;
-    GetClientRect(m_hwnd, &rect);
+    if (m_hwnd == NULL) return 0;
 
-    return rect.right - rect.left;
+    RECT rect;
+    BOOL result = GetClientRect(m_hwnd, &rect);
+
+    return (result == TRUE)
+        ? rect.right - rect.left
+        : 0;
 }
 
 int ysWindowsWindow::GetScreenHeight() const {
-    RECT rect;
-    GetClientRect(m_hwnd, &rect);
+    if (m_hwnd == NULL) return 0;
 
-    return rect.bottom - rect.top;
+    RECT rect;
+    BOOL result = GetClientRect(m_hwnd, &rect);
+
+    return (result == TRUE)
+        ? rect.bottom - rect.top
+        : 0;
 }
 
 int ysWindowsWindow::GetWindowsStyle() const {
@@ -191,6 +212,8 @@ void ysWindowsWindow::SetTitle(const char *title) {
 }
 
 void ysWindowsWindow::SetState(WindowState state) {
+    if (m_hwnd == NULL) return;
+
     ysWindow::SetState(state);
 
     switch (state) {
@@ -213,12 +236,16 @@ void ysWindowsWindow::SetState(WindowState state) {
 }
 
 void ysWindowsWindow::AL_SetSize(int width, int height) {
+    if (m_hwnd == NULL) return;
+
     ysWindow::AL_SetSize(width, height);
 
     SetWindowPos(m_hwnd, NULL, 0, 0, width, height, SWP_NOMOVE | SWP_NOZORDER);
 }
 
 void ysWindowsWindow::AL_SetLocation(int x, int y) {
+    if (m_hwnd == NULL) return;
+
     ysWindow::AL_SetLocation(x, y);
 
     SetWindowPos(m_hwnd, NULL, x, y, 0, 0, SWP_NOSIZE | SWP_NOZORDER);
