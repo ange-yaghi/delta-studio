@@ -3,6 +3,8 @@
 #include <windows.h>
 #include <mmsystem.h>
 
+#include <intrin.h>
+
 static bool qpcFlag;
 static LARGE_INTEGER qpcFrequency;
 

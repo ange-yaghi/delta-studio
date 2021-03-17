@@ -124,11 +124,11 @@ void dphysics::GridPartitionSystem::ProcessRigidBody(RigidBody *object) {
     float actual_y = ysMath::GetY(pos);
 
     int x = (actual_x >= 0)
-        ? actual_x / m_gridCellSize
-        : (actual_x - m_gridCellSize) / m_gridCellSize;
+        ? (int)(actual_x / m_gridCellSize)
+        : (int)((actual_x - m_gridCellSize) / m_gridCellSize);
     int y = (actual_y >= 0)
-        ? actual_y / m_gridCellSize
-        : (actual_y - m_gridCellSize) / m_gridCellSize;
+        ? (int)(actual_y / m_gridCellSize)
+        : (int)((actual_y - m_gridCellSize) / m_gridCellSize);
 
     float nominal_x = m_gridCellSize * x;
     float nominal_y = m_gridCellSize * y;

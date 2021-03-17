@@ -348,8 +348,7 @@ void dphysics::RigidBodySystem::GenerateCollisions() {
 
     GenerateCollisions(0, 0);
 
-    char buffer[1024];
-    int load = m_loadMeasurement;
+    const int load = m_loadMeasurement;
 
     // Simple tuning algorithm
     if (load > m_lastLoadMeasurement) {
@@ -515,7 +514,7 @@ void dphysics::RigidBodySystem::ResolveCollision(Collision *collision, ysVector 
 }
 
 void dphysics::RigidBodySystem::AdjustVelocities(float timestep) {
-    int numContacts = m_collisionAccumulator.GetNumObjects();
+    const int numContacts = m_collisionAccumulator.GetNumObjects();
 
     ysVector velocityChange[2], rotationChange[2];
     ysVector cp;
@@ -523,9 +522,9 @@ void dphysics::RigidBodySystem::AdjustVelocities(float timestep) {
     // iteratively handle impacts in order of severity.
     for (int velocityIterationsUsed = 0; velocityIterationsUsed < ResolutionIterationLimit; ++velocityIterationsUsed) {
         // Find contact with maximum magnitude of probable velocity change.
-        float max = 1E-4;
-        unsigned index = numContacts;
-        for(unsigned i = 0; i < numContacts; ++i) {
+        float max = 1E-4f;
+        int index = numContacts;
+        for(int i = 0; i < numContacts; ++i) {
             Collision &collision = *m_collisionAccumulator[i];
             if (collision.m_desiredDeltaVelocity > max) {
                 if (collision.m_sensor) continue;
@@ -549,7 +548,7 @@ void dphysics::RigidBodySystem::AdjustVelocities(float timestep) {
         // With the change in velocity of the two bodies, the update of 
         // contact velocities means that some of the relative closing 
         // velocities need recomputing.
-        for (unsigned i = 0; i < numContacts; i++) {
+        for (int i = 0; i < numContacts; ++i) {
             Collision *c = m_collisionAccumulator[i];
 
             if (c->m_sensor) continue;

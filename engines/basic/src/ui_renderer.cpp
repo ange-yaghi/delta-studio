@@ -34,8 +34,8 @@ ysError dbasic::UiRenderer::UpdateDisplay() {
     if (m_vertexOffset == 0) return YDS_ERROR_RETURN(ysError::None);
 
     m_shaders.SetScreenDimensions(
-        m_engine->GetScreenWidth(),
-        m_engine->GetScreenHeight());
+        (float)m_engine->GetScreenWidth(),
+        (float)m_engine->GetScreenHeight());
     m_shaders.CalculateCamera();
 
     m_engine->GetDevice()->EditBufferDataRange(
