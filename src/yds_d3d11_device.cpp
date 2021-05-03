@@ -111,7 +111,7 @@ ysError ysD3D11Device::DestroyDevice() {
     if (m_rasterizerState != nullptr) m_rasterizerState->Release();
 
     if (m_DXGIFactory != nullptr) m_DXGIFactory->Release();
-    if (m_deviceContext != nullptr)    m_deviceContext->Release();
+    if (m_deviceContext != nullptr) m_deviceContext->Release();
     if (m_device != nullptr) m_device->Release();
     
 #ifdef _DEBUG
@@ -1239,10 +1239,8 @@ ysError ysD3D11Device::CreateTexture(ysTexture **texture, int width, int height,
     data.SysMemPitch = width * sizeof(unsigned char) * 4;
     data.SysMemSlicePitch = 0;
 
-    HRESULT result;
-
     ID3D11Texture2D *newD3DTexture = nullptr;
-    result = m_device->CreateTexture2D(&desc, &data, &newD3DTexture);
+    HRESULT result = m_device->CreateTexture2D(&desc, &data, &newD3DTexture);
 
     if (FAILED(result)) {
         return YDS_ERROR_RETURN(ysError::InvalidOperation);
@@ -1265,9 +1263,8 @@ ysError ysD3D11Device::CreateTexture(ysTexture **texture, int width, int height,
     newD3D11Texture->m_resourceView = resourceView;
     newD3D11Texture->m_width = desc.Width;
     newD3D11Texture->m_height = desc.Height;
+    newD3D11Texture->m_textureResource = newD3DTexture;
     *texture = newD3D11Texture;
-
-    newD3DTexture->Release();
 
     return YDS_ERROR_RETURN(ysError::None);
 }
@@ -1318,11 +1315,36 @@ ysError ysD3D11Device::CreateAlphaTexture(ysTexture **texture, int width, int he
     newD3D11Texture->m_resourceView = resourceView;
     newD3D11Texture->m_width = desc.Width;
     newD3D11Texture->m_height = desc.Height;
+    newD3D11Texture->m_textureResource = newD3DTexture;
     *texture = newD3D11Texture;
-        
-    newD3DTexture->Release();
 
     return YDS_ERROR_RETURN(ysError::None);
+}
+
+ysError ysD3D11Device::UpdateTexture(ysTexture *texture, const unsigned char *buffer) {
+    YDS_ERROR_DECLARE("UpdateTexture");
+
+    ID3D11DeviceContext *deviceContext = m_deviceContext;
+
+    ysD3D11Texture *d3d11Texture = static_cast<ysD3D11Texture *>(texture);
+    D3D11_MAPPED_SUBRESOURCE mappedResource;
+    HRESULT result = deviceContext->Map(d3d11Texture->m_textureResource, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+
+    if (SUCCEEDED(result)) {
+        for (size_t i = 0; i < d3d11Texture->GetHeight(); ++i) {
+            memcpy(
+                (unsigned char *)mappedResource.pData + (size_t)mappedResource.RowPitch * i,
+                buffer + i * 4 * sizeof(unsigned char) * texture->GetWidth(),
+                4 * sizeof(unsigned char) * texture->GetWidth());
+        }
+
+        deviceContext->Unmap(d3d11Texture->m_textureResource, 0);
+
+        return YDS_ERROR_RETURN(ysError::None);
+    }
+    else {
+        return YDS_ERROR_RETURN(ysError::ApiError);
+    }
 }
 
 ysError ysD3D11Device::UseTexture(ysTexture *texture, int slot) {
@@ -1379,6 +1401,7 @@ ysError ysD3D11Device::DestroyTexture(ysTexture *&texture) {
 
     if (d3d11Texture->m_renderTargetView != nullptr) d3d11Texture->m_renderTargetView->Release();
     if (d3d11Texture->m_resourceView != nullptr) d3d11Texture->m_resourceView->Release();
+    if (d3d11Texture->m_textureResource != nullptr) d3d11Texture->m_textureResource->Release();
 
     YDS_NESTED_ERROR_CALL(ysDevice::DestroyTexture(texture));
 

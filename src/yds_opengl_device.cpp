@@ -988,6 +988,11 @@ ysError ysOpenGLDevice::CreateTexture(ysTexture **texture, int width, int height
     return YDS_ERROR_RETURN(ysError::None);
 }
 
+ysError ysOpenGLDevice::UpdateTexture(ysTexture *texture, const unsigned char *buffer) {
+    YDS_ERROR_DECLARE("UpdateTexture");
+    return YDS_ERROR_RETURN(ysError::NotImplemented);
+}
+
 ysError ysOpenGLDevice::CreateAlphaTexture(ysTexture **texture, int width, int height, const unsigned char *buffer) {
     YDS_ERROR_DECLARE("CreateTexture");
 

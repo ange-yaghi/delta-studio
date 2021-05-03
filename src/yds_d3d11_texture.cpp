@@ -5,6 +5,7 @@
 ysD3D11Texture::ysD3D11Texture() : ysTexture(DeviceAPI::DirectX11) {
     m_resourceView = nullptr;
     m_renderTargetView = nullptr;
+    m_textureResource = nullptr;
 }
 
 ysD3D11Texture::~ysD3D11Texture() {

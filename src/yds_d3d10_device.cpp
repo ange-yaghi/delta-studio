@@ -1063,6 +1063,11 @@ ysError ysD3D10Device::CreateTexture(ysTexture **texture, int width, int height,
     return YDS_ERROR_RETURN(ysError::NotImplemented);
 }
 
+ysError ysD3D10Device::UpdateTexture(ysTexture *texture, const unsigned char *buffer) {
+    YDS_ERROR_DECLARE("UpdateTexture");
+    return YDS_ERROR_RETURN(ysError::NotImplemented);
+}
+
 ysError ysD3D10Device::CreateAlphaTexture(ysTexture **texture, int width, int height, const unsigned char *buffer) {
     YDS_ERROR_DECLARE("CreateTexture");
 
