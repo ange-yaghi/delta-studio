@@ -53,10 +53,10 @@ ysError ysErrorSystem::RaiseError(ysError error, unsigned int line, ysObject *ob
 void ysErrorSystem::StackRaise(const char *callName) {
     assert(m_stackLevel >= 0);
 
-    //m_callStack[m_stackLevel] = callName;
-    //m_stackLevel++;
+    m_callStack[m_stackLevel] = callName;
+    m_stackLevel++;
 }
 
 void ysErrorSystem::StackDescend() {
-    //--m_stackLevel;
+    --m_stackLevel;
 }

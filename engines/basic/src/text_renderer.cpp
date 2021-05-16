@@ -103,6 +103,8 @@ void dbasic::TextRenderer::RenderMonospaceText(const std::string &s, float x, fl
 }
 
 float dbasic::TextRenderer::CalculateWidth(const std::string &s, float h) const {
+    m_renderer->SetFont(m_font);
+
     const float scale = h / m_font->GetFontHeight();
 
     float width = 0.0f;

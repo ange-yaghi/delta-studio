@@ -1,6 +1,6 @@
 #include "../include/color_scale.h"
 
-ysVector4 ColorScale3(float x, const ysVector &col1, const ysVector &col2, const ysVector &col3) {
+ysVector4 dbasic::ColorScale3(float x, const ysVector &col1, const ysVector &col2, const ysVector &col3) {
     if (x <= 0.0f) return ysMath::GetVector4(col1);
     else if (x >= 1.0f) return ysMath::GetVector4(col3);
 
