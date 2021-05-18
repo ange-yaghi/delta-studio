@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\include\yds_vulkan_context.h" />
     <ClInclude Include="..\..\include\yds_breakdown_timer_channel.h" />
     <ClInclude Include="..\..\include\yds_breakdown_timer.h" />
     <ClInclude Include="..\..\include\yds_color.h" />
@@ -123,6 +124,14 @@
     <ClInclude Include="..\..\include\yds_tool_animation_file.h" />
     <ClInclude Include="..\..\include\yds_tool_geometry_file.h" />
     <ClInclude Include="..\..\include\yds_transform.h" />
+    <ClInclude Include="..\..\include\yds_vulkan_device.h" />
+    <ClInclude Include="..\..\include\yds_vulkan_gpu_buffer.h" />
+    <ClInclude Include="..\..\include\yds_vulkan_input_layout.h" />
+    <ClInclude Include="..\..\include\yds_vulkan_render_target.h" />
+    <ClInclude Include="..\..\include\yds_vulkan_shader.h" />
+    <ClInclude Include="..\..\include\yds_vulkan_shader_program.h" />
+    <ClInclude Include="..\..\include\yds_vulkan_texture.h" />
+    <ClInclude Include="..\..\include\yds_vulkan_windows_context.h" />
     <ClInclude Include="..\..\include\yds_window.h" />
     <ClInclude Include="..\..\include\yds_windows_audio_wave_file.h" />
     <ClInclude Include="..\..\include\yds_windows_input_device.h" />
@@ -228,6 +237,15 @@
     <ClCompile Include="..\..\src\yds_tool_animation_file.cpp" />
     <ClCompile Include="..\..\src\yds_tool_geometry_file.cpp" />
     <ClCompile Include="..\..\src\yds_transform.cpp" />
+    <ClCompile Include="..\..\src\yds_vulkan_context.cpp" />
+    <ClCompile Include="..\..\src\yds_vulkan_device.cpp" />
+    <ClCompile Include="..\..\src\yds_vulkan_gpu_buffer.cpp" />
+    <ClCompile Include="..\..\src\yds_vulkan_input_layout.cpp" />
+    <ClCompile Include="..\..\src\yds_vulkan_render_target.cpp" />
+    <ClCompile Include="..\..\src\yds_vulkan_shader.cpp" />
+    <ClCompile Include="..\..\src\yds_vulkan_shader_program.cpp" />
+    <ClCompile Include="..\..\src\yds_vulkan_texture.cpp" />
+    <ClCompile Include="..\..\src\yds_vulkan_windows_context.cpp" />
     <ClCompile Include="..\..\src\yds_window.cpp" />
     <ClCompile Include="..\..\src\yds_windows_audio_wave_file.cpp" />
     <ClCompile Include="..\..\src\yds_windows_input_device.cpp" />

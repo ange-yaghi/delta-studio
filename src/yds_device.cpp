@@ -1,5 +1,6 @@
 #include "../include/yds_device.h"
 
+#include "../include/yds_vulkan_device.h"
 #include "../include/yds_opengl_device.h"
 #include "../include/yds_d3d11_device.h"
 #include "../include/yds_d3d10_device.h"
@@ -53,6 +54,9 @@ ysError ysDevice::CreateDevice(ysDevice **newDevice, DeviceAPI API) {
         break;
     case DeviceAPI::OpenGL4_0:
         *newDevice = new ysOpenGLDevice;
+        break;
+    case DeviceAPI::Vulkan:
+        *newDevice = new ysVulkanDevice;
         break;
     }
 
@@ -307,9 +311,9 @@ ysError ysDevice::AttachShader(ysShaderProgram *program, ysShader *shader) {
     YDS_ERROR_DECLARE("AttachShader");
 
     if (program == nullptr || shader == nullptr) return YDS_ERROR_RETURN(ysError::InvalidParameter);
-    if (!CheckCompatibility(program))    return YDS_ERROR_RETURN_MSG(ysError::IncompatiblePlatforms, "PROGRAM");
-    if (!CheckCompatibility(shader))    return YDS_ERROR_RETURN_MSG(ysError::IncompatiblePlatforms, "SHADER");
-    if (program->m_isLinked)            return YDS_ERROR_RETURN(ysError::ProgramAlreadyLinked);
+    if (!CheckCompatibility(program)) return YDS_ERROR_RETURN_MSG(ysError::IncompatiblePlatforms, "PROGRAM");
+    if (!CheckCompatibility(shader)) return YDS_ERROR_RETURN_MSG(ysError::IncompatiblePlatforms, "SHADER");
+    if (program->m_isLinked) return YDS_ERROR_RETURN(ysError::ProgramAlreadyLinked);
 
     program->m_shaderSlots[(int)shader->m_shaderType] = shader;
 
@@ -319,9 +323,9 @@ ysError ysDevice::AttachShader(ysShaderProgram *program, ysShader *shader) {
 ysError ysDevice::LinkProgram(ysShaderProgram *program) {
     YDS_ERROR_DECLARE("LinkProgram");
 
-    if (program == nullptr)                return YDS_ERROR_RETURN(ysError::InvalidParameter);
-    if (!CheckCompatibility(program))    return YDS_ERROR_RETURN(ysError::IncompatiblePlatforms);
-    if (program->m_isLinked)            return YDS_ERROR_RETURN(ysError::ProgramAlreadyLinked);
+    if (program == nullptr) return YDS_ERROR_RETURN(ysError::InvalidParameter);
+    if (!CheckCompatibility(program)) return YDS_ERROR_RETURN(ysError::IncompatiblePlatforms);
+    if (program->m_isLinked) return YDS_ERROR_RETURN(ysError::ProgramAlreadyLinked);
 
     program->m_isLinked = true;
 

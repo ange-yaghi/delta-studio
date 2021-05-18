@@ -172,6 +172,12 @@
     <Filter Include="Source Files\input\aggregators">
       <UniqueIdentifier>{910b8f70-6a9e-45ef-aac8-a0d26929305c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\api\vulkan">
+      <UniqueIdentifier>{d708580f-9170-4057-a73e-97cff7f5a706}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\api\vulkan">
+      <UniqueIdentifier>{5fa73fe9-8f8e-443d-a1a1-ab209fa33c0d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\include\yds_core.h">
@@ -516,6 +522,33 @@
     <ClInclude Include="..\..\include\yds_mouse_aggregator.h">
       <Filter>Header Files\input\aggregators</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\include\yds_vulkan_context.h">
+      <Filter>Header Files\api\vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\yds_vulkan_device.h">
+      <Filter>Header Files\api\vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\yds_vulkan_gpu_buffer.h">
+      <Filter>Header Files\api\vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\yds_vulkan_input_layout.h">
+      <Filter>Header Files\api\vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\yds_vulkan_render_target.h">
+      <Filter>Header Files\api\vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\yds_vulkan_shader.h">
+      <Filter>Header Files\api\vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\yds_vulkan_shader_program.h">
+      <Filter>Header Files\api\vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\yds_vulkan_texture.h">
+      <Filter>Header Files\api\vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\yds_vulkan_windows_context.h">
+      <Filter>Header Files\api\vulkan</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\yds_interchange_file_0_0.cpp">
@@ -829,6 +862,33 @@
     </ClCompile>
     <ClCompile Include="..\..\src\yds_mouse_aggregator.cpp">
       <Filter>Source Files\input\aggregators</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\yds_vulkan_context.cpp">
+      <Filter>Source Files\api\vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\yds_vulkan_device.cpp">
+      <Filter>Source Files\api\vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\yds_vulkan_gpu_buffer.cpp">
+      <Filter>Source Files\api\vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\yds_vulkan_input_layout.cpp">
+      <Filter>Source Files\api\vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\yds_vulkan_render_target.cpp">
+      <Filter>Source Files\api\vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\yds_vulkan_shader.cpp">
+      <Filter>Source Files\api\vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\yds_vulkan_shader_program.cpp">
+      <Filter>Source Files\api\vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\yds_vulkan_texture.cpp">
+      <Filter>Source Files\api\vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\yds_vulkan_windows_context.cpp">
+      <Filter>Source Files\api\vulkan</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

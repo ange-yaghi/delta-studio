@@ -1,5 +1,5 @@
-#ifndef YDS_OPENGL_DEVICE_H
-#define YDS_OPENGL_DEVICE_H
+#ifndef YDS_VULKAN_DEVICE_H
+#define YDS_VULKAN_DEVICE_H
 
 #include "yds_window.h"
 #include "yds_opengl_context.h"
@@ -8,10 +8,10 @@
 // External libraries forward declarations
 struct SDL_Surface;
 
-class ysOpenGLDevice : public ysDevice {
+class ysVulkanDevice : public ysDevice {
 public:
-    ysOpenGLDevice();
-    ~ysOpenGLDevice();
+    ysVulkanDevice();
+    ~ysVulkanDevice();
 
     // Setup
     virtual ysError InitializeDevice();
@@ -77,36 +77,6 @@ public:
     virtual ysError UseRenderTargetAsTexture(ysRenderTarget *renderTarget, int slot);
 
     virtual void Draw(int numFaces, int indexOffset, int vertexOffset);
-
-    const ysOpenGLVirtualContext *UpdateContext();
-
-protected:
-    // Set the current rendering context
-    void SetRenderingContext(ysRenderingContext *context);
-
-    // Hidden Functions
-    void ResubmitInputLayout();
-
-    ysOpenGLVirtualContext *GetTransferContext();
-
-    // Static functions
-    // --------------------------------------------------------------
-
-    // Retrieve a pixel from an SDL surface
-    static unsigned int GetPixel(SDL_Surface *surface, int x, int y);
-
-    // Get a GL type from a geometry channel format
-    static int GetFormatGLType(ysRenderGeometryChannel::ChannelFormat format);
-
-protected:
-    ysOpenGLVirtualContext *m_realContext;
-
-    bool m_deviceCreated;
-
-protected:
-    // Hidden functionality
-    ysError CreateOpenGLOffScreenRenderTarget(ysRenderTarget *target, int width, int height, ysRenderTarget::Format format, bool colorData, bool depthBuffer);
-    ysError DestroyOpenGLRenderTarget(ysRenderTarget *target);
 };
 
-#endif /* YDS_OPENGL_DEVICE_H */
+#endif /* YDS_VULKAN_DEVICE_H */

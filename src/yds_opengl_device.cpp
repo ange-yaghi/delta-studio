@@ -55,8 +55,7 @@ ysError ysOpenGLDevice::CreateRenderingContext(ysRenderingContext **context, ysW
     *context = nullptr;
 
     if (window->GetPlatform() == ysWindowSystemObject::Platform::Windows) {
-        ysOpenGLWindowsContext *newContext;
-        newContext = m_renderingContexts.NewGeneric<ysOpenGLWindowsContext>();
+        ysOpenGLWindowsContext *newContext = m_renderingContexts.NewGeneric<ysOpenGLWindowsContext>();
         YDS_NESTED_ERROR_CALL(newContext->CreateRenderingContext(this, window, 4, 3));
 
         // TEMP
