@@ -10,6 +10,8 @@ class ysVulkanWindowsContext : public ysVulkanContext {
 public:
     ysVulkanWindowsContext();
     virtual ~ysVulkanWindowsContext();
+
+    ysError CreateRenderingContext(ysVulkanDevice *device, ysWindow *window);
 };
 
 #endif /* YDS_VULKAN_WINDOWS_CONTEXT_H */

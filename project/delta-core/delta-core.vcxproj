@@ -313,7 +313,7 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(ProjectDir)/../../dependencies/libraries/SDL/include;$(ProjectDir)/../../dependencies/libraries/OpenGL/include;$(IncludePath);$(ProjectDir)/../../dependencies/libraries/DirectX/include;$(ProjectDir)/../../dependencies/libraries/D3DX/include</IncludePath>
+    <IncludePath>$(ProjectDir)/../../dependencies/libraries/SDL/include;$(ProjectDir)/../../dependencies/libraries/OpenGL/include;$(IncludePath);$(ProjectDir)/../../dependencies/libraries/DirectX/include;$(ProjectDir)/../../dependencies/libraries/D3DX/include;$(ProjectDir)/../../dependencies/libraries/vulkan/include</IncludePath>
     <SourcePath>$(SourcePath)</SourcePath>
     <OutDir>$(ProjectDir)\..\$(PlatformTarget)\$(Configuration)\</OutDir>
     <IntDir>$(PlatformTarget)\$(Configuration)\</IntDir>
@@ -321,7 +321,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(ProjectDir)/../../dependencies/libraries/SDL/include;$(ProjectDir)/../../dependencies/libraries/OpenGL/include;$(IncludePath);$(ProjectDir)/../../dependencies/libraries/DirectX/include;$(ProjectDir)/../../dependencies/libraries/D3DX/include;$(ProjectDir)/../../dependencies/libraries/DirectX/include;$(ProjectDir)/../../dependencies/libraries/D3DX/include</IncludePath>
+    <IncludePath>$(ProjectDir)/../../dependencies/libraries/SDL/include;$(ProjectDir)/../../dependencies/libraries/OpenGL/include;$(IncludePath);$(ProjectDir)/../../dependencies/libraries/DirectX/include;$(ProjectDir)/../../dependencies/libraries/D3DX/include;$(ProjectDir)/../../dependencies/libraries/vulkan/include</IncludePath>
     <SourcePath>$(SourcePath)</SourcePath>
     <OutDir>$(ProjectDir)\..\$(PlatformTarget)\$(Configuration)\</OutDir>
     <IntDir>$(PlatformTarget)\$(Configuration)\</IntDir>
@@ -329,7 +329,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(ProjectDir)/../../dependencies/libraries/SDL/include;$(ProjectDir)/../../dependencies/libraries/OpenGL/include;$(IncludePath);$(ProjectDir)/../../dependencies/libraries/DirectX/include;$(ProjectDir)/../../dependencies/libraries/D3DX/include</IncludePath>
+    <IncludePath>$(ProjectDir)/../../dependencies/libraries/SDL/include;$(ProjectDir)/../../dependencies/libraries/OpenGL/include;$(IncludePath);$(ProjectDir)/../../dependencies/libraries/DirectX/include;$(ProjectDir)/../../dependencies/libraries/D3DX/include;$(ProjectDir)/../../dependencies/libraries/vulkan/include</IncludePath>
     <SourcePath>$(SourcePath)</SourcePath>
     <OutDir>$(ProjectDir)\..\$(PlatformTarget)\$(Configuration)\</OutDir>
     <IntDir>$(PlatformTarget)\$(Configuration)\</IntDir>
@@ -337,7 +337,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(ProjectDir)/../../dependencies/libraries/SDL/include;$(ProjectDir)/../../dependencies/libraries/OpenGL/include;$(IncludePath);$(ProjectDir)/../../dependencies/libraries/DirectX/include;$(ProjectDir)/../../dependencies/libraries/D3DX/include;$(ProjectDir)/../../dependencies/libraries/DirectX/include;$(ProjectDir)/../../dependencies/libraries/D3DX/include</IncludePath>
+    <IncludePath>$(ProjectDir)/../../dependencies/libraries/SDL/include;$(ProjectDir)/../../dependencies/libraries/OpenGL/include;$(IncludePath);$(ProjectDir)/../../dependencies/libraries/DirectX/include;$(ProjectDir)/../../dependencies/libraries/D3DX/include;$(ProjectDir)/../../dependencies/libraries/vulkan/include</IncludePath>
     <SourcePath>$(SourcePath)</SourcePath>
     <OutDir>$(ProjectDir)\..\$(PlatformTarget)\$(Configuration)\</OutDir>
     <IntDir>$(PlatformTarget)\$(Configuration)\</IntDir>

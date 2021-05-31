@@ -2,6 +2,7 @@
 
 #include "../include/yds_vulkan_render_target.h"
 #include "../include/yds_vulkan_context.h"
+#include "../include/yds_vulkan_windows_context.h"
 #include "../include/yds_vulkan_texture.h"
 
 ysVulkanDevice::ysVulkanDevice() {
@@ -31,9 +32,11 @@ ysError ysVulkanDevice::CreateRenderingContext(ysRenderingContext **renderingCon
     *renderingContext = nullptr;
 
     if (window->GetPlatform() == ysWindowSystemObject::Platform::Windows) {
-        ysVulkanContext *newContext = m_renderingContexts.NewGeneric<ysVulkanContext>();
+        ysVulkanWindowsContext *newContext = m_renderingContexts.NewGeneric<ysVulkanWindowsContext>();
         newContext->m_targetWindow = window;
         *renderingContext = static_cast<ysRenderingContext *>(newContext);
+
+        YDS_NESTED_ERROR_CALL(newContext->CreateRenderingContext(this, window));
 
         return YDS_ERROR_RETURN(ysError::None);
     }
