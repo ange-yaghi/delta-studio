@@ -25,7 +25,10 @@ ysError ysVulkanWindowsContext::CreateRenderingContext(
         return YDS_ERROR_RETURN(ysError::IncompatiblePlatforms);
     }
 
-    const char *extensions[] = { VK_KHR_WIN32_SURFACE_EXTENSION_NAME };
+    const char *extensions[] = {
+        VK_KHR_WIN32_SURFACE_EXTENSION_NAME,
+        VK_KHR_SURFACE_EXTENSION_NAME
+    };
 
     VkApplicationInfo appInfo = {};
     appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
@@ -44,7 +47,7 @@ ysError ysVulkanWindowsContext::CreateRenderingContext(
     instInfo.pNext = nullptr;
     instInfo.flags = 0;
     instInfo.pApplicationInfo = &appInfo;
-    instInfo.enabledExtensionCount = 1;
+    instInfo.enabledExtensionCount = sizeof(extensions) / sizeof(const char *);
     instInfo.ppEnabledExtensionNames = extensions;
     instInfo.enabledLayerCount = 1;
     instInfo.ppEnabledLayerNames = layers;
