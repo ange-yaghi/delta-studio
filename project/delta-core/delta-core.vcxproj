@@ -19,6 +19,8 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\include\yds_vulkan.h" />
+    <ClInclude Include="..\..\include\yds_vulkan_decl.h" />
     <ClInclude Include="..\..\include\yds_vulkan_context.h" />
     <ClInclude Include="..\..\include\yds_breakdown_timer_channel.h" />
     <ClInclude Include="..\..\include\yds_breakdown_timer.h" />

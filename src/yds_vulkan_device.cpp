@@ -4,9 +4,12 @@
 #include "../include/yds_vulkan_context.h"
 #include "../include/yds_vulkan_windows_context.h"
 #include "../include/yds_vulkan_texture.h"
+#include "../include/yds_vulkan.h"
+
+#include <vector>
 
 ysVulkanDevice::ysVulkanDevice() {
-    /* void */
+    m_device = nullptr;
 }
 
 ysVulkanDevice::~ysVulkanDevice() {
@@ -14,7 +17,8 @@ ysVulkanDevice::~ysVulkanDevice() {
 }
 
 ysError ysVulkanDevice::InitializeDevice() {
-    return ysError();
+    YDS_ERROR_DECLARE("InitializeDevice");
+    return YDS_ERROR_RETURN(ysError::None);
 }
 
 ysError ysVulkanDevice::DestroyDevice() {
@@ -36,7 +40,10 @@ ysError ysVulkanDevice::CreateRenderingContext(ysRenderingContext **renderingCon
         newContext->m_targetWindow = window;
         *renderingContext = static_cast<ysRenderingContext *>(newContext);
 
-        YDS_NESTED_ERROR_CALL(newContext->CreateRenderingContext(this, window));
+        YDS_NESTED_ERROR_CALL(newContext->Create(this, window));
+
+        SetContext(newContext);
+        YDS_NESTED_ERROR_CALL(CreateVulkanDevice());
 
         return YDS_ERROR_RETURN(ysError::None);
     }
@@ -46,11 +53,20 @@ ysError ysVulkanDevice::CreateRenderingContext(ysRenderingContext **renderingCon
 }
 
 ysError ysVulkanDevice::UpdateRenderingContext(ysRenderingContext *context) {
-    return ysError();
+    YDS_ERROR_DECLARE("UpdateRenderingContext");
+
+    /* TODO */
+
+    return YDS_ERROR_RETURN(ysError::None);
 }
 
 ysError ysVulkanDevice::DestroyRenderingContext(ysRenderingContext *&context) {
-    return ysError();
+    YDS_ERROR_DECLARE("DestroyRenderingContext");
+
+    ysVulkanContext *vulkanContext = static_cast<ysVulkanContext *>(context);
+    YDS_NESTED_ERROR_CALL(vulkanContext->Destroy());
+
+    return YDS_ERROR_RETURN(ysError::None);
 }
 
 ysError ysVulkanDevice::SetContextMode(ysRenderingContext *context, ysRenderingContext::ContextMode mode) {
@@ -246,4 +262,86 @@ ysError ysVulkanDevice::UseRenderTargetAsTexture(ysRenderTarget *renderTarget, i
 }
 
 void ysVulkanDevice::Draw(int numFaces, int indexOffset, int vertexOffset) {
+}
+
+ysError ysVulkanDevice::CreateVulkanDevice() {
+    YDS_ERROR_DECLARE("CreateVulkanDevice");
+
+    uint32_t deviceCount = 0;
+    if (vkEnumeratePhysicalDevices(m_context->GetInstance(), &deviceCount, nullptr) != VkResult::VK_SUCCESS) {
+        return YDS_ERROR_RETURN(ysError::ApiError);
+    }
+
+    if (deviceCount < 1) {
+        return YDS_ERROR_RETURN(ysError::CouldNotObtainDevice);
+    }
+
+    std::vector<VkPhysicalDevice> devices(deviceCount, nullptr);
+    if (vkEnumeratePhysicalDevices(m_context->GetInstance(), &deviceCount, devices.data()) != VkResult::VK_SUCCESS) {
+        return YDS_ERROR_RETURN(ysError::CouldNotObtainDevice);
+    }
+
+    VkPhysicalDevice device = devices.front();
+
+    uint32_t queueFamilyCount = 0;
+    vkGetPhysicalDeviceQueueFamilyProperties(device, &queueFamilyCount, nullptr);
+
+    if (queueFamilyCount < 1) {
+        return YDS_ERROR_RETURN(ysError::NoQueueFamilyFound);
+    }
+
+    std::vector<VkQueueFamilyProperties> queueFamilyProperties(queueFamilyCount);
+    vkGetPhysicalDeviceQueueFamilyProperties(device, &queueFamilyCount, queueFamilyProperties.data());
+
+    uint32_t deviceExtensionCount = 0;
+    if (vkEnumerateDeviceExtensionProperties(
+        device,
+        nullptr,
+        &deviceExtensionCount,
+        nullptr) != VkResult::VK_SUCCESS)
+    {
+        return YDS_ERROR_RETURN(ysError::ApiError);
+    }
+
+    std::vector<VkExtensionProperties> deviceExtensions(deviceExtensionCount);
+    if (vkEnumerateDeviceExtensionProperties(
+        device,
+        nullptr,
+        &deviceExtensionCount,
+        deviceExtensions.data()) != VkResult::VK_SUCCESS)
+    {
+        return YDS_ERROR_RETURN(ysError::ApiError);
+    }
+
+    int graphicsQueueIndex = -1;
+    for (int i = 0; i < queueFamilyCount; ++i) {
+        VkBool32 supportsPresent;
+        vkGetPhysicalDeviceSurfaceSupportKHR(device, i, m_context->GetSurface(), &supportsPresent);
+
+        if ((queueFamilyProperties[i].queueFlags & VK_QUEUE_GRAPHICS_BIT) && supportsPresent) {
+            graphicsQueueIndex = i;
+            break;
+        }
+    }
+
+    float queuePriority = 1.0f;
+
+    VkDeviceQueueCreateInfo queueInfo{ VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO };
+    queueInfo.queueFamilyIndex = graphicsQueueIndex;
+    queueInfo.queueCount = 1;
+    queueInfo.pQueuePriorities = &queuePriority;
+
+    std::vector<const char *> requiredExtensions = { "VK_KHR_swapchain" };
+
+    VkDeviceCreateInfo deviceInfo{ VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO };
+    deviceInfo.queueCreateInfoCount = 1;
+    deviceInfo.pQueueCreateInfos = &queueInfo;
+    deviceInfo.enabledExtensionCount = (uint32_t)requiredExtensions.size();
+    deviceInfo.ppEnabledExtensionNames = requiredExtensions.data();
+
+    if (vkCreateDevice(device, &deviceInfo, nullptr, &m_device) != VkResult::VK_SUCCESS) {
+        return YDS_ERROR_RETURN(ysError::ApiError);
+    }
+
+    return YDS_ERROR_RETURN(ysError::None);
 }

@@ -2,15 +2,15 @@
 
 #include <sstream>
 
-dbasic_demo::DeltaBasicDemoApplication::DeltaBasicDemoApplication() {
+delta_demo::DeltaBasicDemoApplication::DeltaBasicDemoApplication() {
     m_demoTexture = nullptr;
 }
 
-dbasic_demo::DeltaBasicDemoApplication::~DeltaBasicDemoApplication() {
+delta_demo::DeltaBasicDemoApplication::~DeltaBasicDemoApplication() {
     /* void */
 }
 
-void dbasic_demo::DeltaBasicDemoApplication::Initialize(void *instance, ysContextObject::DeviceAPI api) {
+void delta_demo::DeltaBasicDemoApplication::Initialize(void *instance, ysContextObject::DeviceAPI api) {
     m_engine.GetConsole()->SetDefaultFontDirectory("../../engines/basic/fonts/");
 
     dbasic::DeltaEngine::GameEngineSettings settings;
@@ -96,11 +96,11 @@ void dbasic_demo::DeltaBasicDemoApplication::Initialize(void *instance, ysContex
     m_shaders.SetClearColor(ysColor::srgbiToLinear(0xadd8e6));
 }
 
-void dbasic_demo::DeltaBasicDemoApplication::Process() {
+void delta_demo::DeltaBasicDemoApplication::Process() {
     /* void */
 }
 
-void dbasic_demo::DeltaBasicDemoApplication::Render() {
+void delta_demo::DeltaBasicDemoApplication::Render() {
     m_shaders.SetCameraPosition(0.0f, 0.0f);
     m_shaders.SetCameraAltitude(20.0f);
 
@@ -205,7 +205,7 @@ void dbasic_demo::DeltaBasicDemoApplication::Render() {
     console->DrawGeneralText(msg.str().c_str());
 }
 
-void dbasic_demo::DeltaBasicDemoApplication::Run() {
+void delta_demo::DeltaBasicDemoApplication::Run() {
     while (m_engine.IsOpen()) {
         m_engine.StartFrame();
 
@@ -218,7 +218,9 @@ void dbasic_demo::DeltaBasicDemoApplication::Run() {
 
         m_engine.EndFrame();
     }
+}
 
+void delta_demo::DeltaBasicDemoApplication::Destroy() {
     m_shaderSet.Destroy();
     m_shaders.Destroy();
     m_assetManager.Destroy();

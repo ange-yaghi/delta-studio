@@ -178,6 +178,9 @@
     <Filter Include="Source Files\api\vulkan">
       <UniqueIdentifier>{5fa73fe9-8f8e-443d-a1a1-ab209fa33c0d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\api\vulkan\vulkan">
+      <UniqueIdentifier>{69de1ebc-33dd-4de9-a847-8edbba5b3d3d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\include\yds_core.h">
@@ -548,6 +551,12 @@
     </ClInclude>
     <ClInclude Include="..\..\include\yds_vulkan_windows_context.h">
       <Filter>Header Files\api\vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\yds_vulkan_decl.h">
+      <Filter>Header Files\api\vulkan\vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\yds_vulkan.h">
+      <Filter>Header Files\api\vulkan\vulkan</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

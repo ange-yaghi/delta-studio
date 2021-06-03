@@ -1,9 +1,8 @@
 #include "../include/yds_vulkan_windows_context.h"
 
 #include "../include/yds_windows_window.h"
-
-#include <vulkan/vulkan_core.h>
-#include <vulkan/vulkan_win32.h>
+#include "../include/yds_vulkan_device.h"
+#include "../include/yds_vulkan.h"
 
 ysVulkanWindowsContext::ysVulkanWindowsContext()
     : ysVulkanContext(ysWindowSystemObject::Platform::Windows)
@@ -15,15 +14,17 @@ ysVulkanWindowsContext::~ysVulkanWindowsContext() {
     /* void */
 }
 
-ysError ysVulkanWindowsContext::CreateRenderingContext(
+ysError ysVulkanWindowsContext::Create(
     ysVulkanDevice *device,
     ysWindow *window)
 {
-    YDS_ERROR_DECLARE("CreateRenderingContext");
+    YDS_ERROR_DECLARE("Create");
 
     if (window->GetPlatform() != ysWindow::Platform::Windows) {
         return YDS_ERROR_RETURN(ysError::IncompatiblePlatforms);
     }
+
+    device->SetContext(this);
 
     const char *extensions[] = {
         VK_KHR_WIN32_SURFACE_EXTENSION_NAME,
@@ -52,8 +53,7 @@ ysError ysVulkanWindowsContext::CreateRenderingContext(
     instInfo.enabledLayerCount = 1;
     instInfo.ppEnabledLayerNames = layers;
 
-    VkInstance instance;
-    vkCreateInstance(&instInfo, nullptr, &instance);
+    vkCreateInstance(&instInfo, nullptr, &m_instance);
 
     ysWindowsWindow *win32Window = static_cast<ysWindowsWindow *>(window);
 
@@ -64,11 +64,22 @@ ysError ysVulkanWindowsContext::CreateRenderingContext(
     win32Info.hinstance = win32Window->GetInstance();
     win32Info.hwnd = win32Window->GetWindowHandle();
 
-    VkSurfaceKHR surface;
-    VkResult result = vkCreateWin32SurfaceKHR(instance, &win32Info, nullptr, &surface);
+    VkResult result = vkCreateWin32SurfaceKHR(m_instance, &win32Info, nullptr, &m_surface);
     if (result != VkResult::VK_SUCCESS) {
         return YDS_ERROR_RETURN(ysError::ApiError);
     }
+
+    return YDS_ERROR_RETURN(ysError::None);
+}
+
+ysError ysVulkanWindowsContext::Destroy() {
+    YDS_ERROR_DECLARE("Destroy");
+
+    vkDestroySurfaceKHR(m_instance, m_surface, nullptr);
+    vkDestroyInstance(m_instance, nullptr);
+
+    m_instance = nullptr;
+    m_surface = nullptr;
 
     return YDS_ERROR_RETURN(ysError::None);
 }

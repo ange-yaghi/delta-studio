@@ -13,21 +13,75 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Header Files\delta">
+      <UniqueIdentifier>{0b36225b-d595-4044-944e-e950f6732562}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\base">
+      <UniqueIdentifier>{57ed43d7-4732-4f62-80a3-f01731d1b189}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\base">
+      <UniqueIdentifier>{16c2f3a3-0dbf-4e67-ac84-823ee13ec6fe}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\demos">
+      <UniqueIdentifier>{006ba99a-031b-4f5e-89db-a10a69f7f514}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\demos\00-delta-basic-demo">
+      <UniqueIdentifier>{a4e9b43a-0f96-4e94-b594-d19ecdcfafed}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\demos">
+      <UniqueIdentifier>{e57d9fc6-9d3d-48a0-a0b1-8108eac8d8f4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\demos\00-delta-basic-demo">
+      <UniqueIdentifier>{9635d6a2-7347-4d26-a2de-d71f70d8326e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\factory">
+      <UniqueIdentifier>{c3f69b29-65bf-4a52-9764-0b6c9a430add}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\factor">
+      <UniqueIdentifier>{a9daf63b-2f6d-4f46-b34f-a3a76de1ecc0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\demos\01-empty-window-demo">
+      <UniqueIdentifier>{52f2550f-050d-48ef-9bee-de0fe863b03d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\demos\01-empty-window-demo">
+      <UniqueIdentifier>{262a2347-0398-429a-a8c2-9eb30eecafa2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\demos\delta-basic-demo\src\main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\demos\delta-basic-demo\src\demo_application.cpp">
+      <Filter>Source Files\base</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\demos\delta-basic-demo\src\delta_basic_demo_application.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\demos\00-delta-basic-demo</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\demos\delta-basic-demo\src\empty_window_demo.cpp">
+      <Filter>Source Files\demos\01-empty-window-demo</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\demos\delta-basic-demo\include\delta_basic_demo_application.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="..\..\demos\delta-basic-demo\include\delta.h">
+      <Filter>Header Files\delta</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\demos\delta-basic-demo\include\delta_basic.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="..\..\demos\delta-basic-demo\include\demo_application.h">
+      <Filter>Header Files\base</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\demos\delta-basic-demo\include\delta_basic_demo_application.h">
+      <Filter>Header Files\demos\00-delta-basic-demo</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\demos\delta-basic-demo\include\demo_factory.h">
+      <Filter>Header Files\factory</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\demos\delta-basic-demo\include\demo_list.h">
+      <Filter>Header Files\factory</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\demos\delta-basic-demo\include\empty_window_demo.h">
+      <Filter>Header Files\demos\01-empty-window-demo</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\demos\delta-basic-demo\include\all_demos.h">
+      <Filter>Header Files\demos</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -143,11 +143,18 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\..\demos\delta-basic-demo\src\delta_basic_demo_application.cpp" />
+    <ClCompile Include="..\..\demos\delta-basic-demo\src\demo_application.cpp" />
+    <ClCompile Include="..\..\demos\delta-basic-demo\src\empty_window_demo.cpp" />
     <ClCompile Include="..\..\demos\delta-basic-demo\src\main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\demos\delta-basic-demo\include\delta_basic.h" />
+    <ClInclude Include="..\..\demos\delta-basic-demo\include\all_demos.h" />
+    <ClInclude Include="..\..\demos\delta-basic-demo\include\delta.h" />
     <ClInclude Include="..\..\demos\delta-basic-demo\include\delta_basic_demo_application.h" />
+    <ClInclude Include="..\..\demos\delta-basic-demo\include\demo_application.h" />
+    <ClInclude Include="..\..\demos\delta-basic-demo\include\demo_factory.h" />
+    <ClInclude Include="..\..\demos\delta-basic-demo\include\demo_list.h" />
+    <ClInclude Include="..\..\demos\delta-basic-demo\include\empty_window_demo.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

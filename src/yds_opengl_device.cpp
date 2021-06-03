@@ -123,7 +123,7 @@ ysError ysOpenGLDevice::DestroyRenderingContext(ysRenderingContext *&context) {
 ysError ysOpenGLDevice::SetContextMode(ysRenderingContext *context, ysRenderingContext::ContextMode mode) {
     YDS_ERROR_DECLARE("SetContextMode");
 
-    if (context == NULL) return YDS_ERROR_RETURN(ysError::InvalidParameter);
+    if (context == nullptr) return YDS_ERROR_RETURN(ysError::InvalidParameter);
     if (!CheckCompatibility(context)) return YDS_ERROR_RETURN(ysError::IncompatiblePlatforms);
 
     ysOpenGLVirtualContext *openglContext = static_cast<ysOpenGLVirtualContext *>(context);
@@ -1096,14 +1096,13 @@ void ysOpenGLDevice::ResubmitInputLayout() {
 
 const ysOpenGLVirtualContext *ysOpenGLDevice::UpdateContext() {
     for (int i = 0; i < m_renderingContexts.GetNumObjects(); i++) {
-
         ysOpenGLVirtualContext *openglContext = static_cast<ysOpenGLVirtualContext *>(m_renderingContexts.Get(i));
         if (openglContext->IsRealContext())
             return m_realContext = openglContext;
 
     }
 
-    return NULL;
+    return nullptr;
 }
 
 ysOpenGLVirtualContext *ysOpenGLDevice::GetTransferContext() {
@@ -1112,7 +1111,7 @@ ysOpenGLVirtualContext *ysOpenGLDevice::GetTransferContext() {
         if (!openglContext->IsRealContext()) return openglContext;
     }
 
-    return NULL;
+    return nullptr;
 }
 
 int ysOpenGLDevice::GetFormatGLType(ysRenderGeometryChannel::ChannelFormat format) {

@@ -11,7 +11,8 @@ public:
     ysVulkanWindowsContext();
     virtual ~ysVulkanWindowsContext();
 
-    ysError CreateRenderingContext(ysVulkanDevice *device, ysWindow *window);
+    virtual ysError Create(ysVulkanDevice *device, ysWindow *window);
+    virtual ysError Destroy();
 };
 
 #endif /* YDS_VULKAN_WINDOWS_CONTEXT_H */

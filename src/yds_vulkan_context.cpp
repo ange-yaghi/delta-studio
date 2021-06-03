@@ -3,7 +3,8 @@
 ysVulkanContext::ysVulkanContext()
     : ysRenderingContext(DeviceAPI::Vulkan, ysWindowSystemObject::Platform::Unknown) 
 {
-    /* void */
+    m_instance = nullptr;
+    m_surface = nullptr;
 }
 
 ysVulkanContext::ysVulkanContext(ysWindowSystemObject::Platform platform)

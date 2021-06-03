@@ -1,17 +1,20 @@
-#ifndef DBASIC_DEMO_DELTA_BASIC_DEMO_APPLICATION_H
-#define DBASIC_DEMO_DELTA_BASIC_DEMO_APPLICATION_H
+#ifndef DELTA_DEMO_DELTA_BASIC_DEMO_APPLICATION_H
+#define DELTA_DEMO_DELTA_BASIC_DEMO_APPLICATION_H
 
-#include "delta_basic.h"
+#include "demo_application.h"
 
-namespace dbasic_demo {
+#include "delta.h"
 
-    class DeltaBasicDemoApplication {
+namespace delta_demo {
+
+    class DeltaBasicDemoApplication : public DemoApplication {
     public:
         DeltaBasicDemoApplication();
-        ~DeltaBasicDemoApplication();
+        virtual ~DeltaBasicDemoApplication();
 
-        void Initialize(void *instance, ysContextObject::DeviceAPI api);
-        void Run();
+        virtual void Initialize(void *instance, ysContextObject::DeviceAPI api);
+        virtual void Run();
+        virtual void Destroy();
 
     protected:
         void Process();
@@ -46,4 +49,4 @@ namespace dbasic_demo {
 
 } /* namesapce dbasic_demo */
 
-#endif /* DBASIC_DEMO_DELTA_BASIC_DEMO_APPLICATION_H */
+#endif /* DELTA_DEMO_DELTA_BASIC_DEMO_APPLICATION_H */
