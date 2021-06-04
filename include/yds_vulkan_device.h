@@ -81,10 +81,13 @@ public:
     void SetContext(ysVulkanContext *context) { m_context = context; }
     ysVulkanContext *GetContext() const { return m_context; }
 
+    VkInstance GetInstance() const { return m_instance; }
+
 protected:
     ysError CreateVulkanDevice();
 
 protected:
+    VkInstance m_instance;
     VkDevice m_device;
 
     ysVulkanContext *m_context;

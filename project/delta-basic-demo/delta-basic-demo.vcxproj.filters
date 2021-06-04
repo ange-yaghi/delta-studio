@@ -46,6 +46,12 @@
     <Filter Include="Source Files\demos\01-empty-window-demo">
       <UniqueIdentifier>{262a2347-0398-429a-a8c2-9eb30eecafa2}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\demos\02-multiple-window-demo">
+      <UniqueIdentifier>{6b48f682-0758-4e18-b7c8-0647a7343864}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\demos\02-multiple-window-demo">
+      <UniqueIdentifier>{9b974c40-81df-43f4-ab00-d5e2608ea06c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\demos\delta-basic-demo\src\main.cpp">
@@ -59,6 +65,9 @@
     </ClCompile>
     <ClCompile Include="..\..\demos\delta-basic-demo\src\empty_window_demo.cpp">
       <Filter>Source Files\demos\01-empty-window-demo</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\demos\delta-basic-demo\src\multiple_window_demo.cpp">
+      <Filter>Source Files\demos\02-multiple-window-demo</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -82,6 +91,9 @@
     </ClInclude>
     <ClInclude Include="..\..\demos\delta-basic-demo\include\all_demos.h">
       <Filter>Header Files\demos</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\demos\delta-basic-demo\include\multiple_window_demo.h">
+      <Filter>Header Files\demos\02-multiple-window-demo</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -52,6 +52,10 @@ void delta_demo::EmptyWindowDemo::Run() {
     while (m_window->IsOpen()) {
         m_windowSystem->ProcessMessages();
 
+        if (!m_window->IsOpen()) {
+            break;
+        }
+
         const float clearColor[] = { 0.0f, 1.0f, 0.0f, 1.0f };
         m_device->ClearBuffers(clearColor);
 

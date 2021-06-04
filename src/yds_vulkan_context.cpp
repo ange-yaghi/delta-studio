@@ -3,7 +3,6 @@
 ysVulkanContext::ysVulkanContext()
     : ysRenderingContext(DeviceAPI::Vulkan, ysWindowSystemObject::Platform::Unknown) 
 {
-    m_instance = nullptr;
     m_surface = nullptr;
 }
 
@@ -15,4 +14,12 @@ ysVulkanContext::ysVulkanContext(ysWindowSystemObject::Platform platform)
 
 ysVulkanContext::~ysVulkanContext() {
     /* void */
+}
+
+ysError ysVulkanContext::Create(ysVulkanDevice *device, ysWindow *window) {
+    YDS_ERROR_DECLARE("Create");
+
+    m_device = device;
+
+    return YDS_ERROR_RETURN(ysError::None);
 }

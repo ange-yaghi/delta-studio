@@ -14,7 +14,7 @@ int WINAPI WinMain(
 
     ysContextObject::DeviceAPI api = ysContextObject::DeviceAPI::DirectX11;
     delta_demo::DemoApplication::Demo demo =
-        delta_demo::DemoApplication::Demo::EmptyWindowDemo;
+        delta_demo::DemoApplication::Demo::MultipleWindowDemo;
 
     delta_demo::DemoApplication *app = delta_demo::CreateApplication(demo);
     app->Initialize((void *)&hInstance, api); 

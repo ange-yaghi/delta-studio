@@ -8,6 +8,7 @@
 DEMO_LIST()
     DEMO(DemoApplication::Demo::DeltaBasicDemo, DeltaBasicDemoApplication)
     DEMO(DemoApplication::Demo::EmptyWindowDemo, EmptyWindowDemo)
+    DEMO(DemoApplication::Demo::MultipleWindowDemo, MultipleWindowDemo)
 END_DEMO_LIST()
 
 #endif /* DELTA_DEMO_DEMO_LIST_H */

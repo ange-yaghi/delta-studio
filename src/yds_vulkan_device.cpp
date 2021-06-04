@@ -10,6 +10,7 @@
 
 ysVulkanDevice::ysVulkanDevice() {
     m_device = nullptr;
+    m_instance = nullptr;
 }
 
 ysVulkanDevice::~ysVulkanDevice() {
@@ -22,7 +23,11 @@ ysError ysVulkanDevice::InitializeDevice() {
 }
 
 ysError ysVulkanDevice::DestroyDevice() {
-    return ysError();
+    YDS_ERROR_DECLARE("DestroyDevice");
+
+    vkDestroyInstance(m_instance, nullptr);
+
+    return YDS_ERROR_RETURN(ysError::None);
 }
 
 bool ysVulkanDevice::CheckSupport() {
@@ -267,8 +272,37 @@ void ysVulkanDevice::Draw(int numFaces, int indexOffset, int vertexOffset) {
 ysError ysVulkanDevice::CreateVulkanDevice() {
     YDS_ERROR_DECLARE("CreateVulkanDevice");
 
+    const char *extensions[] = {
+    VK_KHR_WIN32_SURFACE_EXTENSION_NAME,
+    VK_KHR_SURFACE_EXTENSION_NAME
+    };
+
+    VkApplicationInfo appInfo = {};
+    appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
+    appInfo.pNext = NULL;
+    appInfo.pApplicationName = "";
+    appInfo.applicationVersion = 1;
+    appInfo.pEngineName = "Delta Studio";
+    appInfo.engineVersion = 1;
+    appInfo.apiVersion = VK_API_VERSION_1_0;
+
+    // TODO: enable only for debug builds
+    const char *layers[] = { "VK_LAYER_KHRONOS_validation" };
+
+    VkInstanceCreateInfo instInfo = {};
+    instInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
+    instInfo.pNext = nullptr;
+    instInfo.flags = 0;
+    instInfo.pApplicationInfo = &appInfo;
+    instInfo.enabledExtensionCount = sizeof(extensions) / sizeof(const char *);
+    instInfo.ppEnabledExtensionNames = extensions;
+    instInfo.enabledLayerCount = 1;
+    instInfo.ppEnabledLayerNames = layers;
+
+    vkCreateInstance(&instInfo, nullptr, &m_instance);
+
     uint32_t deviceCount = 0;
-    if (vkEnumeratePhysicalDevices(m_context->GetInstance(), &deviceCount, nullptr) != VkResult::VK_SUCCESS) {
+    if (vkEnumeratePhysicalDevices(m_instance, &deviceCount, nullptr) != VkResult::VK_SUCCESS) {
         return YDS_ERROR_RETURN(ysError::ApiError);
     }
 
@@ -277,7 +311,7 @@ ysError ysVulkanDevice::CreateVulkanDevice() {
     }
 
     std::vector<VkPhysicalDevice> devices(deviceCount, nullptr);
-    if (vkEnumeratePhysicalDevices(m_context->GetInstance(), &deviceCount, devices.data()) != VkResult::VK_SUCCESS) {
+    if (vkEnumeratePhysicalDevices(m_instance, &deviceCount, devices.data()) != VkResult::VK_SUCCESS) {
         return YDS_ERROR_RETURN(ysError::CouldNotObtainDevice);
     }
 

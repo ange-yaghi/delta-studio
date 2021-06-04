@@ -34,82 +34,80 @@ ysError ysOpenGLWindowsContext::CreateRenderingContext(ysOpenGLDevice *device, y
     m_targetWindow = NULL;
     m_contextHandle = NULL;
     m_isRealContext = false;
+    
+    // Create dummy context
+    WNDCLASSEX wc;
+    wc.cbSize = sizeof(WNDCLASSEX);
+
+    wc.style = CS_HREDRAW | CS_VREDRAW;
+    wc.lpfnWndProc = (WNDPROC)(ysWindowsWindowSystem::WinProc);
+    wc.cbClsExtra = 0;
+    wc.cbWndExtra = 0;
+    wc.hInstance = windowsWindow->GetInstance();
+    wc.hIcon = NULL;
+    wc.hCursor = LoadCursor(NULL, IDC_ARROW);
+    wc.hbrBackground = (HBRUSH)GetStockObject(WHITE_BRUSH);
+    wc.lpszMenuName = NULL;
+    wc.lpszClassName = "DUMMY_WINDOW";
+    wc.hIconSm = NULL;
+
+    RegisterClassEx(&wc);
+
+    HWND dummyWnd = CreateWindow("DUMMY_WINDOW", "", 0, 0, 0, 0, 0, 0, 0, windowsWindow->GetInstance(), 0);
+    HDC dummyDeviceHandle = GetDC(dummyWnd);
+
+    PIXELFORMATDESCRIPTOR pfd;
+    memset(&pfd, 0, sizeof(PIXELFORMATDESCRIPTOR));
+    pfd.nSize = sizeof(PIXELFORMATDESCRIPTOR);
+    pfd.nVersion = 1;
+    pfd.dwFlags = PFD_DOUBLEBUFFER | PFD_SUPPORT_OPENGL | PFD_DRAW_TO_WINDOW;
+    pfd.iPixelType = PFD_TYPE_RGBA;
+    pfd.cColorBits = 32;
+    pfd.cDepthBits = 32;
+    pfd.iLayerType = PFD_MAIN_PLANE;
+
+    unsigned int pixelFormat = ChoosePixelFormat(dummyDeviceHandle, &pfd);
+    SetPixelFormat(dummyDeviceHandle, pixelFormat, &pfd);
+
+    HGLRC tempContext = wglCreateContext(dummyDeviceHandle);
+    if (tempContext == nullptr) return YDS_ERROR_RETURN(ysError::CouldNotCreateTemporaryContext);
+
+    wresult = wglMakeCurrent(dummyDeviceHandle, tempContext);
+    if (wresult == FALSE) return YDS_ERROR_RETURN(ysError::CouldNotActivateTemporaryContext);
+
+    LoadContextCreationExtension();
+
+    const int contextAttribs[] = {
+        WGL_CONTEXT_MAJOR_VERSION_ARB, major,
+        WGL_CONTEXT_MINOR_VERSION_ARB, minor,
+        WGL_CONTEXT_PROFILE_MASK_ARB, WGL_CONTEXT_CORE_PROFILE_BIT_ARB,
+        0
+    };
+
+    const int pixelFormatAttributes[] = {
+        WGL_DRAW_TO_WINDOW_ARB, GL_TRUE,
+        WGL_SUPPORT_OPENGL_ARB, GL_TRUE,
+        WGL_DOUBLE_BUFFER_ARB, GL_TRUE,
+        WGL_PIXEL_TYPE_ARB, WGL_TYPE_RGBA_ARB,
+        WGL_COLOR_BITS_ARB, 32,
+        WGL_DEPTH_BITS_ARB, 24,
+        WGL_STENCIL_BITS_ARB, 8,
+        WGL_SAMPLE_BUFFERS_ARB, 1,
+        WGL_SAMPLES_ARB, 8,
+        0
+    };
+
+    int msPixelFormat;
+    UINT numFormats;
+
+    wglChoosePixelFormatARB(deviceHandle, pixelFormatAttributes, NULL, 1, &msPixelFormat, &numFormats);
+    SetPixelFormat(deviceHandle, msPixelFormat, &pfd);
+
+    wglMakeCurrent(0, 0);
 
     // Create a context if one doesn't already exist
     if (device->UpdateContext() == nullptr) {
-        // Create dummy context
-        WNDCLASSEX wc;
-        wc.cbSize = sizeof(WNDCLASSEX);
-
-        wc.style = CS_HREDRAW | CS_VREDRAW;
-        wc.lpfnWndProc = (WNDPROC)(ysWindowsWindowSystem::WinProc);
-        wc.cbClsExtra = 0;
-        wc.cbWndExtra = 0;
-        wc.hInstance = windowsWindow->GetInstance();
-        wc.hIcon = NULL;
-        wc.hCursor = LoadCursor(NULL, IDC_ARROW);
-        wc.hbrBackground = (HBRUSH)GetStockObject(WHITE_BRUSH);
-        wc.lpszMenuName = NULL;
-        wc.lpszClassName = "DUMMY_WINDOW";
-        wc.hIconSm = NULL;
-
-        RegisterClassEx(&wc);
-
-        HWND dummyWnd = CreateWindow("DUMMY_WINDOW", "", 0, 0, 0, 0, 0, 0, 0, windowsWindow->GetInstance(), 0);
-        HDC dummyDeviceHandle = GetDC(dummyWnd);
-
-        PIXELFORMATDESCRIPTOR pfd;
-        memset(&pfd, 0, sizeof(PIXELFORMATDESCRIPTOR));
-        pfd.nSize = sizeof(PIXELFORMATDESCRIPTOR);
-        pfd.nVersion = 1;
-        pfd.dwFlags = PFD_DOUBLEBUFFER | PFD_SUPPORT_OPENGL | PFD_DRAW_TO_WINDOW;
-        pfd.iPixelType = PFD_TYPE_RGBA;
-        pfd.cColorBits = 32;
-        pfd.cDepthBits = 32;
-        pfd.iLayerType = PFD_MAIN_PLANE;
-
-        unsigned int pixelFormat = ChoosePixelFormat(dummyDeviceHandle, &pfd);
-        SetPixelFormat(dummyDeviceHandle, pixelFormat, &pfd);
-
-        HGLRC tempContext = wglCreateContext(dummyDeviceHandle);
-        if (tempContext == nullptr) return YDS_ERROR_RETURN(ysError::CouldNotCreateTemporaryContext);
-
-        wresult = wglMakeCurrent(dummyDeviceHandle, tempContext);
-        if (wresult == FALSE) return YDS_ERROR_RETURN(ysError::CouldNotActivateTemporaryContext);
-
-        LoadContextCreationExtension();
-
-        const int contextAttribs[] = {
-            WGL_CONTEXT_MAJOR_VERSION_ARB, major,
-            WGL_CONTEXT_MINOR_VERSION_ARB, minor,
-            WGL_CONTEXT_PROFILE_MASK_ARB, WGL_CONTEXT_CORE_PROFILE_BIT_ARB,
-            0
-        };
-
-        const int pixelFormatAttributes[] = {
-            WGL_DRAW_TO_WINDOW_ARB, GL_TRUE,
-            WGL_SUPPORT_OPENGL_ARB, GL_TRUE,
-            WGL_DOUBLE_BUFFER_ARB, GL_TRUE,
-            WGL_PIXEL_TYPE_ARB, WGL_TYPE_RGBA_ARB,
-            WGL_COLOR_BITS_ARB, 32,
-            WGL_DEPTH_BITS_ARB, 24,
-            WGL_STENCIL_BITS_ARB, 8,
-            WGL_SAMPLE_BUFFERS_ARB, 1,
-            WGL_SAMPLES_ARB, 8,
-            0
-        };
-
-        int msPixelFormat;
-        UINT numFormats;
-
-        wglChoosePixelFormatARB(deviceHandle, pixelFormatAttributes, NULL, 1, &msPixelFormat, &numFormats);
-        SetPixelFormat(deviceHandle, msPixelFormat, &pfd);
-
         HGLRC hRC = wglCreateContextAttribsARB(deviceHandle, 0, contextAttribs);
-        wglMakeCurrent(0, 0);
-        wglDeleteContext(tempContext);
-        DestroyWindow(dummyWnd);
-
         if (hRC == 0) return YDS_ERROR_RETURN(ysError::CouldNotCreateContext);
 
         wresult = wglMakeCurrent(deviceHandle, hRC);
@@ -123,6 +121,9 @@ ysError ysOpenGLWindowsContext::CreateRenderingContext(ysOpenGLDevice *device, y
 
         device->UpdateContext();
     }
+
+    wglDeleteContext(tempContext);
+    DestroyWindow(dummyWnd);
 
     m_device = device;
     m_deviceHandle = deviceHandle;
@@ -203,7 +204,11 @@ ysError ysOpenGLWindowsContext::SetContext(ysRenderingContext *realContext) {
 
     if (realContext != nullptr) {
         result = wglMakeCurrent(m_deviceHandle, realOpenglContext->m_contextHandle);
-        if (result == FALSE) return YDS_ERROR_RETURN(ysError::CouldNotActivateContext);
+        if (result == FALSE) {
+            DWORD lastError = GetLastError();
+
+            return YDS_ERROR_RETURN(ysError::CouldNotActivateContext);
+        }
     }
     else {
         wglMakeCurrent(NULL, NULL);
@@ -215,10 +220,7 @@ ysError ysOpenGLWindowsContext::SetContext(ysRenderingContext *realContext) {
 ysError ysOpenGLWindowsContext::Present() {
     YDS_ERROR_DECLARE("Present");
 
-    BOOL result = TRUE;
-    result = SwapBuffers(m_deviceHandle);
-
-    if (result == FALSE) return YDS_ERROR_RETURN(ysError::BufferSwapError);
+    if (SwapBuffers(m_deviceHandle) == FALSE) return YDS_ERROR_RETURN(ysError::BufferSwapError);
 
     return YDS_ERROR_RETURN(ysError::None);
 }

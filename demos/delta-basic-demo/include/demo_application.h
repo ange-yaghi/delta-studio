@@ -10,6 +10,7 @@ namespace delta_demo {
         enum class Demo {
             DeltaBasicDemo,
             EmptyWindowDemo,
+            MultipleWindowDemo
         };
 
     public:

@@ -6,22 +6,24 @@
 
 #include "yds_vulkan_decl.h"
 
+class ysVulkanDevice;
+
 class ysVulkanContext : public ysRenderingContext {
-    friend class ysVulkanDevice;
+    friend ysVulkanDevice;
 
 public:
     ysVulkanContext();
     ysVulkanContext(ysWindowSystemObject::Platform platform);
     virtual ~ysVulkanContext();
 
-    virtual ysError Create(ysVulkanDevice *device, ysWindow *window) = 0;
+    virtual ysError Create(ysVulkanDevice *device, ysWindow *window);
     virtual ysError Destroy() = 0;
 
-    VkInstance GetInstance() const { return m_instance; }
     VkSurfaceKHR GetSurface() const { return m_surface; }
 
 protected:
-    VkInstance m_instance;
+    ysVulkanDevice *m_device;
+
     VkSurfaceKHR m_surface;
 };
 

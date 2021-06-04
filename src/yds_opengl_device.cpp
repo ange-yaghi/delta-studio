@@ -133,16 +133,14 @@ ysError ysOpenGLDevice::SetContextMode(ysRenderingContext *context, ysRenderingC
 }
 
 void ysOpenGLDevice::SetRenderingContext(ysRenderingContext *context) {
-    if (context) {
+    if (context != nullptr) {
         if (context != m_activeContext) {
             ysOpenGLVirtualContext *openGLContext = static_cast<ysOpenGLVirtualContext *>(context);
-            //wglMakeCurrent(openGLContext->m_deviceHandle, m_contextHandle);// openGLContext->m_contextHandle);
             openGLContext->SetContext(m_realContext);
         }
     }
     else {
-        if (m_realContext) m_realContext->SetContext(NULL);
-        //wglMakeCurrent(NULL, NULL);
+        if (m_realContext != nullptr) m_realContext->SetContext(nullptr);
     }
 
     m_activeContext = context;
@@ -346,8 +344,6 @@ ysError ysOpenGLDevice::ClearBuffers(const float *clearColor) {
 
 ysError ysOpenGLDevice::Present() {
     YDS_ERROR_DECLARE("Present");
-
-    int lastError = glGetError();
 
     if (m_activeContext == nullptr) return YDS_ERROR_RETURN(ysError::NoContext);
     if (m_activeRenderTarget->GetType() == ysRenderTarget::Type::Subdivision) return YDS_ERROR_RETURN(ysError::InvalidOperation);
@@ -1097,8 +1093,9 @@ void ysOpenGLDevice::ResubmitInputLayout() {
 const ysOpenGLVirtualContext *ysOpenGLDevice::UpdateContext() {
     for (int i = 0; i < m_renderingContexts.GetNumObjects(); i++) {
         ysOpenGLVirtualContext *openglContext = static_cast<ysOpenGLVirtualContext *>(m_renderingContexts.Get(i));
-        if (openglContext->IsRealContext())
+        if (openglContext->IsRealContext()) {
             return m_realContext = openglContext;
+        }
 
     }
 

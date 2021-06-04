@@ -277,11 +277,15 @@ ysError ysD3D11Device::CreateRenderingContext(ysRenderingContext **context, ysWi
     dsDesc.BackFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
     dsDesc.BackFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
 
-    // Create depth stencil state
-    m_device->CreateDepthStencilState(&dsDesc, &m_depthStencilEnabledState);
+    if (m_depthStencilEnabledState == nullptr) {
+        // Create depth stencil state
+        m_device->CreateDepthStencilState(&dsDesc, &m_depthStencilEnabledState);
+    }
 
-    dsDesc.DepthEnable = false;
-    m_device->CreateDepthStencilState(&dsDesc, &m_depthStencilDisabledState);
+    if (m_depthStencilDisabledState == nullptr) {
+        dsDesc.DepthEnable = false;
+        m_device->CreateDepthStencilState(&dsDesc, &m_depthStencilDisabledState);
+    }
 
     return YDS_ERROR_RETURN(ysError::None);
 }
@@ -573,6 +577,7 @@ ysError ysD3D11Device::Present() {
 
     if (m_activeContext == nullptr) return YDS_ERROR_RETURN(ysError::NoContext);
     if (m_activeRenderTarget->GetType() == ysRenderTarget::Type::Subdivision) return YDS_ERROR_RETURN(ysError::InvalidOperation);
+    if (!m_activeContext->GetWindow()->IsOpen()) return YDS_ERROR_RETURN(ysError::InvalidOperation);
 
     ysD3D11Context *context = static_cast<ysD3D11Context *>(m_activeContext);
     if (context->m_swapChain == nullptr) return YDS_ERROR_RETURN(ysError::NoContext);
