@@ -25,8 +25,6 @@ ysError ysVulkanWindowsContext::Create(
         return YDS_ERROR_RETURN(ysError::IncompatiblePlatforms);
     }
 
-    device->SetContext(this);
-
     ysWindowsWindow *win32Window = static_cast<ysWindowsWindow *>(window);
 
     VkWin32SurfaceCreateInfoKHR win32Info = {};

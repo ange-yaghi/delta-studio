@@ -19,6 +19,9 @@ ysVulkanDevice::~ysVulkanDevice() {
 
 ysError ysVulkanDevice::InitializeDevice() {
     YDS_ERROR_DECLARE("InitializeDevice");
+
+    YDS_NESTED_ERROR_CALL(CreateVulkanInstance());
+
     return YDS_ERROR_RETURN(ysError::None);
 }
 
@@ -47,8 +50,9 @@ ysError ysVulkanDevice::CreateRenderingContext(ysRenderingContext **renderingCon
 
         YDS_NESTED_ERROR_CALL(newContext->Create(this, window));
 
-        SetContext(newContext);
-        YDS_NESTED_ERROR_CALL(CreateVulkanDevice());
+        if (m_device == nullptr) {
+            YDS_NESTED_ERROR_CALL(CreateVulkanDevice(newContext->GetSurface()));
+        }
 
         return YDS_ERROR_RETURN(ysError::None);
     }
@@ -269,8 +273,8 @@ ysError ysVulkanDevice::UseRenderTargetAsTexture(ysRenderTarget *renderTarget, i
 void ysVulkanDevice::Draw(int numFaces, int indexOffset, int vertexOffset) {
 }
 
-ysError ysVulkanDevice::CreateVulkanDevice() {
-    YDS_ERROR_DECLARE("CreateVulkanDevice");
+ysError ysVulkanDevice::CreateVulkanInstance() {
+    YDS_ERROR_DECLARE("CreateVulkanInstance");
 
     const char *extensions[] = {
     VK_KHR_WIN32_SURFACE_EXTENSION_NAME,
@@ -299,7 +303,15 @@ ysError ysVulkanDevice::CreateVulkanDevice() {
     instInfo.enabledLayerCount = 1;
     instInfo.ppEnabledLayerNames = layers;
 
-    vkCreateInstance(&instInfo, nullptr, &m_instance);
+    if (vkCreateInstance(&instInfo, nullptr, &m_instance) != VkResult::VK_SUCCESS) {
+        return YDS_ERROR_RETURN(ysError::ApiError);
+    }
+
+    return YDS_ERROR_RETURN(ysError::None);
+}
+
+ysError ysVulkanDevice::CreateVulkanDevice(VkSurfaceKHR surface) {
+    YDS_ERROR_DECLARE("CreateVulkanDevice");
 
     uint32_t deviceCount = 0;
     if (vkEnumeratePhysicalDevices(m_instance, &deviceCount, nullptr) != VkResult::VK_SUCCESS) {
@@ -332,8 +344,7 @@ ysError ysVulkanDevice::CreateVulkanDevice() {
         device,
         nullptr,
         &deviceExtensionCount,
-        nullptr) != VkResult::VK_SUCCESS)
-    {
+        nullptr) != VkResult::VK_SUCCESS) {
         return YDS_ERROR_RETURN(ysError::ApiError);
     }
 
@@ -342,15 +353,14 @@ ysError ysVulkanDevice::CreateVulkanDevice() {
         device,
         nullptr,
         &deviceExtensionCount,
-        deviceExtensions.data()) != VkResult::VK_SUCCESS)
-    {
+        deviceExtensions.data()) != VkResult::VK_SUCCESS) {
         return YDS_ERROR_RETURN(ysError::ApiError);
     }
 
     int graphicsQueueIndex = -1;
     for (int i = 0; i < queueFamilyCount; ++i) {
         VkBool32 supportsPresent;
-        vkGetPhysicalDeviceSurfaceSupportKHR(device, i, m_context->GetSurface(), &supportsPresent);
+        vkGetPhysicalDeviceSurfaceSupportKHR(device, i, surface, &supportsPresent);
 
         if ((queueFamilyProperties[i].queueFlags & VK_QUEUE_GRAPHICS_BIT) && supportsPresent) {
             graphicsQueueIndex = i;

@@ -78,19 +78,15 @@ public:
 
     virtual void Draw(int numFaces, int indexOffset, int vertexOffset);
 
-    void SetContext(ysVulkanContext *context) { m_context = context; }
-    ysVulkanContext *GetContext() const { return m_context; }
-
     VkInstance GetInstance() const { return m_instance; }
 
 protected:
-    ysError CreateVulkanDevice();
+    ysError CreateVulkanInstance();
+    ysError CreateVulkanDevice(VkSurfaceKHR surface);
 
 protected:
     VkInstance m_instance;
     VkDevice m_device;
-
-    ysVulkanContext *m_context;
 };
 
 #endif /* YDS_VULKAN_DEVICE_H */

@@ -12,7 +12,7 @@ int WINAPI WinMain(
     (void)lpCmdLine;
     (void)hPrevInstance;
 
-    ysContextObject::DeviceAPI api = ysContextObject::DeviceAPI::DirectX11;
+    ysContextObject::DeviceAPI api = ysContextObject::DeviceAPI::Vulkan;
     delta_demo::DemoApplication::Demo demo =
         delta_demo::DemoApplication::Demo::MultipleWindowDemo;
 
