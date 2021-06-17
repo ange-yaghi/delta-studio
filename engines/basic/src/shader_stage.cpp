@@ -2,16 +2,20 @@
 
 dbasic::ShaderStage::ShaderStage() {
 	m_device = nullptr;
-	m_renderTarget = nullptr;
 	m_shaderProgram = nullptr;
 	m_inputLayout = nullptr;
 	m_type = Type::FullPass;
 	m_name = "";
 	m_objectDataSize = 0;
-	m_clearColor = {0.0f, 0.0f, 0.0f, 1.0f};
+	m_clearColor = { 0.0f, 0.0f, 0.0f, 1.0f };
 	m_clearTarget = true;
 	m_cullMode = ysDevice::CullMode::Back;
 	m_enabled = true;
+	m_passes = 1;
+
+	for (int i = 0; i < OutputSlot::Count; ++i) {
+		m_renderTarget[i] = nullptr;
+	}
 }
 
 dbasic::ShaderStage::~ShaderStage() {
@@ -91,6 +95,19 @@ ysError dbasic::ShaderStage::AddInput(ysRenderTarget *inputData, int slot) {
 	return YDS_ERROR_RETURN(ysError::None);
 }
 
+ysError dbasic::ShaderStage::SetInput(ysRenderTarget *renderTarget, int slot) {
+	YDS_ERROR_DECLARE("SetInput");
+
+	const int inputCount = m_inputs.GetNumObjects();
+	for (int i = 0; i < inputCount; ++i) {
+		if (m_inputs[i].Slot == slot) {
+			m_inputs[i].InputData = renderTarget;
+		}
+	}
+
+	return YDS_ERROR_RETURN(ysError::None);
+}
+
 ysError dbasic::ShaderStage::AddTextureInput(int slot, TextureHandle *handle) {
 	YDS_ERROR_DECLARE("AddTextureInput");
 
@@ -114,8 +131,10 @@ ysError dbasic::ShaderStage::BindTexture(ysTexture *texture, TextureHandle handl
 
 ysError dbasic::ShaderStage::BindScene() {
 	YDS_ERROR_DECLARE("BindScene");
-
-	m_device->SetRenderTarget(m_renderTarget);
+	
+	for (int i = 0; i < OutputSlot::Count; ++i) {
+		m_device->SetRenderTarget(m_renderTarget[i], i);
+	}
 	m_device->UseShaderProgram(m_shaderProgram);
 	m_device->UseInputLayout(m_inputLayout);
 

@@ -6,7 +6,7 @@
 #include "../include/yds_d3d10_device.h"
 
 ysDevice::ysDevice() : ysContextObject("API_DEVICE", DeviceAPI::Unknown) {
-    m_activeRenderTarget = nullptr;
+    for (int i = 0; i < MaxRenderTargets; ++i) m_activeRenderTarget[i] = nullptr;
     m_activeContext = nullptr;
     m_activeVertexBuffer = nullptr;
     m_activeConstantBuffer = nullptr;
@@ -20,7 +20,7 @@ ysDevice::ysDevice() : ysContextObject("API_DEVICE", DeviceAPI::Unknown) {
 }
 
 ysDevice::ysDevice(DeviceAPI API) : ysContextObject("API_DEVICE", API) {
-    m_activeRenderTarget = nullptr;
+    for (int i = 0; i < MaxRenderTargets; ++i) m_activeRenderTarget[i] = nullptr;
     m_activeContext = nullptr;
     m_activeVertexBuffer = nullptr;
     m_activeIndexBuffer = nullptr;
@@ -83,10 +83,10 @@ ysError ysDevice::SetContextMode(ysRenderingContext *context, ysRenderingContext
     return YDS_ERROR_RETURN(ysError::None);
 }
 
-ysError ysDevice::SetRenderTarget(ysRenderTarget *newTarget) {
+ysError ysDevice::SetRenderTarget(ysRenderTarget *newTarget, int slot) {
     YDS_ERROR_DECLARE("SetRenderTarget");
 
-    m_activeRenderTarget = newTarget;
+    m_activeRenderTarget[slot] = newTarget;
 
     return YDS_ERROR_RETURN(ysError::None);
 }
@@ -100,14 +100,14 @@ bool ysDevice::GetDebugFlag(int flag) const {
     return (m_debugFlags & (0x1 << flag)) != 0;
 }
 
-ysRenderTarget *ysDevice::GetActualRenderTarget() {
-    if (m_activeRenderTarget == nullptr) return nullptr;
+ysRenderTarget *ysDevice::GetActualRenderTarget(int slot) {
+    if (m_activeRenderTarget[slot] == nullptr) return nullptr;
 
-    if (m_activeRenderTarget->GetType() == ysRenderTarget::Type::Subdivision) {
-        return m_activeRenderTarget->GetParent();
+    if (m_activeRenderTarget[slot]->GetType() == ysRenderTarget::Type::Subdivision) {
+        return m_activeRenderTarget[slot]->GetParent();
     }
 
-    return m_activeRenderTarget;
+    return m_activeRenderTarget[slot];
 }
 
 ysError ysDevice::CreateOffScreenRenderTarget(ysRenderTarget **newTarget, const ysRenderTarget *reference) {

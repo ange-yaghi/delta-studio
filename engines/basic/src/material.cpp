@@ -12,6 +12,13 @@ dbasic::Material::Material() : ysObject("Material") {
 
     m_lit = true;
 
+    m_specularMix = 1.0f;
+    m_diffuseMix = 1.0f;
+    m_metallic = 0.0f;
+    m_diffuseRoughness = 0.5f;
+    m_specularPower = 4.0f;
+    m_incidentSpecular = 1.0f;
+
     m_diffuseColor = ysVector4();
 }
 

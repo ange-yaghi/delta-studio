@@ -748,9 +748,9 @@ ysError dbasic::DeltaEngine::ExecuteShaderStage(int stageIndex) {
     YDS_ERROR_DECLARE("ExecuteShaderStage");
 
     ShaderStage *stage = m_shaderSet->GetStage(stageIndex);
-    stage->BindScene();
-
     if (stage->GetType() == ShaderStage::Type::FullPass) {
+        stage->BindScene();
+
         for (int i = 0; i < MaxLayers; i++) {
             const int objectsAtLayer = m_drawQueue[i].GetNumObjects();;
             for (int j = 0; j < objectsAtLayer; j++) {
@@ -781,12 +781,19 @@ ysError dbasic::DeltaEngine::ExecuteShaderStage(int stageIndex) {
         }
     }
     else if (stage->GetType() == ShaderStage::Type::PostProcessing) {
-        m_device->SetDepthTestEnabled(stage->GetRenderTarget(), false);
+        for (int i = 0; i < stage->GetPasses(); ++i) {
+            stage->OnPass(i);
+            stage->BindScene();
 
-        m_device->UseIndexBuffer(m_mainIndexBuffer, 0);
-        m_device->UseVertexBuffer(m_mainVertexBuffer, sizeof(Vertex), 0);
+            m_device->SetDepthTestEnabled(stage->GetRenderTarget(), false);
 
-        m_device->Draw(2, 0, 0);
+            m_device->UseIndexBuffer(m_mainIndexBuffer, 0);
+            m_device->UseVertexBuffer(m_mainVertexBuffer, sizeof(Vertex), 0);
+
+            m_device->Draw(2, 0, 0);
+        }
+
+        stage->OnEnd();
     }
 
     return YDS_ERROR_RETURN(ysError::None);

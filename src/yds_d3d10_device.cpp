@@ -371,14 +371,16 @@ ysError ysD3D10Device::ResizeRenderTarget(ysRenderTarget *target, int width, int
         return YDS_ERROR_RETURN(ysError::None);
     }
 
-    if (target == m_activeRenderTarget) {
-        SetRenderTarget(target);
+    for (int i = 0; i < MaxRenderTargets; ++i) {
+        if (target == m_activeRenderTarget[i]) {
+            SetRenderTarget(target, i);
+        }
     }
 
     return YDS_ERROR_RETURN(ysError::None);
 }
 
-ysError ysD3D10Device::SetRenderTarget(ysRenderTarget *newTarget) {
+ysError ysD3D10Device::SetRenderTarget(ysRenderTarget *newTarget, int slot) {
     YDS_ERROR_DECLARE("SetRenderTarget");
 
     if (newTarget) {
@@ -386,7 +388,7 @@ ysError ysD3D10Device::SetRenderTarget(ysRenderTarget *newTarget) {
         ysD3D10RenderTarget* realTarget = (newTarget->GetType() == ysRenderTarget::Type::Subdivision) ?
             static_cast<ysD3D10RenderTarget*>(newTarget->GetParent()) : d3d10Target;
 
-        if (realTarget != m_activeRenderTarget) {
+        if (realTarget != m_activeRenderTarget[slot]) {
             GetDevice()->OMSetRenderTargets(1, &realTarget->m_renderTargetView, realTarget->m_depthStencil);
         }
 
@@ -409,7 +411,7 @@ ysError ysD3D10Device::SetRenderTarget(ysRenderTarget *newTarget) {
         m_activeContext = nullptr;
     }
 
-    YDS_NESTED_ERROR_CALL( ysDevice::SetRenderTarget(newTarget) );
+    YDS_NESTED_ERROR_CALL( ysDevice::SetRenderTarget(newTarget, slot) );
 
     return YDS_ERROR_RETURN(ysError::None);
 }
@@ -419,8 +421,10 @@ ysError ysD3D10Device::DestroyRenderTarget(ysRenderTarget *&target) {
 
     if (target == nullptr) return YDS_ERROR_RETURN(ysError::InvalidParameter);
 
-    if (target == m_activeRenderTarget) {
-        YDS_NESTED_ERROR_CALL( SetRenderTarget(nullptr) );
+    for (int i = 0; i < MaxRenderTargets; ++i) {
+        if (target == m_activeRenderTarget[i]) {
+            YDS_NESTED_ERROR_CALL(SetRenderTarget(nullptr, i));
+        }
     }
 
     YDS_NESTED_ERROR_CALL( DestroyD3D10RenderTarget(target) );
@@ -434,14 +438,17 @@ ysError ysD3D10Device::ClearBuffers(const float *clearColor) {
 
     if (GetDevice() == nullptr) return YDS_ERROR_RETURN(ysError::NoDevice);
 
-    ysRenderTarget *actualRenderTarget = GetActualRenderTarget();
+    for (int i = 0; i < MaxRenderTargets; ++i) {
+        ysRenderTarget *actualRenderTarget = GetActualRenderTarget(i);
+        if (m_activeRenderTarget != nullptr) {
+            ysD3D10RenderTarget *renderTarget = static_cast<ysD3D10RenderTarget *>(actualRenderTarget);
+            m_device->ClearRenderTargetView(renderTarget->m_renderTargetView, clearColor);
+            if (renderTarget->m_hasDepthBuffer) {
+                m_device->ClearDepthStencilView(renderTarget->m_depthStencil, D3D10_CLEAR_DEPTH, 1.0f, 0);
+            }
 
-    if (m_activeRenderTarget != nullptr) {
-        ysD3D10RenderTarget *renderTarget = static_cast<ysD3D10RenderTarget *>(actualRenderTarget);
-        m_device->ClearRenderTargetView(renderTarget->m_renderTargetView, clearColor);
-        if (renderTarget->m_hasDepthBuffer) m_device->ClearDepthStencilView(renderTarget->m_depthStencil, D3D10_CLEAR_DEPTH, 1.0f, 0);
-
-        return YDS_ERROR_RETURN(ysError::None);
+            return YDS_ERROR_RETURN(ysError::None);
+        }
     }
 
     return YDS_ERROR_RETURN(ysError::NoRenderTarget);
@@ -451,7 +458,7 @@ ysError ysD3D10Device::Present() {
     YDS_ERROR_DECLARE("Present");
 
     if (m_activeContext == nullptr) return YDS_ERROR_RETURN(ysError::NoContext);
-    if (m_activeRenderTarget->GetType() == ysRenderTarget::Type::Subdivision) return YDS_ERROR_RETURN(ysError::InvalidOperation);
+    if (m_activeRenderTarget[0]->GetType() == ysRenderTarget::Type::Subdivision) return YDS_ERROR_RETURN(ysError::InvalidOperation);
 
     ysD3D10Context *context = static_cast<ysD3D10Context *>(m_activeContext);
     if (context->m_swapChain == nullptr) return YDS_ERROR_RETURN(ysError::NoContext);

@@ -310,7 +310,12 @@ ysError dbasic::AssetManager::LoadSceneFile(const char *fname, bool placeInVram)
             }
 
             if (objectType == ysObjectData::ObjectType::Instance) {
-                newObject->m_geometry = GetModelAsset(modelIndexMap[header.ParentInstanceIndex]);
+                if (modelIndexMap.count(header.ParentInstanceIndex) == 1) {
+                    newObject->m_geometry = GetModelAsset(modelIndexMap[header.ParentInstanceIndex]);
+                }
+                else {
+                    newObject->m_geometry = nullptr;
+                }
             }
         }
         else if (objectType == ysObjectData::ObjectType::Geometry) {

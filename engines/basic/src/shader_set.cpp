@@ -32,17 +32,6 @@ ysError dbasic::ShaderSet::Destroy() {
     return YDS_ERROR_RETURN(ysError::None);
 }
 
-ysError dbasic::ShaderSet::NewStage(const std::string &name, ShaderStage **newStage) {
-    YDS_ERROR_DECLARE("NewStage");
-
-    ShaderStage *stage = m_stages.New() = new ShaderStage();
-    stage->Initialize(m_device, name);
-
-    *newStage = stage;
-
-    return YDS_ERROR_RETURN(ysError::None);
-}
-
 int dbasic::ShaderSet::GetObjectDataSize() const {
     const int stageCount = GetStageCount();
     int totalSize = 0;

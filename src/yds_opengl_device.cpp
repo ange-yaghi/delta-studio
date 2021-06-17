@@ -235,9 +235,15 @@ ysError ysOpenGLDevice::ResizeRenderTarget(ysRenderTarget *target, int width, in
 
     YDS_NESTED_ERROR_CALL(ysDevice::ResizeRenderTarget(target, width, height, pwidth, pheight));
 
-    ysRenderTarget *prevTarget = m_activeRenderTarget;
-    if (target == m_activeRenderTarget) {
-        SetRenderTarget(nullptr);
+    ysRenderTarget *prevTargets[MaxRenderTargets];
+    for (int i = 0; i < MaxRenderTargets; ++i) {
+        prevTargets[i] = m_activeRenderTarget[i];
+    }
+
+    for (int i = 0; i < MaxRenderTargets; ++i) {
+        if (target == prevTargets[i]) {
+            SetRenderTarget(nullptr, i);
+        }
     }
 
     if (target->GetType() == ysRenderTarget::Type::OnScreen) {
@@ -252,14 +258,16 @@ ysError ysOpenGLDevice::ResizeRenderTarget(ysRenderTarget *target, int width, in
         // Nothing needs to be done
     }
 
-    if (target == prevTarget) {
-        SetRenderTarget(target);
+    for (int i = 0; i < MaxRenderTargets; ++i) {
+        if (target == prevTargets[i]) {
+            SetRenderTarget(target, i);
+        }
     }
 
     return YDS_ERROR_RETURN(ysError::None);
 }
 
-ysError ysOpenGLDevice::SetRenderTarget(ysRenderTarget *target) {
+ysError ysOpenGLDevice::SetRenderTarget(ysRenderTarget *target, int slot) {
     YDS_ERROR_DECLARE("SetRenderTarget");
 
     if (target != nullptr) {
@@ -267,9 +275,11 @@ ysError ysOpenGLDevice::SetRenderTarget(ysRenderTarget *target) {
         ysOpenGLRenderTarget *realTarget = (target->GetType() == ysRenderTarget::Type::Subdivision) ?
             static_cast<ysOpenGLRenderTarget *>(target->GetParent()) : openglTarget;
 
-        if (realTarget != m_activeRenderTarget) {
-            if (target->GetAssociatedContext() != nullptr) {
-                SetRenderingContext(target->GetAssociatedContext());
+        for (int i = 0; i < MaxRenderTargets; ++i) {
+            if (realTarget != m_activeRenderTarget[i]) {
+                if (target->GetAssociatedContext() != nullptr) {
+                    SetRenderingContext(target->GetAssociatedContext());
+                }
             }
         }
 
@@ -277,22 +287,58 @@ ysError ysOpenGLDevice::SetRenderTarget(ysRenderTarget *target) {
             m_realContext->glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
         }
         else if (realTarget->GetType() == ysRenderTarget::Type::OffScreen) {
-            m_realContext->glBindFramebuffer(GL_DRAW_FRAMEBUFFER, realTarget->GetFramebuffer());
+            if (slot == 0) {
+                m_realContext->glBindFramebuffer(GL_DRAW_FRAMEBUFFER, realTarget->GetFramebuffer());
+
+                if (realTarget->HasColorData()) {
+                    m_realContext->glFramebufferTexture2D(
+                        GL_FRAMEBUFFER,
+                        GL_COLOR_ATTACHMENT0,
+                        GL_TEXTURE_2D,
+                        realTarget->m_textureHandle,
+                        0);
+                }
+            }
+            else {
+                if (realTarget->HasColorData()) {
+                    m_realContext->glFramebufferTexture2D(
+                        GL_FRAMEBUFFER,
+                        GL_COLOR_ATTACHMENT0 + slot,
+                        GL_TEXTURE_2D,
+                        realTarget->m_textureHandle,
+                        0);
+                }
+            }
         }
 
-        if (target->HasDepthBuffer() && target->IsDepthTestEnabled()) glEnable(GL_DEPTH_TEST);
-        else glDisable(GL_DEPTH_TEST);
+        if (slot == 0) {
+            if (target->HasDepthBuffer() && target->IsDepthTestEnabled()) glEnable(GL_DEPTH_TEST);
+            else glDisable(GL_DEPTH_TEST);
 
-        const int refw = realTarget->GetPhysicalWidth();
-        const int refh = realTarget->GetPhysicalHeight();
+            const int refw = realTarget->GetPhysicalWidth();
+            const int refh = realTarget->GetPhysicalHeight();
 
-        const int pwidth = target->GetPhysicalWidth();
-        const int pheight = target->GetPhysicalHeight();
+            const int pwidth = target->GetPhysicalWidth();
+            const int pheight = target->GetPhysicalHeight();
 
-        glViewport(target->GetPosX(), refh - target->GetPosY() - pheight, pwidth, pheight);
+            glViewport(target->GetPosX(), refh - target->GetPosY() - pheight, pwidth, pheight);
+        }
     }
 
-    YDS_NESTED_ERROR_CALL(ysDevice::SetRenderTarget(target));
+    YDS_NESTED_ERROR_CALL(ysDevice::SetRenderTarget(target, slot));
+
+    GLenum buffers[MaxRenderTargets];
+    int bufferCount = 0;
+    for (int i = 0; i < MaxRenderTargets; ++i) {
+        if (m_activeRenderTarget[i] != nullptr && m_activeRenderTarget[i]->HasColorData()) {
+            buffers[bufferCount] = GL_COLOR_ATTACHMENT0 + bufferCount;
+            ++bufferCount;
+        }
+    }
+
+    if (bufferCount > 0) {
+        m_realContext->glDrawBuffers(bufferCount, buffers);
+    }
 
     return YDS_ERROR_RETURN(ysError::None);
 }
@@ -314,8 +360,10 @@ ysError ysOpenGLDevice::DestroyRenderTarget(ysRenderTarget *&target) {
     YDS_ERROR_DECLARE("DestroyRenderTarget");
 
     if (target == nullptr) return YDS_ERROR_RETURN(ysError::InvalidParameter);
-    else if (target == m_activeRenderTarget) {
-        YDS_NESTED_ERROR_CALL(SetRenderTarget(nullptr));
+    for (int i = 0; i < MaxRenderTargets; ++i) {
+        if (target == m_activeRenderTarget[i]) {
+            YDS_NESTED_ERROR_CALL(SetRenderTarget(nullptr, i));
+        }
     }
 
     ysOpenGLRenderTarget *openglTarget = static_cast<ysOpenGLRenderTarget *>(target);
@@ -346,7 +394,7 @@ ysError ysOpenGLDevice::Present() {
     YDS_ERROR_DECLARE("Present");
 
     if (m_activeContext == nullptr) return YDS_ERROR_RETURN(ysError::NoContext);
-    if (m_activeRenderTarget->GetType() == ysRenderTarget::Type::Subdivision) return YDS_ERROR_RETURN(ysError::InvalidOperation);
+    if (m_activeRenderTarget[0]->GetType() == ysRenderTarget::Type::Subdivision) return YDS_ERROR_RETURN(ysError::InvalidOperation);
 
     ysOpenGLVirtualContext *currentContext = static_cast<ysOpenGLVirtualContext *>(m_activeContext);
     currentContext->Present();
@@ -372,6 +420,9 @@ ysError ysOpenGLDevice::SetFaceCullingMode(CullMode cullMode) {
         break;
     case CullMode::Back:
         glCullFace(GL_BACK);
+        break;
+    case CullMode::None:
+        glCullFace(GL_NONE);
         break;
     default:
         return YDS_ERROR_RETURN(ysError::InvalidParameter);
@@ -1127,6 +1178,10 @@ int ysOpenGLDevice::GetFormatGLType(ysRenderGeometryChannel::ChannelFormat forma
     }
 }
 
+int ysOpenGLDevice::GetFramebufferName(int slot) {
+    return GL_COLOR_ATTACHMENT0 + slot;
+}
+
 // TEMP
 void ysOpenGLDevice::Draw(int numFaces, int indexOffset, int vertexOffset) {
     if (m_activeVertexBuffer != nullptr) {
@@ -1150,7 +1205,7 @@ ysError ysOpenGLDevice::CreateOpenGLOffScreenRenderTarget(ysRenderTarget *target
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
     if (!colorData) {
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_REF_TO_TEXTURE);
+        //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_REF_TO_TEXTURE);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     }
@@ -1168,9 +1223,13 @@ ysError ysOpenGLDevice::CreateOpenGLOffScreenRenderTarget(ysRenderTarget *target
         glFormat = GL_RGBA32F_ARB;
         glType = GL_FLOAT;
         break;
-    case ysRenderTarget::Format::R32_FLOAT:
+    case ysRenderTarget::Format::R32_DEPTH_COMPONENT:
         glFormat = GL_DEPTH_COMPONENT;
         glType = GL_FLOAT;
+        break;
+    case ysRenderTarget::Format::R32_FLOAT:
+        glFormat = GL_R32F;
+        glType = GL_FLAT;
         break;
     default:
         return YDS_ERROR_RETURN(ysError::InvalidParameter);
@@ -1210,6 +1269,7 @@ ysError ysOpenGLDevice::CreateOpenGLOffScreenRenderTarget(ysRenderTarget *target
     newRenderTarget->m_physicalHeight = height;
     newRenderTarget->m_format = format;
     newRenderTarget->m_hasDepthBuffer = depthBuffer;
+    newRenderTarget->m_hasColorData = colorData;
     newRenderTarget->m_associatedContext = nullptr;
 
     newRenderTarget->m_textureHandle = newTexture;
