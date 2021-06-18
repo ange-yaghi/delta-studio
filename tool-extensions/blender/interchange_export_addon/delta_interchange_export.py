@@ -2,8 +2,8 @@ import mathutils
 import math
 import bpy
 from math import radians
-from . object_list import ObjectList, Object, ObjectType
-from . utilities import write_32_bit_unsigned, write_32_bit_signed, write_string, Vector2, Vector3, Quaternion
+from . object_list import LightData, ObjectList, Object, ObjectType
+from . utilities import write_32_bit_float, write_32_bit_unsigned, write_32_bit_signed, write_string, Vector2, Vector3, Quaternion
         
         
 def write_id_header(f):
@@ -59,7 +59,30 @@ class ObjectInformationHeader(object):
         write_32_bit_signed(self.parent_index, f)
         write_32_bit_signed(self.instance_index, f)
         write_32_bit_signed(self.object_type, f)
-        
+
+
+class LightInformationHeader(object):
+    def __init__(self, light_data: LightData):
+        self.light_type = light_data.light_type
+        self.intensity = light_data.intensity
+        self.color = light_data.color
+        self.cutoff_distance = light_data.cutoff_distance
+        self.distance = light_data.distance
+
+        # Spot information
+        self.spot_angular_size = light_data.spot_angular_size
+        self.spot_fade = light_data.spot_fade
+
+    def write(self, f):
+        write_32_bit_unsigned(self.light_type, f)
+        write_32_bit_float(self.intensity, f)
+        write_32_bit_float(self.cutoff_distance, f)
+        write_32_bit_float(self.distance, f)
+        self.color.write(f)
+
+        write_32_bit_float(self.spot_angular_size, f)
+        write_32_bit_float(self.spot_fade, f)
+
         
 class GeometryInformation(object):
     def __init__(self):
@@ -122,7 +145,7 @@ def triangulate_mesh(me):
     bm.free()
     
     
-def write_object_mesh(object_record, object_list, global_transform, apply_modifiers, depsgraph, f):
+def write_object_mesh(object_record: Object, object_list, global_transform, apply_modifiers, depsgraph, f):
     obj = object_record.obj
 
     parent_index = object_record.parent_index
@@ -150,7 +173,6 @@ def write_object_mesh(object_record, object_list, global_transform, apply_modifi
     obji_header.object_type = object_record.object_type
     obji_header.write(f)
     
-    #final_transform = global_transform @ obj_transform
     final_transform = obj_transform
 
     # Fill in object transformation header
@@ -165,6 +187,9 @@ def write_object_mesh(object_record, object_list, global_transform, apply_modifi
     objt_header.orientation = Quaternion.from_bquat(quat)
     objt_header.scale = Vector3.from_bvec(scale)
     objt_header.write(f)
+
+    if object_record.object_type == ObjectType.LIGHT:
+        LightInformationHeader(object_record.light_data).write(f)
 
     if object_record.object_type != ObjectType.GEOMETRY:
         return

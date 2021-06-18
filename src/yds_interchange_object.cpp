@@ -6,10 +6,10 @@
 bool ysInterchangeObject::Validate() const {
     if (ModelIndex < 0) return false;
 
-    int vertexCount = (int)Vertices.size();
-    int normalCount = (int)Normals.size();
-    int tangentCount = (int)Tangents.size();
-    int channelCount = (int)UVChannels.size();
+    const int vertexCount = (int)Vertices.size();
+    const int normalCount = (int)Normals.size();
+    const int tangentCount = (int)Tangents.size();
+    const int channelCount = (int)UVChannels.size();
 
     for (const IndexSet &s : VertexIndices) {
         if (s.x >= vertexCount || s.y >= vertexCount || s.z >= vertexCount) return false;
@@ -35,7 +35,7 @@ bool ysInterchangeObject::Validate() const {
 
 void ysInterchangeObject::RipByIndexSet(std::vector<IndexSet> &indices) {
     int N = (int)Vertices.size();
-    int faces = (int)VertexIndices.size();
+    const int faces = (int)VertexIndices.size();
 
     std::vector<int> vertexToIndex(N, -1);
     std::vector<int> newVertex(N, -1);

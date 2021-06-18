@@ -16,6 +16,7 @@ dbasic::SceneObjectAsset::SceneObjectAsset() : ysObject("SceneObjectAsset") {
     m_geometry = nullptr;
     m_manager = nullptr;
     m_material = nullptr;
+    m_instance = nullptr;
 }
 
 dbasic::SceneObjectAsset::~SceneObjectAsset() {

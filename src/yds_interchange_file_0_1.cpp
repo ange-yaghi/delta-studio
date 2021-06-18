@@ -56,7 +56,7 @@ ysError ysInterchangeFile0_1::ReadObject(ysInterchangeObject *object) {
     object->InstanceIndex = info.InstanceIndex;
     object->Type = InterpretType(info.ObjectType);
 
-    bool isInstance = object->InstanceIndex != -1;
+    const bool isInstance = object->InstanceIndex != -1;
 
     ObjectTransformation t;
     m_file.read((char *)&t, sizeof(ObjectTransformation));
@@ -70,11 +70,11 @@ ysError ysInterchangeFile0_1::ReadObject(ysInterchangeObject *object) {
         GeometryInformation geometryInfo;
         m_file.read((char *)&geometryInfo, sizeof(GeometryInformation));
 
-        int normalCount = geometryInfo.NormalCount;
-        int uvChannelCount = geometryInfo.UVChannelCount;
-        int vertexCount = geometryInfo.VertexCount;
-        int faceCount = geometryInfo.FaceCount;
-        int tangentCount = geometryInfo.TangentCount;
+        const int normalCount = geometryInfo.NormalCount;
+        const int uvChannelCount = geometryInfo.UVChannelCount;
+        const int vertexCount = geometryInfo.VertexCount;
+        const int faceCount = geometryInfo.FaceCount;
+        const int tangentCount = geometryInfo.TangentCount;
 
         for (int i = 0; i < vertexCount; ++i) {
             ysVector3 v;
@@ -129,6 +129,18 @@ ysError ysInterchangeFile0_1::ReadObject(ysInterchangeObject *object) {
             }
         }
     }
+    else if (object->Type == ysInterchangeObject::ObjectType::Light) {
+        LightInformation lightInformation;
+        m_file.read((char *)&lightInformation, sizeof(LightInformation));
+
+        object->LightInformation.Color = lightInformation.Color;
+        object->LightInformation.CutoffDistance = lightInformation.CutoffDistance;
+        object->LightInformation.Distance = lightInformation.Distance;
+        object->LightInformation.Intensity = lightInformation.Intensity;
+        object->LightInformation.LightType = lightInformation.LightType;
+        object->LightInformation.SpotAngularSize = lightInformation.SpotAngularSize;
+        object->LightInformation.SpotFade = lightInformation.SpotFade;
+    }
 
     return YDS_ERROR_RETURN(ysError::None);
 }
@@ -141,6 +153,8 @@ ysInterchangeObject::ObjectType ysInterchangeFile0_1::InterpretType(int i) {
     case 0x03: return ysInterchangeObject::ObjectType::Plane;
     case 0x04: return ysInterchangeObject::ObjectType::Instance;
     case 0x05: return ysInterchangeObject::ObjectType::Empty;
+    case 0x06: return ysInterchangeObject::ObjectType::Armature;
+    case 0x07: return ysInterchangeObject::ObjectType::Light;
     default: return ysInterchangeObject::ObjectType::Undefined;
     }
 }

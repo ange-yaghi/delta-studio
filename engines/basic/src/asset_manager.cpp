@@ -3,6 +3,7 @@
 #include "../include/animation_export_file.h"
 #include "../include/delta_engine.h"
 
+#include <set>
 #include <sys/stat.h>
 
 dbasic::AssetManager::AssetManager() : ysObject("AssetManager") {
@@ -130,11 +131,11 @@ ysError dbasic::AssetManager::CompileSceneFile(const char *fname, float scale, b
             ysGeometryPreprocessing::SeparateBySmoothingGroups(objects[i]);
             ysGeometryPreprocessing::CalculateNormals(objects[i]);
 
-            if ((material != NULL) && material->UsesNormalMap())
+            if ((material != nullptr) && material->UsesNormalMap())
                 ysGeometryPreprocessing::CalculateTangents(objects[i], 0);
 
-            if ((material != NULL) && (material->UsesNormalMap() || material->UsesSpecularMap() || material->UsesDiffuseMap())) {
-                int startingVerts = objects[i]->m_objectStatistics.NumVertices;
+            if ((material != nullptr) && (material->UsesNormalMap() || material->UsesSpecularMap() || material->UsesDiffuseMap())) {
+                const int startingVerts = objects[i]->m_objectStatistics.NumVertices;
                 for (int ii = 0; ii < objects[i]->m_objectStatistics.NumUVChannels; ii++) {
                     ysGeometryPreprocessing::SeparateByUVGroups(objects[i], ii);
                 }
@@ -193,8 +194,8 @@ ysError dbasic::AssetManager::CompileInterchangeFile(const char *fname, float sc
     ysGeometryExportFile exportFile;
     exportFile.Open(completePath);
 
-    ysInterchangeObject *objects = new ysInterchangeObject[toolFile.GetObjectCount()];
-    int objectCount = toolFile.GetObjectCount();
+    const int objectCount = toolFile.GetObjectCount();
+    ysInterchangeObject *objects = new ysInterchangeObject[objectCount];
 
     CompiledHeader header;
     header.ObjectCount = objectCount;
@@ -257,6 +258,7 @@ ysError dbasic::AssetManager::LoadSceneFile(const char *fname, bool placeInVram)
         m_engine->GetDevice()->CreateVertexBuffer(&vertexBuffer, 4 * 1024 * 1024, nullptr, false);
     }
 
+    std::set<int> lights;
     std::map<int, int> modelIndexMap;
 
     for (int i = 0; i < fileHeader.ObjectCount; i++) {
@@ -270,8 +272,13 @@ ysError dbasic::AssetManager::LoadSceneFile(const char *fname, bool placeInVram)
             objectType == ysObjectData::ObjectType::Group ||
             objectType == ysObjectData::ObjectType::Plane ||
             objectType == ysObjectData::ObjectType::Instance ||
-            objectType == ysObjectData::ObjectType::Empty) 
+            objectType == ysObjectData::ObjectType::Empty ||
+            objectType == ysObjectData::ObjectType::Light) 
         {
+            if (objectType == ysObjectData::ObjectType::Light) {
+                lights.insert(i);
+            }
+
             newObject->m_type = objectType;
             newObject->m_parent = (header.ParentIndex < 0) ? -1 : header.ParentIndex + initialIndex;
             newObject->m_skeletonIndex = header.SkeletonIndex;
@@ -308,14 +315,30 @@ ysError dbasic::AssetManager::LoadSceneFile(const char *fname, bool placeInVram)
             if (objectType == ysObjectData::ObjectType::Plane) {
                 return YDS_ERROR_RETURN_MSG(ysError::UnsupportedType, "Planes not supported.");
             }
-
-            if (objectType == ysObjectData::ObjectType::Instance) {
+            else if (objectType == ysObjectData::ObjectType::Instance) {
                 if (modelIndexMap.count(header.ParentInstanceIndex) == 1) {
                     newObject->m_geometry = GetModelAsset(modelIndexMap[header.ParentInstanceIndex]);
                 }
                 else {
                     newObject->m_geometry = nullptr;
                 }
+
+                if (header.ParentInstanceIndex != -1) {
+                    newObject->SetInstance(GetSceneObject(header.ParentInstanceIndex));
+                }
+            }
+            else if (objectType == ysObjectData::ObjectType::Light) {
+                ysInterchangeObject::Light lightInformation;
+                file.read((char *)&lightInformation, sizeof(ysInterchangeObject::Light));
+
+                newObject->GetLightInformation().Color = lightInformation.Color;
+                newObject->GetLightInformation().CutoffDistance = lightInformation.CutoffDistance;
+                newObject->GetLightInformation().Distance = lightInformation.Distance;
+                newObject->GetLightInformation().Intensity = lightInformation.Intensity;
+                newObject->GetLightInformation().LightType =
+                    static_cast<SceneObjectAsset::LightInformation::Type>(lightInformation.LightType);
+                newObject->GetLightInformation().SpotAngularSize = lightInformation.SpotAngularSize;
+                newObject->GetLightInformation().SpotFade = lightInformation.SpotFade;
             }
         }
         else if (objectType == ysObjectData::ObjectType::Geometry) {
@@ -629,7 +652,6 @@ dbasic::RenderSkeleton *dbasic::AssetManager::BuildRenderSkeleton(ysTransform *r
 
     // Get the root bone
     SceneObjectAsset *rootBoneReference = rootBone;
-
     ProcessRenderNode(rootBoneReference, newRenderSkeleton, nullptr, newNode);
 
     return newRenderSkeleton;
@@ -694,15 +716,13 @@ dbasic::AnimationObjectController *dbasic::AssetManager::
 ysError dbasic::AssetManager::ResolveNodeHierarchy() {
     YDS_ERROR_DECLARE("ResolveNodeHierarchy");
 
-    int nSceneObjects = GetSceneObjectCount();
-
+    const int nSceneObjects = GetSceneObjectCount();
     for (int i = 0; i < nSceneObjects; i++) {
         m_sceneObjects.Get(i)->ClearChildren();
     }
 
     for (int i = 0; i < nSceneObjects; i++) {
-        int parent = m_sceneObjects.Get(i)->GetParent();
-
+        const int parent = m_sceneObjects.Get(i)->GetParent();
         if (parent != -1) {
             m_sceneObjects.Get(parent)->AddChild(i);
         }

@@ -476,11 +476,12 @@ ysError ysGeometryExportFile::WriteObject(ysInterchangeObject *object, const Ver
 
         // TODO: Bone Map
     }
-
-    // Primitive Data
-    if (object->Type == ysInterchangeObject::ObjectType::Plane) {
+    else if (object->Type == ysInterchangeObject::ObjectType::Plane) {
         m_file.write((char *)&object->Length, sizeof(float));
         m_file.write((char *)&object->Width, sizeof(float));
+    }
+    else if (object->Type == ysInterchangeObject::ObjectType::Light) {
+        m_file.write((char *)&object->LightInformation, sizeof(ysInterchangeObject::Light));
     }
 
     return YDS_ERROR_RETURN(ysError::None);

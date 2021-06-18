@@ -1,5 +1,7 @@
 import mathutils
 
+from . utilities import Vector3
+
 class ObjectType(object):
     GEOMETRY = 0x0
     BONE = 0x1
@@ -8,6 +10,7 @@ class ObjectType(object):
     INSTANCE = 0x4
     EMPTY = 0x5
     ARMATURE = 0x6
+    LIGHT = 0x7
     UNDEFINED = -1
 
 
@@ -20,6 +23,26 @@ class Object(object):
         self.parent_index = -1
         self.object_type = ObjectType.UNDEFINED
         self.global_matrix = None
+        self.light_data = None
+
+
+class LightType(object):
+    SPOT = 0
+    POINT = 1
+    SUN = 2
+
+
+class LightData(object):
+    def __init__(self):
+        self.light_type = None
+        self.intensity = Vector3()
+        self.color = None
+        self.distance = None
+        self.cutoff_distance = None
+
+        # Spot shape
+        self.spot_angular_size = 0
+        self.spot_fade = 0
 
 
 class Armature(object):
@@ -75,6 +98,8 @@ class ObjectList(object):
                 new_object = self.add_empty(obj)
             elif obj.type == 'ARMATURE':
                 new_object = self.add_armature(obj)
+            elif obj.type == 'LIGHT':
+                new_object = self.add_light(obj)
             else:
                 new_object = self.add_object(obj)
 
@@ -90,7 +115,10 @@ class ObjectList(object):
                     if not sub_obj.is_instancer:
                         index = self.get_index(sub_obj)
                         if index is None:
-                            new_object = self.add_object(sub_obj)
+                            if sub_obj.type == 'LIGHT':
+                                new_object = self.add_light(sub_obj)
+                            else:
+                                new_object = self.add_object(sub_obj)
                             new_object.global_matrix = sub_obj.matrix_world
                     else:
                         self.add_referenced_geometry(sub_obj)
@@ -165,6 +193,33 @@ class ObjectList(object):
         new_object.instance_index = -1
         new_object.empty = True
         new_object.object_type = ObjectType.EMPTY
+
+        self.object_list.append(new_object)
+
+        return new_object
+
+    def add_light(self, obj):
+        n = len(self.object_list)
+        new_object = Object(obj)
+        new_object.index = n
+        new_object.instance_index = -1
+        new_object.empty = False
+        new_object.object_type = ObjectType.LIGHT
+
+        new_object.light_data = LightData()
+        new_object.light_data.intensity = obj.data.energy
+        new_object.light_data.color = Vector3(obj.data.color.r, obj.data.color.g, obj.data.color.b)
+        new_object.light_data.cutoff_distance = obj.data.cutoff_distance
+        new_object.light_data.distance = obj.data.distance
+
+        if obj.data.type == 'SPOT':
+            new_object.light_data.light_type = LightType.SPOT
+            new_object.light_data.spot_angular_size = obj.data.spot_size
+            new_object.light_data.spot_fade = obj.data.spot_blend
+        elif obj.data.type == 'POINT':
+            new_object.light_data.light_type = LightType.POINT
+        elif obj.data.type == 'SUN':
+            new_object.light_data.light_type = LightType.SUN
 
         self.object_list.append(new_object)
 
