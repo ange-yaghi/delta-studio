@@ -66,34 +66,13 @@ class ObjectList(object):
         if collection.name in self.collections:
             return self.collections[collection.name]
         
-        new_object = self.add_collection(collection.name)
-
-        #parent_map = {}
-        new_sub_objects = []
+        collection_object = self.add_collection(collection.name)
 
         for sub_obj in collection.objects:
-            #if sub_obj.is_instancer:
-                #new_instance = self.expand_object(sub_obj, new_object.global_matrix)
-                #new_instance.parent_index = new_object.index
+            new_instance = self.expand_object(sub_obj, collection_object.global_matrix)
+            new_instance.parent_index = collection_object.index
 
-                #index = self.get_index(sub_obj)
-                #parent_map[index] = new_instance.index
-            #else:
-            new_instance = self.expand_object(sub_obj, new_object.global_matrix)
-            new_instance.parent_index = new_object.index
-
-                #parent_map[ref.index] = new_instance.index
-
-            #new_sub_objects.append(new_instance)
-
-        #for sub_obj in new_sub_objects:
-        #    if sub_obj.obj.parent is not None:
-        #        index = self.get_index(sub_obj.obj.parent)
-        #        mapped_index = parent_map[index]
-
-        #        sub_obj.parent_index = mapped_index
-
-        return new_object
+        return collection_object
 
     def expand_object(self, obj, parent_transform):
         if obj.is_instancer:
@@ -118,27 +97,7 @@ class ObjectList(object):
         
         return new_object
 
-
-    def add_referenced_geometry(self, obj):
-        if obj.is_instancer:
-            if obj.instance_type == 'COLLECTION':
-                for sub_obj in obj.instance_collection.objects:
-                    if not sub_obj.is_instancer:
-                        index = self.get_index(sub_obj)
-                        if index is None:
-                            if sub_obj.type == 'LIGHT':
-                                new_object = self.add_light(sub_obj)
-                            else:
-                                new_object = self.add_object(sub_obj)
-                            new_object.global_matrix = sub_obj.matrix_world
-                    else:
-                        self.add_referenced_geometry(sub_obj)
-
-
     def generate_object_list(self, objects):
-        #for obj in objects:
-        #    self.add_referenced_geometry(obj)
-
         for obj in objects:
             self.expand_object(obj, mathutils.Matrix.Identity(4))
 
@@ -286,7 +245,7 @@ class ObjectList(object):
 
             n += 1
 
-        for name, bone in new_armature.bone_map.items():
+        for _, bone in new_armature.bone_map.items():
             parent = bone.obj.parent
 
             if parent is None:
@@ -295,7 +254,7 @@ class ObjectList(object):
                 parent_bone_name = parent.name
                 bone.parent_index = new_armature.bone_map[parent_bone_name].index
 
-        for name, bone in new_armature.bone_map.items():
+        for _, bone in new_armature.bone_map.items():
             self.resolve_bone_transform(bone, top_level.global_matrix)
 
         return top_level
