@@ -146,8 +146,6 @@ def triangulate_mesh(me):
     
     
 def write_object_mesh(object_record: Object, object_list, global_transform, apply_modifiers, depsgraph, f):
-    obj = object_record.obj
-
     parent_index = object_record.parent_index
     parent = None
     if parent_index != -1:
@@ -160,10 +158,10 @@ def write_object_mesh(object_record: Object, object_list, global_transform, appl
         obj_transform = inverse_parent @ object_record.global_matrix
 
     obji_header = ObjectInformationHeader()
-    obji_header.name = obj.name
+    obji_header.name = object_record.name
 
     if (object_record.object_type in (ObjectType.GEOMETRY, ObjectType.INSTANCE)):
-        obji_header.material_name = obj.active_material.name if obj.active_material is not None else ''
+        obji_header.material_name = object_record.material.name if object_record.material is not None else ''
     else:
         obji_header.material_name = ''
     
@@ -195,6 +193,7 @@ def write_object_mesh(object_record: Object, object_list, global_transform, appl
         return
     
     try:
+        obj = object_record.obj
         obj_copy = obj.evaluated_get(depsgraph) if apply_modifiers else obj.original
         me = obj_copy.to_mesh()
     except:

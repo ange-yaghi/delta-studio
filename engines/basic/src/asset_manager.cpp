@@ -49,11 +49,13 @@ dbasic::SceneObjectAsset *dbasic::AssetManager::NewSceneObject() {
     return newObject;
 }
 
-dbasic::SceneObjectAsset *dbasic::AssetManager::GetSceneObject(const char *name) {
-    int objectCount = m_sceneObjects.GetNumObjects();
-
+dbasic::SceneObjectAsset *dbasic::AssetManager::GetSceneObject(const char *name, ysObjectData::ObjectType type) {
+    const int objectCount = m_sceneObjects.GetNumObjects();
     for (int i = 0; i < objectCount; i++) {
-        if (strcmp(m_sceneObjects.Get(i)->GetName(), name) == 0) {
+        if (m_sceneObjects.Get(i)->GetType() != type) {
+            continue;
+        }
+        else if (strcmp(m_sceneObjects.Get(i)->GetName(), name) == 0) {
             return m_sceneObjects.Get(i);
         }
     }
@@ -679,6 +681,10 @@ void dbasic::AssetManager::ProcessRenderNode(SceneObjectAsset *object, RenderSke
         newNode->SetRestOrientation(object->GetLocalOrientation());
     }
 
+    if (object->GetType() == ysObjectData::ObjectType::Instance) {
+        ProcessRenderNode(object->GetInstance(), skeleton, newNode, top);
+    }
+
     for (int i = 0; i < nChildren; i++) {
         ProcessRenderNode(GetSceneObject(object->GetChild(i)), skeleton, newNode, top);
     }
@@ -688,18 +694,17 @@ dbasic::AnimationObjectController *dbasic::AssetManager::
     BuildAnimationObjectController(const char *name, ysTransform *transform)
 {
     const int nAnimationData = m_animationExportData.GetNumObjects();
-    for (int i = 0; i < nAnimationData; i++) {
+    for (int i = 0; i < nAnimationData; ++i) {
         int nObjects = m_animationExportData.Get(i)->GetKeyCount();
 
-        for (int j = 0; j < nObjects; j++) {
+        for (int j = 0; j < nObjects; ++j) {
             if (strcmp(name, m_animationExportData.Get(i)->GetKey(j)->GetObjectName()) == 0) {
                 ObjectKeyframeDataExport *data = m_animationExportData.Get(i)->GetKey(j);
-
-                int nKeys = data->GetKeyCount();
 
                 AnimationObjectController *newController = m_animationControllers.New();
                 newController->SetTarget(transform);
 
+                const int nKeys = data->GetKeyCount();
                 for (int k = 0; k < nKeys; k++) {
                     Keyframe *newKey = newController->AppendKeyframe();
                     newKey->LoadAssetKeyframe(data->GetKey(k));

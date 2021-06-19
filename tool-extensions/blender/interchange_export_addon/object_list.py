@@ -17,6 +17,8 @@ class ObjectType(object):
 class Object(object):
     def __init__(self, obj):
         self.obj = obj
+        self.name = ""
+        self.material = None
         self.index = -1
         self.instance_index = -1
         self.empty = False
@@ -53,46 +55,55 @@ class Armature(object):
 
 class ObjectList(object):
     def __init__(self):
+        self.collections = dict()
         self.object_list = []
         self.armatures = []
 
     def get_object_count(self):
         return len(self.object_list)
 
+    def expand_collection(self, collection):
+        if collection.name in self.collections:
+            return self.collections[collection.name]
+        
+        new_object = self.add_collection(collection.name)
+
+        #parent_map = {}
+        new_sub_objects = []
+
+        for sub_obj in collection.objects:
+            #if sub_obj.is_instancer:
+                #new_instance = self.expand_object(sub_obj, new_object.global_matrix)
+                #new_instance.parent_index = new_object.index
+
+                #index = self.get_index(sub_obj)
+                #parent_map[index] = new_instance.index
+            #else:
+            new_instance = self.expand_object(sub_obj, new_object.global_matrix)
+            new_instance.parent_index = new_object.index
+
+                #parent_map[ref.index] = new_instance.index
+
+            #new_sub_objects.append(new_instance)
+
+        #for sub_obj in new_sub_objects:
+        #    if sub_obj.obj.parent is not None:
+        #        index = self.get_index(sub_obj.obj.parent)
+        #        mapped_index = parent_map[index]
+
+        #        sub_obj.parent_index = mapped_index
+
+        return new_object
+
     def expand_object(self, obj, parent_transform):
         if obj.is_instancer:
-            new_object = self.add_empty(obj)
-            new_object.global_matrix = parent_transform @ obj.matrix_world
-
             if obj.instance_type == 'COLLECTION':
-                parent_map = {}
-                new_sub_objects = []
-
-                for sub_obj in obj.instance_collection.objects:
-                    if sub_obj.is_instancer:
-                        new_instance = self.expand_object(sub_obj, new_object.global_matrix)
-                        new_instance.parent_index = new_object.index
-
-                        index = self.get_index(sub_obj)
-                        parent_map[index] = new_instance.index
-                    else:
-                        index = self.get_index(sub_obj)
-                        ref = self.get(index)
-
-                        new_instance = self.add_instance(sub_obj, ref.index)
-                        new_instance.parent_index = new_object.index
-                        new_instance.global_matrix = new_object.global_matrix @ ref.global_matrix
-
-                        parent_map[ref.index] = new_instance.index
-
-                    new_sub_objects.append(new_instance)
-
-                for sub_obj in new_sub_objects:
-                    if sub_obj.obj.parent is not None:
-                        index = self.get_index(sub_obj.obj.parent)
-                        mapped_index = parent_map[index]
-
-                        sub_obj.parent_index = mapped_index
+                collection = self.expand_collection(obj.instance_collection)
+                new_object = self.add_instance(obj, collection.index)
+            else:
+                new_object = self.add_empty(obj)
+            
+            new_object.global_matrix = parent_transform @ obj.matrix_world
         else:
             if obj.type == 'EMPTY':
                 new_object = self.add_empty(obj)
@@ -125,32 +136,18 @@ class ObjectList(object):
 
 
     def generate_object_list(self, objects):
-        for obj in objects:
-            self.add_referenced_geometry(obj)
+        #for obj in objects:
+        #    self.add_referenced_geometry(obj)
 
         for obj in objects:
             self.expand_object(obj, mathutils.Matrix.Identity(4))
 
         for obj in self.object_list:
-            if obj.obj.parent is not None and obj.parent_index == -1:
-                obj.parent_index = self.resolve_parent(obj)
+            if obj.obj is not None:
+                if obj.obj.parent is not None and obj.parent_index == -1:
+                    obj.parent_index = self.resolve_parent(obj)
 
         return self
-
-    def add_object(self, obj):
-        n = len(self.object_list)
-        new_object = Object(obj)
-        new_object.index = n
-        new_object.instance_index = -1
-
-        if (obj.type == 'MESH'):
-            new_object.object_type = ObjectType.GEOMETRY
-        elif (obj.type == 'EMPTY'):
-            new_object.object_type = ObjectType.EMPTY
-
-        self.object_list.append(new_object)
-
-        return new_object
 
     def get_armature(self, armature):
         for arm in self.armatures:
@@ -181,6 +178,24 @@ class ObjectList(object):
         new_object.index = n
         new_object.instance_index = instance_index
         new_object.object_type = ObjectType.INSTANCE
+        new_object.name = obj.name
+
+        self.object_list.append(new_object)
+
+        return new_object
+
+    def add_object(self, obj):
+        n = len(self.object_list)
+        new_object = Object(obj)
+        new_object.index = n
+        new_object.instance_index = -1
+        new_object.material = obj.active_material
+        new_object.name = obj.name
+
+        if (obj.type == 'MESH'):
+            new_object.object_type = ObjectType.GEOMETRY
+        elif (obj.type == 'EMPTY'):
+            new_object.object_type = ObjectType.EMPTY
 
         self.object_list.append(new_object)
 
@@ -193,18 +208,34 @@ class ObjectList(object):
         new_object.instance_index = -1
         new_object.empty = True
         new_object.object_type = ObjectType.EMPTY
+        new_object.name = obj.name
 
         self.object_list.append(new_object)
 
         return new_object
 
+    def add_collection(self, name):
+        new_object = Object(None)
+        new_object.index = len(self.object_list)
+        new_object.material = None
+        new_object.name = name
+        new_object.instance_index = -1
+        new_object.empty = True
+        new_object.object_type = ObjectType.EMPTY
+        new_object.global_matrix = mathutils.Matrix()
+
+        self.collections[name] = new_object
+        self.object_list.append(new_object)
+
+        return new_object        
+
     def add_light(self, obj):
-        n = len(self.object_list)
         new_object = Object(obj)
-        new_object.index = n
+        new_object.index = len(self.object_list)
         new_object.instance_index = -1
         new_object.empty = False
         new_object.object_type = ObjectType.LIGHT
+        new_object.name = obj.name
 
         new_object.light_data = LightData()
         new_object.light_data.intensity = obj.data.energy
@@ -248,6 +279,7 @@ class ObjectList(object):
             new_bone.instance_index = -1
             new_bone.empty = False
             new_bone.object_type = ObjectType.BONE
+            new_bone.name = bone.name
             self.object_list.append(new_bone)
 
             new_armature.bone_map[bone.name] = new_bone

@@ -19,7 +19,7 @@ dbasic::Material::Material() : ysObject("Material") {
     m_specularPower = 4.0f;
     m_incidentSpecular = 1.0f;
 
-    m_diffuseColor = ysVector4();
+    m_diffuseColor = ysVector4(1.0f, 1.0f, 1.0f, 1.0f);
 }
 
 dbasic::Material::~Material() {

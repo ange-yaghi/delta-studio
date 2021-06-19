@@ -85,8 +85,9 @@ void ysDS8Device::UpdateAudioSources() {
 
         if (ds8Buffer->GetBufferMode() == ysAudioSource::Mode::PlayOnce) {
             DWORD status;
-            if (ds8Buffer->m_buffer->GetStatus(&status)) {
-                if (!(status & DSBSTATUS_PLAYING)) {
+            if (ds8Buffer->m_buffer->GetStatus(&status) == TRUE) {
+                if ((status & DSBSTATUS_PLAYING) == 0) {
+                    ds8Buffer->Destroy();
                     m_audioBuffers.Delete(ds8Buffer->GetIndex());
                 }
             }

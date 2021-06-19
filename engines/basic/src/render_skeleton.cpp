@@ -28,12 +28,12 @@ dbasic::RenderNode *dbasic::RenderSkeleton::GetNode(const char *nodeName) {
 }
 
 void dbasic::RenderSkeleton::BindAction(
-    ysAnimationAction *action, ysAnimationActionBinding *binding) 
+    ysAnimationAction *action,
+    ysAnimationActionBinding *binding) 
 {
     binding->SetAction(action);
 
-    int nNodes = m_renderNodes.GetNumObjects();
-
+    const int nNodes = m_renderNodes.GetNumObjects();
     for (int i = 0; i < nNodes; i++) {
         RenderNode *node = m_renderNodes.Get(i);
         if (!node->IsBone()) continue;
@@ -48,8 +48,7 @@ void dbasic::RenderSkeleton::BindAction(
 }
 
 dbasic::RenderNode *dbasic::RenderSkeleton::FindNode(const char *boneName) {
-    int nNodes = m_renderNodes.GetNumObjects();
-
+    const int nNodes = m_renderNodes.GetNumObjects();
     for (int i = 0; i < nNodes; i++) {
         if (strcmp(m_renderNodes.Get(i)->GetName(), boneName) == 0) {
             return m_renderNodes.Get(i);
@@ -60,14 +59,14 @@ dbasic::RenderNode *dbasic::RenderSkeleton::FindNode(const char *boneName) {
 }
 
 void dbasic::RenderSkeleton::Update() {
-    int nNodes = m_renderNodes.GetNumObjects();
+    const int nNodes = m_renderNodes.GetNumObjects();
     for (int i = 0; i < nNodes; i++) {
         RenderNode *node = m_renderNodes.Get(i);
     }
 }
 
 void dbasic::RenderSkeleton::UpdateAnimation(float dt) {
-    int nNodes = m_renderNodes.GetNumObjects();
+    const int nNodes = m_renderNodes.GetNumObjects();
     for (int i = 0; i < nNodes; ++i) {
         RenderNode *node = m_renderNodes.Get(i);
         node->GetLocationTarget()->ClearFlags();
@@ -89,8 +88,7 @@ void dbasic::RenderSkeleton::UpdateAnimation(float dt) {
 
         if (rotTarget->IsAnimated()) {
             ysQuaternion r = rotTarget->GetQuaternionResult();
-            float mag = ysMath::GetScalar(ysMath::Magnitude(r));
-
+            const float mag = ysMath::GetScalar(ysMath::Magnitude(r));
             if (mag <= 1e-5) {
                 r = node->GetLastValidOrientation();
             }

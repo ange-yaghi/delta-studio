@@ -181,6 +181,7 @@ ysError dbasic::DeltaEngine::StartFrame() {
     m_breakdownTimer.StartFrame();
     m_breakdownTimer.StartMeasurement(FrameBreakdownFull);
 
+    m_audioDevice->UpdateAudioSources();
     m_windowSystem->ProcessMessages();
     m_timingSystem->Update();
 
@@ -784,6 +785,7 @@ ysError dbasic::DeltaEngine::ExecuteShaderStage(int stageIndex) {
         for (int i = 0; i < stage->GetPasses(); ++i) {
             stage->OnPass(i);
             stage->BindScene();
+            stage->BindObject();
 
             m_device->SetDepthTestEnabled(stage->GetRenderTarget(), false);
 
