@@ -122,6 +122,7 @@ const char ysKeyboard::CharMap[] = {
     '\0',    // KEY_F6
     '\0',    // KEY_F7
     '\0',    // KEY_F8
+    '\0',    // KEY_F9
     '\0',    // KEY_F10
     '\0',    // KEY_F11
     '\0',    // KEY_F12
