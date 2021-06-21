@@ -457,11 +457,14 @@ ysError ysD3D11Device::CreateSubRenderTarget(ysRenderTarget **newTarget, ysRende
 ysError ysD3D11Device::SetRenderTarget(ysRenderTarget *target, int slot) {
     YDS_ERROR_DECLARE("SetRenderTarget");
 
-    if (target != nullptr) {
-        ysD3D11RenderTarget *d3d11Target = static_cast<ysD3D11RenderTarget *>(target);
-        ysD3D11RenderTarget *realTarget = (target->GetType() == ysRenderTarget::Type::Subdivision) ?
-            static_cast<ysD3D11RenderTarget *>(target->GetParent()) : d3d11Target;
+    ysD3D11RenderTarget *d3d11Target = static_cast<ysD3D11RenderTarget *>(target);
+    ysD3D11RenderTarget *realTarget = (target != nullptr)
+        ? (target->GetType() == ysRenderTarget::Type::Subdivision)
+            ? static_cast<ysD3D11RenderTarget *>(target->GetParent())
+            : d3d11Target
+        : nullptr;
 
+    if (target != nullptr) {
         if (target->IsDepthTestEnabled()) {
             m_deviceContext->OMSetDepthStencilState(m_depthStencilEnabledState, 1);
         }
@@ -469,22 +472,7 @@ ysError ysD3D11Device::SetRenderTarget(ysRenderTarget *target, int slot) {
             m_deviceContext->OMSetDepthStencilState(m_depthStencilDisabledState, 1);
         }
 
-        if (realTarget != m_activeRenderTarget[slot]) {
-            ID3D11RenderTargetView *views[MaxRenderTargets];
-            int colorTargets = 0;
-            for (int i = 0; i < MaxRenderTargets; ++i) {
-                ysD3D11RenderTarget *activeTarget = static_cast<ysD3D11RenderTarget *>(m_activeRenderTarget[i]);
-                if (activeTarget == nullptr && i != slot) continue;
-
-                views[colorTargets++] = (i == slot)
-                    ? d3d11Target->m_renderTargetView
-                    : activeTarget->m_renderTargetView;
-            }
-
-            GetImmediateContext()->OMSetRenderTargets(colorTargets, views, d3d11Target->m_depthStencilView);
-        }
-
-        if (target->GetAssociatedContext()) {
+        if (target->GetAssociatedContext() != nullptr) {
             m_activeContext = target->GetAssociatedContext();
         }
 
@@ -497,9 +485,26 @@ ysError ysD3D11Device::SetRenderTarget(ysRenderTarget *target, int slot) {
         vp.TopLeftY = (FLOAT)target->GetPosY();
         GetImmediateContext()->RSSetViewports(1, &vp);
     }
-    else {
-        GetImmediateContext()->OMSetRenderTargets(0, nullptr, nullptr);
-        m_activeContext = nullptr;
+
+    if (realTarget != m_activeRenderTarget[slot]) {
+        ID3D11RenderTargetView *views[MaxRenderTargets];
+        int colorTargets = 0;
+        for (int i = 0; i < MaxRenderTargets; ++i) {
+            ysD3D11RenderTarget *activeTarget = static_cast<ysD3D11RenderTarget *>(m_activeRenderTarget[i]);
+            if (activeTarget == nullptr && i != slot) continue;
+
+            views[colorTargets++] = (i == slot)
+                ? (d3d11Target != nullptr) ? d3d11Target->m_renderTargetView : nullptr
+                : activeTarget->m_renderTargetView;
+        }
+
+        GetImmediateContext()->OMSetRenderTargets(
+            colorTargets,
+            views,
+            (d3d11Target != nullptr)
+                ? d3d11Target->m_depthStencilView
+                : nullptr
+        );
     }
 
     YDS_NESTED_ERROR_CALL(ysDevice::SetRenderTarget(target, slot));
