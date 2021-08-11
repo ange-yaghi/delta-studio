@@ -18,6 +18,4 @@
 #include "spring_link.h"
 #include "ledge_link.h"
 
-#pragma comment(lib, "delta-physics.lib")
-
 #endif /* DELTA_PHYSICS_DELTA_PHYSICS_H */

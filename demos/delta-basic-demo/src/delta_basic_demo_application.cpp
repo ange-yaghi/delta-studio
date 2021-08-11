@@ -11,13 +11,13 @@ delta_demo::DeltaBasicDemoApplication::~DeltaBasicDemoApplication() {
 }
 
 void delta_demo::DeltaBasicDemoApplication::Initialize(void *instance, ysContextObject::DeviceAPI api) {
-    m_engine.GetConsole()->SetDefaultFontDirectory("../../engines/basic/fonts/");
+    m_engine.GetConsole()->SetDefaultFontDirectory("../../../engines/basic/fonts/");
 
     dbasic::DeltaEngine::GameEngineSettings settings;
     settings.API = api;
     settings.DepthBuffer = true;
     settings.Instance = instance;
-    settings.ShaderDirectory = "../../engines/basic/shaders/";
+    settings.ShaderDirectory = "../../../engines/basic/shaders/";
     settings.WindowTitle = "Delta Basic Engine - Demo Application";
     settings.WindowPositionX = 0;
     settings.WindowPositionY = 0;
@@ -52,19 +52,20 @@ void delta_demo::DeltaBasicDemoApplication::Initialize(void *instance, ysContext
     highlight->SetLit(false);
 
     m_assetManager.SetEngine(&m_engine);
-    m_assetManager.CompileInterchangeFile("../../test/geometry_files/ant_rigged", 1.0f, true);
-    m_assetManager.LoadSceneFile("../../test/geometry_files/ant_rigged");
+    m_assetManager.CompileInterchangeFile("../../../test/geometry_files/ant_rigged", 1.0f, true);
+    m_assetManager.LoadSceneFile("../../../test/geometry_files/ant_rigged");
 
     m_assetManager.ResolveNodeHierarchy();
 
-    dbasic::SceneObjectAsset *root = m_assetManager.GetSceneObject("Armature");
+    dbasic::SceneObjectAsset *root = m_assetManager.GetSceneObject(
+        "Armature", ysObjectData::ObjectType::Empty);
     m_renderSkeleton = m_assetManager.BuildRenderSkeleton(&m_skeletonBase, root);
     m_skeletonBase.SetPosition(ysMath::LoadVector(0.0f, 0.0f, 0.0f));
 
     m_probe = &m_renderSkeleton->FindNode("Head")->Transform;
     m_probe2 = m_renderSkeleton->FindNode("Circle");
 
-    m_assetManager.LoadAnimationFile("../../test/animation_files/ant_rigged.dimo");
+    m_assetManager.LoadAnimationFile("../../../test/animation_files/ant_rigged.dimo");
     m_blinkAction = m_assetManager.GetAction("Blink");
     m_idleAction = m_assetManager.GetAction("Idle");
     m_walkAction = m_assetManager.GetAction("Walk");

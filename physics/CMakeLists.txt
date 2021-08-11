@@ -1,0 +1,37 @@
+add_library(delta-physics
+    include/collision_detector.h
+    include/collision_geometry.h
+    include/collision_object.h
+    include/collision_primitives.h
+    include/delta_core.h
+    include/delta_physics.h
+    include/expanding_spring.h
+    include/force_generator.h
+    include/grid_partition_system.h
+    include/hinge_link.h
+    include/ledge_link.h
+    include/mass_spring_system.h
+    include/particle.h
+    include/particle_system.h
+    include/rigid_body.h
+    include/rigid_body_link.h
+    include/rigid_body_system.h
+    include/spring_link.h
+
+    src/collision_detector.cpp
+    src/collision_geometry.cpp
+    src/collision_object.cpp
+    src/collision_primitives.cpp
+    src/expanding_spring.cpp
+    src/force_generator.cpp
+    src/grid_partition_system.cpp
+    src/hinge_link.cpp
+    src/ledge_link.cpp
+    src/mass_spring_system.cpp
+    src/particle.cpp
+    src/particle_system.cpp
+    src/rigid_body.cpp
+    src/rigid_body_link.cpp
+    src/rigid_body_system.cpp
+    src/spring_link.cpp
+)

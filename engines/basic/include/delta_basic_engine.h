@@ -7,6 +7,4 @@
 #include "os_utilities.h"
 #include "text_renderer.h"
 
-#pragma comment(lib, "delta-basic-engine.lib")
-
 #endif /* DELTA_BASIC_DELTA_BASIC_ENGINE_H */
