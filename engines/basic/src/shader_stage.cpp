@@ -12,6 +12,7 @@ dbasic::ShaderStage::ShaderStage() {
 	m_cullMode = ysDevice::CullMode::Back;
 	m_enabled = true;
 	m_passes = 1;
+	m_flagBit = 0;
 
 	for (int i = 0; i < OutputSlot::Count; ++i) {
 		m_renderTarget[i] = nullptr;

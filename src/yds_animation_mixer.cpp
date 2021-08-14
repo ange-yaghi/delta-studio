@@ -21,6 +21,8 @@ ysAnimationChannel::~ysAnimationChannel() {
 
 void ysAnimationChannel::Reset() {
     m_currentStackPointer = 0;
+    m_queuedAction = nullptr;
+    m_actionQueued = false;
 
     for (int i = 0; i < SegmentStackSize; ++i) {
         m_segmentStack[i].Action = nullptr;
