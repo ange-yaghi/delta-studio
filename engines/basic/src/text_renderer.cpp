@@ -35,6 +35,11 @@ void dbasic::TextRenderer::RenderText(const std::string &s, float x, float y, fl
 
     for (int i = 0; i < n; ++i) {
         const char character = s[i];
+        if (character == '\n') {
+            current_y -= h;
+            current_x = x;
+            continue;
+        }
 
         const Font::GlyphData *data = m_font->GetGlyphData(character);
 
@@ -79,6 +84,11 @@ void dbasic::TextRenderer::RenderMonospaceText(const std::string &s, float x, fl
 
     for (int i = 0; i < n; ++i) {
         const char character = s[i];
+        if (character == '\n') {
+            current_y -= h;
+            current_x = x;
+            continue;
+        }
 
         const Font::GlyphData *data = m_font->GetGlyphData(character);
 
