@@ -20,7 +20,13 @@ void dbasic::TextRenderer::Initialize() {
 void dbasic::TextRenderer::RenderText(const std::string &s, float x, float y, float h) {
     m_renderer->SetFont(m_font);
 
-    const int n = (int)s.size();
+    int n = (int)s.size();
+    for (char c : s) {
+        if (c == '\n') {
+            --n;
+        }
+    }
+
     if (n == 0) return;
 
     ConsoleVertex *vertexData = m_renderer->AllocateQuads(n);
@@ -33,7 +39,7 @@ void dbasic::TextRenderer::RenderText(const std::string &s, float x, float y, fl
 
     const ysVector4 color = ysMath::GetVector4(m_currentColor);
 
-    for (int i = 0; i < n; ++i) {
+    for (size_t i = 0; i < s.size(); ++i) {
         const char character = s[i];
         if (character == '\n') {
             current_y -= h;
