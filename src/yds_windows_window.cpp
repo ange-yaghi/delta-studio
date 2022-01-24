@@ -141,7 +141,7 @@ void ysWindowsWindow::ScreenToLocal(int &x, int &y) const {
     }
 
     x = p.x;
-    y = m_height - p.y;
+    y = GetScreenHeight() - p.y;
 }
 
 bool ysWindowsWindow::IsVisible() {
