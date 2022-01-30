@@ -38,6 +38,7 @@ public:
     virtual ysError ResizeRenderTarget(ysRenderTarget *target, int width, int height, int pwidth, int pheight);
     virtual ysError DestroyRenderTarget(ysRenderTarget *&target);
     virtual ysError SetRenderTarget(ysRenderTarget *target, int slot=0);
+    virtual ysError ReadRenderTarget(ysRenderTarget *src, uint8_t *target);
 
     virtual ysError ClearBuffers(const float *clearColor);
     virtual ysError Present();

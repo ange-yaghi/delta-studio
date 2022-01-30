@@ -91,6 +91,12 @@ ysError ysDevice::SetRenderTarget(ysRenderTarget *newTarget, int slot) {
     return YDS_ERROR_RETURN(ysError::None);
 }
 
+ysError ysDevice::ReadRenderTarget(ysRenderTarget *src, uint8_t *target) {
+    YDS_ERROR_DECLARE("ReadRenderTarget");
+
+    return YDS_ERROR_RETURN(ysError::None);
+}
+
 void ysDevice::SetDebugFlag(int flag, bool state) {
     m_debugFlags &= ~(0x1 << flag);
     if (state) m_debugFlags |= (0x1 << flag);

@@ -356,6 +356,10 @@ ysError ysOpenGLDevice::SetDepthTestEnabled(ysRenderTarget *target, bool enable)
     return YDS_ERROR_RETURN(ysError::None);
 }
 
+ysError ysOpenGLDevice::ReadRenderTarget(ysRenderTarget *src, uint8_t *target) {
+    return ysError();
+}
+
 ysError ysOpenGLDevice::DestroyRenderTarget(ysRenderTarget *&target) {
     YDS_ERROR_DECLARE("DestroyRenderTarget");
 

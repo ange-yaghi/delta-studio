@@ -416,6 +416,10 @@ ysError ysD3D10Device::SetRenderTarget(ysRenderTarget *newTarget, int slot) {
     return YDS_ERROR_RETURN(ysError::None);
 }
 
+ysError ysD3D10Device::ReadRenderTarget(ysRenderTarget *src, uint8_t *target) {
+    return ysError();
+}
+
 ysError ysD3D10Device::DestroyRenderTarget(ysRenderTarget *&target) {
     YDS_ERROR_DECLARE("DestroyRenderTarget");
 

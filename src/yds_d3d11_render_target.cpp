@@ -14,6 +14,7 @@ ysD3D11RenderTarget::ysD3D11RenderTarget() : ysRenderTarget(DeviceAPI::DirectX11
 
     m_depthTestEnabledState = nullptr;
     m_depthTestDisabledState = nullptr;
+    m_texture = nullptr;
 }
 
 ysD3D11RenderTarget::~ysD3D11RenderTarget() {
@@ -22,6 +23,7 @@ ysD3D11RenderTarget::~ysD3D11RenderTarget() {
     assert(m_depthStencilView == nullptr);
     assert(m_depthTestEnabledState == nullptr);
     assert(m_depthTestDisabledState == nullptr);
+    assert(m_texture == nullptr);
 }
 
 void ysD3D11RenderTarget::SetDebugName(const std::string &debugName) {

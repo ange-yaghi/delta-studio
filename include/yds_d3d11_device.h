@@ -43,6 +43,7 @@ public:
     virtual ysError DestroyRenderTarget(ysRenderTarget *&target);
     virtual ysError SetRenderTarget(ysRenderTarget *target, int slot=0);
     virtual ysError SetDepthTestEnabled(ysRenderTarget *target, bool enable);
+    virtual ysError ReadRenderTarget(ysRenderTarget *src, uint8_t *target);
 
     virtual ysError ClearBuffers(const float *clearColor);
     virtual ysError Present();
@@ -119,7 +120,13 @@ protected:
     ysError DestroyD3D11DepthStencilView(ID3D11DepthStencilView *&depthStencil);
 
     ysError CreateD3D11OnScreenRenderTarget(ysRenderTarget *target, ysRenderingContext *context, bool depthBuffer);
-    ysError CreateD3D11OffScreenRenderTarget(ysRenderTarget *target, int width, int height, ysRenderTarget::Format format, bool colorData, bool depthBuffer);
+    ysError CreateD3D11OffScreenRenderTarget(
+        ysRenderTarget *target,
+        int width,
+        int height,
+        ysRenderTarget::Format format,
+        bool colorData,
+        bool depthBuffer);
 
     ysError DestroyD3D11RenderTarget(ysRenderTarget *target);
 };

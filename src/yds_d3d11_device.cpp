@@ -62,7 +62,8 @@ ysError ysD3D11Device::InitializeDevice() {
     deviceCreationFlags |= D3D11_CREATE_DEVICE_DEBUG;
 #endif /* _DEBUG */
 
-    result = D3D11CreateDevice(nullptr,
+    result = D3D11CreateDevice(
+        nullptr,
         D3D_DRIVER_TYPE_HARDWARE,
         nullptr,
         deviceCreationFlags,
@@ -174,7 +175,7 @@ ysError ysD3D11Device::CreateRenderingContext(ysRenderingContext **context, ysWi
     m_multisampleQuality = (int)maxQuality - 1;
 
     // Create the swap chain
-    DXGI_SWAP_CHAIN_DESC swapChainDesc;
+    DXGI_SWAP_CHAIN_DESC swapChainDesc = {};
     ZeroMemory(&swapChainDesc, sizeof(DXGI_SWAP_CHAIN_DESC));
     swapChainDesc.BufferDesc.Width = window->GetGameWidth();
     swapChainDesc.BufferDesc.Height = window->GetGameHeight();
@@ -337,8 +338,6 @@ ysError ysD3D11Device::DestroyRenderingContext(ysRenderingContext *&context) {
     YDS_ERROR_DECLARE("DestroyRenderingContext");
 
     if (context != nullptr) {
-        YDS_NESTED_ERROR_CALL(SetContextMode(context, ysRenderingContext::ContextMode::Windowed));
-
         ysD3D11Context *d3d11Context = static_cast<ysD3D11Context *>(context);
         if (d3d11Context->m_swapChain != nullptr) d3d11Context->m_swapChain->Release();
     }
@@ -515,12 +514,69 @@ ysError ysD3D11Device::SetRenderTarget(ysRenderTarget *target, int slot) {
 ysError ysD3D11Device::SetDepthTestEnabled(ysRenderTarget *target, bool enable) {
     YDS_ERROR_DECLARE("SetDepthTestEnabled");
 
-    bool previousState = target->IsDepthTestEnabled();
+    const bool previousState = target->IsDepthTestEnabled();
     YDS_NESTED_ERROR_CALL(ysDevice::SetDepthTestEnabled(target, enable));
 
     if (target == GetActiveRenderTarget() && previousState != enable) {
         SetRenderTarget(target);
     }
+
+    return YDS_ERROR_RETURN(ysError::None);
+}
+
+ysError ysD3D11Device::ReadRenderTarget(ysRenderTarget *src, uint8_t *target) {
+    YDS_ERROR_DECLARE("ReadRenderTarget");
+
+    ysD3D11RenderTarget *d3d11Target = static_cast<ysD3D11RenderTarget *>(src);
+
+    D3D11_TEXTURE2D_DESC desc;
+    desc.Width = src->GetWidth();
+    desc.Height = src->GetHeight();
+    desc.MipLevels = desc.ArraySize = 1;
+    desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+    desc.SampleDesc.Count = 1;
+    desc.SampleDesc.Quality = 0;
+    desc.Usage = D3D11_USAGE_DEFAULT;
+    desc.BindFlags = 0;
+    desc.CPUAccessFlags = 0;
+    desc.MiscFlags = 0;
+
+    ID3D11Texture2D *resolveTexture = nullptr, *stagingTexture = nullptr;
+    HRESULT result = m_device->CreateTexture2D(&desc, nullptr, &resolveTexture);
+    if (FAILED(result) || resolveTexture == nullptr) {
+        return YDS_ERROR_RETURN(ysError::ApiError);
+    }
+
+    desc.Usage = D3D11_USAGE_STAGING;
+    desc.CPUAccessFlags = D3D11_CPU_ACCESS_READ;
+    result = m_device->CreateTexture2D(&desc, nullptr, &stagingTexture);
+    if (FAILED(result) || stagingTexture == nullptr) {
+        return YDS_ERROR_RETURN(ysError::ApiError);
+    }
+
+    ysD3D11Context *context = static_cast<ysD3D11Context *>(m_activeContext);
+    m_deviceContext->ResolveSubresource(resolveTexture, 0, d3d11Target->m_texture, 0, DXGI_FORMAT_R8G8B8A8_UNORM);
+    m_deviceContext->CopyResource(stagingTexture, resolveTexture);
+
+    D3D11_MAPPED_SUBRESOURCE mappedResource;
+    result = m_deviceContext->Map(
+        stagingTexture,
+        0,
+        D3D11_MAP_READ,
+        0,
+        &mappedResource);
+
+    for (int i = 0; i < src->GetHeight(); ++i) {
+        memcpy(
+            &target[i * src->GetWidth() * 4],
+            &(((uint8_t *)mappedResource.pData)[i * mappedResource.RowPitch]),
+            sizeof(uint8_t) * src->GetWidth() * 4);
+    }
+
+    m_deviceContext->Unmap(stagingTexture, 0);
+
+    stagingTexture->Release();
+    resolveTexture->Release();
 
     return YDS_ERROR_RETURN(ysError::None);
 }
@@ -1558,7 +1614,6 @@ ysError ysD3D11Device::CreateD3D11OnScreenRenderTarget(ysRenderTarget *newTarget
     }
 
     result = m_device->CreateRenderTargetView(backBuffer, nullptr, &newRenderTargetView);
-    backBuffer->Release();
 
     if (FAILED(result)) {
         return YDS_ERROR_RETURN(ysError::CouldNotCreateRenderTarget);
@@ -1595,18 +1650,24 @@ ysError ysD3D11Device::CreateD3D11OnScreenRenderTarget(ysRenderTarget *newTarget
     newRenderTarget->m_renderTargetView = newRenderTargetView;
     newRenderTarget->m_depthStencilView = newDepthStencilView;
     newRenderTarget->m_resourceView = nullptr;
+    newRenderTarget->m_texture = backBuffer;
 
     return YDS_ERROR_RETURN(ysError::None);
 }
 
 ysError ysD3D11Device::CreateD3D11OffScreenRenderTarget(
-    ysRenderTarget *target, int width, int height, ysRenderTarget::Format format, bool colorData, bool depthBuffer)
+    ysRenderTarget *target,
+    int width,
+    int height,
+    ysRenderTarget::Format format,
+    bool colorData,
+    bool depthBuffer)
 {
     YDS_ERROR_DECLARE("CreateD3D11OffScreenRenderTarget");
 
     HRESULT result;
 
-    ID3D11Texture2D *renderTarget;
+    ID3D11Texture2D *renderTarget = nullptr;
     ID3D11RenderTargetView *newRenderTargetView = nullptr;
     ID3D11ShaderResourceView *shaderResourceView = nullptr;
     ID3D11DepthStencilView *newDepthStencil = nullptr;
@@ -1673,8 +1734,6 @@ ysError ysD3D11Device::CreateD3D11OffScreenRenderTarget(
         if (FAILED(result)) {
             return YDS_ERROR_RETURN(ysError::CouldNotCreateRenderTarget);
         }
-
-        renderTarget->Release();
     }
 
     // Create Depth Buffer
@@ -1710,6 +1769,7 @@ ysError ysD3D11Device::CreateD3D11OffScreenRenderTarget(
     newRenderTarget->m_renderTargetView = newRenderTargetView;
     newRenderTarget->m_depthStencilView = newDepthStencil;
     newRenderTarget->m_resourceView = shaderResourceView;
+    newRenderTarget->m_texture = renderTarget;
 
     return YDS_ERROR_RETURN(ysError::None);
 }
@@ -1721,10 +1781,12 @@ ysError ysD3D11Device::DestroyD3D11RenderTarget(ysRenderTarget *target) {
     if (d3d11Target->m_renderTargetView != nullptr) d3d11Target->m_renderTargetView->Release();
     if (d3d11Target->m_depthStencilView != nullptr) d3d11Target->m_depthStencilView->Release();
     if (d3d11Target->m_resourceView != nullptr) d3d11Target->m_resourceView->Release();
+    if (d3d11Target->m_texture != nullptr) d3d11Target->m_texture->Release();
 
     d3d11Target->m_renderTargetView = nullptr;
     d3d11Target->m_depthStencilView = nullptr;
     d3d11Target->m_resourceView = nullptr;
+    d3d11Target->m_texture = nullptr;
 
     return YDS_ERROR_RETURN(ysError::None);
 }

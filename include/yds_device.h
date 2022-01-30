@@ -99,6 +99,9 @@ public:
     // Set the active rendering target
     virtual ysError SetRenderTarget(ysRenderTarget *target, int slot=0);
 
+    // Read render target
+    virtual ysError ReadRenderTarget(ysRenderTarget *src, uint8_t *target);
+
     /* Scene start/end */
 
     // Clear the current render target

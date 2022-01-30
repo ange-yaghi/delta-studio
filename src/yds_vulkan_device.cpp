@@ -134,6 +134,10 @@ ysError ysVulkanDevice::SetDepthTestEnabled(ysRenderTarget *target, bool enable)
     return ysError();
 }
 
+ysError ysVulkanDevice::ReadRenderTarget(ysRenderTarget *src, uint8_t *target) {
+    return ysError();
+}
+
 ysError ysVulkanDevice::ClearBuffers(const float *clearColor) {
     return ysError();
 }
