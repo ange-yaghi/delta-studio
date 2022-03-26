@@ -185,7 +185,10 @@ namespace ysMath {
     int UniformRandomInt(int range);
 
     // Vector/General Quaternion
-    ysGeneric LoadScalar(float s);
+    __forceinline ysGeneric LoadScalar(float s) {
+        return _mm_set_ps(s, s, s, s);
+    }
+
     ysGeneric LoadVector(float x = 0.0f, float y = 0.0f, float z = 0.0f, float w = 0.0f);
     ysGeneric LoadVector(const ysVector4 &v);
     ysGeneric LoadVector(const ysVector3 &v, float w = 0.0f);
@@ -197,31 +200,83 @@ namespace ysMath {
     ysVector4 GetVector4(const ysVector &v);
     ysVector3 GetVector3(const ysVector &v);
     ysVector2 GetVector2(const ysVector &v);
-    float GetScalar(const ysVector &v);
+    __forceinline float GetScalar(const ysVector &v) {
+        return v.m128_f32[0];
+    }
 
-    float GetX(const ysVector &v);
-    float GetY(const ysVector &v);
-    float GetZ(const ysVector &v);
-    float GetW(const ysVector &v);
+    __forceinline float GetX(const ysVector &v) {
+        return v.m128_f32[0];
+    }
+
+    __forceinline float GetY(const ysVector &v) {
+        return v.m128_f32[1];
+    }
+
+    __forceinline float GetZ(const ysVector &v) {
+        return v.m128_f32[2];
+    }
+
+    __forceinline float GetW(const ysVector &v) {
+        return v.m128_f32[3];
+    }
 
     float GetQuatX(const ysQuaternion &v);
     float GetQuatY(const ysQuaternion &v);
     float GetQuatZ(const ysQuaternion &v);
     float GetQuatW(const ysQuaternion &v);
 
-    ysGeneric Add(const ysGeneric &v1, const ysGeneric &v2);
-    ysGeneric Sub(const ysGeneric &v1, const ysGeneric &v2);
-    ysGeneric Mul(const ysGeneric &v1, const ysGeneric &v2);
-    ysGeneric Div(const ysGeneric &v1, const ysGeneric &v2);
-    ysGeneric Sqrt(const ysGeneric &v);
+    __forceinline ysGeneric Add(const ysGeneric &v1, const ysGeneric &v2) {
+        return _mm_add_ps(v1, v2);
+    }
 
-    ysVector Dot(const ysVector &v1, const ysVector &v2);
+    __forceinline ysGeneric Sub(const ysGeneric &v1, const ysGeneric &v2) {
+        return _mm_sub_ps(v1, v2);
+    }
+
+    __forceinline ysGeneric Mul(const ysGeneric &v1, const ysGeneric &v2) {
+        return _mm_mul_ps(v1, v2);
+    }
+
+    __forceinline ysGeneric Div(const ysGeneric &v1, const ysGeneric &v2) {
+        return _mm_div_ps(v1, v2);
+    }
+
+    __forceinline ysGeneric Sqrt(const ysGeneric &v) {
+        return _mm_sqrt_ps(v);
+    }
+
+    __forceinline ysVector Dot(const ysVector &v1, const ysVector &v2) {
+        ysVector t0 = _mm_mul_ps(v1, v2);
+        ysVector t1 = _mm_shuffle_ps(t0, t0, _MM_SHUFFLE(1, 0, 3, 2));
+        ysVector t2 = _mm_add_ps(t0, t1);
+        ysVector t3 = _mm_shuffle_ps(t2, t2, _MM_SHUFFLE(2, 3, 0, 1));
+        ysVector dot = _mm_add_ps(t3, t2);
+        return (dot);
+    }
+
     ysVector Dot3(const ysVector &v1, const ysVector &v2);
     ysVector Cross(const ysVector &v1, const ysVector &v2);
-    ysVector MagnitudeSquared3(const ysVector &v);
-    ysVector Magnitude(const ysVector &v);
-    ysVector Normalize(const ysVector &v);
-    ysVector Negate(const ysVector &v);
+
+    __forceinline ysVector MagnitudeSquared3(const ysVector &v) {
+        ysVector selfDot = ysMath::Dot3(v, v);
+
+        return selfDot;
+    }
+
+    __forceinline ysVector Magnitude(const ysVector &v) {
+        ysVector selfDot = ysMath::Dot(v, v);
+
+        return _mm_sqrt_ps(selfDot);
+    }
+
+    __forceinline ysVector Normalize(const ysVector &v) {
+        return ysMath::Div(v, ysMath::Magnitude(v));
+    }
+
+    __forceinline ysVector Negate(const ysVector &v) {
+        return ysMath::Mul(v, ysMath::Constants::Negate);
+    }
+
     ysVector Negate3(const ysVector &v);
     ysVector Abs(const ysVector &a);
 
