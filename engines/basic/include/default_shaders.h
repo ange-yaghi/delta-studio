@@ -101,8 +101,8 @@ namespace dbasic {
         StageEnableFlags GetRiggedFlags() const;
 
         void ConfigureImage(
-            float scaleX, float scaleY, 
-            float texOffsetU = 0.0f, float texOffsetV = 0.0f, 
+            float scaleX, float scaleY,
+            float texOffsetU = 0.0f, float texOffsetV = 0.0f,
             float texScaleU = 1.0f, float texScaleV = 1.0f);
         void ConfigureBox(float width, float height);
         void ConfigureAxis(const ysVector &position, const ysVector &direction, float length);
