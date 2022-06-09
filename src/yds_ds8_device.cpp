@@ -51,7 +51,8 @@ ysAudioSource *ysDS8Device::CreateSource(const ysAudioParameters *parameters, Sa
         DSBCAPS_CTRLPAN | 
         DSBCAPS_CTRLVOLUME | 
         DSBCAPS_CTRLFREQUENCY | 
-        DSBCAPS_GLOBALFOCUS; 
+        DSBCAPS_GLOBALFOCUS |
+        DSBCAPS_GETCURRENTPOSITION2;
     dsbdesc.dwBufferBytes = parameters->GetSizeFromSamples(size); 
     dsbdesc.lpwfxFormat = &wfx; 
  

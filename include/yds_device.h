@@ -111,7 +111,7 @@ public:
     virtual ysError Present() = 0;
 
 
-    /* Vertex Buffers */
+    /* Buffers */
 
     // Create vertex buffer
     virtual ysError CreateVertexBuffer(ysGPUBuffer **newBuffer, int size, char *data, bool mirrorToRam = false) = 0;

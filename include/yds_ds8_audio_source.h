@@ -15,6 +15,7 @@ public:
     virtual ~ysDS8AudioSource();
 
     virtual ysError LockEntireBuffer(void **buffer, SampleOffset *samples);
+    virtual ysError UnlockBuffer(void *buffer, SampleOffset samples);
     virtual ysError LockBufferSegment(SampleOffset offset, SampleOffset samples, void **segment1, SampleOffset *size1, void **segment2, SampleOffset *size2);
     virtual ysError UnlockBufferSegments(void *segment1, SampleOffset segment1Size, void *segment2, SampleOffset segment2Size);
 

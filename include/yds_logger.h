@@ -4,11 +4,8 @@
 #include "yds_dynamic_array.h"
 #include "yds_logger_output.h"
 
-class ysLoggerMessageLevel
-{
-
+class ysLoggerMessageLevel {
 public:
-
     ysLoggerMessageLevel();
     ysLoggerMessageLevel(const char *name, int level);
     ~ysLoggerMessageLevel();
@@ -16,35 +13,26 @@ public:
     char m_name[256];
     int m_level;
     bool m_valid;
-
 };
 
-class ysLogger
-{
-
+class ysLogger {
 protected:
-
     static ysLogger *g_instance;
-
+    
 public:
-
     static void LoggerCreate(ysLogger *logger) { g_instance = logger; g_instance->Initialize(); }
     static ysLogger *Logger() { return g_instance; }
 
 public:
-
     ysLogger();
     ~ysLogger();
 
     template<typename LoggerType>
-    LoggerType *NewLoggerOutput()
-    {
-
+    LoggerType *NewLoggerOutput() {
         LoggerType *newOutput = m_loggerOutputs.NewGeneric<LoggerType>();
         newOutput->SetLogger(this);
 
         return newOutput;
-
     }
 
     void LogMessage(const char *message, const char *fname, int line, int level, ...);
@@ -61,7 +49,6 @@ public:
     void End();
 
 protected:
-
     ysDynamicArray<ysLoggerOutput, 4> m_loggerOutputs;
     ysLoggerMessageLevel m_messageLevels[256];
 

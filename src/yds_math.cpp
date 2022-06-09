@@ -25,10 +25,6 @@ int ysMath::UniformRandomInt(int range) {
     return rand() % range;
 }
 
-ysGeneric ysMath::LoadScalar(float s) {
-    return _mm_set_ps(s, s, s, s);
-}
-
 ysGeneric ysMath::LoadVector(float x, float y, float z, float w) {
     return _mm_set_ps(w, z, y, x);
 }
@@ -100,26 +96,6 @@ ysVector2 ysMath::GetVector2(const ysVector &v) {
     return r;
 }
 
-float ysMath::GetScalar(const ysVector &v) {
-    return v.m128_f32[0];
-}
-
-float ysMath::GetX(const ysVector &v) {
-    return v.m128_f32[0];
-}
-
-float ysMath::GetY(const ysVector &v) {
-    return v.m128_f32[1];
-}
-
-float ysMath::GetZ(const ysVector &v) {
-    return v.m128_f32[2];
-}
-
-float ysMath::GetW(const ysVector &v) {
-    return v.m128_f32[3];
-}
-
 float ysMath::GetQuatX(const ysQuaternion &v) {
     return v.m128_f32[1];
 }
@@ -134,35 +110,6 @@ float ysMath::GetQuatZ(const ysQuaternion &v) {
 
 float ysMath::GetQuatW(const ysQuaternion &v) {
     return v.m128_f32[0];
-}
-
-ysGeneric ysMath::Add(const ysGeneric &v1, const ysGeneric &v2) {
-    return _mm_add_ps(v1, v2);
-}
-
-ysGeneric ysMath::Sub(const ysGeneric &v1, const ysGeneric &v2) {
-    return _mm_sub_ps(v1, v2);
-}
-
-ysGeneric ysMath::Div(const ysGeneric &v1, const ysGeneric &v2) {
-    return _mm_div_ps(v1, v2);
-}
-
-ysGeneric ysMath::Mul(const ysGeneric &v1, const ysGeneric &v2) {
-    return _mm_mul_ps(v1, v2);
-}
-
-ysGeneric ysMath::Sqrt(const ysGeneric &v) {
-    return _mm_sqrt_ps(v);
-}
-
-ysVector ysMath::Dot(const ysVector &v1, const ysVector &v2) {
-    ysVector t0 = _mm_mul_ps(v1, v2);
-    ysVector t1 = _mm_shuffle_ps(t0, t0, _MM_SHUFFLE(1, 0, 3, 2));
-    ysVector t2 = _mm_add_ps(t0, t1);
-    ysVector t3 = _mm_shuffle_ps(t2, t2, _MM_SHUFFLE(2, 3, 0, 1));
-    ysVector dot = _mm_add_ps(t3, t2);
-    return (dot);
 }
 
 ysVector ysMath::Dot3(const ysVector &v1, const ysVector &v2) {
@@ -201,26 +148,6 @@ ysVector ysMath::Cross(const ysVector &v1, const ysVector &v2) {
 
     // Set w to zero
     return _mm_and_ps(vResult, ysMath::Constants::MaskOffW);
-}
-
-ysVector ysMath::MagnitudeSquared3(const ysVector &v) {
-    ysVector selfDot = ysMath::Dot3(v, v);
-
-    return selfDot;
-}
-
-ysVector ysMath::Magnitude(const ysVector &v) {
-    ysVector selfDot = ysMath::Dot(v, v);
-
-    return _mm_sqrt_ps(selfDot);
-}
-
-ysVector ysMath::Normalize(const ysVector &v) {
-    return ysMath::Div(v, ysMath::Magnitude(v));
-}
-
-ysVector ysMath::Negate(const ysVector &v) {
-    return ysMath::Mul(v, ysMath::Constants::Negate);
 }
 
 ysVector ysMath::Negate3(const ysVector &v) {
