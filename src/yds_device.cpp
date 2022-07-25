@@ -159,6 +159,21 @@ ysError ysDevice::ResizeRenderTarget(ysRenderTarget *target, int width, int heig
     return YDS_ERROR_RETURN(ysError::None);
 }
 
+ysError ysDevice::RepositionRenderTarget(ysRenderTarget *target, int x, int y) {
+    YDS_ERROR_DECLARE("RepositionRenderTarget");
+
+    if (target == nullptr) return YDS_ERROR_RETURN(ysError::InvalidParameter);
+
+    if (target->GetType() != ysRenderTarget::Type::Subdivision) {
+        return YDS_ERROR_RETURN(ysError::InvalidParameter);
+    }
+
+    target->m_posX = x;
+    target->m_posY = y;
+
+    return YDS_ERROR_RETURN(ysError::None);
+}
+
 ysError ysDevice::SetDepthTestEnabled(ysRenderTarget *target, bool enable) {
     YDS_ERROR_DECLARE("SetDepthTestEnable");
 

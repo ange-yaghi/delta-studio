@@ -90,6 +90,9 @@ public:
     // Resize a render target
     virtual ysError ResizeRenderTarget(ysRenderTarget *target, int width, int height, int pwidth, int pheight);
 
+    // Reposition a render target
+    virtual ysError RepositionRenderTarget(ysRenderTarget *target, int x, int y);
+
     // Enable/disable depth testing
     virtual ysError SetDepthTestEnabled(ysRenderTarget *target, bool enable);
 

@@ -432,6 +432,7 @@ ysError ysD3D11Device::CreateSubRenderTarget(ysRenderTarget **newTarget, ysRende
     if (parent->GetType() == ysRenderTarget::Type::Subdivision) return YDS_ERROR_RETURN(ysError::InvalidParameter);
 
     ysD3D11RenderTarget *newRenderTarget = m_renderTargets.NewGeneric<ysD3D11RenderTarget>();
+    ysD3D11RenderTarget *d3d11Parent = static_cast<ysD3D11RenderTarget *>(parent);
 
     newRenderTarget->m_type = ysRenderTarget::Type::Subdivision;
     newRenderTarget->m_posX = x;
@@ -445,8 +446,8 @@ ysError ysD3D11Device::CreateSubRenderTarget(ysRenderTarget **newTarget, ysRende
     newRenderTarget->m_associatedContext = parent->GetAssociatedContext();
     newRenderTarget->m_parent = parent;
 
-    newRenderTarget->m_renderTargetView = nullptr;
-    newRenderTarget->m_depthStencilView = nullptr;
+    newRenderTarget->m_renderTargetView = d3d11Parent->m_renderTargetView;
+    newRenderTarget->m_depthStencilView = d3d11Parent->m_depthStencilView;
 
     *newTarget = static_cast<ysRenderTarget *>(newRenderTarget);
 
