@@ -65,11 +65,11 @@ void ysMonitor::CalculateScaling() {
 }
 
 void ysMonitor::PhysicalToLogical(int px, int py, int &lx, int &ly) const {
-    lx = std::round(px * m_horizontalScaling);
-    ly = std::round(py * m_verticalScaling);
+    lx = (int)std::round(px * m_horizontalScaling);
+    ly = (int)std::round(py * m_verticalScaling);
 }
 
 void ysMonitor::LogicalToPhysical(int lx, int ly, int &px, int &py) const {
-    px = std::round(lx / m_horizontalScaling);
-    py = std::round(ly / m_verticalScaling);
+    px = (int)std::round(lx / m_horizontalScaling);
+    py = (int)std::round(ly / m_verticalScaling);
 }
