@@ -446,8 +446,8 @@ ysError ysD3D11Device::CreateSubRenderTarget(ysRenderTarget **newTarget, ysRende
     newRenderTarget->m_associatedContext = parent->GetAssociatedContext();
     newRenderTarget->m_parent = parent;
 
-    newRenderTarget->m_renderTargetView = d3d11Parent->m_renderTargetView;
-    newRenderTarget->m_depthStencilView = d3d11Parent->m_depthStencilView;
+    newRenderTarget->m_renderTargetView = nullptr;
+    newRenderTarget->m_depthStencilView = nullptr;
 
     *newTarget = static_cast<ysRenderTarget *>(newRenderTarget);
 
@@ -494,15 +494,15 @@ ysError ysD3D11Device::SetRenderTarget(ysRenderTarget *target, int slot) {
             if (activeTarget == nullptr && i != slot) continue;
 
             views[colorTargets++] = (i == slot)
-                ? (d3d11Target != nullptr) ? d3d11Target->m_renderTargetView : nullptr
+                ? (realTarget != nullptr) ? realTarget->m_renderTargetView : nullptr
                 : activeTarget->m_renderTargetView;
         }
 
         GetImmediateContext()->OMSetRenderTargets(
             colorTargets,
             views,
-            (d3d11Target != nullptr)
-                ? d3d11Target->m_depthStencilView
+            (realTarget != nullptr)
+                ? realTarget->m_depthStencilView
                 : nullptr
         );
     }
@@ -646,8 +646,12 @@ ysError ysD3D11Device::ClearBuffers(const float *clearColor) {
     for (int i = 0; i < MaxRenderTargets; ++i) {
         if (m_activeRenderTarget[i] != nullptr) {
             ysD3D11RenderTarget *renderTarget = static_cast<ysD3D11RenderTarget *>(m_activeRenderTarget[i]);
-            if (renderTarget->HasColorData()) GetImmediateContext()->ClearRenderTargetView(renderTarget->m_renderTargetView, clearColor);
-            if (renderTarget->HasDepthBuffer()) GetImmediateContext()->ClearDepthStencilView(renderTarget->m_depthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
+            ysD3D11RenderTarget *actualTarget = (renderTarget->GetType() == ysRenderTarget::Type::Subdivision)
+                ? static_cast<ysD3D11RenderTarget *>(renderTarget->GetParent())
+                : renderTarget;
+
+            if (actualTarget->HasColorData()) GetImmediateContext()->ClearRenderTargetView(actualTarget->m_renderTargetView, clearColor);
+            if (actualTarget->HasDepthBuffer()) GetImmediateContext()->ClearDepthStencilView(actualTarget->m_depthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
 
             return YDS_ERROR_RETURN(ysError::None);
         }
