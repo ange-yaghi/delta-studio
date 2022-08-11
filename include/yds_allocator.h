@@ -1,27 +1,21 @@
 #ifndef YDS_ALLOCATOR_H
 #define YDS_ALLOCATOR_H
 
-#include <malloc.h>
+#include <cstdlib>
 
 class ysAllocator {
 public:
     template <int Alignment>
     static void *BlockAllocate(int size) {
-        return ::_aligned_malloc(size, Alignment);
-    }
-
-    template <>
-    static void *BlockAllocate<1>(int size) {
-        return ::malloc(size);
+        if constexpr (Alignment != 1) {
+            return ::aligned_alloc(Alignment, size);
+        } else {
+            return ::malloc(size);
+        }
     }
 
     static void BlockFree(void *block, int alignment) {
-        if (alignment != 1) {
-            ::_aligned_free(block);
-        }
-        else {
-            ::free(block);
-        }
+        ::free(block);
     }
 
     template <typename T_Create, int Alignment>
