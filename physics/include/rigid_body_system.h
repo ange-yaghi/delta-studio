@@ -9,7 +9,6 @@
 #include "rigid_body_link.h"
 #include "grid_partition_system.h"
 
-#include <Windows.h>
 #include <fstream>
 
 namespace dphysics {
