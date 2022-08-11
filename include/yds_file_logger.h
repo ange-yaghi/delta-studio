@@ -4,6 +4,7 @@
 #include "yds_logger_output.h"
 
 #include <fstream>
+#include <string_view>
 
 class ysFileLogger : public ysLoggerOutput
 {
@@ -21,7 +22,7 @@ protected:
     // Virtual functions
     virtual void Initialize();
     virtual void Close();
-    virtual void Write(const char *data);
+    virtual void Write(std::string_view data, int padding = 0);
 
     // File name
     char m_fname[256];

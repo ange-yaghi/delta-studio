@@ -1,5 +1,7 @@
 #include "../include/yds_file_logger.h"
 
+#include <iomanip>
+
 ysFileLogger::ysFileLogger() : ysLoggerOutput("ysFileLogger") {
     /* void */
 }
@@ -20,6 +22,6 @@ void ysFileLogger::Close() {
     m_stream.close();
 }
 
-void ysFileLogger::Write(const char *data) {
-    m_stream.write(data, strlen(data));
+void ysFileLogger::Write(std::string_view data, int padding) {
+    m_stream << std::setw(padding) << data;
 }
