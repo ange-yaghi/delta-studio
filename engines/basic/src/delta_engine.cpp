@@ -471,8 +471,7 @@ ysError dbasic::DeltaEngine::LoadFont(Font **font, const char *path, int size, i
     unsigned char *ttfBuffer = new unsigned char[1 << 20];
     unsigned char *bitmapData = new unsigned char[size * size];
 
-    FILE *f = nullptr;
-    fopen_s(&f, path, "rb");
+    FILE *f = fopen(path, "rb");
 
     if (f == nullptr) {
         return YDS_ERROR_RETURN(ysError::CouldNotOpenFile);
