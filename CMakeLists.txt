@@ -9,6 +9,15 @@ project(delta-studio)
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake/")
 
+if (MSVC)
+    add_definitions("-DMSVC")
+else()
+    # This codebase uses a bunch of msvc extentsions, and it's easier just to ask
+    # other compilers to just support as many of those extentions as possible
+    # At least for now.
+    add_compile_options(-fms-extensions)
+endif()
+
 if (CMAKE_SIZEOF_VOID_P EQUAL 8)
     set(TARGET_ARCHITECTURE x64)
 else()
