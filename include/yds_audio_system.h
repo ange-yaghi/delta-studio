@@ -27,6 +27,10 @@ public:
 
 protected:
     ysDynamicArray<ysAudioDevice, 4> m_devices;
+
+protected:
+    template<API api>
+    static ysAudioSystem* CreateApiSystem();
 };
 
 #endif /* YDS_AUDIO_SYSTEM_H */

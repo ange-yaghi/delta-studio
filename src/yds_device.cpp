@@ -1,9 +1,6 @@
 #include "../include/yds_device.h"
 
-#include "../include/yds_vulkan_device.h"
-#include "../include/yds_opengl_device.h"
-#include "../include/yds_d3d11_device.h"
-#include "../include/yds_d3d10_device.h"
+ysDevice::Registry ysDevice::s_registry;
 
 ysDevice::ysDevice() : ysContextObject("API_DEVICE", DeviceAPI::Unknown) {
     for (int i = 0; i < MaxRenderTargets; ++i) m_activeRenderTarget[i] = nullptr;
@@ -37,28 +34,23 @@ ysDevice::~ysDevice() {
     /* void */
 }
 
+template<ysContextObject::DeviceAPI api>
+ysDevice* ysDevice::CreateApiDevice() {
+    // Generic template for when the API is not supported
+    return nullptr;
+}
+
 ysError ysDevice::CreateDevice(ysDevice **newDevice, DeviceAPI API) {
     YDS_ERROR_DECLARE("CreateDevice");
 
     if (newDevice == nullptr) return YDS_ERROR_RETURN_STATIC(ysError::InvalidParameter);
-    *newDevice = nullptr;
 
-    if (API == DeviceAPI::Unknown) return YDS_ERROR_RETURN_STATIC(ysError::InvalidParameter);
-
-    switch(API) {
-    case DeviceAPI::DirectX10:
-        *newDevice = new ysD3D10Device;
-        break;
-    case DeviceAPI::DirectX11:
-        *newDevice = new ysD3D11Device;
-        break;
-    case DeviceAPI::OpenGL4_0:
-        *newDevice = new ysOpenGLDevice;
-        break;
-    case DeviceAPI::Vulkan:
-        *newDevice = new ysVulkanDevice;
-        break;
+    if (!s_registry.Has(API)) {
+        *newDevice = nullptr;
+        return YDS_ERROR_RETURN_STATIC(ysError::NoPlatform);
     }
+
+    *newDevice = s_registry.New(API);;
 
     return YDS_ERROR_RETURN_STATIC(ysError::None);
 }
@@ -294,7 +286,7 @@ ysError ysDevice::DestroyGPUBuffer(ysGPUBuffer *&buffer) {
     YDS_NESTED_ERROR_CALL( m_gpuBuffers.Delete(buffer->GetIndex()) );
     buffer = nullptr;
 
-    return YDS_ERROR_RETURN(ysError::None); 
+    return YDS_ERROR_RETURN(ysError::None);
 }
 
 ysError ysDevice::DestroyShader(ysShader *&shader) {

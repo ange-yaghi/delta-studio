@@ -15,7 +15,7 @@
 
 #include "../include/yds_file.h"
 
-ysOpenGLDevice::ysOpenGLDevice() : ysDevice(DeviceAPI::OpenGL4_0) {
+ysOpenGLDevice::ysOpenGLDevice() : ysDevice(ysContextObject::DeviceAPI::OpenGL4_0) {
     m_deviceCreated = false;
     m_realContext = nullptr;
     m_activeContext = nullptr;
@@ -54,23 +54,25 @@ ysError ysOpenGLDevice::CreateRenderingContext(ysRenderingContext **context, ysW
     if (context == nullptr) return YDS_ERROR_RETURN(ysError::InvalidParameter);
     *context = nullptr;
 
-    if (window->GetPlatform() == ysWindowSystemObject::Platform::Windows) {
-        ysOpenGLWindowsContext *newContext = m_renderingContexts.NewGeneric<ysOpenGLWindowsContext>();
-        YDS_NESTED_ERROR_CALL(newContext->CreateRenderingContext(this, window, 4, 3));
+#ifdef _WIN32
+    if (window->GetPlatform() != ysWindowSystemObject::Platform::Windows) return YDS_ERROR_RETURN(ysError::IncompatiblePlatforms);
+    ysOpenGLWindowsContext *newContext = m_renderingContexts.NewGeneric<ysOpenGLWindowsContext>();
+#else
+    if (window->GetPlatform() != ysWindowSystemObject::Platform::Sdl) return YDS_ERROR_RETURN(ysError::IncompatiblePlatforms);
+    ysOpenGLSdlContext *newContext = m_renderingContexts.NewGeneric<ysOpenGLSdlContext>();
+#endif
 
-        // TEMP
-        glFrontFace(GL_CCW);
+    YDS_NESTED_ERROR_CALL(newContext->CreateRenderingContext(this, window, 4, 3));
 
-        SetFaceCulling(true);
-        SetFaceCullingMode(CullMode::Back);
+    // TEMP
+    glFrontFace(GL_CCW);
 
-        *context = static_cast<ysRenderingContext *>(newContext);
+    SetFaceCulling(true);
+    SetFaceCullingMode(CullMode::Back);
 
-        return YDS_ERROR_RETURN(ysError::None);
-    }
-    else {
-        return YDS_ERROR_RETURN_MSG(ysError::IncompatiblePlatforms, "Only Windows platforms are currently supported.");
-    }
+    *context = static_cast<ysRenderingContext *>(newContext);
+
+    return YDS_ERROR_RETURN(ysError::None);
 }
 
 ysError ysOpenGLDevice::UpdateRenderingContext(ysRenderingContext *context) {
@@ -183,8 +185,8 @@ ysError ysOpenGLDevice::CreateOnScreenRenderTarget(ysRenderTarget **newTarget, y
     return YDS_ERROR_RETURN(ysError::None);
 }
 
-ysError ysOpenGLDevice::CreateOffScreenRenderTarget(ysRenderTarget **newTarget, int width, int height, 
-    ysRenderTarget::Format format, bool colorData, bool depthBuffer) 
+ysError ysOpenGLDevice::CreateOffScreenRenderTarget(ysRenderTarget **newTarget, int width, int height,
+    ysRenderTarget::Format format, bool colorData, bool depthBuffer)
 {
     YDS_ERROR_DECLARE("CreateOffScreenRenderTarget");
 
@@ -639,7 +641,7 @@ ysError ysOpenGLDevice::EditBufferData(ysGPUBuffer *buffer, char *data) {
 
     ysOpenGLGPUBuffer *openglBuffer = static_cast<ysOpenGLGPUBuffer *>(buffer);
     int target = openglBuffer->GetTarget();
-    
+
     m_realContext->glBindBuffer(target, openglBuffer->m_bufferHandle);
     m_realContext->glBufferSubData(target, 0, openglBuffer->GetSize(), data);
 
@@ -696,8 +698,8 @@ ysError ysOpenGLDevice::CreateVertexShader(ysShader **newShader, const char *sha
     }
 
     ysOpenGLShader *newOpenGLShader = m_shaders.NewGeneric<ysOpenGLShader>();
-    strcpy_s(newOpenGLShader->m_shaderName, 64, shaderName);
-    strcpy_s(newOpenGLShader->m_filename, 256, shaderFilename);
+    newOpenGLShader->m_shaderName =  shaderName;
+    newOpenGLShader->m_filename = shaderFilename;
     newOpenGLShader->m_shaderType = ysShader::ShaderType::Vertex;
     newOpenGLShader->m_handle = handle;
 
@@ -749,8 +751,8 @@ ysError ysOpenGLDevice::CreatePixelShader(ysShader **newShader, const char *shad
     }
 
     ysOpenGLShader *newOpenGLShader = m_shaders.NewGeneric<ysOpenGLShader>();
-    strcpy_s(newOpenGLShader->m_shaderName, 64, shaderName);
-    strcpy_s(newOpenGLShader->m_filename, 256, shaderFilename);
+    newOpenGLShader->m_shaderName = shaderName;
+    newOpenGLShader->m_filename = shaderFilename;
     newOpenGLShader->m_shaderType = ysShader::ShaderType::Pixel;
     newOpenGLShader->m_handle = shaderHandle;
 
@@ -927,7 +929,7 @@ unsigned int ysOpenGLDevice::GetPixel(SDL_Surface *surface, int x, int y) {
         break;
     case 4:
         return *(Uint32 *)p;
-        break; 
+        break;
     default:
         return 0; // Avoid warnings
     }
@@ -944,7 +946,7 @@ ysError ysOpenGLDevice::CreateTexture(ysTexture **texture, const char *fname) {
     bool useAlpha = true;
 
     // Use SDL to load the image
-    SDL_Surface *pTexSurface = IMG_Load(fname); 
+    SDL_Surface *pTexSurface = IMG_Load(fname);
 
     if (pTexSurface == nullptr) {
         const char *err = IMG_GetError();
@@ -952,7 +954,7 @@ ysError ysOpenGLDevice::CreateTexture(ysTexture **texture, const char *fname) {
     }
 
     ysOpenGLTexture *newTexture = m_textures.NewGeneric<ysOpenGLTexture>();
-    strcpy_s(newTexture->m_filename, 257, fname);
+    newTexture->m_filename = fname;
 
     glGenTextures(1, &newTexture->m_handle);
     glBindTexture(GL_TEXTURE_2D, newTexture->m_handle);
@@ -1020,7 +1022,7 @@ ysError ysOpenGLDevice::CreateTexture(ysTexture **texture, int width, int height
     *texture = nullptr;
 
     ysOpenGLTexture *newTexture = m_textures.NewGeneric<ysOpenGLTexture>();
-    strcpy_s(newTexture->m_filename, 257, "");
+    newTexture->m_filename = "";
 
     glGenTextures(1, &newTexture->m_handle);
     glBindTexture(GL_TEXTURE_2D, newTexture->m_handle);
@@ -1050,7 +1052,7 @@ ysError ysOpenGLDevice::CreateAlphaTexture(ysTexture **texture, int width, int h
     *texture = nullptr;
 
     ysOpenGLTexture *newTexture = m_textures.NewGeneric<ysOpenGLTexture>();
-    strcpy_s(newTexture->m_filename, 257, "");
+    newTexture->m_filename = "";
 
     glGenTextures(1, &newTexture->m_handle);
     glBindTexture(GL_TEXTURE_2D, newTexture->m_handle);
@@ -1193,8 +1195,8 @@ void ysOpenGLDevice::Draw(int numFaces, int indexOffset, int vertexOffset) {
     }
 }
 
-ysError ysOpenGLDevice::CreateOpenGLOffScreenRenderTarget(ysRenderTarget *target, int width, int height, 
-    ysRenderTarget::Format format, bool colorData, bool depthBuffer) 
+ysError ysOpenGLDevice::CreateOpenGLOffScreenRenderTarget(ysRenderTarget *target, int width, int height,
+    ysRenderTarget::Format format, bool colorData, bool depthBuffer)
 {
     YDS_ERROR_DECLARE("CreateOpenGLOffScreenRenderTarget");
 
@@ -1303,3 +1305,6 @@ ysError ysOpenGLDevice::DestroyOpenGLRenderTarget(ysRenderTarget *target) {
 
     return YDS_ERROR_RETURN(ysError::None);
 }
+
+// ctor magic to register as a subclass
+static ysRegisterSubclass<ysOpenGLDevice> reg();
