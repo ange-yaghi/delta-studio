@@ -28,8 +28,9 @@ void ysGeometryExportFile::Close() {
 void ysGeometryExportFile::FillOutputHeader(ysObjectData* object, ObjectOutputHeader* header) {
     memset(header, 0, sizeof(ObjectOutputHeader));
 
-    strcpy_s(header->ObjectName, 64, object->m_name);
-    strcpy_s(header->ObjectMaterial, 64, object->m_materialName);
+    // Will be implicitly null-terminated due to memset
+    strncpy(header->ObjectName, object->m_name, sizeof(header->ObjectName) - 1);
+    strncpy(header->ObjectMaterial, object->m_materialName, sizeof(header->ObjectMaterial) - 1);
 
     header->ModelIndex = object->m_objectInformation.ModelIndex;
     header->ParentIndex = object->m_objectInformation.ParentIndex;
@@ -76,8 +77,9 @@ void ysGeometryExportFile::FillOutputHeader(ysObjectData* object, ObjectOutputHe
 void ysGeometryExportFile::FillOutputHeader(const ysInterchangeObject *object, const VertexInfo *info, ObjectOutputHeader *header) {
     memset(header, 0, sizeof(ObjectOutputHeader));
 
-    strcpy_s(header->ObjectName, 64, object->Name.c_str());
-    strcpy_s(header->ObjectMaterial, 64, object->MaterialName.c_str());
+    // Will be implicitly null-terminated due to memset
+    strncpy(header->ObjectName, object->Name.c_str(), sizeof(header->ObjectName) - 1);
+    strncpy(header->ObjectMaterial, object->MaterialName.c_str(), sizeof(header->ObjectMaterial) - 1);
 
     header->ModelIndex = object->ModelIndex;
     header->ParentIndex = object->ParentIndex;
