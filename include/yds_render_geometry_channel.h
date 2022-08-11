@@ -3,6 +3,8 @@
 
 #include "yds_base.h"
 
+#include <string>
+
 class ysRenderGeometryChannel : public ysObject {
     friend class ysRenderGeometryFormat;
 
@@ -22,10 +24,10 @@ public:
     ysRenderGeometryChannel();
     ~ysRenderGeometryChannel();
 
-    const char *    GetName()    const { return m_name; }
-    int                GetOffset() const { return m_offset; }
-    int                GetSize()    const { return GetFormatSize(m_format); }
-    int                GetLength() const { return GetFormatLength(m_format); }
+    std::string      GetName()    const { return m_name; }
+    int              GetOffset() const { return m_offset; }
+    int              GetSize()    const { return GetFormatSize(m_format); }
+    int              GetLength() const { return GetFormatLength(m_format); }
     ChannelFormat    GetFormat() const { return m_format; }
 
     static int GetFormatSize(ChannelFormat format) {
@@ -65,8 +67,8 @@ public:
     }
 
 protected:
-    char            m_name[MAX_NAME_LENGTH];
-    int                m_offset;
+    std::string      m_name;
+    int              m_offset;
     ChannelFormat    m_format;
 };
 

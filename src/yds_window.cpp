@@ -55,13 +55,13 @@ ysWindow::~ysWindow() {
     /* void */
 }
 
-ysError ysWindow::InitializeWindow(ysWindow *parent, const char *title, WindowStyle style, int x, int y, int width, int height, ysMonitor *monitor) {
+ysError ysWindow::InitializeWindow(ysWindow *parent, std::string title, WindowStyle style, int x, int y, int width, int height, ysMonitor *monitor) {
     YDS_ERROR_DECLARE("InitializeWindow");
 
     m_width = width;
     m_height = height;
 
-    strcpy_s(m_title, 256, title);
+    m_title = title;
 
     m_locationx = x;
     m_locationy = y;
@@ -74,7 +74,7 @@ ysError ysWindow::InitializeWindow(ysWindow *parent, const char *title, WindowSt
     return YDS_ERROR_RETURN(ysError::None);
 }
 
-ysError ysWindow::InitializeWindow(ysWindow *parent, const char *title, WindowStyle style, ysMonitor *monitor) {
+ysError ysWindow::InitializeWindow(ysWindow *parent, std::string title, WindowStyle style, ysMonitor *monitor) {
     YDS_ERROR_DECLARE("InitializeWindow");
 
     YDS_NESTED_ERROR_CALL(
@@ -135,8 +135,8 @@ void ysWindow::SetWindowSize(int width, int height) {
     AL_SetSize(width, height);
 }
 
-void ysWindow::SetTitle(const char *title) {
-    strcpy_s(m_title, 256, title);
+void ysWindow::SetTitle(std::string title) {
+    m_title = title;
 }
 
 bool ysWindow::SetWindowStyle(WindowStyle style) {

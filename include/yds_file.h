@@ -5,10 +5,10 @@
 
 #include <iostream>
 #include <fstream>
+#include <string>
 
 class ysFile : ysObject {
 public:
-    static const int MAX_FILE_NAME_LENGTH = 256;
 
     enum FILE_MODE {
         // Defaults
@@ -21,10 +21,10 @@ public:
 
 public:
     ysFile();
-    ysFile(const char *fname);
+    ysFile(std::string fname);
     ~ysFile();
 
-    ysError OpenFile(const char *fname, unsigned int filemode = FILE_READ);
+    ysError OpenFile(std::string fname, unsigned int filemode = FILE_READ);
     void CloseFile();
 
     int GetFileLength();
@@ -33,7 +33,7 @@ public:
     bool IsOpen() { return m_file.is_open(); }
 
 protected:
-    char m_name[MAX_FILE_NAME_LENGTH];
+    std::string m_name;
     unsigned int m_filemode;
 
     std::fstream m_file;
