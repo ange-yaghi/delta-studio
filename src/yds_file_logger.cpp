@@ -10,12 +10,12 @@ ysFileLogger::~ysFileLogger() {
     /* void */
 }
 
-void ysFileLogger::OpenFile(const char *fname) {
-    strcpy_s(m_fname, 256, fname);
+void ysFileLogger::OpenFile(std::string fname) {
+    m_fname = fname;
 }
 
 void ysFileLogger::Initialize() {
-    m_stream.open(m_fname, std::ios::out);
+    m_stream.open(m_fname.c_str(), std::ios::out);
 }
 
 void ysFileLogger::Close() {

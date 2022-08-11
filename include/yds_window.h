@@ -4,13 +4,13 @@
 #include "yds_window_system_object.h"
 #include "yds_monitor.h"
 
+#include <string>
+
 class ysWindowEventHandler;
 class ysWindowSystem;
 
 class ysWindow : public ysWindowSystemObject {
 public:
-    static const int MAX_NAME_LENGTH = 256;
-
     enum class WindowState {
         Visible,
         Hidden,
@@ -33,8 +33,8 @@ public:
     virtual ~ysWindow();
 
     /* Interface */
-    virtual ysError InitializeWindow(ysWindow *parent, const char *title, WindowStyle style, int x, int y, int width, int height, ysMonitor *monitor);
-    virtual ysError InitializeWindow(ysWindow *parent, const char *title, WindowStyle style, ysMonitor *monitor);
+    virtual ysError InitializeWindow(ysWindow *parent, std::string title, WindowStyle style, int x, int y, int width, int height, ysMonitor *monitor);
+    virtual ysError InitializeWindow(ysWindow *parent, std::string title, WindowStyle style, ysMonitor *monitor);
 
     virtual void Close() { SetState(WindowState::Closed); }
     virtual void SetState(WindowState state = WindowState::Visible) { m_windowState = state; }
@@ -64,7 +64,7 @@ public:
     virtual void SetScreenSize(int width, int height);
     virtual void SetWindowSize(int width, int height);
     virtual void SetLocation(int x, int y);
-    virtual void SetTitle(const char *title);
+    virtual void SetTitle(std::string title);
 
     virtual void StartResizing() { m_resizing = true; }
     virtual void EndResizing() { m_resizing = false; }
@@ -112,7 +112,7 @@ protected:
     int m_locationy;
 
     // Title
-    char m_title[MAX_NAME_LENGTH];
+    std::string m_title;
 
     // Current Window State
     WindowState m_windowState;
