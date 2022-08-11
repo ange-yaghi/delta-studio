@@ -19,7 +19,7 @@ ysError ysFile::OpenFile(const char *fname, unsigned int filemode) {
 
     strcpy_s(m_name, MAX_FILE_NAME_LENGTH, fname);
 
-    unsigned int openMode=0;
+    std::ios_base::openmode openMode = {};
     if (filemode & FILE_READ) openMode |= std::ios::in;
     else openMode |= std::ios::out;
 
