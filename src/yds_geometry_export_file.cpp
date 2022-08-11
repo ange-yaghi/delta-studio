@@ -1,6 +1,7 @@
 #include "../include/yds_geometry_export_file.h"
 
 #include <math.h>
+#include <float.h>
 
 ysGeometryExportFile::ysGeometryExportFile() : ysObject("ysGeometryExportFile") {
     /* void */
@@ -178,12 +179,12 @@ int ysGeometryExportFile::PackVertexData(ysObjectData *object, int maxBonesPerVe
             }
         }
     }
-    
+
     char *data = (char *)malloc(packedSize);
     char *location = data;
 
     for (int vert = 0; vert < object->m_objectStatistics.NumVertices; ++vert) {
-        ysVector3 &vertex = object->m_vertices[vert]; 
+        ysVector3 &vertex = object->m_vertices[vert];
 
         WriteFloatToBuffer(vertex.x, &location);
         WriteFloatToBuffer(vertex.y, &location);
@@ -205,7 +206,7 @@ int ysGeometryExportFile::PackVertexData(ysObjectData *object, int maxBonesPerVe
         }
 
         if (object->m_normals.IsActive()) {
-            ysVector3 &normal = object->m_normals[vert]; 
+            ysVector3 &normal = object->m_normals[vert];
 
             WriteFloatToBuffer(normal.x, &location);
             WriteFloatToBuffer(normal.y, &location);
@@ -233,9 +234,9 @@ int ysGeometryExportFile::PackVertexData(ysObjectData *object, int maxBonesPerVe
                 }
             }
         }
-    
+
         if (object->m_tangents.IsActive()) {
-            ysVector4 &tangent = object->m_tangents[vert]; 
+            ysVector4 &tangent = object->m_tangents[vert];
 
             WriteFloatToBuffer(tangent.x, &location);
             WriteFloatToBuffer(tangent.y, &location);

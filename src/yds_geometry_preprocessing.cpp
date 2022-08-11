@@ -5,6 +5,7 @@
 #include <memory>
 #include <assert.h>
 #include <float.h>
+#include <limits.h>
 
 bool ysGeometryPreprocessing::ConnectedFaces(ysObjectData *object, int face1, int face2) {
     for (int i = 0; i < 3; i++) {
