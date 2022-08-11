@@ -1,7 +1,6 @@
 #include "../include/yds_audio_system.h"
 
 #include "../include/yds_audio_device.h"
-#include "../include/yds_ds8_system.h"
 
 ysAudioSystem::ysAudioSystem() : ysAudioSystemObject("AUDIO_SYSTEM", API::Undefined) {
     /* void */
@@ -15,6 +14,12 @@ ysAudioSystem::~ysAudioSystem() {
     /* void */
 }
 
+template<ysAudioSystemObject::API api>
+ysAudioSystem* ysAudioSystem::CreateApiSystem() {
+    // Generic template for when the API is not supported
+    return nullptr;
+}
+
 ysError ysAudioSystem::CreateAudioSystem(ysAudioSystem **newAudioSystem, API api) {
     YDS_ERROR_DECLARE("CreateAudioSystem");
 
@@ -25,12 +30,14 @@ ysError ysAudioSystem::CreateAudioSystem(ysAudioSystem **newAudioSystem, API api
 
     switch (api) {
     case API::DirectSound8:
-        *newAudioSystem = new ysDS8System;
+        *newAudioSystem = CreateApiSystem<API::DirectSound8>();
         break;
     default:
         *newAudioSystem = nullptr;
         break;
     }
+
+    if (*newAudioSystem == nullptr) return YDS_ERROR_RETURN_STATIC(ysError::NoPlatform);
 
     return YDS_ERROR_RETURN_STATIC(ysError::None);
 }
