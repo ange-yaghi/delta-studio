@@ -71,45 +71,28 @@ ysQuaternion ysMath::LoadQuaternion(float angle, const ysVector &axis) {
 
 ysVector4 ysMath::GetVector4(const ysVector &v) {
     ysVector4 r;
-    r.x = v.m128_f32[0];
-    r.y = v.m128_f32[1];
-    r.z = v.m128_f32[2];
-    r.w = v.m128_f32[3];
+    r.x = GetX(v);
+    r.y = GetY(v);
+    r.z = GetZ(v);
+    r.w = GetW(v);
 
     return r;
 }
 
 ysVector3 ysMath::GetVector3(const ysVector &v) {
     ysVector3 r;
-    r.x = v.m128_f32[0];
-    r.y = v.m128_f32[1];
-    r.z = v.m128_f32[2];
+    r.x = GetX(v);
+    r.y = GetY(v);
+    r.z = GetZ(v);
 
     return r;
 }
 
 ysVector2 ysMath::GetVector2(const ysVector &v) {
     ysVector2 r;
-    r.x = v.m128_f32[0];
-    r.y = v.m128_f32[1];
-
+    r.x = GetX(v);
+    r.y = GetY(v);
     return r;
-}
-
-float ysMath::GetQuatX(const ysQuaternion &v) {
-    return v.m128_f32[1];
-}
-
-float ysMath::GetQuatY(const ysQuaternion &v) {
-    return v.m128_f32[2];
-}
-
-float ysMath::GetQuatZ(const ysQuaternion &v) {
-    return v.m128_f32[3];
-}
-
-float ysMath::GetQuatW(const ysQuaternion &v) {
-    return v.m128_f32[0];
 }
 
 ysVector ysMath::Dot3(const ysVector &v1, const ysVector &v2) {
