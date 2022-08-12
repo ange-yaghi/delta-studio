@@ -64,6 +64,7 @@ dbasic::DeltaEngine::DeltaEngine() {
 
     m_cursorHidden = false;
     m_cursorPositionLocked = false;
+    m_globalInputCapture = false;
 }
 
 dbasic::DeltaEngine::~DeltaEngine() {
@@ -531,7 +532,8 @@ void dbasic::DeltaEngine::SetConsoleColor(const ysVector &v) {
 }
 
 bool dbasic::DeltaEngine::IsKeyDown(ysKey::Code key) {
-    if (m_mainKeyboard != nullptr) {
+    if (!m_globalInputCapture && !m_gameWindow->IsActive()) return false;
+    else if (m_mainKeyboard != nullptr) {
         return m_mainKeyboard->IsKeyDown(key);
     }
 
@@ -539,7 +541,8 @@ bool dbasic::DeltaEngine::IsKeyDown(ysKey::Code key) {
 }
 
 bool dbasic::DeltaEngine::ProcessKeyDown(ysKey::Code key) {
-    if (m_mainKeyboard != nullptr) {
+    if (!m_globalInputCapture && !m_gameWindow->IsActive()) return false;
+    else if (m_mainKeyboard != nullptr) {
         return m_mainKeyboard->ProcessKeyTransition(key);
     }
 
@@ -547,7 +550,8 @@ bool dbasic::DeltaEngine::ProcessKeyDown(ysKey::Code key) {
 }
 
 bool dbasic::DeltaEngine::ProcessKeyUp(ysKey::Code key) {
-    if (m_mainKeyboard != nullptr) {
+    if (!m_globalInputCapture && !m_gameWindow->IsActive()) return false;
+    else if (m_mainKeyboard != nullptr && m_gameWindow->IsActive()) {
         return m_mainKeyboard->ProcessKeyTransition(key, ysKey::State::UpTransition);
     }
 
@@ -555,7 +559,8 @@ bool dbasic::DeltaEngine::ProcessKeyUp(ysKey::Code key) {
 }
 
 bool dbasic::DeltaEngine::ProcessMouseButtonDown(ysMouse::Button key) {
-    if (m_mainMouse != nullptr) {
+    if (!m_globalInputCapture && !m_gameWindow->IsActive()) return false;
+    else if (m_mainMouse != nullptr && m_gameWindow->IsActive()) {
         return m_mainMouse->ProcessMouseButton(key, ysMouse::ButtonState::DownTransition);
     }
 
@@ -563,7 +568,8 @@ bool dbasic::DeltaEngine::ProcessMouseButtonDown(ysMouse::Button key) {
 }
 
 bool dbasic::DeltaEngine::ProcessMouseButtonUp(ysMouse::Button key) {
-    if (m_mainMouse != nullptr) {
+    if (!m_globalInputCapture && !m_gameWindow->IsActive()) return false;
+    else if (m_mainMouse != nullptr && m_gameWindow->IsActive()) {
         return m_mainMouse->ProcessMouseButton(key, ysMouse::ButtonState::UpTransition);
     }
 
@@ -571,7 +577,8 @@ bool dbasic::DeltaEngine::ProcessMouseButtonUp(ysMouse::Button key) {
 }
 
 bool dbasic::DeltaEngine::IsMouseButtonDown(ysMouse::Button button) {
-    if (m_mainMouse != nullptr) {
+    if (!m_globalInputCapture && !m_gameWindow->IsActive()) return false;
+    else if (m_mainMouse != nullptr) {
         return m_mainMouse->IsDown(button);
     }
 
