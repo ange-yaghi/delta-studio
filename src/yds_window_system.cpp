@@ -1,7 +1,7 @@
 #include "../include/yds_window_system.h"
 
 #include "../include/yds_input_system.h"
-#include "../include/yds_windows_window_system.h"
+//#include "../include/yds_windows_window_system.h"
 
 ysWindowSystem *ysWindowSystem::g_instance = nullptr;
 
@@ -35,6 +35,20 @@ ysWindowSystem::~ysWindowSystem() {
     /* void */
 }
 
+#ifdef PLAT_SDL
+template <>
+ysWindowSystem* ysWindowSystem::CreatePlatformWindowSystem<ysWindowSystemObject::Platform::Sdl>();
+#endif
+#ifdef PLAT_WIN32
+template <>
+ysWindowSystem* ysWindowSystem::CreatePlatformWindowSystem<ysWindowSystemObject::Platform::Windows>();
+#endif
+
+template<ysWindowSystemObject::Platform plat>
+ysWindowSystem* ysWindowSystem::CreatePlatformWindowSystem() {
+    return nullptr;
+}
+
 ysError ysWindowSystem::CreateWindowSystem(ysWindowSystem **newSystem, Platform platform) {
     YDS_ERROR_DECLARE("CreateWindowSystem");
 
@@ -46,11 +60,16 @@ ysError ysWindowSystem::CreateWindowSystem(ysWindowSystem **newSystem, Platform 
 
     switch (platform) {
     case Platform::Windows:
-        *newSystem = new ysWindowsWindowSystem();
+        *newSystem = CreatePlatformWindowSystem<Platform::Windows>();
+        break;
+    case Platform::Sdl:
+        *newSystem = CreatePlatformWindowSystem<Platform::Sdl>();
         break;
     default:
         break;
     }
+
+    if (*newSystem == nullptr) return YDS_ERROR_RETURN_STATIC(ysError::NoPlatform);
 
     return YDS_ERROR_RETURN_STATIC(ysError::None);
 }

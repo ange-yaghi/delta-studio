@@ -17,7 +17,12 @@ option(ENABLE_VULKAN "Enable the Vulkan graphics API" ON)
 cmake_dependent_option(ENABLE_DSOUND "Enable the DirectSound API" ON WIN32 OFF)
 
 # Platform
+option(ENABLE_PLAT_SDL "Enable the SDL platform" ON)
 cmake_dependent_option(ENABLE_PLAT_WIN32 "Enable the Win32 Platform" ON WIN32 OFF)
+
+if (ENABLE_PLAT_SDL OR ENABLE_OPENGL)
+    set(ENABLE_SDL ON)
+endif()
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake/")
@@ -67,13 +72,6 @@ set(
     VULKAN_LIBS
     ${CMAKE_CURRENT_SOURCE_DIR}/dependencies/libraries/vulkan/lib/${TARGET_ARCHITECTURE})
 include_directories(dependencies/libraries/vulkan/include)
-
-# =========================================================
-# SDL2
-
-find_package(SDL2 REQUIRED)
-find_package(SDL2_image REQUIRED)
-include_directories(${SDL2_INCLUDE_DIRS} ${SDL2_IMAGE_INCLUDE_DIRS})
 
 # =========================================================
 # Boost
@@ -241,10 +239,6 @@ add_library(delta-core STATIC
 )
 
 target_link_libraries(delta-core PUBLIC
-    # SDL
-    ${SDL2_LIBRARY}
-    ${SDL2_IMAGE_LIBRARIES}
-
     # Boost
     Boost::filesystem
 )
@@ -422,6 +416,38 @@ if (ENABLE_PLAT_WIN32)
         winmm
     )
 
+    target_compile_definitions(delta-core PRIVATE
+        -DPLAT_WIN32
+    )
+endif()
+
+if (ENABLE_PLAT_SDL)
+    target_sources(delta-core PRIVATE
+        src/yds_sdl_monitor.cpp
+        src/yds_sdl_window.cpp
+        src/ysd_sdl_window_system.cpp
+
+        include/yds_sdl_monitor.h
+        include/yds_sdl_window.h
+        include/yds_sdl_window_system.h
+    )
+
+    target_compile_definitions(delta-core PRIVATE
+        -DPLAT_SDL
+    )
+endif()
+
+if (ENABLE_SDL)
+    find_package(SDL2 REQUIRED)
+    find_package(SDL2_image REQUIRED)
+    include_directories(${SDL2_INCLUDE_DIRS} ${SDL2_IMAGE_INCLUDE_DIRS})
+
+    target_link_libraries(delta-core PUBLIC
+
+        # SDL
+        ${SDL2_LIBRARY}
+        ${SDL2_IMAGE_LIBRARIES}
+    )
 endif()
 
 add_subdirectory(physics)
