@@ -54,12 +54,19 @@ find_package(SDL2_image REQUIRED)
 include_directories(${SDL2_INCLUDE_DIRS} ${SDL2_IMAGE_INCLUDE_DIRS})
 
 # =========================================================
-# Boost
+# Filesystem (stdlib or Boost)
 
-set(Boost_USE_STATIC_LIBS ON)
-set(Boost_USE_MULTITHREADED ON)
-set(Boost_USE_STATIC_RUNTIME OFF)
-find_package(Boost 1.40 COMPONENTS filesystem REQUIRED)
+# Aim for C++17's filesystem first, fallback on boost
+include(CheckCXXSymbolExists)
+check_cxx_symbol_exists(std::filesystem::path::preferred_separator "filesystem" USE_CXX17_FILESYSTEM)
+add_compile_definitions(USE_CXX17_FILESYSTEM=${USE_CXX17_FILESYSTEM})
+
+if (NOT USE_CXX17_FILESYSTEM)
+    set(Boost_USE_STATIC_LIBS ON)
+    set(Boost_USE_MULTITHREADED ON)
+    set(Boost_USE_STATIC_RUNTIME OFF)
+    find_package(Boost 1.40 COMPONENTS filesystem REQUIRED)
+endif()
 
 # =========================================================
 # STB
@@ -339,12 +346,14 @@ target_link_libraries(delta-core PUBLIC
     # Vulkan
     ${VULKAN_LIBS}/vulkan-1.lib
 
-    # Boost
-    Boost::filesystem
-
     winmm
     OpenGL32
 )
+
+# Boost
+if (NOT USE_CXX17_FILESYSTEM)
+    target_link_libraries(delta-core PUBLIC Boost::filesystem)
+endif()
 
 add_subdirectory(physics)
 add_subdirectory(engines)
