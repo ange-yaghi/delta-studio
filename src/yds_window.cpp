@@ -17,7 +17,7 @@ ysWindow::ysWindow() : ysWindowSystemObject("WINDOW", Platform::Unknown) {
     m_locationy = 0;
 
     m_windowStyle = WindowStyle::Unknown;
-    m_windowState = WindowState::Hidden;
+    m_windowState = WindowState::Visible;
     m_parent = nullptr;
 
     m_active = false;
@@ -40,7 +40,7 @@ ysWindow::ysWindow(Platform platform) : ysWindowSystemObject("WINDOW", platform)
     m_locationy = 0;
 
     m_windowStyle = WindowStyle::Unknown;
-    m_windowState = WindowState::Hidden;
+    m_windowState = WindowState::Visible;
     m_parent = nullptr;
 
     m_active = true;
@@ -66,7 +66,7 @@ ysError ysWindow::InitializeWindow(ysWindow *parent, std::string title, WindowSt
     m_locationx = x;
     m_locationy = y;
 
-    m_windowState = WindowState::Hidden; // DEFAULT
+    m_windowState = WindowState::Visible; // DEFAULT
     m_windowStyle = style;
 
     m_monitor = monitor;
