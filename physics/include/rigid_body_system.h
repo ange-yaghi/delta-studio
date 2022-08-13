@@ -31,7 +31,7 @@ namespace dphysics {
         ~RigidBodySystem();
 
         // Collision Detector Interface
-        CollisionDetector CollisionDetector;
+        CollisionDetector m_collisionDetector;
 
         void InitializeFrictionTable(
             int materialCount, float defaultStaticFriction, float defaultDynamicFriction);

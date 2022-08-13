@@ -118,7 +118,11 @@ struct ysMatrix33 {
     };
 };
 
+#ifdef _MSC_VER
 #define YS_MATH_CONST extern const __declspec(selectany)
+#else
+#define YS_MATH_CONST static constexpr
+#endif
 
 namespace ysMath {
 

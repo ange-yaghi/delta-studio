@@ -89,7 +89,9 @@ void ysTimingSystem::Update() {
 }
 
 void ysTimingSystem::Initialize() {
+#if _WIN32
     qpcFlag = (QueryPerformanceFrequency(&qpcFrequency) > 0);
+#endif
 
     m_frameNumber = 0;
 

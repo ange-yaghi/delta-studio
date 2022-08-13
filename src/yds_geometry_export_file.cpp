@@ -36,7 +36,7 @@ void ysGeometryExportFile::FillOutputHeader(ysObjectData* object, ObjectOutputHe
     header->ParentIndex = object->m_objectInformation.ParentIndex;
     header->ParentInstanceIndex = object->m_objectInformation.ParentInstance;
     header->SkeletonIndex = object->m_objectInformation.SkeletonIndex;
-    header->ObjectType = static_cast<int>(object->m_objectInformation.ObjectType);
+    header->ObjectType = static_cast<int>(object->m_objectInformation.objectType);
 
     header->Position = object->m_objectTransformation.Position;
     header->OrientationEuler = object->m_objectTransformation.OrientationEuler;
@@ -58,7 +58,7 @@ void ysGeometryExportFile::FillOutputHeader(ysObjectData* object, ObjectOutputHe
     if (object->m_objectStatistics.NumUVChannels)    header->Flags |= MDF_TEXTURE_DATA;
 
     float minx = FLT_MAX, miny = FLT_MAX, minz = FLT_MAX, maxx = -FLT_MAX, maxy = -FLT_MAX, maxz = -FLT_MAX;
-    if (object->m_objectInformation.ObjectType == ysObjectData::ObjectType::Geometry) {
+    if (object->m_objectInformation.objectType == ysObjectData::ObjectType::Geometry) {
         for (int vert = 0; vert < object->m_objectStatistics.NumVertices; vert++) {
             const ysVector3 vertex = object->m_vertices[vert];
             if (vertex.x > maxx) maxx = vertex.x;
@@ -408,7 +408,7 @@ ysError ysGeometryExportFile::WriteObject(ysObjectData *object) {
     void *vertexData = nullptr;
     int vertexDataSize = 0;
 
-    if (object->m_objectInformation.ObjectType == ysObjectData::ObjectType::Geometry) {
+    if (object->m_objectInformation.objectType == ysObjectData::ObjectType::Geometry) {
         vertexDataSize = PackVertexData(object, 4 /* TEMP */, &vertexData);
         header.VertexDataSize = vertexDataSize;
     }
@@ -416,7 +416,7 @@ ysError ysGeometryExportFile::WriteObject(ysObjectData *object) {
     m_file.write((char *)&header, sizeof(ObjectOutputHeader));
 
     // Geometry Data
-    if (object->m_objectInformation.ObjectType == ysObjectData::ObjectType::Geometry) {
+    if (object->m_objectInformation.objectType == ysObjectData::ObjectType::Geometry) {
         m_file.write((char *)vertexData, vertexDataSize);
 
         for (int i  =0; i < object->m_objectStatistics.NumFaces; ++i) {
@@ -434,7 +434,7 @@ ysError ysGeometryExportFile::WriteObject(ysObjectData *object) {
     }
 
     // Primitive Data
-    if (object->m_objectInformation.ObjectType == ysObjectData::ObjectType::Plane) {
+    if (object->m_objectInformation.objectType == ysObjectData::ObjectType::Plane) {
         m_file.write((char *)&object->m_length, sizeof(float));
         m_file.write((char *)&object->m_width, sizeof(float));
     }
