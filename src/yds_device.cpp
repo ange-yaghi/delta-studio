@@ -34,12 +34,6 @@ ysDevice::~ysDevice() {
     /* void */
 }
 
-template<ysContextObject::DeviceAPI api>
-ysDevice* ysDevice::CreateApiDevice() {
-    // Generic template for when the API is not supported
-    return nullptr;
-}
-
 ysError ysDevice::CreateDevice(ysDevice **newDevice, DeviceAPI API) {
     YDS_ERROR_DECLARE("CreateDevice");
 
