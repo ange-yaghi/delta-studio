@@ -127,7 +127,7 @@ ysError dbasic::AssetManager::CompileSceneFile(const char *fname, float scale, b
         YDS_NESTED_ERROR_CALL(toolFile.ReadObject(&objects[i]));
         Material *material = FindMaterial(objects[i]->m_materialName);
 
-        if (objects[i]->m_objectInformation.ObjectType == ysObjectData::ObjectType::Geometry) {
+        if (objects[i]->m_objectInformation.objectType == ysObjectData::ObjectType::Geometry) {
             ysGeometryPreprocessing::ResolveSmoothingGroupAmbiguity(objects[i]);
             ysGeometryPreprocessing::CreateAutomaticSmoothingGroups(objects[i]);
             ysGeometryPreprocessing::SeparateBySmoothingGroups(objects[i]);

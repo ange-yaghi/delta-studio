@@ -232,11 +232,11 @@ ysError ysToolGeometryFile::ReadString(char *dest) {
 ysError ysToolGeometryFile::ReadObjectDataVersion000_005(ysObjectData *object) {
     YDS_ERROR_DECLARE("ReadObjectDataVersion000_005");
 
-    if (object->m_objectInformation.ObjectType == ysObjectData::ObjectType::Plane) {
+    if (object->m_objectInformation.objectType == ysObjectData::ObjectType::Plane) {
         m_file.read((char *)&object->m_length, sizeof(float));
         m_file.read((char *)&object->m_width, sizeof(float));
     }
-    else if (object->m_objectInformation.ObjectType == ysObjectData::ObjectType::Geometry) {
+    else if (object->m_objectInformation.objectType == ysObjectData::ObjectType::Geometry) {
         // ====================================================
         // Read In Vertex Data
         // ====================================================
@@ -350,7 +350,7 @@ ysError ysToolGeometryFile::ReadObjectVersion000(ysObjectData *object) {
     if (!m_file) return YDS_ERROR_RETURN(ysError::CorruptedFile);
 
     object->m_objectInformation.ModelIndex = objectInformation.ModelIndex;
-    object->m_objectInformation.ObjectType = objectInformation.ObjectType;
+    object->m_objectInformation.objectType = objectInformation.ObjectType;
     object->m_objectInformation.ParentIndex = objectInformation.ParentIndex;
     object->m_objectInformation.ParentInstance = -1;
     object->m_objectInformation.UsesBones = objectInformation.UsesBones;
@@ -392,7 +392,7 @@ ysError ysToolGeometryFile::ReadObjectVersion001(ysObjectData *object) {
     if (!m_file) return YDS_ERROR_RETURN(ysError::CorruptedFile);
 
     object->m_objectInformation.ModelIndex = objectInformation.ModelIndex;
-    object->m_objectInformation.ObjectType = objectInformation.ObjectType;
+    object->m_objectInformation.objectType = objectInformation.ObjectType;
     object->m_objectInformation.ParentIndex = objectInformation.ParentIndex;
     object->m_objectInformation.ParentInstance = -1;
     object->m_objectInformation.UsesBones = objectInformation.UsesBones;
@@ -438,7 +438,7 @@ ysError ysToolGeometryFile::ReadObjectVersion002(ysObjectData *object) {
     if (!m_file) return YDS_ERROR_RETURN(ysError::CorruptedFile);
 
     object->m_objectInformation.ModelIndex = objectInformation.ModelIndex;
-    object->m_objectInformation.ObjectType = objectInformation.ObjectType;
+    object->m_objectInformation.objectType = objectInformation.ObjectType;
     object->m_objectInformation.ParentIndex = objectInformation.ParentIndex;
     object->m_objectInformation.ParentInstance = -1;
     object->m_objectInformation.UsesBones = objectInformation.UsesBones;
@@ -484,7 +484,7 @@ ysError ysToolGeometryFile::ReadObjectVersion003(ysObjectData *object) {
     if (!m_file) return YDS_ERROR_RETURN(ysError::CorruptedFile);
 
     object->m_objectInformation.ModelIndex = objectInformation.ModelIndex;
-    object->m_objectInformation.ObjectType = objectInformation.ObjectType;
+    object->m_objectInformation.objectType = objectInformation.ObjectType;
     object->m_objectInformation.ParentIndex = objectInformation.ParentIndex;
     object->m_objectInformation.ParentInstance = objectInformation.ParentInstance;
     object->m_objectInformation.UsesBones = objectInformation.UsesBones;
@@ -529,7 +529,7 @@ ysError ysToolGeometryFile::ReadObjectVersion004(ysObjectData *object) {
     if (!m_file) return YDS_ERROR_RETURN(ysError::CorruptedFile);
 
     object->m_objectInformation.ModelIndex = objectInformation.ModelIndex;
-    object->m_objectInformation.ObjectType = objectInformation.ObjectType;
+    object->m_objectInformation.objectType = objectInformation.ObjectType;
     object->m_objectInformation.ParentIndex = objectInformation.ParentIndex;
     object->m_objectInformation.ParentInstance = objectInformation.ParentInstance;
     object->m_objectInformation.UsesBones = objectInformation.UsesBones;
@@ -574,7 +574,7 @@ ysError ysToolGeometryFile::ReadObjectVersion005(ysObjectData *object) {
     if (!m_file) return YDS_ERROR_RETURN(ysError::CorruptedFile);
 
     object->m_objectInformation.ModelIndex = objectInformation.ModelIndex;
-    object->m_objectInformation.ObjectType = objectInformation.ObjectType;
+    object->m_objectInformation.objectType = objectInformation.ObjectType;
     object->m_objectInformation.ParentIndex = objectInformation.ParentIndex;
     object->m_objectInformation.ParentInstance = objectInformation.ParentInstance;
     object->m_objectInformation.UsesBones = objectInformation.UsesBones;

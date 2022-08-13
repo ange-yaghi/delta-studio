@@ -200,8 +200,8 @@ void dphysics::RigidBodySystem::WriteFrameToReplayFile() {
 void dphysics::RigidBodySystem::GenerateCollisions(RigidBody *body1, RigidBody *body2) {
     if (!body1->IsAwake() && !body2->IsAwake()) return;
 
-    const int nPrim1 = body1->CollisionGeometry.GetNumObjects();
-    const int nPrim2 = body2->CollisionGeometry.GetNumObjects();
+    const int nPrim1 = body1->m_collisionGeometry.GetNumObjects();
+    const int nPrim2 = body2->m_collisionGeometry.GetNumObjects();
 
     RigidBody *body1Ord = nullptr;
     RigidBody *body2Ord = nullptr;
@@ -209,8 +209,8 @@ void dphysics::RigidBodySystem::GenerateCollisions(RigidBody *body1, RigidBody *
     bool coarseCollision = true;
     bool coarsePresent = false;
 
-    CollisionObject **object1Prims = body1->CollisionGeometry.GetCollisionObjects();
-    CollisionObject **object2Prims = body2->CollisionGeometry.GetCollisionObjects();
+    CollisionObject **object1Prims = body1->m_collisionGeometry.GetCollisionObjects();
+    CollisionObject **object2Prims = body2->m_collisionGeometry.GetCollisionObjects();
 
     for (int i = 0; i < nPrim1; i++) {
         for (int j = 0; j < nPrim2; j++) {
@@ -244,13 +244,13 @@ void dphysics::RigidBodySystem::GenerateCollisions(RigidBody *body1, RigidBody *
                 if (mode1 == CollisionObject::Mode::Fine) {
                     if (prim1->GetType() == CollisionObject::Type::Circle) {
                         if (prim2->GetType() == CollisionObject::Type::Circle) {
-                            nCollisions = CollisionDetector.CircleCircleCollision(
+                            nCollisions = m_collisionDetector.CircleCircleCollision(
                                 newCollisions,
                                 body1Ord->GetRoot(), body2Ord->GetRoot(),
                                 prim1->GetAsCircle(), prim2->GetAsCircle());
                         }
                         else if (prim2->GetType() == CollisionObject::Type::Box) {
-                            nCollisions = CollisionDetector.CircleBoxCollision(
+                            nCollisions = m_collisionDetector.CircleBoxCollision(
                                 newCollisions,
                                 body1Ord->GetRoot(), body2Ord->GetRoot(),
                                 prim1->GetAsCircle(), prim2->GetAsBox());
@@ -260,7 +260,7 @@ void dphysics::RigidBodySystem::GenerateCollisions(RigidBody *body1, RigidBody *
 
                 if (prim1->GetType() == CollisionObject::Type::Box) {
                     if (prim2->GetType() == CollisionObject::Type::Box) {
-                        nCollisions = CollisionDetector.BoxBoxCollision(
+                        nCollisions = m_collisionDetector.BoxBoxCollision(
                             newCollisions,
                             body1Ord->GetRoot(), body2Ord->GetRoot(),
                             prim1->GetAsBox(), prim2->GetAsBox());
@@ -272,7 +272,7 @@ void dphysics::RigidBodySystem::GenerateCollisions(RigidBody *body1, RigidBody *
                 {
                     if (prim1->GetType() == CollisionObject::Type::Circle) {
                         if (prim2->GetType() == CollisionObject::Type::Circle) {
-                            bool intersect = CollisionDetector.CircleCircleIntersect(
+                            bool intersect = m_collisionDetector.CircleCircleIntersect(
                                 body1Ord->GetRoot(), body2Ord->GetRoot(),
                                 prim1->GetAsCircle(), prim2->GetAsCircle());
 
@@ -288,7 +288,7 @@ void dphysics::RigidBodySystem::GenerateCollisions(RigidBody *body1, RigidBody *
                             }
                         }
                         else if (prim2->GetType() == CollisionObject::Type::Ray) {
-                            nCollisions = CollisionDetector.RayCircleCollision(
+                            nCollisions = m_collisionDetector.RayCircleCollision(
                                 newCollisions,
                                 body2Ord->GetRoot(), body1Ord->GetRoot(),
                                 prim2->GetAsRay(), prim1->GetAsCircle());
@@ -341,7 +341,7 @@ void dphysics::RigidBodySystem::GenerateCollisions() {
 
     for (int i = 0; i < nObjects; i++) {
         m_rigidBodyRegistry.Get(i)->ClearCollisions();
-        m_rigidBodyRegistry.Get(i)->CollisionGeometry.UpdatePrimitives();
+        m_rigidBodyRegistry.Get(i)->m_collisionGeometry.UpdatePrimitives();
     }
 
     GenerateCollisions(0, 0);
