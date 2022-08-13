@@ -13,7 +13,7 @@ class ysAnimationAction;
 class ysAnimationInterchangeFileReader : public ysObject {
 public:
     ysAnimationInterchangeFileReader();
-    ~ysAnimationInterchangeFileReader();
+    virtual ~ysAnimationInterchangeFileReader();
 
     virtual unsigned int GetActionCount() const = 0;
 

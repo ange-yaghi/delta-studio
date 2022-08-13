@@ -27,6 +27,7 @@ namespace dbasic {
             std::string Name = "";
             ysGPUBuffer *Buffer = nullptr;
             void *Memory = nullptr;
+            void (*Deleter)(void *) = nullptr;
             int Size = 0;
             int Slot = 0;
             BufferType Type = BufferType::SceneData;
@@ -76,6 +77,9 @@ namespace dbasic {
             newBuffer.Memory = (newBuffer.Preallocated)
                 ? memory
                 : reinterpret_cast<void *>(new T_ConstantData);
+            if (!newBuffer.Preallocated) {
+                newBuffer.Deleter = [](void *val) { delete static_cast<T_ConstantData *>(val); };
+            }
             newBuffer.Size = sizeof(T_ConstantData);
             newBuffer.Name = name;
             newBuffer.Type = type;

@@ -10,7 +10,7 @@ namespace dphysics {
     class ForceGenerator : public ysDynamicArrayElement {
     public:
         ForceGenerator();
-        ~ForceGenerator();
+        virtual ~ForceGenerator();
 
         virtual void GenerateForces(float dt) = 0;
 

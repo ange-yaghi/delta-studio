@@ -614,7 +614,7 @@ ysError ysToolGeometryFile::ReadObjectVersion005(ysObjectData *object) {
 void ysToolGeometryFile::DestroyMemory() {
     int n = m_allocationTracker.GetNumObjects();
     for (int i = n - 1; i >= 0; i--) {
-        delete[] m_allocationTracker.Get(i)->m_allocation;
+        m_allocationTracker.Get(i)->destroy();
         m_allocationTracker.Delete(i);
     }
 }
