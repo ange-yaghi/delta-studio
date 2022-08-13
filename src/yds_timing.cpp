@@ -39,12 +39,12 @@ uint64_t ysTimingSystem::GetTime() {
     return SystemTime();
 }
 
-inline unsigned __int64 SystemClock() {
+uint64_t SystemClock() {
     return __rdtsc();
 }
 
-unsigned __int64 ysTimingSystem::GetClock() {
-    return (unsigned long long) SystemClock();
+uint64_t ysTimingSystem::GetClock() {
+    return SystemClock();
 }
 
 void ysTimingSystem::SetPrecisionMode(Precision mode) {
