@@ -27,7 +27,7 @@ public:
 public:
     ysLoggerOutput();
     ysLoggerOutput(const char *typeID);
-    ~ysLoggerOutput();
+    virtual ~ysLoggerOutput();
 
     /* Initialize the output */
     virtual void Initialize() = 0;
