@@ -7,13 +7,16 @@
 #include "../include/yds_opengl_shader_program.h"
 #include "../include/yds_opengl_texture.h"
 
-#include "../include/yds_opengl_windows_context.h"
+// TODO: only include windows impl if we're on windows
+//#include "../include/yds_opengl_windows_context.h"
+#include "../include/yds_opengl_sdl_context.h"
 
 #include "OpenGL.h"
 #include <SDL.h>
 #include <SDL_image.h>
 
 #include "../include/yds_file.h"
+#include "../engines/basic/include/safe_string.h" // TODO: move this down into delta
 
 ysOpenGLDevice::ysOpenGLDevice() : ysDevice(ysContextObject::DeviceAPI::OpenGL4_0) {
     m_deviceCreated = false;
@@ -54,25 +57,43 @@ ysError ysOpenGLDevice::CreateRenderingContext(ysRenderingContext **context, ysW
     if (context == nullptr) return YDS_ERROR_RETURN(ysError::InvalidParameter);
     *context = nullptr;
 
-#ifdef _WIN32
-    if (window->GetPlatform() != ysWindowSystemObject::Platform::Windows) return YDS_ERROR_RETURN(ysError::IncompatiblePlatforms);
-    ysOpenGLWindowsContext *newContext = m_renderingContexts.NewGeneric<ysOpenGLWindowsContext>();
-#else
-    if (window->GetPlatform() != ysWindowSystemObject::Platform::Sdl) return YDS_ERROR_RETURN(ysError::IncompatiblePlatforms);
-    ysOpenGLSdlContext *newContext = m_renderingContexts.NewGeneric<ysOpenGLSdlContext>();
+#if 0 // TODO: Windows
+    if (window->GetPlatform() == ysWindowSystemObject::Platform::Windows) {
+        ysOpenGLWindowsContext *newContext = m_renderingContexts.NewGeneric<ysOpenGLWindowsContext>();
+        YDS_NESTED_ERROR_CALL(newContext->CreateRenderingContext(this, window, 4, 3));
+
+        // TEMP
+        glFrontFace(GL_CCW);
+
+        SetFaceCulling(true);
+        SetFaceCullingMode(CullMode::Back);
+
+        *context = static_cast<ysRenderingContext *>(newContext);
+
+        return YDS_ERROR_RETURN(ysError::None);
+    }
+    else
 #endif
+#if 1 // TODO: SDL
+    if (window->GetPlatform() == ysWindowSystemObject::Platform::Sdl) {
+        ysOpenGLSDLContext *newContext = m_renderingContexts.NewGeneric<ysOpenGLSDLContext>();
+        YDS_NESTED_ERROR_CALL(newContext->CreateRenderingContext(this, window, 4, 3));
 
-    YDS_NESTED_ERROR_CALL(newContext->CreateRenderingContext(this, window, 4, 3));
+        // TEMP
+        glFrontFace(GL_CCW);
 
-    // TEMP
-    glFrontFace(GL_CCW);
+        SetFaceCulling(true);
+        SetFaceCullingMode(CullMode::Back);
 
-    SetFaceCulling(true);
-    SetFaceCullingMode(CullMode::Back);
+        *context = static_cast<ysRenderingContext *>(newContext);
 
-    *context = static_cast<ysRenderingContext *>(newContext);
-
-    return YDS_ERROR_RETURN(ysError::None);
+        return YDS_ERROR_RETURN(ysError::None);
+    }
+    else
+#endif
+    {
+        return YDS_ERROR_RETURN_MSG(ysError::IncompatiblePlatforms, "Only Windows platforms are currently supported.");
+    }
 }
 
 ysError ysOpenGLDevice::UpdateRenderingContext(ysRenderingContext *context) {

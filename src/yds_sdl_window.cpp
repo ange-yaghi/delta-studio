@@ -36,7 +36,8 @@ ysError ysSdlWindow::InitializeWindow(ysWindow *parent, std::string title, Windo
         break;
     }
 
-    m_window = SDL_CreateWindow(title.c_str(), x, y, width, height, 0);
+    // TODO: choose between VULKAN and OPENGL here
+    m_window = SDL_CreateWindow(title.c_str(), x, y, width, height, SDL_WINDOW_OPENGL);
 
     return YDS_ERROR_RETURN(ysError::None);
 }
