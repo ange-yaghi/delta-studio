@@ -339,7 +339,9 @@ if(ENABLE_OPENGL)
         src/yds_opengl_shader.cpp
         src/yds_opengl_shader_program.cpp
         src/yds_opengl_texture.cpp
-        src/yds_opengl_windows_context.cpp
+        # TODO: make windows impl optional
+        #src/yds_opengl_windows_context.cpp
+        src/yds_opengl_sdl_context.cpp
 
         # Include files
         include/yds_opengl_context.h
@@ -351,6 +353,7 @@ if(ENABLE_OPENGL)
         include/yds_opengl_shader_program.h
         include/yds_opengl_texture.h
         include/yds_opengl_windows_context.h
+        include/yds_opengl_sdl_context.h
     )
 
     target_link_libraries(delta-core PUBLIC
