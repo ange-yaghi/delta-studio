@@ -97,7 +97,7 @@ ysError ysStreamingAudio::InitializeBuffer() {
         m_fileOffset += m_file->GetBufferSize();
     }
 
-    m_source->UnlockBufferSegments(audioBuffer, audioBufferSize, NULL, NULL);
+    m_source->UnlockBuffer(audioBuffer, audioBufferSize);
 
     m_currentWriteSubdivision = 0;
     m_currentReadSubdivision = 0;
