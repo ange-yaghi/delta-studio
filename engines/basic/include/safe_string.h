@@ -1,6 +1,7 @@
 #pragma once
 
-#include <string.h>
+#include <cstring>
+#include <utility>
 
 #ifndef __STDC_LIB_EXT1__
 
@@ -14,8 +15,12 @@
 //
 // Ideally we will remove these later
 
-int strcpy_s(char *__restrict dest, int destsz, const char *__restrict src);
-int strcat_s(char *__restrict dest, int destsz, const char *__restrict src);
-int sprintf_s(char *__restrict buffer, int bufsz, const char *__restrict format, ...);
+int strcpy_s(char *__restrict dest, size_t destsz, const char *__restrict src);
+int strcat_s(char *__restrict dest, size_t destsz, const char *__restrict src);
+int sprintf_s(char *__restrict buffer, size_t bufsz, const char *__restrict format, ...);
+template <size_t size, typename ...Args>
+int sprintf_s(char (&buffer)[size], const char *__restrict format, Args&&...args) {
+    return snprintf_s(buffer, size, std::forward<Args>(args)...);
+}
 
 #endif

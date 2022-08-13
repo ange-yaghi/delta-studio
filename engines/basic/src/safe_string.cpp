@@ -8,7 +8,7 @@
 #include <stdarg.h>
 #include <stdio.h>
 
-int strcpy_s(char *__restrict dest, int destsz, const char *__restrict src) {
+int strcpy_s(char *__restrict dest, size_t destsz, const char *__restrict src) {
     if (destsz > std::numeric_limits<int>::max() || destsz == 0 || dest == nullptr || src == nullptr)
         std::abort();
 
@@ -23,13 +23,13 @@ int strcpy_s(char *__restrict dest, int destsz, const char *__restrict src) {
 }
 
 
-int strcat_s(char *__restrict dest, int destsz, const char *__restrict src) {
+int strcat_s(char *__restrict dest, size_t destsz, const char *__restrict src) {
     if (destsz > std::numeric_limits<int>::max() || destsz == 0 || dest == nullptr || src == nullptr)
         std::abort();
 
     int i;
     for (i = 0; i < (destsz - 1); i++) {
-        if (src[i] == '\0')
+        if (dest[i] == '\0')
             goto found;
     }
     std::abort();
@@ -44,7 +44,7 @@ found:
     return 0;
 }
 
-int sprintf_s(char *__restrict buffer, int bufsz, const char *__restrict format, ...) {
+int sprintf_s(char *__restrict buffer, size_t bufsz, const char *__restrict format, ...) {
     if (bufsz > std::numeric_limits<int>::max() || bufsz == 0 || buffer == nullptr || format == nullptr)
         std::abort();
 
