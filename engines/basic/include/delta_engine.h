@@ -219,9 +219,6 @@ namespace dbasic {
         bool m_cursorPositionLocked;
         bool m_cursorHidden;
 
-        // Input
-        bool m_globalInputCapture;
-
     protected:
         // Initialization Routines
         ysError InitializeGeometry();

@@ -5,10 +5,12 @@
 
 ysInputSystem::ysInputSystem() : ysWindowSystemObject("INPUT_SYSTEM", Platform::Unknown) {
     m_windowSystem = nullptr;
+    m_enableGlobalInput = false;
 }
 
 ysInputSystem::ysInputSystem(Platform platform) : ysWindowSystemObject("INPUT_SYSTEM", platform) {
     m_windowSystem = nullptr;
+    m_enableGlobalInput = false;
 }
 
 ysInputSystem::~ysInputSystem() {
