@@ -14,8 +14,13 @@ ysError ysDS8AudioBuffer::Initialize(SampleOffset samples, const ysAudioParamete
     YDS_NESTED_ERROR_CALL(ysAudioBuffer::Initialize(samples, parameters));
 
     m_buffer = malloc(parameters.GetSizeFromSamples(samples));
-
-    return YDS_ERROR_RETURN(ysError::None);
+    if (m_buffer != nullptr) {
+        memset(m_buffer, 0, parameters.GetSizeFromSamples(samples));
+        return YDS_ERROR_RETURN(ysError::None);
+    }
+    else {
+        return YDS_ERROR_RETURN(ysError::OutOfMemory);
+    }
 }
 
 ysError ysDS8AudioBuffer::EditBuffer(void *data) {
