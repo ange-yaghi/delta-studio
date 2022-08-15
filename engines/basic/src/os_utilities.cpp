@@ -2,17 +2,15 @@
 
 #include "../include/path.h"
 
-#include <Windows.h>
+#include <SDL2/SDL.h>
 
 dbasic::Path dbasic::GetModulePath() {
-    // Windows only implementation for now
-    char path[256];
-    DWORD result = GetModuleFileName(NULL, path, 256);
+    // Query SDL for the path to our executable
+    char * path = SDL_GetBasePath();
+    if (path == nullptr) return ".";
 
-    Path fullPath = Path(path);
-    Path parentPath;
-
-    fullPath.GetParentPath(&parentPath);
-
+    // Return it but don't forget we own 'path'
+    Path parentPath(path);
+    SDL_free(path);
     return parentPath;
 }
