@@ -6,6 +6,11 @@
 #include <stdio.h>
 #include <string.h>
 
+#ifndef _MSC_VER
+// Trust in the compiler
+#define __forceinline inline
+#endif
+
 // Extra Definitions
 
 #define _mm_replicate_x_ps(v) \
