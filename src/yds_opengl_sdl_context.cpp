@@ -33,7 +33,7 @@ ysError ysOpenGLSDLContext::CreateRenderingContext(ysOpenGLDevice *device, ysWin
     m_isRealContext = true;
     m_targetWindow = window;
 
-    device->UpdateContext();}
+    device->UpdateContext();
 
     return YDS_ERROR_RETURN(ysError::None);
 }
