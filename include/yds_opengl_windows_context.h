@@ -31,6 +31,11 @@ protected:
 protected:
     void LoadAllExtensions();
     void LoadContextCreationExtension();
+
+private:
+    PFNWGLMAKECONTEXTCURRENTARBPROC wglMakeContextCurrent = nullptr;
+    PFNWGLCREATECONTEXTATTRIBSARBPROC wglCreateContextAttribsARB = nullptr;
+    PFNWGLCHOOSEPIXELFORMATARBPROC wglChoosePixelFormatARB = nullptr;
 };
 
 #endif /* YDS_OPENGL_WINDOWS_CONTEXT_H */

@@ -122,10 +122,6 @@ public:
     PFNGLBLITFRAMEBUFFERPROC glBlitFramebuffer = nullptr;
     PFNGLBLENDEQUATIONPROC glBlendEquation = nullptr;
 
-    PFNWGLMAKECONTEXTCURRENTARBPROC wglMakeContextCurrent = nullptr;
-    PFNWGLCREATECONTEXTATTRIBSARBPROC wglCreateContextAttribsARB = nullptr;
-    PFNWGLCHOOSEPIXELFORMATARBPROC wglChoosePixelFormatARB = nullptr;
-
     bool IsRealContext() { return m_isRealContext; }
 
 protected:
