@@ -838,7 +838,9 @@ ysError ysOpenGLDevice::LinkProgram(ysShaderProgram *program) {
     m_realContext->glGetProgramiv(openglProgram->m_handle, GL_LINK_STATUS, &status);
 
     if (status == GL_FALSE) {
-        return YDS_ERROR_RETURN(ysError::ProgramLinkError);
+        char errorBuffer[2048 + 1];
+        m_realContext->glGetProgramInfoLog(openglProgram->m_handle, 2048, NULL, errorBuffer);
+        return YDS_ERROR_RETURN_MSG(ysError::ProgramLinkError, errorBuffer);
     }
 
     return YDS_ERROR_RETURN(ysError::None);
