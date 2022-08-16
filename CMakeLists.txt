@@ -74,12 +74,26 @@ set(
 include_directories(dependencies/libraries/vulkan/include)
 
 # =========================================================
-# Boost
+# SDL2
 
-set(Boost_USE_STATIC_LIBS ON)
-set(Boost_USE_MULTITHREADED ON)
-set(Boost_USE_STATIC_RUNTIME OFF)
-find_package(Boost 1.40 COMPONENTS filesystem REQUIRED)
+find_package(SDL2 REQUIRED)
+find_package(SDL2_image REQUIRED)
+include_directories(${SDL2_INCLUDE_DIRS} ${SDL2_IMAGE_INCLUDE_DIRS})
+
+# =========================================================
+# Filesystem (stdlib or Boost)
+
+# Aim for C++17's filesystem first, fallback on boost
+include(CheckCXXSymbolExists)
+check_cxx_symbol_exists(std::filesystem::path::preferred_separator "filesystem" USE_CXX17_FILESYSTEM)
+add_compile_definitions(USE_CXX17_FILESYSTEM=${USE_CXX17_FILESYSTEM})
+
+if (NOT USE_CXX17_FILESYSTEM)
+    set(Boost_USE_STATIC_LIBS ON)
+    set(Boost_USE_MULTITHREADED ON)
+    set(Boost_USE_STATIC_RUNTIME OFF)
+    find_package(Boost 1.40 COMPONENTS filesystem REQUIRED)
+endif()
 
 # =========================================================
 # STB
@@ -238,11 +252,10 @@ add_library(delta-core STATIC
     include/yds_window_system_object.h
 )
 
-target_link_libraries(delta-core PUBLIC
-    # Boost
-    Boost::filesystem
-)
-
+# Boost
+if (NOT USE_CXX17_FILESYSTEM)
+    target_link_libraries(delta-core PUBLIC Boost::filesystem)
+endif()
 
 if(ENABLE_D3D)
     target_sources(delta-core PRIVATE
