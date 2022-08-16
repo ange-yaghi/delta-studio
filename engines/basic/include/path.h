@@ -3,16 +3,26 @@
 
 #include <string>
 
+#if USE_CXX17_FILESYSTEM
+#include <filesystem>
+#else // USE_CXX17_FILESYSTEM
 namespace boost {
     namespace filesystem {
         class path;
     } /* namespace filesystem */
 } /* namespace boost */
+#endif // USE_CXX17_FILESYSTEM
 
 namespace dbasic {
 
+#if USE_CXX17_FILESYSTEM
+    namespace filesystem = std::filesystem;
+#else // USE_CXX17_FILESYSTEM
+    namespace filesystem = boost::filesystem;
+#endif // USE_CXX17_FILESYSTEM
+
     class Path {
-    protected: Path(const boost::filesystem::path &path);
+    protected: Path(const filesystem::path &path);
     public:
         Path(const std::string &path);
         Path(const char *path);
@@ -39,10 +49,10 @@ namespace dbasic {
         bool Exists() const;
 
     protected:
-        boost::filesystem::path *m_path;
+        filesystem::path *m_path;
 
     protected:
-        const boost::filesystem::path &GetBoostPath() const { return *m_path; }
+        const filesystem::path &GetPath() const { return *m_path; }
     };
 
 } /* namespace dbasic */
