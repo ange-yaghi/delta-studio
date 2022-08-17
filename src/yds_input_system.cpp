@@ -1,7 +1,9 @@
 #include "../include/yds_input_system.h"
 
 #include "../include/yds_window_system.h"
+#ifdef _WIN32
 #include "../include/yds_windows_input_system.h"
+#endif
 
 ysInputSystem::ysInputSystem() : ysWindowSystemObject("INPUT_SYSTEM", Platform::Unknown) {
     m_windowSystem = nullptr;
@@ -25,7 +27,9 @@ ysError ysInputSystem::CreateInputSystem(ysInputSystem **newInputSystem, Platfor
 
     switch (platform) {
     case Platform::Windows:
+#ifdef _WIN32
         *newInputSystem = new ysWindowsInputSystem();
+#endif
         break;
     }
 

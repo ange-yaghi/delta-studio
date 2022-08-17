@@ -342,6 +342,15 @@ if (ENABLE_DSOUND)
 endif()
 
 if(ENABLE_OPENGL)
+    find_package(OpenGL REQUIRED)
+    if (APPLE)
+        include_directories("${OPENGL_INCLUDE_DIR}/Headers")
+    else()
+        include_directories(${OPENGL_INCLUDE_DIR})
+    endif()
+
+    message("Found OpenGL include dir: ${OPENGL_INCLUDE_DIR}")
+
     target_sources(delta-core PRIVATE
         # Source files
         src/yds_opengl_context.cpp
@@ -371,7 +380,7 @@ if(ENABLE_OPENGL)
 
     target_link_libraries(delta-core PUBLIC
         delta-core-opengl
-        OpenGL32
+        OpenGL::GL
     )
 endif()
 

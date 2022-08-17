@@ -7,9 +7,10 @@
 #include "../include/yds_opengl_shader_program.h"
 #include "../include/yds_opengl_texture.h"
 
-// TODO: only include windows impl if we're on windows
-//#include "../include/yds_opengl_windows_context.h"
 #include "../include/yds_opengl_sdl_context.h"
+#ifdef _WIN32
+#include "../include/yds_opengl_windows_context.h"
+#endif
 
 #include "OpenGL.h"
 #include <SDL.h>
@@ -57,43 +58,25 @@ ysError ysOpenGLDevice::CreateRenderingContext(ysRenderingContext **context, ysW
     if (context == nullptr) return YDS_ERROR_RETURN(ysError::InvalidParameter);
     *context = nullptr;
 
-#if 0 // TODO: Windows
-    if (window->GetPlatform() == ysWindowSystemObject::Platform::Windows) {
-        ysOpenGLWindowsContext *newContext = m_renderingContexts.NewGeneric<ysOpenGLWindowsContext>();
-        YDS_NESTED_ERROR_CALL(newContext->CreateRenderingContext(this, window, 4, 3));
-
-        // TEMP
-        glFrontFace(GL_CCW);
-
-        SetFaceCulling(true);
-        SetFaceCullingMode(CullMode::Back);
-
-        *context = static_cast<ysRenderingContext *>(newContext);
-
-        return YDS_ERROR_RETURN(ysError::None);
-    }
-    else
+#ifdef _WIN32
+    if (window->GetPlatform() != ysWindowSystemObject::Platform::Windows) return YDS_ERROR_RETURN(ysError::IncompatiblePlatforms);
+    ysOpenGLWindowsContext *newContext = m_renderingContexts.NewGeneric<ysOpenGLWindowsContext>();
+#else
+    if (window->GetPlatform() != ysWindowSystemObject::Platform::Sdl) return YDS_ERROR_RETURN(ysError::IncompatiblePlatforms);
+    ysOpenGLSDLContext *newContext = m_renderingContexts.NewGeneric<ysOpenGLSDLContext>();
 #endif
-#if 1 // TODO: SDL
-    if (window->GetPlatform() == ysWindowSystemObject::Platform::Sdl) {
-        ysOpenGLSDLContext *newContext = m_renderingContexts.NewGeneric<ysOpenGLSDLContext>();
-        YDS_NESTED_ERROR_CALL(newContext->CreateRenderingContext(this, window, 4, 3));
 
-        // TEMP
-        glFrontFace(GL_CCW);
+    YDS_NESTED_ERROR_CALL(newContext->CreateRenderingContext(this, window, 4, 3));
 
-        SetFaceCulling(true);
-        SetFaceCullingMode(CullMode::Back);
+    // TEMP
+    glFrontFace(GL_CCW);
 
-        *context = static_cast<ysRenderingContext *>(newContext);
+    SetFaceCulling(true);
+    SetFaceCullingMode(CullMode::Back);
 
-        return YDS_ERROR_RETURN(ysError::None);
-    }
-    else
-#endif
-    {
-        return YDS_ERROR_RETURN_MSG(ysError::IncompatiblePlatforms, "Only Windows platforms are currently supported.");
-    }
+    *context = static_cast<ysRenderingContext *>(newContext);
+
+    return YDS_ERROR_RETURN(ysError::None);
 }
 
 ysError ysOpenGLDevice::UpdateRenderingContext(ysRenderingContext *context) {
@@ -1163,7 +1146,12 @@ void ysOpenGLDevice::ResubmitInputLayout() {
             m_realContext->glVertexAttribPointer(i, channel->m_length, channel->m_type, GL_FALSE, openglLayout->m_size, (void *)channel->m_offset);
         }
         else {
+#ifdef __APPLE__
+            // TODO: may need special handling here
+            assert(channel->m_type == GL_FLOAT);
+#else
             m_realContext->glVertexAttribIPointer(i, channel->m_length, channel->m_type, openglLayout->m_size, (void *)channel->m_offset);
+#endif
         }
 
         m_realContext->glEnableVertexAttribArray(i);
@@ -1203,7 +1191,7 @@ int ysOpenGLDevice::GetFormatGLType(ysRenderGeometryChannel::ChannelFormat forma
         return GL_UNSIGNED_INT;
     default:
         // No real option here
-        return GL_4_BYTES;
+        return GL_UNSIGNED_INT;
     }
 }
 
@@ -1228,8 +1216,8 @@ ysError ysOpenGLDevice::CreateOpenGLOffScreenRenderTarget(ysRenderTarget *target
     glGenTextures(1, &newTexture);
     glBindTexture(GL_TEXTURE_2D, newTexture);
 
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
@@ -1249,7 +1237,7 @@ ysError ysOpenGLDevice::CreateOpenGLOffScreenRenderTarget(ysRenderTarget *target
         glType = GL_UNSIGNED_BYTE;
         break;
     case ysRenderTarget::Format::R32G32B32_FLOAT:
-        glFormat = GL_RGBA32F_ARB;
+        glFormat = GL_RGBA32F;
         glType = GL_FLOAT;
         break;
     case ysRenderTarget::Format::R32_DEPTH_COMPONENT:
@@ -1258,7 +1246,7 @@ ysError ysOpenGLDevice::CreateOpenGLOffScreenRenderTarget(ysRenderTarget *target
         break;
     case ysRenderTarget::Format::R32_FLOAT:
         glFormat = GL_R32F;
-        glType = GL_FLAT;
+        glType = GL_FLOAT;
         break;
     default:
         return YDS_ERROR_RETURN(ysError::InvalidParameter);

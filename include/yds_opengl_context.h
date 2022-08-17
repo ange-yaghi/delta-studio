@@ -48,7 +48,9 @@ public:
     PFNGLBINDVERTEXARRAYPROC glBindVertexArray = nullptr;
     PFNGLENABLEVERTEXATTRIBARRAYPROC glEnableVertexAttribArray = nullptr;
     PFNGLVERTEXATTRIBPOINTERPROC glVertexAttribPointer = nullptr;
+#ifndef __APPLE__
     PFNGLVERTEXATTRIBIPOINTERPROC glVertexAttribIPointer = nullptr;
+#endif
 
     PFNGLVERTEXATTRIB3FPROC glVertexAttrib3f = nullptr;
     PFNGLVERTEXATTRIB4FPROC glVertexAttrib4f = nullptr;
@@ -86,8 +88,6 @@ public:
     PFNGLUNIFORMMATRIX3FVPROC glUniformMatrix3fv = nullptr;
 
     PFNGLGETPROGRAMIVPROC glGetProgramiv = nullptr;
-    PFNGLGETACTIVEUNIFORMNAMEPROC glGetActiveUniformName = nullptr;
-    PFNGLGETACTIVEUNIFORMSIVPROC glGetActiveUniformsiv = nullptr;
     PFNGLGETACTIVEUNIFORMPROC glGetActiveUniform = nullptr;
 
     PFNGLDRAWELEMENTSBASEVERTEXPROC glDrawElementsBaseVertex = nullptr;

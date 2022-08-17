@@ -2,15 +2,12 @@
 
 #include "../include/path.h"
 
-#include <SDL2/SDL.h>
+#include <filesystem>
 
-dbasic::Path dbasic::GetModulePath() {
-    // Query SDL for the path to our executable
-    char * path = SDL_GetBasePath();
-    if (path == nullptr) return ".";
+dbasic::Path dbasic::GetModulePath()
+{
+    char path[256];
+    std::filesystem::current_path(path);
 
-    // Return it but don't forget we own 'path'
-    Path parentPath(path);
-    SDL_free(path);
-    return parentPath;
+    return path;
 }
