@@ -450,7 +450,7 @@ if (ENABLE_PLAT_SDL)
     target_sources(delta-core PRIVATE
         src/yds_sdl_monitor.cpp
         src/yds_sdl_window.cpp
-        src/ysd_sdl_window_system.cpp
+        src/yds_sdl_window_system.cpp
 
         include/yds_sdl_monitor.h
         include/yds_sdl_window.h
