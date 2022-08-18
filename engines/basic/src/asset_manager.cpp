@@ -3,9 +3,7 @@
 #include "../include/animation_export_file.h"
 #include "../include/delta_engine.h"
 
-#ifdef _WIN32
-#include "../../../include/yds_windows_audio_wav_file.h"
-#endif
+#include "../../../include/yds_audio_wave_file.h"
 
 #include <set>
 #include <sys/stat.h>
@@ -548,8 +546,7 @@ dbasic::TextureAsset *dbasic::AssetManager::GetTexture(const char *name) {
 ysError dbasic::AssetManager::LoadAudioFile(const char *fname, const char *name) {
     YDS_ERROR_DECLARE("LoadAudioFile");
 
-#ifdef _WIN32
-    ysWindowsAudioWaveFile waveFile;
+    ysAudioWaveFile waveFile;
     waveFile.OpenFile(fname);
 
     ysAudioBuffer *newBuffer = m_engine->GetAudioDevice()->CreateBuffer(
@@ -565,10 +562,6 @@ ysError dbasic::AssetManager::LoadAudioFile(const char *fname, const char *name)
     newAsset->SetName(name);
 
     return YDS_ERROR_RETURN(ysError::None);
-#else
-    // TODO
-    return YDS_ERROR_RETURN(ysError::UnsupportedType);
-#endif
 }
 
 dbasic::AudioAsset *dbasic::AssetManager::GetAudioAsset(const char *name) {

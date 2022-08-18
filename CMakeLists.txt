@@ -189,6 +189,7 @@ add_library(delta-core STATIC
     include/yds_audio_streaming.h
     include/yds_audio_system.h
     include/yds_audio_system_object.h
+    include/yds_audio_wave_file.h
     include/yds_base.h
     include/yds_breakdown_timer.h
     include/yds_breakdown_timer_channel.h
