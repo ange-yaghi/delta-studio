@@ -5,11 +5,11 @@
 #include <SDL2/SDL_video.h>
 
 class ysSdlWindowSystem;
-class ysOpenGLSDLContext;
+class ysOpenGLSdlContext;
 
 class ysSdlWindow : public ysWindow {
     friend ysSdlWindowSystem;
-    friend ysOpenGLSDLContext;
+    friend ysOpenGLSdlContext;
 
 public:
     ysSdlWindow();
