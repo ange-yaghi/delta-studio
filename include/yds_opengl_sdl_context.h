@@ -7,12 +7,12 @@
 
 class ysOpenGLDevice;
 
-class ysOpenGLSDLContext : public ysOpenGLVirtualContext {
+class ysOpenGLSdlContext : public ysOpenGLVirtualContext {
     friend ysOpenGLDevice;
 
 public:
-    ysOpenGLSDLContext();
-    virtual ~ysOpenGLSDLContext();
+    ysOpenGLSdlContext();
+    virtual ~ysOpenGLSdlContext();
 
     ysError CreateRenderingContext(ysOpenGLDevice *device, ysWindow *window, int major, int minor);
 

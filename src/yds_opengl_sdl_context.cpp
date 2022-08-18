@@ -4,15 +4,15 @@
 #include "../include/yds_sdl_window.h"
 #include "../include/yds_sdl_window_system.h"
 
-ysOpenGLSDLContext::ysOpenGLSDLContext() : ysOpenGLVirtualContext(ysWindowSystem::Platform::Sdl) {
+ysOpenGLSdlContext::ysOpenGLSdlContext() : ysOpenGLVirtualContext(ysWindowSystem::Platform::Sdl) {
     m_device = nullptr;
 }
 
-ysOpenGLSDLContext::~ysOpenGLSDLContext() {
+ysOpenGLSdlContext::~ysOpenGLSdlContext() {
     /* void */
 }
 
-ysError ysOpenGLSDLContext::CreateRenderingContext(ysOpenGLDevice *device, ysWindow *window, int major, int minor) {
+ysError ysOpenGLSdlContext::CreateRenderingContext(ysOpenGLDevice *device, ysWindow *window, int major, int minor) {
     YDS_ERROR_DECLARE("CreateRenderingContext");
 
     if (window->GetPlatform() != ysWindowSystemObject::Platform::Sdl) {
@@ -38,7 +38,7 @@ ysError ysOpenGLSDLContext::CreateRenderingContext(ysOpenGLDevice *device, ysWin
     return YDS_ERROR_RETURN(ysError::None);
 }
 
-ysError ysOpenGLSDLContext::DestroyContext() {
+ysError ysOpenGLSdlContext::DestroyContext() {
     YDS_ERROR_DECLARE("DestroyContext");
 
     SDL_GL_MakeCurrent(nullptr, nullptr);
@@ -51,12 +51,12 @@ ysError ysOpenGLSDLContext::DestroyContext() {
     return YDS_ERROR_RETURN(ysError::None);
 }
 
-ysError ysOpenGLSDLContext::TransferContext(ysOpenGLVirtualContext *context) {
+ysError ysOpenGLSdlContext::TransferContext(ysOpenGLVirtualContext *context) {
     YDS_ERROR_DECLARE("TransferContext");
 
     if (context->GetPlatform() != ysWindowSystemObject::Platform::Sdl) return YDS_ERROR_RETURN(ysError::IncompatiblePlatforms);
 
-    ysOpenGLSDLContext *windowsContext = static_cast<ysOpenGLSDLContext *>(context);
+    ysOpenGLSdlContext *windowsContext = static_cast<ysOpenGLSdlContext *>(context);
     windowsContext->m_context = m_context;
     windowsContext->m_isRealContext = true;
 
@@ -66,7 +66,7 @@ ysError ysOpenGLSDLContext::TransferContext(ysOpenGLVirtualContext *context) {
     return YDS_ERROR_RETURN(ysError::None);
 }
 
-ysError ysOpenGLSDLContext::SetContextMode(ContextMode mode) {
+ysError ysOpenGLSdlContext::SetContextMode(ContextMode mode) {
     YDS_ERROR_DECLARE("SetContextMode");
 
     ysWindow *window = GetWindow();
@@ -80,10 +80,10 @@ ysError ysOpenGLSDLContext::SetContextMode(ContextMode mode) {
     return YDS_ERROR_RETURN(ysError::None);
 }
 
-ysError ysOpenGLSDLContext::SetContext(ysRenderingContext *realContext) {
+ysError ysOpenGLSdlContext::SetContext(ysRenderingContext *realContext) {
     YDS_ERROR_DECLARE("SetContext");
 
-    ysOpenGLSDLContext *realOpenglContext = static_cast<ysOpenGLSDLContext *>(realContext);
+    ysOpenGLSdlContext *realOpenglContext = static_cast<ysOpenGLSdlContext *>(realContext);
     ysSdlWindow *sdlWindow = static_cast<ysSdlWindow *>(realOpenglContext->m_targetWindow);
 
     if (realContext != nullptr) {
@@ -98,7 +98,7 @@ ysError ysOpenGLSDLContext::SetContext(ysRenderingContext *realContext) {
     return YDS_ERROR_RETURN(ysError::None);
 }
 
-ysError ysOpenGLSDLContext::Present() {
+ysError ysOpenGLSdlContext::Present() {
     YDS_ERROR_DECLARE("Present");
 
     ysSdlWindow *sdlWindow = static_cast<ysSdlWindow *>(m_targetWindow);
@@ -107,7 +107,7 @@ ysError ysOpenGLSDLContext::Present() {
     return YDS_ERROR_RETURN(ysError::None);
 }
 
-void ysOpenGLSDLContext::LoadAllExtensions() {
+void ysOpenGLSdlContext::LoadAllExtensions() {
     // TODO: assert that these have been loaded
 
     glGenBuffers = (PFNGLGENBUFFERSPROC)SDL_GL_GetProcAddress("glGenBuffers");
