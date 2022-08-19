@@ -8,7 +8,7 @@
 
 template <>
 ysWindowSystem* ysWindowSystem::CreatePlatformWindowSystem<ysWindowSystem::Platform::Windows>() {
-    return new ysSdlWindowSystem();
+    return new ysWindowsWindowSystem();
 }
 
 ysWindowsWindowSystem::ysWindowsWindowSystem() : ysWindowSystem(Platform::Windows) {
