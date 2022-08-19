@@ -380,7 +380,6 @@ if(ENABLE_OPENGL)
     )
 
     target_link_libraries(delta-core PUBLIC
-        delta-core-opengl
         OpenGL::GL
     )
 endif()
