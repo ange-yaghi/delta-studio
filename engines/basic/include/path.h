@@ -22,8 +22,8 @@ namespace dbasic {
 #endif // USE_CXX17_FILESYSTEM
 
     class Path {
-    protected: Path(const filesystem::path &path);
     public:
+        Path(const filesystem::path &path);
         Path(const std::string &path);
         Path(const char *path);
         Path(const Path &path);
