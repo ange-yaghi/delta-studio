@@ -14,12 +14,6 @@ ysAudioSystem::~ysAudioSystem() {
     /* void */
 }
 
-template<ysAudioSystemObject::API api>
-ysAudioSystem* ysAudioSystem::CreateApiSystem() {
-    // Generic template for when the API is not supported
-    return nullptr;
-}
-
 ysError ysAudioSystem::CreateAudioSystem(ysAudioSystem **newAudioSystem, API api) {
     YDS_ERROR_DECLARE("CreateAudioSystem");
 
@@ -32,8 +26,8 @@ ysError ysAudioSystem::CreateAudioSystem(ysAudioSystem **newAudioSystem, API api
     case API::DirectSound8:
         *newAudioSystem = CreateApiSystem<API::DirectSound8>();
         break;
-    default:
-        *newAudioSystem = nullptr;
+    case API::Sdl:
+        *newAudioSystem = CreateApiSystem<API::Sdl>();
         break;
     }
 
