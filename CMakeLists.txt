@@ -448,11 +448,19 @@ endif()
 
 if (ENABLE_PLAT_SDL)
     target_sources(delta-core PRIVATE
+        src/yds_sdl_audio_buffer.cpp
+        src/yds_sdl_audio_device.cpp
+        src/yds_sdl_audio_source.cpp
+        src/yds_sdl_audio_system.cpp
         src/yds_sdl_audio_wave_file.cpp
         src/yds_sdl_monitor.cpp
         src/yds_sdl_window.cpp
         src/yds_sdl_window_system.cpp
 
+        include/yds_sdl_audio_buffer.h
+        include/yds_sdl_audio_device.h
+        include/yds_sdl_audio_source.h
+        include/yds_sdl_audio_system.h
         include/yds_sdl_audio_wave_file.h
         include/yds_sdl_monitor.h
         include/yds_sdl_window.h
