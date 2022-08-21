@@ -103,16 +103,17 @@ ysError ysSdlAudioSource::SetPan(float pan) {
 
 SampleOffset ysSdlAudioSource::GetCurrentPosition() {
     const size_t bufferSize = m_audioParameters.GetSizeFromSamples(m_bufferSize);
+    const size_t readPosition = m_readPosition % bufferSize;
+    return m_audioParameters.GetSamplesFromSize(readPosition);
+}
+
+SampleOffset ysSdlAudioSource::GetCurrentWritePosition() {
+    const size_t bufferSize = m_audioParameters.GetSizeFromSamples(m_bufferSize);
     const size_t writePosition = (m_readPosition + m_queuedSize) % bufferSize;
 
     // HACK: add a bodge so that code actually runs
     const size_t bodgeSamples = 441;
     return m_audioParameters.GetSamplesFromSize(writePosition) + bodgeSamples;
-}
-
-SampleOffset ysSdlAudioSource::GetCurrentWritePosition() {
-    // TODO
-    return 0;
 }
 
 void ysSdlAudioSource::Seek(SampleOffset offset) {
