@@ -1,7 +1,12 @@
 #include "../include/yds_window_system.h"
 
 #include "../include/yds_input_system.h"
-//#include "../include/yds_windows_window_system.h"
+#if PLATFORM_WIN32
+#include "../include/yds_windows_window_system.h"
+#endif
+#if PLATFORM_SDL
+#include "../include/yds_sdl_window_system.h"
+#endif
 
 ysWindowSystem *ysWindowSystem::g_instance = nullptr;
 
@@ -35,20 +40,6 @@ ysWindowSystem::~ysWindowSystem() {
     /* void */
 }
 
-#ifdef PLAT_SDL
-template <>
-ysWindowSystem* ysWindowSystem::CreatePlatformWindowSystem<ysWindowSystemObject::Platform::Sdl>();
-#endif
-#ifdef PLAT_WIN32
-template <>
-ysWindowSystem* ysWindowSystem::CreatePlatformWindowSystem<ysWindowSystemObject::Platform::Windows>();
-#endif
-
-template<ysWindowSystemObject::Platform plat>
-ysWindowSystem* ysWindowSystem::CreatePlatformWindowSystem() {
-    return nullptr;
-}
-
 ysError ysWindowSystem::CreateWindowSystem(ysWindowSystem **newSystem, Platform platform) {
     YDS_ERROR_DECLARE("CreateWindowSystem");
 
@@ -60,10 +51,14 @@ ysError ysWindowSystem::CreateWindowSystem(ysWindowSystem **newSystem, Platform 
 
     switch (platform) {
     case Platform::Windows:
-        *newSystem = CreatePlatformWindowSystem<Platform::Windows>();
+#if PLATFORM_WIN32
+        *newSystem = new ysWindowsWindowSystem();
+#endif
         break;
     case Platform::Sdl:
-        *newSystem = CreatePlatformWindowSystem<Platform::Sdl>();
+#if PLATFORM_SDL
+        *newSystem = new ysSdlWindowSystem();
+#endif
         break;
     default:
         break;

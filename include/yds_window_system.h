@@ -67,10 +67,6 @@ protected:
 
     bool m_cursorVisible;
     bool m_cursorConfined;
-
-protected:
-    template<Platform plat>
-    static ysWindowSystem* CreatePlatformWindowSystem();
 };
 
 #endif /* YDS_WINDOW_SYSTEM_H */

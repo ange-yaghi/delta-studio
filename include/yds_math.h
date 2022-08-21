@@ -210,7 +210,7 @@ namespace ysMath {
     ysVector3 GetVector3(const ysVector &v);
     ysVector2 GetVector2(const ysVector &v);
     __forceinline float GetScalar(const ysVector &v) {
-#ifdef MSVC
+#ifdef _MSC_VER
         return v.m128_f32[0];
 #else
         return v[0];
@@ -218,7 +218,7 @@ namespace ysMath {
     }
 
     __forceinline float GetX(const ysVector &v) {
-#ifdef MSVC
+#ifdef _MSC_VER
         return v.m128_f32[0];
 #else
         return v[0];
@@ -226,7 +226,7 @@ namespace ysMath {
     }
 
     __forceinline float GetY(const ysVector &v) {
-#ifdef MSVC
+#ifdef _MSC_VER
         return v.m128_f32[1];
 #else
         return v[1];
@@ -234,7 +234,7 @@ namespace ysMath {
     }
 
     __forceinline float GetZ(const ysVector &v) {
-#ifdef MSVC
+#ifdef _MSC_VER
         return v.m128_f32[2];
 #else
         return v[2];
@@ -242,7 +242,7 @@ namespace ysMath {
     }
 
     __forceinline float GetW(const ysVector &v) {
-#ifdef MSVC
+#ifdef _MSC_VER
         return v.m128_f32[3];
 #else
         return v[3];
@@ -250,7 +250,7 @@ namespace ysMath {
     }
 
     __forceinline float GetQuatX(const ysQuaternion &v) {
-#ifdef MSVC
+#ifdef _MSC_VER
         return v.m128_f32[1];
 #else
         return v[1];
@@ -258,7 +258,7 @@ namespace ysMath {
     }
 
     __forceinline float GetQuatY(const ysQuaternion &v) {
-#ifdef MSVC
+#ifdef _MSC_VER
         return v.m128_f32[2];
 #else
         return v[2];
@@ -266,7 +266,7 @@ namespace ysMath {
     }
 
     __forceinline float GetQuatZ(const ysQuaternion &v) {
-#ifdef MSVC
+#ifdef _MSC_VER
         return v.m128_f32[3];
 #else
         return v[3];
@@ -274,7 +274,7 @@ namespace ysMath {
     }
 
     __forceinline float GetQuatW(const ysQuaternion &v) {
-#ifdef MSVC
+#ifdef _MSC_VER
         return v.m128_f32[0];
 #else
         return v[0];

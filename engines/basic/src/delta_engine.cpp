@@ -98,8 +98,17 @@ dbasic::DeltaEngine::~DeltaEngine() {
 ysError dbasic::DeltaEngine::CreateGameWindow(const GameEngineSettings &settings) {
     YDS_ERROR_DECLARE("CreateGameWindow");
 
+    // TODO: plumb choices in from caller
+#ifdef _WIN32
+    const auto chosenPlatform = ysWindowSystemObject::Platform::Windows;
+    const auto audioPlatform = ysAudioSystem::API::DirectSound8;
+#else
+    const auto chosenPlatform = ysWindowSystemObject::Platform::Sdl;
+    const auto audioPlatform = ysAudioSystem::API::Sdl;
+#endif
+
     // Create the window system
-    YDS_NESTED_ERROR_CALL(ysWindowSystem::CreateWindowSystem(&m_windowSystem, ysWindowSystemObject::Platform::Sdl));
+    YDS_NESTED_ERROR_CALL(ysWindowSystem::CreateWindowSystem(&m_windowSystem, chosenPlatform));
     m_windowSystem->ConnectInstance(settings.Instance);
 
     // Find the monitor setup
@@ -117,7 +126,7 @@ ysError dbasic::DeltaEngine::CreateGameWindow(const GameEngineSettings &settings
         mainMonitor));
     m_gameWindow->AttachEventHandler(&m_windowHandler);
 
-    YDS_NESTED_ERROR_CALL(ysInputSystem::CreateInputSystem(&m_inputSystem, ysWindowSystemObject::Platform::Windows));
+    YDS_NESTED_ERROR_CALL(ysInputSystem::CreateInputSystem(&m_inputSystem, chosenPlatform));
     m_windowSystem->AssignInputSystem(m_inputSystem);
     m_inputSystem->Initialize();
 
@@ -129,7 +138,7 @@ ysError dbasic::DeltaEngine::CreateGameWindow(const GameEngineSettings &settings
     YDS_NESTED_ERROR_CALL(m_device->InitializeDevice());
 
     // Create the audio device
-    YDS_NESTED_ERROR_CALL(ysAudioSystem::CreateAudioSystem(&m_audioSystem, ysAudioSystem::API::DirectSound8));
+    YDS_NESTED_ERROR_CALL(ysAudioSystem::CreateAudioSystem(&m_audioSystem, audioPlatform));
     m_audioSystem->EnumerateDevices();
     m_audioDevice = m_audioSystem->GetPrimaryDevice();
     m_audioSystem->ConnectDevice(m_audioDevice, m_gameWindow);
