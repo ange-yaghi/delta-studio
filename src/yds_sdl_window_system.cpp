@@ -1,5 +1,6 @@
-
 #include "../include/yds_sdl_window_system.h"
+
+#include "../include/yds_sdl_input_system.h"
 #include "../include/yds_sdl_monitor.h"
 #include "../include/yds_sdl_window.h"
 
@@ -61,5 +62,29 @@ void ysSdlWindowSystem::SurveyMonitors() {
 }
 
 void ysSdlWindowSystem::ProcessMessages() {
-    SDL_PumpEvents();
+    auto *inputSystem = static_cast<ysSdlInputSystem *>(GetInputSystem());
+
+    // Grab all the queued events
+    SDL_Event event;
+    while (SDL_PollEvent(&event)) {
+        switch (event.type) {
+            case SDL_QUIT:
+                // TODO: quit
+                break;
+
+            // Input events
+            case SDL_KEYDOWN:
+            case SDL_KEYUP:
+            case SDL_MOUSEMOTION:
+            case SDL_MOUSEBUTTONDOWN:
+            case SDL_MOUSEBUTTONUP:
+            case SDL_MOUSEWHEEL:
+                inputSystem->ProcessEvent(event);
+                break;
+
+            default:
+                // Ignore it
+                break;
+        }
+    }
 }
