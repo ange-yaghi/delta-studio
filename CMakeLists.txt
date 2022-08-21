@@ -453,6 +453,9 @@ if (ENABLE_PLAT_SDL)
         src/yds_sdl_audio_source.cpp
         src/yds_sdl_audio_system.cpp
         src/yds_sdl_audio_wave_file.cpp
+        src/yds_sdl_input_device.cpp
+        src/yds_sdl_input_system.cpp
+        src/yds_sdl_key_maps.cpp
         src/yds_sdl_monitor.cpp
         src/yds_sdl_window.cpp
         src/yds_sdl_window_system.cpp
@@ -462,6 +465,8 @@ if (ENABLE_PLAT_SDL)
         include/yds_sdl_audio_source.h
         include/yds_sdl_audio_system.h
         include/yds_sdl_audio_wave_file.h
+        include/yds_sdl_input_device.h
+        include/yds_sdl_input_system.h
         include/yds_sdl_monitor.h
         include/yds_sdl_window.h
         include/yds_sdl_window_system.h
