@@ -4,11 +4,6 @@
 
 #include <SDL2/SDL.h>
 
-template <>
-ysAudioSystem *ysAudioSystem::CreateApiSystem<ysAudioSystem::API::Sdl>() {
-    return new ysSdlAudioSystem();
-}
-
 ysSdlAudioSystem::ysSdlAudioSystem() : ysAudioSystem(API::Sdl) {
     // Make sure that the audio system is up
     SDL_Init(SDL_INIT_AUDIO);

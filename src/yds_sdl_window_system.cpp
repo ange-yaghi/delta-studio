@@ -7,11 +7,6 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_events.h>
 
-template <>
-ysWindowSystem* ysWindowSystem::CreatePlatformWindowSystem<ysWindowSystem::Platform::Sdl>() {
-    return new ysSdlWindowSystem();
-}
-
 ysSdlWindowSystem::ysSdlWindowSystem() : ysWindowSystem(Platform::Sdl) {
     SDL_Init(SDL_INIT_VIDEO);
 }

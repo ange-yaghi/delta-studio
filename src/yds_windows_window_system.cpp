@@ -6,11 +6,6 @@
 
 #include <shellscalingapi.h>
 
-template <>
-ysWindowSystem* ysWindowSystem::CreatePlatformWindowSystem<ysWindowSystem::Platform::Windows>() {
-    return new ysWindowsWindowSystem();
-}
-
 ysWindowsWindowSystem::ysWindowsWindowSystem() : ysWindowSystem(Platform::Windows) {
     m_instance = NULL;
     m_oldCursor = NULL;

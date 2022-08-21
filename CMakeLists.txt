@@ -11,7 +11,7 @@ project(delta-studio)
 # Graphics APIs
 option(ENABLE_OPENGL "Enable the OpenGL graphics API" ON)
 cmake_dependent_option(ENABLE_D3D "Enable the Direct3D 10/11 graphics API" ON WIN32 OFF)
-option(ENABLE_VULKAN "Enable the Vulkan graphics API" ON)
+cmake_dependent_option(ENABLE_VULKAN "Enable the Vulkan graphics API" ON WIN32 OFF) # TODO: make Vulkan work outside of Win32
 
 # Sound Systems
 cmake_dependent_option(ENABLE_DSOUND "Enable the DirectSound API" ON WIN32 OFF)
@@ -26,15 +26,6 @@ endif()
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake/")
-
-if (MSVC)
-    add_definitions("-DMSVC")
-else()
-    # This codebase uses a bunch of msvc extentsions, and it's easier just to ask
-    # other compilers to just support as many of those extentions as possible
-    # At least for now.
-    add_compile_options(-fms-extensions)
-endif()
 
 if (CMAKE_SIZEOF_VOID_P EQUAL 8)
     set(TARGET_ARCHITECTURE x64)
@@ -86,7 +77,6 @@ include_directories(${SDL2_INCLUDE_DIRS} ${SDL2_IMAGE_INCLUDE_DIRS})
 # Aim for C++17's filesystem first, fallback on boost
 include(CheckCXXSymbolExists)
 check_cxx_symbol_exists(std::filesystem::path::preferred_separator "filesystem" USE_CXX17_FILESYSTEM)
-add_compile_definitions(USE_CXX17_FILESYSTEM=${USE_CXX17_FILESYSTEM})
 
 if (NOT USE_CXX17_FILESYSTEM)
     set(Boost_USE_STATIC_LIBS ON)
@@ -299,7 +289,7 @@ if(ENABLE_D3D)
         include/yds_d3d11_utilities.h
     )
 
-    target_link_libraries(delta-core PUBLIC
+    target_link_libraries(delta-core PRIVATE
         # D3DX
         d3d9
         d3d10
@@ -335,7 +325,7 @@ if (ENABLE_DSOUND)
         include/yds_ds8_system.h
     )
 
-    target_link_libraries(delta-core PUBLIC
+    target_link_libraries(delta-core PRIVATE
         # DirectSound
         ${DIRECT_SOUND_LIBS}/dsound.lib
     )
@@ -344,12 +334,6 @@ endif()
 
 if(ENABLE_OPENGL)
     find_package(OpenGL REQUIRED)
-    if (APPLE)
-        include_directories("${OPENGL_INCLUDE_DIR}/Headers")
-    else()
-        include_directories(${OPENGL_INCLUDE_DIR})
-    endif()
-
     message("Found OpenGL include dir: ${OPENGL_INCLUDE_DIR}")
 
     target_sources(delta-core PRIVATE
@@ -379,9 +363,15 @@ if(ENABLE_OPENGL)
         include/yds_opengl_sdl_context.h
     )
 
-    target_link_libraries(delta-core PUBLIC
+    target_link_libraries(delta-core PRIVATE
         OpenGL::GL
     )
+
+    if (APPLE)
+        target_include_directories(delta-code PRIVATE
+            "${OPENGL_INCLUDE_DIR}/Headers"
+        )
+    endif()
 endif()
 
 if (ENABLE_VULKAN)
@@ -411,9 +401,11 @@ if (ENABLE_VULKAN)
         include/yds_vulkan_windows_context.h
     )
 
-    target_link_libraries(delta-core PUBLIC
-        ${VULKAN_LIBS}/vulkan-1.lib
-    )
+    if (WIN32)
+        target_link_libraries(delta-core PRIVATE
+            ${VULKAN_LIBS}/vulkan-1.lib
+        )
+    endif()
 endif()
 
 if (ENABLE_PLAT_WIN32)
@@ -437,12 +429,8 @@ if (ENABLE_PLAT_WIN32)
         include/yds_windows_window_system.h
     )
 
-    target_link_libraries(delta-core PUBLIC
+    target_link_libraries(delta-core PRIVATE
         winmm
-    )
-
-    target_compile_definitions(delta-core PRIVATE
-        -DPLAT_WIN32
     )
 endif()
 
@@ -471,24 +459,28 @@ if (ENABLE_PLAT_SDL)
         include/yds_sdl_window.h
         include/yds_sdl_window_system.h
     )
-
-    target_compile_definitions(delta-core PRIVATE
-        -DPLAT_SDL
-    )
 endif()
 
 if (ENABLE_SDL)
     find_package(SDL2 REQUIRED)
     find_package(SDL2_image REQUIRED)
-    include_directories(${SDL2_INCLUDE_DIRS} ${SDL2_IMAGE_INCLUDE_DIRS})
 
-    target_link_libraries(delta-core PUBLIC
+    target_include_directories(delta-core PRIVATE
+        ${SDL2_INCLUDE_DIRS}
+        ${SDL2_IMAGE_INCLUDE_DIRS}
+    )
 
-        # SDL
+    target_link_libraries(delta-core PRIVATE
         ${SDL2_LIBRARY}
         ${SDL2_IMAGE_LIBRARIES}
     )
 endif()
+
+target_compile_definitions(delta-core PUBLIC
+    PLATFORM_WIN32=$<BOOL:${ENABLE_PLAT_WIN32}>
+    PLATFORM_SDL=$<BOOL:${ENABLE_PLAT_SDL}>
+    USE_CXX17_FILESYSTEM=$<BOOL:${USE_CXX17_FILESYSTEM}>
+)
 
 add_subdirectory(physics)
 add_subdirectory(engines)
