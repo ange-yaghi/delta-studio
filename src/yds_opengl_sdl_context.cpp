@@ -83,10 +83,10 @@ ysError ysOpenGLSdlContext::SetContextMode(ContextMode mode) {
 ysError ysOpenGLSdlContext::SetContext(ysRenderingContext *realContext) {
     YDS_ERROR_DECLARE("SetContext");
 
-    ysOpenGLSdlContext *realOpenglContext = static_cast<ysOpenGLSdlContext *>(realContext);
-    ysSdlWindow *sdlWindow = static_cast<ysSdlWindow *>(realOpenglContext->m_targetWindow);
-
     if (realContext != nullptr) {
+        ysOpenGLSdlContext *realOpenglContext = static_cast<ysOpenGLSdlContext *>(realContext);
+        ysSdlWindow *sdlWindow = static_cast<ysSdlWindow *>(realOpenglContext->m_targetWindow);
+
         int result = SDL_GL_MakeCurrent(sdlWindow->m_window, realOpenglContext->m_context);
         if (result != 0) {
             return YDS_ERROR_RETURN(ysError::CouldNotActivateContext);
