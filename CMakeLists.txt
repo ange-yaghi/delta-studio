@@ -291,6 +291,7 @@ add_library(delta-core STATIC
     include/yds_shader.h
     include/yds_shader_program.h
     include/yds_stat.h
+    include/yds_subclass_registry.h
     include/yds_texture.h
     include/yds_time_tag_data.h
     include/yds_timing.h
