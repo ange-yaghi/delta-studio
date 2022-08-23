@@ -314,6 +314,7 @@ if (ENABLE_DSOUND)
 endif()
 
 if(ENABLE_OPENGL)
+    set(OpenGL_GL_PREFERENCE GLVND)
     find_package(OpenGL REQUIRED)
     message("Found OpenGL include dir: ${OPENGL_INCLUDE_DIR}")
 
@@ -343,9 +344,6 @@ if(ENABLE_OPENGL)
         include/yds_opengl_windows_context.h
         include/yds_opengl_sdl_context.h
     )
-
-    set(OpenGL_GL_PREFERENCE LEGACY)
-    find_package(OpenGL REQUIRED)
 
     target_link_libraries(delta-core PRIVATE
         OpenGL::GL
