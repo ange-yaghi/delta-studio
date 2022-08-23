@@ -328,9 +328,6 @@ if(ENABLE_OPENGL)
         src/yds_opengl_shader.cpp
         src/yds_opengl_shader_program.cpp
         src/yds_opengl_texture.cpp
-        # TODO: make windows impl optional
-        #src/yds_opengl_windows_context.cpp
-        src/yds_opengl_sdl_context.cpp
 
         # Include files
         include/yds_opengl_context.h
@@ -341,8 +338,6 @@ if(ENABLE_OPENGL)
         include/yds_opengl_shader.h
         include/yds_opengl_shader_program.h
         include/yds_opengl_texture.h
-        include/yds_opengl_windows_context.h
-        include/yds_opengl_sdl_context.h
     )
 
     target_link_libraries(delta-core PRIVATE
@@ -418,6 +413,13 @@ if (ENABLE_PLAT_WIN32)
         include/yds_windows_window_system.h
     )
 
+    if (ENABLE_OPENGL)
+        target_sources(delta-core PRIVATE
+            src/yds_opengl_windows_context.cpp
+            include/yds_opengl_windows_context.h
+        )
+    endif()
+
     target_link_libraries(delta-core PRIVATE
         winmm
     )
@@ -448,6 +450,13 @@ if (ENABLE_PLAT_SDL)
         include/yds_sdl_window.h
         include/yds_sdl_window_system.h
     )
+
+    if (ENABLE_OPENGL)
+        target_sources(delta-core PRIVATE
+            src/yds_opengl_sdl_context.cpp
+            include/yds_opengl_sdl_context.h
+        )
+    endif()
 endif()
 
 if (ENABLE_SDL)
