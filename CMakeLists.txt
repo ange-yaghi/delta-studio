@@ -33,43 +33,6 @@ else()
     set(TARGET_ARCHITECTURE x86)
 endif()
 
-# =========================================================
-# D3DX
-
-set(
-    D3DX_LIBS
-    ${CMAKE_CURRENT_SOURCE_DIR}/dependencies/libraries/D3DX/lib/${TARGET_ARCHITECTURE})
-set(
-    DXGI_LIBS
-    ${CMAKE_CURRENT_SOURCE_DIR}/dependencies/libraries/DXGI/lib/${TARGET_ARCHITECTURE})
-include_directories(dependencies/libraries/D3DX/include)
-
-# =========================================================
-# DirectSound
-
-set(
-    DIRECT_SOUND_LIBS
-    ${CMAKE_CURRENT_SOURCE_DIR}/dependencies/libraries/DirectSound/lib/${TARGET_ARCHITECTURE})
-
-# =========================================================
-# OpenGL
-
-include_directories(dependencies/libraries/OpenGL/include)
-
-# =========================================================
-# Vulkan
-
-set(
-    VULKAN_LIBS
-    ${CMAKE_CURRENT_SOURCE_DIR}/dependencies/libraries/vulkan/lib/${TARGET_ARCHITECTURE})
-include_directories(dependencies/libraries/vulkan/include)
-
-# =========================================================
-# SDL2
-
-find_package(SDL2 REQUIRED)
-find_package(SDL2_image REQUIRED)
-include_directories(${SDL2_INCLUDE_DIRS} ${SDL2_IMAGE_INCLUDE_DIRS})
 
 # =========================================================
 # Filesystem (stdlib or Boost)
@@ -289,6 +252,14 @@ if(ENABLE_D3D)
         include/yds_d3d11_utilities.h
     )
 
+    set(
+        D3DX_LIBS
+        ${CMAKE_CURRENT_SOURCE_DIR}/dependencies/libraries/D3DX/lib/${TARGET_ARCHITECTURE})
+    set(
+        DXGI_LIBS
+        ${CMAKE_CURRENT_SOURCE_DIR}/dependencies/libraries/DXGI/lib/${TARGET_ARCHITECTURE})
+    target_include_directories(delta-core PUBLIC dependencies/libraries/D3DX/include)
+
     target_link_libraries(delta-core PRIVATE
         # D3DX
         d3d9
@@ -306,7 +277,10 @@ if(ENABLE_D3D)
         ${DXGI_LIBS}/DxErr.lib
         ${DXGI_LIBS}/dxgi.lib
         ${DXGI_LIBS}/dxguid.lib
+    )
 
+    target_compile_definitions(delta-core PRIVATE
+        -DAPI_D3D
     )
 endif()
 
@@ -325,9 +299,16 @@ if (ENABLE_DSOUND)
         include/yds_ds8_system.h
     )
 
+    set(DIRECT_SOUND_LIBS
+    ${CMAKE_CURRENT_SOURCE_DIR}/dependencies/libraries/DirectSound/lib/${TARGET_ARCHITECTURE})
+
     target_link_libraries(delta-core PRIVATE
         # DirectSound
         ${DIRECT_SOUND_LIBS}/dsound.lib
+    )
+
+    target_compile_definitions(delta-core PRIVATE
+        -DSOUND_DSOUND
     )
 
 endif()
@@ -363,9 +344,14 @@ if(ENABLE_OPENGL)
         include/yds_opengl_sdl_context.h
     )
 
+    set(OpenGL_GL_PREFERENCE LEGACY)
+    find_package(OpenGL REQUIRED)
+
     target_link_libraries(delta-core PRIVATE
         OpenGL::GL
     )
+
+    target_include_directories(delta-core PRIVATE dependencies/libraries/OpenGL/include)
 
     if (APPLE)
         target_include_directories(delta-code PRIVATE
@@ -401,7 +387,12 @@ if (ENABLE_VULKAN)
         include/yds_vulkan_windows_context.h
     )
 
+    target_include_directories(delta-core PRIVATE dependencies/libraries/vulkan/include)
+
     if (WIN32)
+        set(VULKAN_LIBS
+        ${CMAKE_CURRENT_SOURCE_DIR}/dependencies/libraries/vulkan/lib/${TARGET_ARCHITECTURE})
+
         target_link_libraries(delta-core PRIVATE
             ${VULKAN_LIBS}/vulkan-1.lib
         )
