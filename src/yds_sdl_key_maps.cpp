@@ -50,6 +50,7 @@ const ysKey::Code *ysKeyMaps::GetSdlKeyMap() {
         m_sdlKeyMap[SDL_SCANCODE_TAB] = ysKey::Code::Tab;
         m_sdlKeyMap[SDL_SCANCODE_ESCAPE] = ysKey::Code::Escape;
         m_sdlKeyMap[SDL_SCANCODE_SPACE] = ysKey::Code::Space;
+        m_sdlKeyMap[SDL_SCANCODE_RETURN] = ysKey::Code::Return;
 
         m_sdlKeyMap[SDL_SCANCODE_LSHIFT] = ysKey::Code::Shift;
         m_sdlKeyMap[SDL_SCANCODE_RSHIFT] = ysKey::Code::Shift;
