@@ -71,6 +71,9 @@ void ysSdlWindowSystem::ProcessMessages() {
             // Window events
             case SDL_WINDOWEVENT:
                 switch (event.window.event) {
+                    case SDL_WINDOWEVENT_SIZE_CHANGED:
+                        window->SetWindowSize(event.window.data1, event.window.data2);
+                        break;
                     default:
                         break;
                 }
