@@ -58,6 +58,7 @@ void ysSdlWindowSystem::SurveyMonitors() {
 
 void ysSdlWindowSystem::ProcessMessages() {
     auto *inputSystem = static_cast<ysSdlInputSystem *>(GetInputSystem());
+    auto *window = ysWindowSystem::GetWindow(0);
 
     // Grab all the queued events
     SDL_Event event;
@@ -65,6 +66,14 @@ void ysSdlWindowSystem::ProcessMessages() {
         switch (event.type) {
             case SDL_QUIT:
                 // TODO: quit
+                break;
+
+            // Window events
+            case SDL_WINDOWEVENT:
+                switch (event.window.event) {
+                    default:
+                        break;
+                }
                 break;
 
             // Input events
