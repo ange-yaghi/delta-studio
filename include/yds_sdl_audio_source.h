@@ -3,6 +3,8 @@
 
 #include "yds_audio_source.h"
 
+#include <mutex>
+
 class ysSdlAudioDevice;
 
 class ysSdlAudioSource : public ysAudioSource {
@@ -31,12 +33,14 @@ public:
 
     virtual ysError Destroy() override;
 
-    bool TryLockForRead(void **segment1, size_t *length1, void **segment2, size_t *length2);
-    void UnlockForRead();
+    void AddToBuffer(int16_t *audio, int frames);
 
 private:
+    size_t m_safeWriteFrames;
+
+    // Lazy. Should be lock-free for perf here...
+    std::mutex m_mutex;
     size_t m_readPosition;
-    size_t m_queuedSize;
 };
 
 #endif /* YDS_SDL_AUDIO_SOURCE_H */

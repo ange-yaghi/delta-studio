@@ -5,8 +5,9 @@
 #include <cmath>
 
 ysSdlAudioSource::ysSdlAudioSource() : ysAudioSource(API::Sdl) {
+    std::lock_guard<std::mutex> guard(m_mutex);
     m_readPosition = 0;
-    m_queuedSize = 0;
+    m_safeWriteFrames = 0;
 }
 
 ysSdlAudioSource::~ysSdlAudioSource() {
@@ -17,6 +18,7 @@ ysError ysSdlAudioSource::LockEntireBuffer(void **buffer, SampleOffset *samples)
     YDS_ERROR_DECLARE("LockEntireBuffer");
 
     YDS_NESTED_ERROR_CALL( ysAudioSource::LockEntireBuffer(buffer, samples) );
+    m_mutex.lock();
 
     ysSdlAudioBuffer *sdlBuffer = static_cast<ysSdlAudioBuffer *>(m_dataBuffer);
     *buffer = sdlBuffer->GetBuffer();
@@ -29,8 +31,7 @@ ysError ysSdlAudioSource::UnlockBuffer(void *buffer, SampleOffset samples) {
 
     YDS_NESTED_ERROR_CALL(ysAudioSource::UnlockBuffer(buffer, samples));
 
-    m_queuedSize += m_audioParameters.GetSizeFromSamples(samples);
-
+    m_mutex.unlock();
     return YDS_ERROR_RETURN(ysError::None);
 }
 
@@ -38,6 +39,7 @@ ysError ysSdlAudioSource::LockBufferSegment(SampleOffset offset, SampleOffset sa
     YDS_ERROR_DECLARE("LockBufferSegment");
 
     YDS_NESTED_ERROR_CALL( ysAudioSource::LockBufferSegment(offset, samples, segment1, size1, segment2, size2) );
+    m_mutex.lock();
 
     size_t byteOffset = m_audioParameters.GetSizeFromSamples(offset);
 
@@ -53,8 +55,7 @@ ysError ysSdlAudioSource::UnlockBufferSegments(void *segment1, SampleOffset segm
 
     YDS_NESTED_ERROR_CALL( ysAudioSource::UnlockBufferSegments(segment1, segment1Size, segment2, segment2Size) );
 
-    m_queuedSize += m_audioParameters.GetSizeFromSamples(segment1Size + segment2Size);
-
+    m_mutex.unlock();
     return YDS_ERROR_RETURN(ysError::None);
 }
 
@@ -102,18 +103,13 @@ ysError ysSdlAudioSource::SetPan(float pan) {
 }
 
 SampleOffset ysSdlAudioSource::GetCurrentPosition() {
-    const size_t bufferSize = m_audioParameters.GetSizeFromSamples(m_bufferSize);
-    const size_t readPosition = m_readPosition % bufferSize;
-    return m_audioParameters.GetSamplesFromSize(readPosition);
+    std::lock_guard<std::mutex> guard(m_mutex);
+    return m_readPosition % m_bufferSize;
 }
 
 SampleOffset ysSdlAudioSource::GetCurrentWritePosition() {
-    const size_t bufferSize = m_audioParameters.GetSizeFromSamples(m_bufferSize);
-    const size_t writePosition = (m_readPosition + m_queuedSize) % bufferSize;
-
-    // HACK: add a bodge so that code actually runs
-    const size_t bodgeSamples = 441;
-    return m_audioParameters.GetSamplesFromSize(writePosition) + bodgeSamples;
+    std::lock_guard<std::mutex> guard(m_mutex);
+    return (m_readPosition + m_safeWriteFrames) % m_bufferSize;
 }
 
 void ysSdlAudioSource::Seek(SampleOffset offset) {
@@ -128,37 +124,27 @@ ysError ysSdlAudioSource::Destroy() {
     return YDS_ERROR_RETURN(ysError::None);
 }
 
-bool ysSdlAudioSource::TryLockForRead(void **segment1, size_t *length1, void **segment2, size_t *length2)
-{
-    // TODO: add a way to check this is safe
-    //if (m_locked) return false;
+void ysSdlAudioSource::AddToBuffer(int16_t *audio, int frames) {
+    std::lock_guard<std::mutex> guard(m_mutex);
 
     ysSdlAudioBuffer *sdlBuffer = static_cast<ysSdlAudioBuffer *>(m_dataBuffer);
-    auto *buffer = (uint8_t *)sdlBuffer->GetBuffer();
-    const size_t bufferSize = m_audioParameters.GetSizeFromSamples(m_bufferSize);
-    const size_t startOffset = m_readPosition % bufferSize;
+    auto *buffer = (int16_t *)sdlBuffer->GetBuffer();
+    const size_t startOffset = m_readPosition % m_bufferSize;
 
-    // First segment start is simple
-    *segment1 = buffer + startOffset;
-
-    if (startOffset + m_queuedSize <= bufferSize) {
-        // Everything is contiguous, so no second segment
-        *length1 = m_queuedSize;
-        *segment2 = nullptr;
-        *length2 = 0;
-    } else {
-        // Need to split it up into 2 segments
-        *length1 = bufferSize - startOffset;
-        *segment2 = buffer;
-        *length2 = startOffset + m_queuedSize - bufferSize;
+    // Read the first segment
+    const auto *segment1 = buffer + startOffset;
+    const size_t length1 = std::min(size_t(frames), m_bufferSize - startOffset);
+    for (size_t i = 0; i < length1; i++) {
+        audio[i] += segment1[i];
     }
 
-    return true;
-}
+    // Read the second segment
+    const auto *segment2 = buffer;
+    const size_t length2 = frames - length1;
+    for (size_t i = 0; i < length2; i++) {
+        audio[i + length1] += segment2[i];
+    }
 
-void ysSdlAudioSource::UnlockForRead()
-{
-    const size_t bufferSize = m_audioParameters.GetSizeFromSamples(m_bufferSize);
-    m_readPosition += m_queuedSize;
-    m_queuedSize = 0;
+    // Update position
+    m_readPosition += frames;
 }

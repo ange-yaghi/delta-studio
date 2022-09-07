@@ -20,6 +20,9 @@ public:
     virtual void UpdateAudioSources() override;
 
 private:
+    void FillBuffer(int16_t *audio, int frames);
+
+private:
     SDL_AudioDeviceID m_deviceId;
     SDL_AudioSpec m_outputFormat;
 };

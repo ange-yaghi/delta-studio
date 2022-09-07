@@ -31,6 +31,8 @@ ysAudioSource *ysSdlAudioDevice::CreateSource(const ysAudioParameters *parameter
 
     newSource->m_bufferSize = size;
     newSource->m_audioParameters = *parameters;
+    newSource->m_safeWriteFrames = m_outputFormat.size /
+        (m_outputFormat.channels * SDL_AUDIO_BITSIZE(m_outputFormat.format) / 8);
 
     return newSource;
 }
@@ -44,33 +46,23 @@ ysAudioSource *ysSdlAudioDevice::CreateSource(ysAudioBuffer *sourceBuffer) {
 
 void ysSdlAudioDevice::UpdateAudioSources() {
     const int sourceCount = m_audioSources.GetNumObjects();
-
     if (sourceCount > 0) {
         // Unpause the device if we now have sources
         SDL_PauseAudioDevice(m_deviceId, 0);
     } else {
         // Stop and clear the queue when nothing's left
         SDL_PauseAudioDevice(m_deviceId, 1);
-        SDL_ClearQueuedAudio(m_deviceId);
     }
+}
 
-    // TODO: we currently assume 1 source, otherwise we'd need to mix them here
+void ysSdlAudioDevice::FillBuffer(int16_t *audio, int frames) {
+    // Clear the buffer
+    memset(audio, 0, frames * sizeof(int16_t));
+
+    // Mix each source in
+    const int sourceCount = m_audioSources.GetNumObjects();
     for (int i = 0; i < sourceCount; ++i) {
         auto *sdlBuffer = static_cast<ysSdlAudioSource *>(m_audioSources.Get(i));
-
-        void *data1;
-        void *data2;
-        size_t length1;
-        size_t length2;
-
-        // Try and take the lock on this buffer
-        if (sdlBuffer->TryLockForRead(&data1, &length1, &data2, &length2)) {
-            // Submit the audio
-            SDL_QueueAudio(m_deviceId, data1, length1);
-            SDL_QueueAudio(m_deviceId, data2, length2);
-
-            // We're done with the buffer
-            sdlBuffer->UnlockForRead();
-        }
+        sdlBuffer->AddToBuffer(audio, frames);
     }
 }
