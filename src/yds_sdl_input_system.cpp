@@ -67,7 +67,9 @@ void ysSdlInputSystem::ProcessEvent(const SDL_Event &event) {
             auto &wheelEvent = event.wheel;
             ysMouse *mouse = GetMouse();
 
-            mouse->UpdateWheel(wheelEvent.y);
+            // Match the Windows impl by scaling by WHEEL_DELTA
+            const int WHEEL_DELTA = 120;
+            mouse->UpdateWheel(wheelEvent.y * WHEEL_DELTA);
             break;
         }
 
