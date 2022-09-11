@@ -2,6 +2,7 @@
 
 #include "../include/yds_sdl_input_device.h"
 #include "../include/yds_key_maps.h"
+#include "../include/yds_window_system.h"
 
 #include <SDL2/SDL.h>
 
@@ -36,6 +37,9 @@ void ysSdlInputSystem::ProcessEvent(const SDL_Event &event) {
             auto &motionEvent = event.motion;
             ysMouse *mouse = GetMouse();
 
+            // Y is inverted vs what the Windows impl does
+            const int height = m_windowSystem->GetWindow(0)->GetHeight();
+            mouse->SetOsPosition(motionEvent.x, height - motionEvent.y);
             mouse->UpdatePosition(motionEvent.x, motionEvent.y, false);
             break;
         }
