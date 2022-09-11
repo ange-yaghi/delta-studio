@@ -395,4 +395,4 @@ ysError ysVulkanDevice::CreateVulkanDevice(VkSurfaceKHR surface) {
 }
 
 // ctor magic to register as a subclass
-static ysRegisterSubclass<ysVulkanDevice> reg();
+static ysRegisterSubclass<ysVulkanDevice> reg;

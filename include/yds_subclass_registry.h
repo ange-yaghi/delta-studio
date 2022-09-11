@@ -23,7 +23,7 @@ public:
         m_constructors.fill(nullptr);
     }
 
-    AbstractClass *New(const Enum key, Args... args) const {
+    AbstractClass *New(const Enum key, Args&&... args) const {
         return m_constructors[static_cast<size_t>(key)](std::forward<Args>(args)...);
     }
 
@@ -36,9 +36,8 @@ public:
 // use ctor magic to easily register a subclass
 template<typename Subclass, typename... Args>
 struct ysRegisterSubclass {
-    using AbstractClass = typename decltype(Subclass::s_registry)::AbstractClass;
-
-    static AbstractClass* New(Args... args)  {
+    template <typename AbstractClass>
+    static AbstractClass* New(Args&&... args)  {
         return new Subclass(std::forward<Args>(args)...);
     }
 

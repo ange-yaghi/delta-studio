@@ -14,10 +14,10 @@ struct ID3D11ShaderResourceView;
 enum DXGI_FORMAT;
 
 class ysD3D11Device : public ysDevice {
+public:
     ysD3D11Device();
     virtual ~ysD3D11Device();
 
-public:
     static constexpr DeviceAPI SubclassID = DeviceAPI::DirectX11;
 
     // Setup

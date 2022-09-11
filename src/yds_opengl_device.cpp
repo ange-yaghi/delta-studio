@@ -1318,4 +1318,4 @@ ysError ysOpenGLDevice::DestroyOpenGLRenderTarget(ysRenderTarget *target) {
 }
 
 // ctor magic to register as a subclass
-static ysRegisterSubclass<ysOpenGLDevice> reg();
+static ysRegisterSubclass<ysOpenGLDevice> reg;

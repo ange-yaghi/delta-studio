@@ -9,10 +9,10 @@
 struct SDL_Surface;
 
 class ysOpenGLDevice : public ysDevice {
+public:
     ysOpenGLDevice();
     ~ysOpenGLDevice();
 
-public:
     static constexpr DeviceAPI SubclassID = DeviceAPI::OpenGL4_0;
 
     // Setup

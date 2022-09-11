@@ -9,10 +9,10 @@
 #include "yds_vulkan_decl.h"
 
 class ysVulkanDevice : public ysDevice {
+public:
     ysVulkanDevice();
     ~ysVulkanDevice();
 
-public:
     static constexpr DeviceAPI SubclassID = DeviceAPI::Vulkan;
 
     // Setup

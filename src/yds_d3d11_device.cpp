@@ -1797,4 +1797,4 @@ ysError ysD3D11Device::DestroyD3D11RenderTarget(ysRenderTarget *target) {
 }
 
 // ctor magic to register as a subclass
-static ysRegisterSubclass<ysD3D11Device> reg();
+static ysRegisterSubclass<ysD3D11Device> reg;

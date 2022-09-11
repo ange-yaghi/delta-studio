@@ -10,10 +10,10 @@
 // --------------------------------------------------------
 
 class ysD3D10Device : public ysDevice {
+public:
     ysD3D10Device();
     virtual ~ysD3D10Device();
 
-public:
     static constexpr DeviceAPI SubclassID = DeviceAPI::DirectX10;
 
     // Setup
