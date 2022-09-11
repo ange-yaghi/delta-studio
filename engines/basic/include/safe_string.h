@@ -18,6 +18,11 @@
 int strcpy_s(char *__restrict dest, size_t destsz, const char *__restrict src);
 int strcat_s(char *__restrict dest, size_t destsz, const char *__restrict src);
 int sprintf_s(char *__restrict buffer, size_t bufsz, const char *__restrict format, ...);
+
+template <size_t size>
+int strcpy_s(char (&buffer)[size], const char *src) {
+    return strcpy_s(buffer, size, src);
+}
 template <size_t size, typename ...Args>
 int sprintf_s(char (&buffer)[size], const char *__restrict format, Args&&...args) {
     return snprintf_s(buffer, size, std::forward<Args>(args)...);
