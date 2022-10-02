@@ -83,3 +83,7 @@ bool dbasic::Path::IsAbsolute() const {
 bool dbasic::Path::Exists() const {
     return filesystem::exists(*m_path);
 }
+
+bool dbasic::Path::CreateDir() const {
+    return filesystem::create_directories(*m_path);
+}

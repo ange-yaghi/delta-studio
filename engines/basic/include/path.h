@@ -48,6 +48,8 @@ namespace dbasic {
         bool IsAbsolute() const;
         bool Exists() const;
 
+        bool CreateDir() const;
+
     protected:
         filesystem::path *m_path;
 
