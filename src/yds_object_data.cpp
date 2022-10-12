@@ -43,5 +43,5 @@ void ysObjectData::Clear() {
 
     m_flipNormals = false;
 
-    m_hardNormalCache = nullptr;
+    m_hardNormalCache.clear();
 }

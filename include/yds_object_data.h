@@ -5,6 +5,8 @@
 
 #include "yds_expanding_array.h"
 
+#include "yds_allocator.h"
+
 class ysObjectData {
 public:
     enum class ObjectType {
@@ -138,7 +140,7 @@ public:
 
 public:
     // DATA CACHE
-    ysVector *m_hardNormalCache;
+    ysAlignedAllocation<ysVector> m_hardNormalCache;
 };
 
 #endif /* YDS_OBJECT_DATA_H */
