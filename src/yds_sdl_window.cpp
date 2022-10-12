@@ -16,7 +16,8 @@ ysError ysSdlWindow::InitializeWindow(ysWindow *parent, std::string title, Windo
     YDS_NESTED_ERROR_CALL(ysWindow::InitializeWindow(parent, title, style, x, y, width, height, monitor));
     auto *parentWindow = static_cast<ysSdlWindow *>(parent);
 
-    Uint32 flags = 0;
+    // TODO: choose between VULKAN and OPENGL here
+    Uint32 flags = SDL_WINDOW_OPENGL;
 
     if (m_windowState == WindowState::Hidden)
         flags |= SDL_WINDOW_HIDDEN;
@@ -36,8 +37,7 @@ ysError ysSdlWindow::InitializeWindow(ysWindow *parent, std::string title, Windo
         break;
     }
 
-    // TODO: choose between VULKAN and OPENGL here
-    m_window = SDL_CreateWindow(title.c_str(), x, y, width, height, SDL_WINDOW_OPENGL);
+    m_window = SDL_CreateWindow(title.c_str(), x, y, width, height, flags);
 
     return YDS_ERROR_RETURN(ysError::None);
 }
