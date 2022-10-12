@@ -2,6 +2,7 @@
 #define YDS_ALLOCATOR_H
 
 #include <cstdlib>
+#include <utility>
 
 class ysAllocator {
 public:
@@ -54,6 +55,53 @@ public:
 
         BlockFree(block, alignment);
     }
+};
+
+// Like a unique_ptr, but aligned
+template <typename T, int Alignment = alignof(T)>
+class ysAlignedAllocation
+{
+public:
+    ysAlignedAllocation() = default;
+    ysAlignedAllocation(int count) {
+        m_count = count;
+        if (m_count > 0) {
+            m_allocation = ysAllocator::TypeAllocate<T, Alignment>(m_count, true);
+        }
+    }
+    ~ysAlignedAllocation() {
+        clear();
+    }
+    ysAlignedAllocation(ysAlignedAllocation &&o) noexcept : ysAlignedAllocation() {
+        operator=(std::move(o));
+    }
+    ysAlignedAllocation& operator=(ysAlignedAllocation &&o) noexcept {
+        std::swap(m_allocation, o.m_allocation);
+        std::swap(m_count, o.m_count);
+        return *this;
+    }
+
+    void clear() {
+        if (m_allocation != nullptr) {
+            ysAllocator::TypeFree<T>(m_allocation, m_count, true, Alignment);
+            m_allocation = nullptr;
+        }
+    }
+
+    T *data() { return m_allocation; }
+    size_t size() const { return m_count; }
+
+    T &operator[](int idx) { return m_allocation[idx]; }
+
+    operator bool() const { return m_allocation != nullptr; }
+
+private:
+    ysAlignedAllocation(const ysAlignedAllocation&) = delete;
+    ysAlignedAllocation& operator=(const ysAlignedAllocation&) = delete;
+
+private:
+    T *m_allocation = nullptr;
+    int m_count = 0;
 };
 
 #endif /* YDS_ALLOCATOR_H */
