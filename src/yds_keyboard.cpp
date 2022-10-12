@@ -402,7 +402,7 @@ void ysKeyboard::SetKeyState(ysKey::Code key, ysKey::State state, ysKey::Variati
     m_keys[(int)key].m_configuration = conf;
 
     // Process the input buffer
-    if (state == ysKey::State::DownTransition) {
+    if (state == ysKey::State::DownTransition && key != ysKey::Code::Undefined) {
         const char *keyMap = nullptr;
 
         if (IsKeyDown(ysKey::Code::Shift)) {
