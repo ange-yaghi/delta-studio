@@ -93,3 +93,9 @@ target_link_libraries(delta-basic PUBLIC
     delta-physics
     ${LINK_WHOLE_ARCHIVE_END}
 )
+
+if (WIN32)
+    target_link_options(delta-basic PUBLIC
+        /WHOLEARCHIVE:delta-core
+    )
+endif()
