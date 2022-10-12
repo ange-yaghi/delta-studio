@@ -3,7 +3,8 @@
 #include <cstring>
 #include <utility>
 
-#ifndef __STDC_LIB_EXT1__
+// __STDC_LIB_EXT1__ isn't defined by MSVC
+#ifndef _MSC_VER
 
 // Portable versions of _s functions for non-windows platforms
 

@@ -179,7 +179,7 @@ ysError ysOpenGLWindowsContext::SetContextMode(ContextMode mode) {
         dmScreenSettings.dmBitsPerPel = 32;
         dmScreenSettings.dmFields = DM_BITSPERPEL | DM_PELSWIDTH | DM_PELSHEIGHT;
 
-        result = ChangeDisplaySettingsEx(monitor->GetDeviceName(), &dmScreenSettings, NULL, CDS_FULLSCREEN | CDS_UPDATEREGISTRY, NULL);
+        result = ChangeDisplaySettingsEx(monitor->GetDeviceName().c_str(), &dmScreenSettings, NULL, CDS_FULLSCREEN | CDS_UPDATEREGISTRY, NULL);
         if (result != DISP_CHANGE_SUCCESSFUL) {
             return YDS_ERROR_RETURN(ysError::CouldNotEnterFullscreen);
         }
@@ -282,8 +282,6 @@ void ysOpenGLWindowsContext::LoadAllExtensions() {
 
     glGetProgramiv = (PFNGLGETPROGRAMIVPROC)wglGetProcAddress("glGetProgramiv");
 
-    glGetActiveUniformName = (PFNGLGETACTIVEUNIFORMNAMEPROC)wglGetProcAddress("glGetActiveUniformName");
-    glGetActiveUniformsiv = (PFNGLGETACTIVEUNIFORMSIVPROC)wglGetProcAddress("glGetActiveUniformsiv");
     glGetActiveUniform = (PFNGLGETACTIVEUNIFORMPROC)wglGetProcAddress("glGetActiveUniform");
 
     glMapBuffer = (PFNGLMAPBUFFERPROC)wglGetProcAddress("glMapBuffer");

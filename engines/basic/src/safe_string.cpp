@@ -1,7 +1,8 @@
 
 #include "../include/safe_string.h"
 
-#ifndef __STDC_LIB_EXT1__
+// __STDC_LIB_EXT1__ isn't defined by MSVC
+#ifndef _MSC_VER
 
 #include <cstdlib>
 #include <limits>
