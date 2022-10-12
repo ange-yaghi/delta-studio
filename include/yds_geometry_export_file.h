@@ -73,8 +73,8 @@ protected:
     void WriteIntToBuffer(int value, char **buffer);
     void WriteFloatToBuffer(float value, char **buffer);
 
-    int PackVertexData(ysObjectData *object, int maxBonesPerVertex, void **output);
-    int PackVertexData(ysInterchangeObject *object, int maxBonesPerVertex, void **output, const VertexInfo *info);
+    int PackVertexData(ysObjectData *object, int maxBonesPerVertex, std::vector<char> &output);
+    int PackVertexData(ysInterchangeObject *object, int maxBonesPerVertex, std::vector<char> &output, const VertexInfo *info);
     void FillOutputHeader(ysObjectData *object, ObjectOutputHeader *header);
     void FillOutputHeader(const ysInterchangeObject *object, const VertexInfo *info, ObjectOutputHeader *header);
 

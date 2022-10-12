@@ -147,7 +147,7 @@ void ysGeometryExportFile::WriteFloatToBuffer(float value, char **location) {
     (*location) += sizeof(float);
 }
 
-int ysGeometryExportFile::PackVertexData(ysObjectData *object, int maxBonesPerVertex, void **output) {
+int ysGeometryExportFile::PackVertexData(ysObjectData *object, int maxBonesPerVertex, std::vector<char> &output) {
     int packedSize = 0;
 
     // First Calculate Size
@@ -182,8 +182,8 @@ int ysGeometryExportFile::PackVertexData(ysObjectData *object, int maxBonesPerVe
         }
     }
 
-    char *data = (char *)malloc(packedSize);
-    char *location = data;
+    output.resize(packedSize);
+    char *location = output.data();
 
     for (int vert = 0; vert < object->m_objectStatistics.NumVertices; ++vert) {
         ysVector3 &vertex = object->m_vertices[vert];
@@ -255,11 +255,10 @@ int ysGeometryExportFile::PackVertexData(ysObjectData *object, int maxBonesPerVe
         delete[] UVCoordinates;
     }
 
-    *output = data;
     return packedSize;
 }
 
-int ysGeometryExportFile::PackVertexData(ysInterchangeObject *object, int maxBonesPerVertex, void **output, const VertexInfo *info) {
+int ysGeometryExportFile::PackVertexData(ysInterchangeObject *object, int maxBonesPerVertex, std::vector<char> &output, const VertexInfo *info) {
     int packedSize = 0;
 
     const int numUVChannels = (int)object->UVChannels.size();
@@ -317,8 +316,8 @@ int ysGeometryExportFile::PackVertexData(ysInterchangeObject *object, int maxBon
         }
     }
 
-    char *data = (char *)malloc(packedSize);
-    char *location = data;
+    output.resize(packedSize);
+    char *location = output.data();
 
     for (int vert = 0; vert < numVertices; vert++) {
         ysVector3 &vertex = object->Vertices[vert];
@@ -381,7 +380,6 @@ int ysGeometryExportFile::PackVertexData(ysInterchangeObject *object, int maxBon
     if (numNormals > 0) delete[] normals;
     if (numTangents > 0) delete[] tangents;
 
-    *output = data;
     return packedSize;
 }
 
@@ -405,11 +403,11 @@ ysError ysGeometryExportFile::WriteObject(ysObjectData *object) {
     ObjectOutputHeader header;
     FillOutputHeader(object, &header);
 
-    void *vertexData = nullptr;
+    std::vector<char> vertexData;
     int vertexDataSize = 0;
 
     if (object->m_objectInformation.objectType == ysObjectData::ObjectType::Geometry) {
-        vertexDataSize = PackVertexData(object, 4 /* TEMP */, &vertexData);
+        vertexDataSize = PackVertexData(object, 4 /* TEMP */, vertexData);
         header.VertexDataSize = vertexDataSize;
     }
 
@@ -417,7 +415,7 @@ ysError ysGeometryExportFile::WriteObject(ysObjectData *object) {
 
     // Geometry Data
     if (object->m_objectInformation.objectType == ysObjectData::ObjectType::Geometry) {
-        m_file.write((char *)vertexData, vertexDataSize);
+        m_file.write(vertexData.data(), vertexDataSize);
 
         for (int i  =0; i < object->m_objectStatistics.NumFaces; ++i) {
             for (int facevert = 0; facevert < 3; facevert++) {
@@ -456,11 +454,11 @@ ysError ysGeometryExportFile::WriteObject(ysInterchangeObject *object, const Ver
     ObjectOutputHeader header;
     FillOutputHeader(object, info, &header);
 
-    void *vertexData = nullptr;
+    std::vector<char> vertexData;
     int vertexDataSize = 0;
 
     if (object->Type == ysInterchangeObject::ObjectType::Geometry) {
-        vertexDataSize = PackVertexData(object, 4 /* TEMP */, &vertexData, info);
+        vertexDataSize = PackVertexData(object, 4 /* TEMP */, vertexData, info);
         header.VertexDataSize = vertexDataSize;
     }
 
@@ -468,7 +466,7 @@ ysError ysGeometryExportFile::WriteObject(ysInterchangeObject *object, const Ver
 
     // Geometry Data
     if (object->Type == ysInterchangeObject::ObjectType::Geometry) {
-        m_file.write((char *)vertexData, vertexDataSize);
+        m_file.write(vertexData.data(), vertexDataSize);
 
         for (size_t i = 0; i < object->VertexIndices.size(); ++i) {
             for (int facevert = 0; facevert < 3; ++facevert) {
