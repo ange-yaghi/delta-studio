@@ -477,14 +477,14 @@ ysError dbasic::DeltaEngine::LoadAnimation(Animation **animation, const char *pa
 ysError dbasic::DeltaEngine::LoadFont(Font **font, const char *path, int size, int fontSize) {
     YDS_ERROR_DECLARE("LoadFont");
 
-    unsigned char *ttfBuffer = new unsigned char[1 << 20];
-    unsigned char *bitmapData = new unsigned char[size * size];
-
     FILE *f = fopen(path, "rb");
 
     if (f == nullptr) {
         return YDS_ERROR_RETURN(ysError::CouldNotOpenFile);
     }
+
+    unsigned char *ttfBuffer = new unsigned char[1 << 20];
+    unsigned char *bitmapData = new unsigned char[size * size];
 
     fread(ttfBuffer, 1, 1 << 20, f);
 
@@ -506,6 +506,7 @@ ysError dbasic::DeltaEngine::LoadFont(Font **font, const char *path, int size, i
     newFont->Initialize(32, 96, cdata, (float)fontSize, texture);
 
     delete[] cdata;
+    delete[] bitmapData;
 
     return YDS_ERROR_RETURN(ysError::None);
 }
