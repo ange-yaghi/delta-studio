@@ -253,6 +253,10 @@ ysError dbasic::DeltaEngine::Destroy() {
     YDS_NESTED_ERROR_CALL(m_device->DestroyGPUBuffer(m_mainVertexBuffer));
     YDS_NESTED_ERROR_CALL(m_device->DestroyGPUBuffer(m_consoleShaderObjectVariablesBuffer));
 
+    YDS_NESTED_ERROR_CALL(m_device->DestroyShaderProgram(m_shaderProgram));
+    YDS_NESTED_ERROR_CALL(m_device->DestroyShaderProgram(m_consoleProgram));
+    YDS_NESTED_ERROR_CALL(m_device->DestroyShaderProgram(m_skinnedShaderProgram));
+
     YDS_NESTED_ERROR_CALL(m_device->DestroyShader(m_vertexShader));
     YDS_NESTED_ERROR_CALL(m_device->DestroyShader(m_vertexSkinnedShader));
     YDS_NESTED_ERROR_CALL(m_device->DestroyShader(m_consoleVertexShader));
@@ -261,10 +265,6 @@ ysError dbasic::DeltaEngine::Destroy() {
     YDS_NESTED_ERROR_CALL(m_device->DestroyShader(m_pixelShader));
     YDS_NESTED_ERROR_CALL(m_device->DestroyShader(m_saqPixelShader));
     YDS_NESTED_ERROR_CALL(m_device->DestroyShader(m_consolePixelShader));
-
-    YDS_NESTED_ERROR_CALL(m_device->DestroyShaderProgram(m_shaderProgram));
-    YDS_NESTED_ERROR_CALL(m_device->DestroyShaderProgram(m_consoleProgram));
-    YDS_NESTED_ERROR_CALL(m_device->DestroyShaderProgram(m_skinnedShaderProgram));
 
     YDS_NESTED_ERROR_CALL(m_device->DestroyInputLayout(m_inputLayout));
     YDS_NESTED_ERROR_CALL(m_device->DestroyInputLayout(m_skinnedInputLayout));
