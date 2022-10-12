@@ -25,7 +25,7 @@ int strcpy_s(char (&buffer)[size], const char *src) {
 }
 template <size_t size, typename ...Args>
 int sprintf_s(char (&buffer)[size], const char *__restrict format, Args&&...args) {
-    return snprintf_s(buffer, size, std::forward<Args>(args)...);
+    return sprintf_s(buffer, size, format, std::forward<Args>(args)...);
 }
 
 #endif
