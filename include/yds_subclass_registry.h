@@ -19,9 +19,7 @@ class ysSubclassRegistry {
     }
 
 public:
-    constexpr ysSubclassRegistry() {
-        m_constructors.fill(nullptr);
-    }
+    constexpr ysSubclassRegistry() = default;
 
     AbstractClass *New(const Enum key, Args&&... args) const {
         return m_constructors[static_cast<size_t>(key)](std::forward<Args>(args)...);
