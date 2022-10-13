@@ -8,16 +8,15 @@ ysSdlWindow::~ysSdlWindow() {
     /* void */
 }
 
-ysError ysSdlWindow::InitializeWindow(ysWindow *parent, std::string title, WindowStyle style, int x, int y, int width, int height, ysMonitor *monitor) {
+ysError ysSdlWindow::InitializeWindow(ysWindow *parent, std::string title, WindowStyle style, int x, int y, int width, int height, ysMonitor *monitor, ysContextObject::DeviceAPI api) {
     YDS_ERROR_DECLARE("InitializeWindow");
 
     if (!CheckCompatibility(parent)) return YDS_ERROR_RETURN(ysError::IncompatiblePlatforms);
 
-    YDS_NESTED_ERROR_CALL(ysWindow::InitializeWindow(parent, title, style, x, y, width, height, monitor));
+    YDS_NESTED_ERROR_CALL(ysWindow::InitializeWindow(parent, title, style, x, y, width, height, monitor, api));
     auto *parentWindow = static_cast<ysSdlWindow *>(parent);
 
-    // TODO: choose between VULKAN and OPENGL here
-    Uint32 flags = SDL_WINDOW_OPENGL;
+    Uint32 flags = 0;
 
     if (m_windowState == WindowState::Hidden)
         flags |= SDL_WINDOW_HIDDEN;
@@ -34,6 +33,21 @@ ysError ysSdlWindow::InitializeWindow(ysWindow *parent, std::string title, Windo
         break;
     case WindowStyle::Unknown:
         // do nothing
+        break;
+    }
+
+    switch (api) {
+    case ysContextObject::DeviceAPI::OpenGL4_0:
+        flags |= SDL_WINDOW_OPENGL;
+        break;
+    case ysContextObject::DeviceAPI::Vulkan:
+        flags |= SDL_WINDOW_VULKAN;
+        break;
+//    case ysContextObject::DeviceAPI::Metal:
+//        flags |= SDL_WINDOW_METAL;
+//        flags |= SDL_WINDOW_ALLOW_HIGHDPI;
+//        break;
+    default:
         break;
     }
 

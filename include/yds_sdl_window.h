@@ -16,7 +16,7 @@ public:
     ~ysSdlWindow();
 
     // Overrides
-    virtual ysError InitializeWindow(ysWindow *parent, std::string title, WindowStyle style, int x, int y, int width, int height, ysMonitor *monitor) override;
+    virtual ysError InitializeWindow(ysWindow *parent, std::string title, WindowStyle style, int x, int y, int width, int height, ysMonitor *monitor, ysContextObject::DeviceAPI api) override;
     virtual void SetState(WindowState state) override;
     virtual void SetTitle(std::string title) override;
 
