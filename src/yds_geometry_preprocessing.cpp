@@ -8,7 +8,7 @@
 #include <float.h>
 #include <limits.h>
 
-static ysAlignedAllocation<ysVector>& CalculateHardNormals(ysObjectData* object);
+static ysVectorAllocation &CalculateHardNormals(ysObjectData* object);
 
 bool ysGeometryPreprocessing::ConnectedFaces(ysObjectData *object, int face1, int face2) {
     for (int i = 0; i < 3; i++) {
@@ -99,7 +99,7 @@ void ysGeometryPreprocessing::ResolveSmoothingGroupAmbiguity(ysObjectData *objec
 }
 
 void ysGeometryPreprocessing::CreateAutomaticSmoothingGroups(ysObjectData *object) {
-    ysAlignedAllocation<ysVector> &tempNormals = CalculateHardNormals(object);
+    ysVectorAllocation &tempNormals = CalculateHardNormals(object);
 
     object->m_extendedSmoothingGroups.Allocate(object->m_objectStatistics.NumFaces);
 
@@ -281,10 +281,10 @@ void ysGeometryPreprocessing::SeparateByUVGroups(ysObjectData *object, int mapCh
     object->m_objectStatistics.NumVertices = object->m_vertices.GetNumObjects();
 }
 
-static ysAlignedAllocation<ysVector> &CalculateHardNormals(ysObjectData *object) {
+static ysVectorAllocation &CalculateHardNormals(ysObjectData *object) {
     if (object->m_hardNormalCache) return object->m_hardNormalCache;
 
-    object->m_hardNormalCache = ysAlignedAllocation<ysVector>(object->m_objectStatistics.NumFaces);
+    object->m_hardNormalCache = ysVectorAllocation(object->m_objectStatistics.NumFaces);
     auto &tempNormals = object->m_hardNormalCache;
 
     ysVector vert1, vert2, vert3;
@@ -312,8 +312,8 @@ static ysAlignedAllocation<ysVector> &CalculateHardNormals(ysObjectData *object)
 
 void ysGeometryPreprocessing::CalculateNormals(ysObjectData *object) {
     object->m_normals.Allocate(object->m_objectStatistics.NumVertices);
-    ysAlignedAllocation<ysVector> &tempNormals = CalculateHardNormals(object);
-    ysAlignedAllocation<ysVector> accum(object->m_objectStatistics.NumVertices);
+    ysVectorAllocation &tempNormals = CalculateHardNormals(object);
+    ysVectorAllocation accum(object->m_objectStatistics.NumVertices);
 
     // Clear accum
     for (int i = 0; i < object->m_objectStatistics.NumVertices; i++) {
@@ -334,9 +334,9 @@ void ysGeometryPreprocessing::CalculateNormals(ysObjectData *object) {
     }
 }
 
-static ysAlignedAllocation<ysVector> CalculateHardTangents(ysObjectData *object, int mapChannel) {
-    ysAlignedAllocation<ysVector> tempTangents(object->m_objectStatistics.NumFaces);
-    ysAlignedAllocation<ysVector> &hardNormals = CalculateHardNormals(object);
+static ysVectorAllocation CalculateHardTangents(ysObjectData *object, int mapChannel) {
+    ysVectorAllocation tempTangents(object->m_objectStatistics.NumFaces);
+    ysVectorAllocation &hardNormals = CalculateHardNormals(object);
 
     ysVector vert1, vert2, vert3;
 
@@ -397,7 +397,7 @@ static ysAlignedAllocation<ysVector> CalculateHardTangents(ysObjectData *object,
 }
 
 void ysGeometryPreprocessing::CalculateTangents(ysObjectData *object, int mapChannel) {
-    ysAlignedAllocation<ysVector> tempTangents = CalculateHardTangents(object, mapChannel);
+    ysVectorAllocation tempTangents = CalculateHardTangents(object, mapChannel);
 
     // Separate Faces With Discontinuous Tangents
     ysExpandingArray<int, 4> m_discontinuousFaces;
@@ -434,7 +434,7 @@ void ysGeometryPreprocessing::CalculateTangents(ysObjectData *object, int mapCha
 
     // Find smoothed tangents
     object->m_tangents.Allocate(object->m_vertices.GetNumObjects());
-    ysAlignedAllocation<ysVector> accum(object->m_objectStatistics.NumVertices);
+    ysVectorAllocation accum(object->m_objectStatistics.NumVertices);
 
     // Clear accum
     for (int i = 0; i < object->m_objectStatistics.NumVertices; i++) {

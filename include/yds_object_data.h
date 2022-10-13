@@ -7,6 +7,13 @@
 
 #include "yds_allocator.h"
 
+// Workaround GCC warning about ysVector dropping attributes
+struct ysVectorAllocationConfig {
+    using Type = ysVector;
+    static constexpr int Alignment = alignof(ysVector);
+};
+using ysVectorAllocation = ysAlignedAllocation<ysVectorAllocationConfig>;
+
 class ysObjectData {
 public:
     enum class ObjectType {
@@ -140,7 +147,7 @@ public:
 
 public:
     // DATA CACHE
-    ysAlignedAllocation<ysVector> m_hardNormalCache;
+    ysVectorAllocation m_hardNormalCache;
 };
 
 #endif /* YDS_OBJECT_DATA_H */

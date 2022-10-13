@@ -58,9 +58,14 @@ public:
 };
 
 // Like a unique_ptr, but aligned
-template <typename T, int Alignment = alignof(T)>
+template <typename AllocationConfig>
 class ysAlignedAllocation
 {
+public:
+    // Workaround GCC warning about ysVector dropping attributes
+    using T = typename AllocationConfig::Type;
+    static constexpr int Alignment = AllocationConfig::Alignment;
+
 public:
     ysAlignedAllocation() = default;
     ysAlignedAllocation(int count) {
