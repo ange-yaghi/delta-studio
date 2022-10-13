@@ -211,6 +211,9 @@ if (NOT USE_CXX17_FILESYSTEM)
     target_link_libraries(delta-core PUBLIC Boost::filesystem)
 endif()
 
+# SSE2NEON
+target_include_directories(delta-core PUBLIC dependencies/libraries/sse2neon-1.5.1)
+
 if(ENABLE_D3D)
     target_sources(delta-core PRIVATE
         # Source files
