@@ -472,7 +472,7 @@ if (ENABLE_SDL)
     )
 
     target_link_libraries(delta-core PRIVATE
-        ${SDL2_LIBRARY}
+        ${SDL2_LIBRARIES}
         ${SDL2_IMAGE_LIBRARIES}
     )
 endif()
