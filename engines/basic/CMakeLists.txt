@@ -28,7 +28,6 @@ add_library(delta-basic STATIC
     include/pose.h
     include/render_node.h
     include/render_skeleton.h
-    include/safe_string.h
     include/scene_object_asset.h
     include/shader_base.h
     include/shader_controls.h
@@ -66,7 +65,6 @@ add_library(delta-basic STATIC
     src/pose.cpp
     src/render_node.cpp
     src/render_skeleton.cpp
-    src/safe_string.cpp
     src/scene_object_asset.cpp
     src/shader_base.cpp
     src/shader_set.cpp

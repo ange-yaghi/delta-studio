@@ -1,5 +1,5 @@
 
-#include "../include/safe_string.h"
+#include "../include/yds_safe_string.h"
 
 // __STDC_LIB_EXT1__ isn't defined by MSVC
 #ifndef _MSC_VER

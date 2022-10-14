@@ -17,7 +17,7 @@
 #include <SDL_image.h>
 
 #include "../include/yds_file.h"
-#include "../engines/basic/include/safe_string.h" // TODO: move this down into delta
+#include "../include/yds_safe_string.h"
 
 ysOpenGLDevice::ysOpenGLDevice() : ysDevice(ysContextObject::DeviceAPI::OpenGL4_0) {
     m_deviceCreated = false;

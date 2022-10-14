@@ -4,6 +4,7 @@
 // Base
 #include "yds_base.h"
 #include "yds_object_data.h"
+#include "yds_safe_string.h"
 
 // Audio
 #include "yds_audio_buffer.h"

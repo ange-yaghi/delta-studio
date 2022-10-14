@@ -109,6 +109,7 @@ add_library(delta-core STATIC
     src/yds_render_geometry_channel.cpp
     src/yds_render_geometry_format.cpp
     src/yds_render_target.cpp
+    src/yds_safe_string.cpp
     src/yds_shader.cpp
     src/yds_shader_program.cpp
     src/yds_stat.cpp
@@ -190,6 +191,7 @@ add_library(delta-core STATIC
     include/yds_render_geometry_channel.h
     include/yds_render_geometry_format.h
     include/yds_render_target.h
+    include/yds_safe_string.h
     include/yds_shader.h
     include/yds_shader_program.h
     include/yds_stat.h
