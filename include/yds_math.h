@@ -133,6 +133,17 @@ struct ysMatrix33 {
 #endif
 #define YS_MATH_CONST extern const EXPORT
 
+#if defined(_MSC_VER)
+    //  Microsoft 
+    #define FORCE_INLINE __forceinline
+#elif defined(__GNUC__)
+    //  GCC
+    #define FORCE_INLINE __attribute__((always_inline))
+#else
+    // Unknown system. Use standard inline
+    #define FORCE_INLINE inline
+#endif
+
 namespace ysMath {
 
     namespace Constants {
@@ -198,7 +209,7 @@ namespace ysMath {
     int UniformRandomInt(int range);
 
     // Vector/General Quaternion
-    __forceinline ysGeneric LoadScalar(float s) {
+    FORCE_INLINE ysGeneric LoadScalar(float s) {
         return _mm_set_ps(s, s, s, s);
     }
 
@@ -213,23 +224,23 @@ namespace ysMath {
     ysVector4 GetVector4(const ysVector &v);
     ysVector3 GetVector3(const ysVector &v);
     ysVector2 GetVector2(const ysVector &v);
-    __forceinline float GetScalar(const ysVector &v) {
+    FORCE_INLINE float GetScalar(const ysVector &v) {
         return v.m128_f32[0];
     }
 
-    __forceinline float GetX(const ysVector &v) {
+    FORCE_INLINE float GetX(const ysVector &v) {
         return v.m128_f32[0];
     }
 
-    __forceinline float GetY(const ysVector &v) {
+    FORCE_INLINE float GetY(const ysVector &v) {
         return v.m128_f32[1];
     }
 
-    __forceinline float GetZ(const ysVector &v) {
+    FORCE_INLINE float GetZ(const ysVector &v) {
         return v.m128_f32[2];
     }
 
-    __forceinline float GetW(const ysVector &v) {
+    FORCE_INLINE float GetW(const ysVector &v) {
         return v.m128_f32[3];
     }
 
@@ -238,27 +249,27 @@ namespace ysMath {
     float GetQuatZ(const ysQuaternion &v);
     float GetQuatW(const ysQuaternion &v);
 
-    __forceinline ysGeneric Add(const ysGeneric &v1, const ysGeneric &v2) {
+    FORCE_INLINE ysGeneric Add(const ysGeneric &v1, const ysGeneric &v2) {
         return _mm_add_ps(v1, v2);
     }
 
-    __forceinline ysGeneric Sub(const ysGeneric &v1, const ysGeneric &v2) {
+    FORCE_INLINE ysGeneric Sub(const ysGeneric &v1, const ysGeneric &v2) {
         return _mm_sub_ps(v1, v2);
     }
 
-    __forceinline ysGeneric Mul(const ysGeneric &v1, const ysGeneric &v2) {
+    FORCE_INLINE ysGeneric Mul(const ysGeneric &v1, const ysGeneric &v2) {
         return _mm_mul_ps(v1, v2);
     }
 
-    __forceinline ysGeneric Div(const ysGeneric &v1, const ysGeneric &v2) {
+    FORCE_INLINE ysGeneric Div(const ysGeneric &v1, const ysGeneric &v2) {
         return _mm_div_ps(v1, v2);
     }
 
-    __forceinline ysGeneric Sqrt(const ysGeneric &v) {
+    FORCE_INLINE ysGeneric Sqrt(const ysGeneric &v) {
         return _mm_sqrt_ps(v);
     }
 
-    __forceinline ysVector Dot(const ysVector &v1, const ysVector &v2) {
+    FORCE_INLINE ysVector Dot(const ysVector &v1, const ysVector &v2) {
         ysVector t0 = _mm_mul_ps(v1, v2);
         ysVector t1 = _mm_shuffle_ps(t0, t0, _MM_SHUFFLE(1, 0, 3, 2));
         ysVector t2 = _mm_add_ps(t0, t1);
@@ -270,23 +281,23 @@ namespace ysMath {
     ysVector Dot3(const ysVector &v1, const ysVector &v2);
     ysVector Cross(const ysVector &v1, const ysVector &v2);
 
-    __forceinline ysVector MagnitudeSquared3(const ysVector &v) {
+    FORCE_INLINE ysVector MagnitudeSquared3(const ysVector &v) {
         ysVector selfDot = ysMath::Dot3(v, v);
 
         return selfDot;
     }
 
-    __forceinline ysVector Magnitude(const ysVector &v) {
+    FORCE_INLINE ysVector Magnitude(const ysVector &v) {
         ysVector selfDot = ysMath::Dot(v, v);
 
         return _mm_sqrt_ps(selfDot);
     }
 
-    __forceinline ysVector Normalize(const ysVector &v) {
+    FORCE_INLINE ysVector Normalize(const ysVector &v) {
         return ysMath::Div(v, ysMath::Magnitude(v));
     }
 
-    __forceinline ysVector Negate(const ysVector &v) {
+    FORCE_INLINE ysVector Negate(const ysVector &v) {
         return ysMath::Mul(v, ysMath::Constants::Negate);
     }
 
