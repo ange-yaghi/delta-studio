@@ -1,6 +1,8 @@
 #ifndef YDS_AUDIO_DEVICE_H
 #define YDS_AUDIO_DEVICE_H
 
+#define __STDC_WANT_LIB_EXT1__ 1
+
 #include "yds_audio_system_object.h"
 #include "yds_audio_parameters.h"
 
@@ -21,7 +23,7 @@ public:
     ~ysAudioDevice();
 
     bool IsConnected() const { return m_connected; }
-    void SetDeviceName(const char *newName) { strcpy_s(m_deviceName, MaxDeviceNameLength, newName); }
+    void SetDeviceName(const char *newName) { strncpy(m_deviceName, newName, MaxDeviceNameLength); }
 
     virtual ysAudioBuffer *CreateBuffer(const ysAudioParameters *parameters, SampleOffset size) = 0;
 
