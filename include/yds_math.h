@@ -225,23 +225,28 @@ namespace ysMath {
     ysVector3 GetVector3(const ysVector &v);
     ysVector2 GetVector2(const ysVector &v);
     FORCE_INLINE float GetScalar(const ysVector &v) {
-        return v.m128_f32[0];
+        ysVector V = _mm_shuffle_ps(v, v, _MM_SHUFFLE(0, 0, 0, 0));
+        return _mm_cvtss_f32(V);
     }
 
     FORCE_INLINE float GetX(const ysVector &v) {
-        return v.m128_f32[0];
+        ysVector V = _mm_shuffle_ps(v, v, _MM_SHUFFLE(0, 0, 0, 0));
+        return _mm_cvtss_f32(V);
     }
 
     FORCE_INLINE float GetY(const ysVector &v) {
-        return v.m128_f32[1];
+        ysVector V = _mm_shuffle_ps(v, v, _MM_SHUFFLE(1, 1, 1, 1));
+        return _mm_cvtss_f32(V);
     }
 
     FORCE_INLINE float GetZ(const ysVector &v) {
-        return v.m128_f32[2];
+        ysVector V = _mm_shuffle_ps(v, v, _MM_SHUFFLE(2, 2, 2, 2));
+        return _mm_cvtss_f32(V);
     }
 
     FORCE_INLINE float GetW(const ysVector &v) {
-        return v.m128_f32[3];
+        ysVector V = _mm_shuffle_ps(v, v, _MM_SHUFFLE(3, 3, 3, 3));
+        return _mm_cvtss_f32(V);
     }
 
     float GetQuatX(const ysQuaternion &v);
