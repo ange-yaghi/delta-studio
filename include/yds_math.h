@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include <string.h>
 
+
 // Extra Definitions
 
 #define _mm_replicate_x_ps(v) \
@@ -118,7 +119,19 @@ struct ysMatrix33 {
     };
 };
 
-#define YS_MATH_CONST extern const __declspec(selectany)
+
+#if defined(_MSC_VER)
+    //  Microsoft 
+    #define EXPORT __declspec(selectany)
+#elif defined(__GNUC__)
+    //  GCC
+    #define EXPORT __attribute__((visibility("default")))
+#else
+    // Unknown system. Do nothing
+    #define EXPORT
+    #pragma warning Unknown dynamic linking system
+#endif
+#define YS_MATH_CONST extern const EXPORT
 
 namespace ysMath {
 
