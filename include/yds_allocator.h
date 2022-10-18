@@ -17,7 +17,12 @@ public:
         // https://learn.microsoft.com/en-us/cpp/standard-library/cstdlib?view=msvc-170#remarks-6
         return _aligned_malloc(size, Alignment);
 #else
-        return ::aligned_alloc(Alignment, size);
+        // posix_memalign() requires the alignment is at least that of a pointer. So much for abstraction...
+        if (Alignment < sizeof(void*)) {
+            return malloc(size);
+        } else {
+            return ::aligned_alloc(Alignment, size);
+        }
 #endif
     }
 
