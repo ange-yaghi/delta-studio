@@ -166,10 +166,17 @@ ysError ysD3D11Device::CreateRenderingContext(ysRenderingContext **context, ysWi
     newContext->m_targetWindow = window;
 
     // Get max quality
-    UINT multisamplesPerPixel = 8;
+    UINT multisamplesPerPixel = 1;
     UINT maxQuality;
     DXGI_FORMAT format = DXGI_FORMAT_R8G8B8A8_UNORM;
-    HRESULT result = m_device->CheckMultisampleQualityLevels(format, multisamplesPerPixel, &maxQuality);
+    for (UINT sampleCount = D3D11_MAX_MULTISAMPLE_SAMPLE_COUNT; sampleCount > 0;
+        sampleCount /= 2) {
+        if (SUCCEEDED(m_device->CheckMultisampleQualityLevels(
+            format, sampleCount, &maxQuality)) &&
+            maxQuality > 0) {
+            multisamplesPerPixel = sampleCount;
+        }
+    }
 
     m_multisampleCount = (int)multisamplesPerPixel;
     m_multisampleQuality = (int)maxQuality - 1;
@@ -195,7 +202,7 @@ ysError ysD3D11Device::CreateRenderingContext(ysRenderingContext **context, ysWi
 
     IDXGIFactory *factory = GetDXGIFactory();
 
-    result = factory->CreateSwapChain(pDXGIDevice, &swapChainDesc, &newContext->m_swapChain);
+    HRESULT result = factory->CreateSwapChain(pDXGIDevice, &swapChainDesc, &newContext->m_swapChain);
     pDXGIDevice->Release();
 
     if (FAILED(result)) {
