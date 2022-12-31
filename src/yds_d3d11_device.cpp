@@ -175,6 +175,7 @@ ysError ysD3D11Device::CreateRenderingContext(ysRenderingContext **context, ysWi
             format, sampleCount, &maxQuality)) &&
             maxQuality > 0) {
             multisamplesPerPixel = sampleCount;
+            break;
         }
     }
 
