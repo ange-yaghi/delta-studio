@@ -5,6 +5,15 @@
 
 #include "yds_expanding_array.h"
 
+#include "yds_allocator.h"
+
+// Workaround GCC warning about ysVector dropping attributes
+struct ysVectorAllocationConfig {
+    using Type = ysVector;
+    static constexpr int Alignment = alignof(ysVector);
+};
+using ysVectorAllocation = ysAlignedAllocation<ysVectorAllocationConfig>;
+
 class ysObjectData {
 public:
     enum class ObjectType {
@@ -82,7 +91,7 @@ public:
         int ModelIndex;
         int ParentIndex;
         int ParentInstance;
-        ObjectType ObjectType;
+        ObjectType objectType;
         int UsesBones;
         int SkeletonIndex;
     } m_objectInformation;
@@ -138,7 +147,7 @@ public:
 
 public:
     // DATA CACHE
-    ysVector *m_hardNormalCache;
+    ysVectorAllocation m_hardNormalCache;
 };
 
 #endif /* YDS_OBJECT_DATA_H */

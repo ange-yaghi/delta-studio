@@ -40,7 +40,7 @@ public:
     }
 
     template<typename DYN_TYPE>
-    void NewGeneric(DYN_TYPE *obj, int alignment = 0) {
+    DYN_TYPE *NewGeneric(DYN_TYPE *obj, int alignment = 0) {
         if (m_nObjects >= m_maxSize) Extend();
 
         m_array[m_nObjects] = static_cast<TYPE *>(obj);

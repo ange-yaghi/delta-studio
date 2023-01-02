@@ -114,7 +114,7 @@ ysError ysD3D11Device::DestroyDevice() {
     if (m_DXGIFactory != nullptr) m_DXGIFactory->Release();
     if (m_deviceContext != nullptr) m_deviceContext->Release();
     if (m_device != nullptr) m_device->Release();
-    
+
 #ifdef _DEBUG
     Microsoft::WRL::ComPtr<IDXGIDebug> dxgiDebug;
 
@@ -1752,7 +1752,7 @@ ysError ysD3D11Device::CreateD3D11OffScreenRenderTarget(
     // Create Depth Buffer
     if (depthBuffer) {
         ysError depthResult;
-        
+
         if (!colorData) depthResult = CreateD3D11DepthStencilView(&newDepthStencil, &shaderResourceView, width, height, 1, 0, true);
         else depthResult = CreateD3D11DepthStencilView(&newDepthStencil, nullptr, width, height, 1, 0, false);
 
@@ -1803,3 +1803,6 @@ ysError ysD3D11Device::DestroyD3D11RenderTarget(ysRenderTarget *target) {
 
     return YDS_ERROR_RETURN(ysError::None);
 }
+
+// ctor magic to register as a subclass
+static ysRegisterSubclass<ysD3D11Device> reg;

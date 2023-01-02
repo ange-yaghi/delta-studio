@@ -1,7 +1,3 @@
-// TEMP
-#include <Windows.h>
-#include <WinBase.h>
-
 #include "../include/yds_error_system.h"
 
 #include "../include/yds_error_handler.h"

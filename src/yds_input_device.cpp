@@ -47,8 +47,8 @@ void ysInputDevice::Destroy() {
     m_generic = 0;
 }
 
-void ysInputDevice::SetName(const char *name) {
-    strcpy_s(m_name, 256, name);
+void ysInputDevice::SetName(std::string name) {
+    m_name = name;
 }
 
 void ysInputDevice::SetType(ysInputDevice::InputDeviceType type) {

@@ -10,7 +10,7 @@
 #include "../../../include/yds_audio_device.h"
 #include "../../../include/yds_audio_buffer.h"
 
-#include "../../../include/yds_windows_audio_wave_file.h"
+#include "../../../include/yds_audio_wave_file.h"
 #include "../../../include/yds_audio_streaming.h"
 
 #include "../../../include/yds_math.h"
@@ -207,7 +207,7 @@ protected:
     ysAudioDevice *m_audioDevice;
 
     SoundSource m_outsideSoundSource;
-    ysWindowsAudioWaveFile m_ambientSoundFile;
+    ysAudioWaveFile m_ambientSoundFile;
     ysAudioBuffer *m_ambientSoundBuffer;
     ysStreamingAudio m_ambientSoundStream;
 

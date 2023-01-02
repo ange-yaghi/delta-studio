@@ -4,13 +4,15 @@
 #include "yds_dynamic_array.h"
 #include "yds_logger_output.h"
 
+#include <string>
+
 class ysLoggerMessageLevel {
 public:
     ysLoggerMessageLevel();
-    ysLoggerMessageLevel(const char *name, int level);
+    ysLoggerMessageLevel(std::string name, int level);
     ~ysLoggerMessageLevel();
 
-    char m_name[256];
+    std::string m_name;
     int m_level;
     bool m_valid;
 };
@@ -18,7 +20,7 @@ public:
 class ysLogger {
 protected:
     static ysLogger *g_instance;
-    
+
 public:
     static void LoggerCreate(ysLogger *logger) { g_instance = logger; g_instance->Initialize(); }
     static ysLogger *Logger() { return g_instance; }
@@ -40,7 +42,7 @@ public:
     void AddMessageLevel(int level, const char *name);
 
     // Get the name corresponding to a level
-    const char *GetLevelName(int level) { return m_messageLevels[level].m_name; }
+    std::string GetLevelName(int level) { return m_messageLevels[level].m_name; }
 
     // Start the logging session
     void Start();

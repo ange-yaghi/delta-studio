@@ -16,9 +16,9 @@ int ysRenderGeometryFormat::GetFormatSize() const {
     return m_formatSize;
 }
 
-void ysRenderGeometryFormat::AddChannel(const char *name, int offset, ysRenderGeometryChannel::ChannelFormat format) {
+void ysRenderGeometryFormat::AddChannel(std::string name, int offset, ysRenderGeometryChannel::ChannelFormat format) {
     ysRenderGeometryChannel *newChannel = m_channels.New();
-    strcpy_s(newChannel->m_name, ysRenderGeometryChannel::MAX_NAME_LENGTH, name);
+    newChannel->m_name = name;
     newChannel->m_format = format;
     newChannel->m_offset = offset;
 

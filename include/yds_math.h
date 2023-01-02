@@ -1,10 +1,20 @@
 #ifndef YDS_MATH_H
 #define YDS_MATH_H
 
-#include <xmmintrin.h>
+#if defined(__ARM_NEON) || defined(__ARM_NEON__)
+#include "sse2neon.h"
+#else
+#include <immintrin.h>
+#endif
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+
+#ifndef _MSC_VER
+// Trust in the compiler
+#define __forceinline inline
+#endif
 
 // Extra Definitions
 
@@ -118,7 +128,11 @@ struct ysMatrix33 {
     };
 };
 
+#ifdef _MSC_VER
 #define YS_MATH_CONST extern const __declspec(selectany)
+#else
+#define YS_MATH_CONST static constexpr
+#endif
 
 namespace ysMath {
 
@@ -159,10 +173,10 @@ namespace ysMath {
         YS_MATH_CONST ysVector Half = { 0.5f, 0.5f, 0.5f, 0.5f };
         YS_MATH_CONST ysVector Double = { 2.0f, 2.0f, 2.0f, 2.0f };
 
-        YS_MATH_CONST ysMatrix Identity = { 
-            IdentityRow1, 
-            IdentityRow2, 
-            IdentityRow3, 
+        YS_MATH_CONST ysMatrix Identity = {
+            IdentityRow1,
+            IdentityRow2,
+            IdentityRow3,
             IdentityRow4 };
 
         // Numeral Constants
@@ -201,29 +215,76 @@ namespace ysMath {
     ysVector3 GetVector3(const ysVector &v);
     ysVector2 GetVector2(const ysVector &v);
     __forceinline float GetScalar(const ysVector &v) {
+#ifdef _MSC_VER
         return v.m128_f32[0];
+#else
+        return v[0];
+#endif
     }
 
     __forceinline float GetX(const ysVector &v) {
+#ifdef _MSC_VER
         return v.m128_f32[0];
+#else
+        return v[0];
+#endif
     }
 
     __forceinline float GetY(const ysVector &v) {
+#ifdef _MSC_VER
         return v.m128_f32[1];
+#else
+        return v[1];
+#endif
     }
 
     __forceinline float GetZ(const ysVector &v) {
+#ifdef _MSC_VER
         return v.m128_f32[2];
+#else
+        return v[2];
+#endif
     }
 
     __forceinline float GetW(const ysVector &v) {
+#ifdef _MSC_VER
         return v.m128_f32[3];
+#else
+        return v[3];
+#endif
     }
 
-    float GetQuatX(const ysQuaternion &v);
-    float GetQuatY(const ysQuaternion &v);
-    float GetQuatZ(const ysQuaternion &v);
-    float GetQuatW(const ysQuaternion &v);
+    __forceinline float GetQuatX(const ysQuaternion &v) {
+#ifdef _MSC_VER
+        return v.m128_f32[1];
+#else
+        return v[1];
+#endif
+    }
+
+    __forceinline float GetQuatY(const ysQuaternion &v) {
+#ifdef _MSC_VER
+        return v.m128_f32[2];
+#else
+        return v[2];
+#endif
+    }
+
+    __forceinline float GetQuatZ(const ysQuaternion &v) {
+#ifdef _MSC_VER
+        return v.m128_f32[3];
+#else
+        return v[3];
+#endif
+    }
+
+    __forceinline float GetQuatW(const ysQuaternion &v) {
+#ifdef _MSC_VER
+        return v.m128_f32[0];
+#else
+        return v[0];
+#endif
+    }
 
     __forceinline ysGeneric Add(const ysGeneric &v1, const ysGeneric &v2) {
         return _mm_add_ps(v1, v2);

@@ -1,7 +1,5 @@
 #include "../include/rigid_body_system.h"
 
-#include <process.h>
-#include <Windows.h>
 #include <ctime>
 #include <assert.h>
 
@@ -24,7 +22,7 @@ dphysics::RigidBodySystem::~RigidBodySystem() {
 }
 
 void dphysics::RigidBodySystem::InitializeFrictionTable(
-    int materialCount, float defaultStaticFriction, float defaultDynamicFriction) 
+    int materialCount, float defaultStaticFriction, float defaultDynamicFriction)
 {
     m_dynamicFrictionTable = std::vector<std::vector<float>>(
         materialCount, std::vector<float>(materialCount, defaultDynamicFriction));
@@ -48,7 +46,7 @@ float dphysics::RigidBodySystem::GetStaticFriction(int material1, int material2)
 }
 
 void dphysics::RigidBodySystem::SetFriction(
-    int material1, int material2, float staticFriction, float dynamicFriction) 
+    int material1, int material2, float staticFriction, float dynamicFriction)
 {
     m_dynamicFrictionTable[material1][material2] = dynamicFriction;
     m_dynamicFrictionTable[material2][material1] = dynamicFriction;
@@ -114,7 +112,7 @@ void dphysics::RigidBodySystem::OpenReplayFile(const std::string &fname) {
     if (!m_outputFile.is_open()) {
         return;
     }
-    
+
     int bodyCount = m_rigidBodyRegistry.GetNumObjects();
 
     m_outputFile << "<Objects>" << "\n";
@@ -182,7 +180,7 @@ void dphysics::RigidBodySystem::WriteFrameToReplayFile() {
     int bodyCount = m_rigidBodyRegistry.GetNumObjects();
     for (int i = 0; i < bodyCount; ++i) {
         RigidBody *body = m_rigidBodyRegistry.Get(i);
-        
+
         m_outputFile << "<Body>" << "\n";
         m_outputFile << "POSITION " <<
             ysMath::GetX(body->Transform.GetWorldPosition()) << " " <<
@@ -202,8 +200,8 @@ void dphysics::RigidBodySystem::WriteFrameToReplayFile() {
 void dphysics::RigidBodySystem::GenerateCollisions(RigidBody *body1, RigidBody *body2) {
     if (!body1->IsAwake() && !body2->IsAwake()) return;
 
-    const int nPrim1 = body1->CollisionGeometry.GetNumObjects();
-    const int nPrim2 = body2->CollisionGeometry.GetNumObjects();
+    const int nPrim1 = body1->m_collisionGeometry.GetNumObjects();
+    const int nPrim2 = body2->m_collisionGeometry.GetNumObjects();
 
     RigidBody *body1Ord = nullptr;
     RigidBody *body2Ord = nullptr;
@@ -211,8 +209,8 @@ void dphysics::RigidBodySystem::GenerateCollisions(RigidBody *body1, RigidBody *
     bool coarseCollision = true;
     bool coarsePresent = false;
 
-    CollisionObject **object1Prims = body1->CollisionGeometry.GetCollisionObjects();
-    CollisionObject **object2Prims = body2->CollisionGeometry.GetCollisionObjects();
+    CollisionObject **object1Prims = body1->m_collisionGeometry.GetCollisionObjects();
+    CollisionObject **object2Prims = body2->m_collisionGeometry.GetCollisionObjects();
 
     for (int i = 0; i < nPrim1; i++) {
         for (int j = 0; j < nPrim2; j++) {
@@ -232,9 +230,9 @@ void dphysics::RigidBodySystem::GenerateCollisions(RigidBody *body1, RigidBody *
 
             if (mode1 == mode2) {
                 bool sensorTest = mode1 == CollisionObject::Mode::Sensor;
-                if (sensorTest && 
-                    !body1Ord->RequestsInformation() && 
-                    !body2Ord->RequestsInformation()) 
+                if (sensorTest &&
+                    !body1Ord->RequestsInformation() &&
+                    !body2Ord->RequestsInformation())
                 {
                     continue;
                 }
@@ -246,15 +244,15 @@ void dphysics::RigidBodySystem::GenerateCollisions(RigidBody *body1, RigidBody *
                 if (mode1 == CollisionObject::Mode::Fine) {
                     if (prim1->GetType() == CollisionObject::Type::Circle) {
                         if (prim2->GetType() == CollisionObject::Type::Circle) {
-                            nCollisions = CollisionDetector.CircleCircleCollision(
-                                newCollisions, 
-                                body1Ord->GetRoot(), body2Ord->GetRoot(), 
+                            nCollisions = m_collisionDetector.CircleCircleCollision(
+                                newCollisions,
+                                body1Ord->GetRoot(), body2Ord->GetRoot(),
                                 prim1->GetAsCircle(), prim2->GetAsCircle());
                         }
                         else if (prim2->GetType() == CollisionObject::Type::Box) {
-                            nCollisions = CollisionDetector.CircleBoxCollision(
-                                newCollisions, 
-                                body1Ord->GetRoot(), body2Ord->GetRoot(), 
+                            nCollisions = m_collisionDetector.CircleBoxCollision(
+                                newCollisions,
+                                body1Ord->GetRoot(), body2Ord->GetRoot(),
                                 prim1->GetAsCircle(), prim2->GetAsBox());
                         }
                     }
@@ -262,20 +260,20 @@ void dphysics::RigidBodySystem::GenerateCollisions(RigidBody *body1, RigidBody *
 
                 if (prim1->GetType() == CollisionObject::Type::Box) {
                     if (prim2->GetType() == CollisionObject::Type::Box) {
-                        nCollisions = CollisionDetector.BoxBoxCollision(
+                        nCollisions = m_collisionDetector.BoxBoxCollision(
                             newCollisions,
-                            body1Ord->GetRoot(), body2Ord->GetRoot(), 
+                            body1Ord->GetRoot(), body2Ord->GetRoot(),
                             prim1->GetAsBox(), prim2->GetAsBox());
                     }
                 }
 
-                if (mode1 == CollisionObject::Mode::Sensor && 
-                    mode2 == CollisionObject::Mode::Sensor) 
+                if (mode1 == CollisionObject::Mode::Sensor &&
+                    mode2 == CollisionObject::Mode::Sensor)
                 {
                     if (prim1->GetType() == CollisionObject::Type::Circle) {
                         if (prim2->GetType() == CollisionObject::Type::Circle) {
-                            bool intersect = CollisionDetector.CircleCircleIntersect(
-                                body1Ord->GetRoot(), body2Ord->GetRoot(), 
+                            bool intersect = m_collisionDetector.CircleCircleIntersect(
+                                body1Ord->GetRoot(), body2Ord->GetRoot(),
                                 prim1->GetAsCircle(), prim2->GetAsCircle());
 
                             if (intersect) nCollisions = 1;
@@ -290,9 +288,9 @@ void dphysics::RigidBodySystem::GenerateCollisions(RigidBody *body1, RigidBody *
                             }
                         }
                         else if (prim2->GetType() == CollisionObject::Type::Ray) {
-                            nCollisions = CollisionDetector.RayCircleCollision(
-                                newCollisions, 
-                                body2Ord->GetRoot(), body1Ord->GetRoot(), 
+                            nCollisions = m_collisionDetector.RayCircleCollision(
+                                newCollisions,
+                                body2Ord->GetRoot(), body1Ord->GetRoot(),
                                 prim2->GetAsRay(), prim1->GetAsCircle());
                         }
                     }
@@ -307,7 +305,7 @@ void dphysics::RigidBodySystem::GenerateCollisions(RigidBody *body1, RigidBody *
                     if (!sensorTest || body1->RequestsInformation()) {
                         body1->AddCollision(newCollisionEntry);
                     }
-                    
+
                     if (!sensorTest || body2->RequestsInformation()) {
                         body2->AddCollision(newCollisionEntry);
                     }
@@ -343,7 +341,7 @@ void dphysics::RigidBodySystem::GenerateCollisions() {
 
     for (int i = 0; i < nObjects; i++) {
         m_rigidBodyRegistry.Get(i)->ClearCollisions();
-        m_rigidBodyRegistry.Get(i)->CollisionGeometry.UpdatePrimitives();
+        m_rigidBodyRegistry.Get(i)->m_collisionGeometry.UpdatePrimitives();
     }
 
     GenerateCollisions(0, 0);
@@ -395,9 +393,9 @@ void dphysics::RigidBodySystem::CleanCollisions() {
     for (int i = 0; i < numContacts; ++i) {
         Collision &collision = *m_collisionAccumulator[i];
 
-        if (collision.m_penetration < MinPenetration || 
+        if (collision.m_penetration < MinPenetration ||
             collision.IsGhost() ||
-            collision.m_sensor) 
+            collision.m_sensor)
         {
             m_collisionAccumulator.Delete(i, false);
             m_dynamicCollisions.Delete(collision.GetIndex());
@@ -545,15 +543,15 @@ void dphysics::RigidBodySystem::AdjustVelocities(float timestep) {
         // Do the resolution on the contact with the largest desired velocity
         AdjustVelocity(biggestCollision, velocityChange, rotationChange);
 
-        // With the change in velocity of the two bodies, the update of 
-        // contact velocities means that some of the relative closing 
+        // With the change in velocity of the two bodies, the update of
+        // contact velocities means that some of the relative closing
         // velocities need recomputing.
         for (int i = 0; i < numContacts; ++i) {
             Collision *c = m_collisionAccumulator[i];
 
             if (c->m_sensor) continue;
             if (c->IsGhost()) continue;
-            if (!c->IsResolvable()) 
+            if (!c->IsResolvable())
                 continue;
 
             if (c->m_bodies[0] != nullptr) {
@@ -736,9 +734,9 @@ void dphysics::RigidBodySystem::ResolveCollisions(float dt) {
 
         biggestCollision->UpdateInternals(dt);
         ResolveCollision(biggestCollision,
-            velocityChange, 
-            rotationChange, 
-            rotationAmount, 
+            velocityChange,
+            rotationChange,
+            rotationAmount,
             max);
 
         for (i = 0; i < numContacts; i++) {
@@ -746,21 +744,21 @@ void dphysics::RigidBodySystem::ResolveCollisions(float dt) {
 
             if (collision.m_sensor) continue;
             if (collision.IsGhost()) continue;
-            if (!collision.IsResolvable()) 
+            if (!collision.IsResolvable())
                 continue;
 
             if (collision.m_body1 == biggestCollision->m_body1) {
                 cp = ysMath::Cross(rotationChange[0], collision.m_relativePosition[0]);
                 cp = ysMath::Add(cp, velocityChange[0]);
 
-                collision.m_penetration -= 
+                collision.m_penetration -=
                     rotationAmount[0] * ysMath::GetScalar(ysMath::Dot(cp, collision.m_normal));
             }
             else if (collision.m_body1 == biggestCollision->m_body2) {
                 cp = ysMath::Cross(rotationChange[1], collision.m_relativePosition[0]);
                 cp = ysMath::Add(cp, velocityChange[1]);
 
-                collision.m_penetration -= 
+                collision.m_penetration -=
                     rotationAmount[1] * ysMath::GetScalar(ysMath::Dot(cp, collision.m_normal));
             }
 
@@ -769,14 +767,14 @@ void dphysics::RigidBodySystem::ResolveCollisions(float dt) {
                     cp = ysMath::Cross(rotationChange[0], collision.m_relativePosition[1]);
                     cp = ysMath::Add(cp, velocityChange[0]);
 
-                    collision.m_penetration += 
+                    collision.m_penetration +=
                         rotationAmount[0] * ysMath::GetScalar(ysMath::Dot(cp, collision.m_normal));
                 }
                 else if (collision.m_body2 == biggestCollision->m_body2) {
                     cp = ysMath::Cross(rotationChange[1], collision.m_relativePosition[1]);
                     cp = ysMath::Add(cp, velocityChange[1]);
 
-                    collision.m_penetration += 
+                    collision.m_penetration +=
                         rotationAmount[1] * ysMath::GetScalar(ysMath::Dot(cp, collision.m_normal));
                 }
             }
@@ -824,7 +822,7 @@ void dphysics::RigidBodySystem::Update(float timestep) {
     InitializeCollisions();
     ResolveCollisions(timestep);
     AdjustVelocities(timestep);
-    CheckAwake();    
+    CheckAwake();
 
     if (m_replayEnabled) {
         WriteFrameToReplayFile();

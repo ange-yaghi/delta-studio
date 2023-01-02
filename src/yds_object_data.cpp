@@ -17,7 +17,7 @@ void ysObjectData::Clear() {
     m_objectInformation.ModelIndex = -1;
     m_objectInformation.ParentIndex = -1;
     m_objectInformation.ParentInstance = -1;
-    m_objectInformation.ObjectType = ObjectType::Undefined;
+    m_objectInformation.objectType = ObjectType::Undefined;
     m_objectInformation.UsesBones = 0;
 
     m_objectStatistics.NumUVChannels = 0;
@@ -43,5 +43,5 @@ void ysObjectData::Clear() {
 
     m_flipNormals = false;
 
-    m_hardNormalCache = nullptr;
+    m_hardNormalCache.clear();
 }

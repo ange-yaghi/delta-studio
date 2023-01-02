@@ -3,6 +3,8 @@
 
 #include "yds_base.h"
 
+#include <string_view>
+
 class ysLogger;
 
 class ysLoggerOutput : public ysObject {
@@ -25,7 +27,7 @@ public:
 public:
     ysLoggerOutput();
     ysLoggerOutput(const char *typeID);
-    ~ysLoggerOutput();
+    virtual ~ysLoggerOutput();
 
     /* Initialize the output */
     virtual void Initialize() = 0;
@@ -47,7 +49,7 @@ public:
 
 protected:
     // Write a message
-    virtual void Write(const char *data) = 0;
+    virtual void Write(std::string_view data, int padding=0) = 0;
 
     // Set the parent logger class used by this output
     void SetLogger(ysLogger *logger);
@@ -64,19 +66,6 @@ protected:
 
     // A reference to the higher level logger class
     ysLogger *m_parentLogger;
-
-protected:
-    // Clear the internal buffer
-    void ClearBuffer();
-
-    // Write to the internal buffer
-    void WriteToBuffer(const char *data, int width = 0);
-
-    // Interal buffer
-    char m_buffer[1024];
-
-    // Internal buffer length
-    int m_bufferLength;
 };
 
 #endif /* YDS_LOGGER_OUTPUT_H */

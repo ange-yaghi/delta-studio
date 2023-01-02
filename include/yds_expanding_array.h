@@ -6,6 +6,11 @@
 #include <stdlib.h>
 #include <new>
 
+#ifndef _MSC_VER
+// Trust in the compiler
+#define __forceinline inline
+#endif
+
 template<typename TYPE, int START_SIZE = 0, int ALIGNMENT = 1>
 class ysExpandingArray {
 public:

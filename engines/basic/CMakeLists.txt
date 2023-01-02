@@ -38,7 +38,7 @@ add_library(delta-basic STATIC
     include/text_renderer.h
     include/ui_renderer.h
     include/window_handler.h
-    
+
     # Source files
     src/animation.cpp
     src/animation_export_data.cpp
@@ -76,7 +76,24 @@ add_library(delta-basic STATIC
     src/window_handler.cpp
 )
 
+# Link in the whole archive since we depend on parts that aren't directly referenced by us
+if (WIN32)
+    set(LINK_WHOLE_ARCHIVE_START "")
+    set(LINK_WHOLE_ARCHIVE_END "")
+else()
+    set(LINK_WHOLE_ARCHIVE_START -Wl,--push-state,--whole-archive)
+    set(LINK_WHOLE_ARCHIVE_END -Wl,--pop-state)
+endif()
+
 target_link_libraries(delta-basic PUBLIC
+    ${LINK_WHOLE_ARCHIVE_START}
     delta-core
     delta-physics
+    ${LINK_WHOLE_ARCHIVE_END}
 )
+
+if (WIN32)
+    target_link_options(delta-basic PUBLIC
+        /WHOLEARCHIVE:delta-core
+    )
+endif()

@@ -30,12 +30,12 @@ ATOM ysWindowsWindow::RegisterWindowsClass() {
     return RegisterClassEx(&wc);
 }
 
-ysError ysWindowsWindow::InitializeWindow(ysWindow *parent, const char *title, WindowStyle style, int x, int y, int width, int height, ysMonitor *monitor) {
+ysError ysWindowsWindow::InitializeWindow(ysWindow *parent, const char *title, WindowStyle style, int x, int y, int width, int height, ysMonitor *monitor, ysContextObject::DeviceAPI api) {
     YDS_ERROR_DECLARE("InitializeWindow");
 
     if (!CheckCompatibility(parent)) return YDS_ERROR_RETURN(ysError::IncompatiblePlatforms);
 
-    YDS_NESTED_ERROR_CALL(ysWindow::InitializeWindow(parent, title, style, x, y, width, height, monitor));
+    YDS_NESTED_ERROR_CALL(ysWindow::InitializeWindow(parent, title, style, x, y, width, height, monitor, api));
 
     ysWindowsWindow *parentWindow = static_cast<ysWindowsWindow *>(parent);
 
@@ -67,10 +67,10 @@ ysError ysWindowsWindow::InitializeWindow(ysWindow *parent, const char *title, W
     return YDS_ERROR_RETURN(ysError::None);
 }
 
-ysError ysWindowsWindow::InitializeWindow(ysWindow *parent, const char *title, WindowStyle style, ysMonitor *monitor) {
+ysError ysWindowsWindow::InitializeWindow(ysWindow *parent, const char *title, WindowStyle style, ysMonitor *monitor, ysContextObject::DeviceAPI api) {
     YDS_ERROR_DECLARE("InitializeWindow");
 
-    YDS_NESTED_ERROR_CALL(InitializeWindow(parent, title, style, monitor->GetOriginX(), monitor->GetOriginY(), monitor->GetPhysicalWidth(), monitor->GetPhysicalHeight(), monitor));
+    YDS_NESTED_ERROR_CALL(InitializeWindow(parent, title, style, monitor->GetOriginX(), monitor->GetOriginY(), monitor->GetPhysicalWidth(), monitor->GetPhysicalHeight(), monitor, api));
 
     return YDS_ERROR_RETURN(ysError::None);
 }

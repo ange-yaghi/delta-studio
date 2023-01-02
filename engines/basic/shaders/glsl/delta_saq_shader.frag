@@ -14,5 +14,5 @@ void main(void) {
 	vec4 l1_color = texture(layer1, ex_Tex).rgba;
 	float alpha = l1_color.a;
 
-	out_Color = alpha * l1_color + (1 - alpha) * l0_color;
+	out_Color = alpha * l1_color + (1.0 - alpha) * l0_color;
 }

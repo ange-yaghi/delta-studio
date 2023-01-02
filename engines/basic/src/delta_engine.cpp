@@ -98,8 +98,17 @@ dbasic::DeltaEngine::~DeltaEngine() {
 ysError dbasic::DeltaEngine::CreateGameWindow(const GameEngineSettings &settings) {
     YDS_ERROR_DECLARE("CreateGameWindow");
 
+    // TODO: plumb choices in from caller
+#ifdef _WIN32
+    const auto chosenPlatform = ysWindowSystemObject::Platform::Windows;
+    const auto audioPlatform = ysAudioSystem::API::DirectSound8;
+#else
+    const auto chosenPlatform = ysWindowSystemObject::Platform::Sdl;
+    const auto audioPlatform = ysAudioSystem::API::Sdl;
+#endif
+
     // Create the window system
-    YDS_NESTED_ERROR_CALL(ysWindowSystem::CreateWindowSystem(&m_windowSystem, ysWindowSystemObject::Platform::Windows));
+    YDS_NESTED_ERROR_CALL(ysWindowSystem::CreateWindowSystem(&m_windowSystem, chosenPlatform));
     m_windowSystem->ConnectInstance(settings.Instance);
 
     // Find the monitor setup
@@ -114,10 +123,11 @@ ysError dbasic::DeltaEngine::CreateGameWindow(const GameEngineSettings &settings
         settings.WindowStyle,
         settings.WindowPositionX, settings.WindowPositionY,
         settings.WindowWidth, settings.WindowHeight,
-        mainMonitor));
+        mainMonitor,
+        settings.API));
     m_gameWindow->AttachEventHandler(&m_windowHandler);
 
-    YDS_NESTED_ERROR_CALL(ysInputSystem::CreateInputSystem(&m_inputSystem, ysWindowSystemObject::Platform::Windows));
+    YDS_NESTED_ERROR_CALL(ysInputSystem::CreateInputSystem(&m_inputSystem, chosenPlatform));
     m_windowSystem->AssignInputSystem(m_inputSystem);
     m_inputSystem->Initialize();
 
@@ -129,7 +139,7 @@ ysError dbasic::DeltaEngine::CreateGameWindow(const GameEngineSettings &settings
     YDS_NESTED_ERROR_CALL(m_device->InitializeDevice());
 
     // Create the audio device
-    YDS_NESTED_ERROR_CALL(ysAudioSystem::CreateAudioSystem(&m_audioSystem, ysAudioSystem::API::DirectSound8));
+    YDS_NESTED_ERROR_CALL(ysAudioSystem::CreateAudioSystem(&m_audioSystem, audioPlatform));
     m_audioSystem->EnumerateDevices();
     m_audioDevice = m_audioSystem->GetPrimaryDevice();
     m_audioSystem->ConnectDevice(m_audioDevice, m_gameWindow);
@@ -242,7 +252,11 @@ ysError dbasic::DeltaEngine::Destroy() {
 
     YDS_NESTED_ERROR_CALL(m_device->DestroyGPUBuffer(m_mainIndexBuffer));
     YDS_NESTED_ERROR_CALL(m_device->DestroyGPUBuffer(m_mainVertexBuffer));
-    YDS_NESTED_ERROR_CALL(m_device->DestroyGPUBuffer(m_consoleShaderObjectVariablesBuffer)); 
+    YDS_NESTED_ERROR_CALL(m_device->DestroyGPUBuffer(m_consoleShaderObjectVariablesBuffer));
+
+    YDS_NESTED_ERROR_CALL(m_device->DestroyShaderProgram(m_shaderProgram));
+    YDS_NESTED_ERROR_CALL(m_device->DestroyShaderProgram(m_consoleProgram));
+    YDS_NESTED_ERROR_CALL(m_device->DestroyShaderProgram(m_skinnedShaderProgram));
 
     YDS_NESTED_ERROR_CALL(m_device->DestroyShader(m_vertexShader));
     YDS_NESTED_ERROR_CALL(m_device->DestroyShader(m_vertexSkinnedShader));
@@ -253,10 +267,6 @@ ysError dbasic::DeltaEngine::Destroy() {
     YDS_NESTED_ERROR_CALL(m_device->DestroyShader(m_saqPixelShader));
     YDS_NESTED_ERROR_CALL(m_device->DestroyShader(m_consolePixelShader));
 
-    YDS_NESTED_ERROR_CALL(m_device->DestroyShaderProgram(m_shaderProgram));
-    YDS_NESTED_ERROR_CALL(m_device->DestroyShaderProgram(m_consoleProgram));
-    YDS_NESTED_ERROR_CALL(m_device->DestroyShaderProgram(m_skinnedShaderProgram));
-
     YDS_NESTED_ERROR_CALL(m_device->DestroyInputLayout(m_inputLayout));
     YDS_NESTED_ERROR_CALL(m_device->DestroyInputLayout(m_skinnedInputLayout));
     YDS_NESTED_ERROR_CALL(m_device->DestroyInputLayout(m_consoleInputLayout));
@@ -266,7 +276,7 @@ ysError dbasic::DeltaEngine::Destroy() {
     YDS_NESTED_ERROR_CALL(m_device->DestroyRenderingContext(m_renderingContext));
 
     YDS_NESTED_ERROR_CALL(m_device->DestroyDevice());
-   
+
     m_audioSystem->DisconnectDevice(m_audioDevice);
     ysAudioSystem::DestroyAudioSystem(&m_audioSystem);
 
@@ -348,7 +358,7 @@ ysError dbasic::DeltaEngine::InitializeShaders(const char *shaderDirectory) {
         m_device->GetAPI() == ysContextObject::DeviceAPI::DirectX10)
     {
         sprintf_s(buffer, "%s%s", shaderDirectory, "/hlsl/delta_engine_shader.fx");
-        YDS_NESTED_ERROR_CALL(m_device->CreateVertexShader(&m_vertexShader, buffer, "VS_STANDARD")); 
+        YDS_NESTED_ERROR_CALL(m_device->CreateVertexShader(&m_vertexShader, buffer, "VS_STANDARD"));
         YDS_NESTED_ERROR_CALL(m_device->CreateVertexShader(&m_vertexSkinnedShader, buffer, "VS_SKINNED"));
         YDS_NESTED_ERROR_CALL(m_device->CreatePixelShader(&m_pixelShader, buffer, "PS"));
 
@@ -450,7 +460,7 @@ ysError dbasic::DeltaEngine::LoadAnimation(Animation **animation, const char *pa
     ysTexture **list = new ysTexture *[end - start + 1];
     char buffer[256];
     for (int i = start; i <= end; ++i) {
-        sprintf_s(buffer, 256, "%s/%.4i.png", path, i);
+        sprintf_s(buffer, "%s/%.4i.png", path, i);
 
         YDS_NESTED_ERROR_CALL(m_device->CreateTexture(&list[i - start], buffer));
     }
@@ -468,15 +478,14 @@ ysError dbasic::DeltaEngine::LoadAnimation(Animation **animation, const char *pa
 ysError dbasic::DeltaEngine::LoadFont(Font **font, const char *path, int size, int fontSize) {
     YDS_ERROR_DECLARE("LoadFont");
 
-    unsigned char *ttfBuffer = new unsigned char[1 << 20];
-    unsigned char *bitmapData = new unsigned char[size * size];
-
-    FILE *f = nullptr;
-    fopen_s(&f, path, "rb");
+    FILE *f = fopen(path, "rb");
 
     if (f == nullptr) {
         return YDS_ERROR_RETURN(ysError::CouldNotOpenFile);
     }
+
+    unsigned char *ttfBuffer = new unsigned char[1 << 20];
+    unsigned char *bitmapData = new unsigned char[size * size];
 
     fread(ttfBuffer, 1, 1 << 20, f);
 
@@ -498,6 +507,7 @@ ysError dbasic::DeltaEngine::LoadFont(Font **font, const char *path, int size, i
     newFont->Initialize(32, 96, cdata, (float)fontSize, texture);
 
     delete[] cdata;
+    delete[] bitmapData;
 
     return YDS_ERROR_RETURN(ysError::None);
 }
@@ -692,7 +702,7 @@ ysError dbasic::DeltaEngine::DrawModel(StageEnableFlags flags, ModelAsset *model
 }
 
 ysError dbasic::DeltaEngine::DrawRenderSkeleton(
-    StageEnableFlags flags, RenderSkeleton *skeleton, float scale, ShaderBase *shaders, int layer) 
+    StageEnableFlags flags, RenderSkeleton *skeleton, float scale, ShaderBase *shaders, int layer)
 {
     YDS_ERROR_DECLARE("DrawRenderSkeleton");
 
@@ -713,7 +723,7 @@ ysError dbasic::DeltaEngine::DrawRenderSkeleton(
 }
 
 ysError dbasic::DeltaEngine::DrawGeneric(
-    StageEnableFlags flags, ysGPUBuffer *indexBuffer, ysGPUBuffer *vertexBuffer, 
+    StageEnableFlags flags, ysGPUBuffer *indexBuffer, ysGPUBuffer *vertexBuffer,
     int vertexSize, int baseIndex, int baseVertex, int faceCount, bool depthTest, int layer)
 {
     YDS_ERROR_DECLARE("DrawGeneric");

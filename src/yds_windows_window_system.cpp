@@ -51,7 +51,7 @@ BOOL CALLBACK MonitorEnum(HMONITOR hMonitor, HDC hdcMonitor, LPRECT lprcMonitor,
     devMode.dmSize = sizeof(devMode);
     devMode.dmDriverExtra = 0;
     EnumDisplaySettings(info.szDevice, ENUM_CURRENT_SETTINGS, &devMode);
-    
+
     newMonitor->SetPhysicalSize(devMode.dmPelsWidth, devMode.dmPelsHeight);
     newMonitor->CalculateScaling();
 
@@ -131,7 +131,7 @@ LRESULT WINAPI ysWindowsWindowSystem::WinProc(HWND hWnd, UINT msg, WPARAM wParam
             if (GetClientRect(hWnd, &rect)) {
                 target->OnResizeWindow(rect.right - rect.left, rect.bottom - rect.top);
             }
-            
+
             target->EndResizing();
 
             return 0;

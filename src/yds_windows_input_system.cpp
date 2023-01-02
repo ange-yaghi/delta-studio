@@ -152,7 +152,7 @@ ysError ysWindowsInputSystem::CreateDevices() {
 
 ysInputDevice *ysWindowsInputSystem::CreateDevice(ysInputDevice::InputDeviceType type, int id) {
     const char *baseName;
-    char deviceName[ysInputDevice::MAX_NAME_LENGTH];
+    char deviceName[128];
 
     switch (type) {
     case ysInputDevice::InputDeviceType::CUSTOM:

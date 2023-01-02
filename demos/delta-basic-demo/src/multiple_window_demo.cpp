@@ -40,14 +40,16 @@ void delta_demo::MultipleWindowDemo::Initialize(void *instance, ysContextObject:
         nullptr,
         "01-Multiple Window Demo Window 1",
         ysWindow::WindowStyle::Windowed,
-        mainMonitor);
+        mainMonitor,
+        api);
     if (result != ysError::None) return;
 
     result = m_window2->InitializeWindow(
         nullptr,
         "01-Multiple Window Demo Window 2",
         ysWindow::WindowStyle::Windowed,
-        mainMonitor);
+        mainMonitor,
+        api);
     if (result != ysError::None) return;
 
     result = ysDevice::CreateDevice(&m_device, api);

@@ -66,7 +66,7 @@ void dphysics::GridPartitionSystem::Reset() {
 }
 
 dphysics::GridCell *dphysics::GridPartitionSystem::GetCell(int x, int y) {
-    unsigned __int64 hash = SzudzikHash(x, y);
+    uint64_t hash = SzudzikHash(x, y);
     
     auto f = m_gridCells.find(hash);
     if (f == m_gridCells.end()) {
@@ -85,15 +85,15 @@ dphysics::GridCell *dphysics::GridPartitionSystem::GetCell(int x, int y) {
     else return f->second;
 }
 
-unsigned __int64 dphysics::GridPartitionSystem::SzudzikHash(int x, int y) {
+uint64_t dphysics::GridPartitionSystem::SzudzikHash(int x, int y) {
     void *data0 = reinterpret_cast<void *>(&x);
     void *data1 = reinterpret_cast<void *>(&y);
 
     unsigned int *u0 = reinterpret_cast<unsigned int *>(data0);
     unsigned int *u1 = reinterpret_cast<unsigned int *>(data1);
 
-    unsigned __int64 a = (unsigned __int64)(*u0);
-    unsigned __int64 b = (unsigned __int64)(*u1);
+    uint64_t a = uint64_t(*u0);
+    uint64_t b = uint64_t(*u1);
 
     return (a >= b)
         ? a * a + a + b

@@ -6,14 +6,14 @@
 #include "yds_keyboard.h"
 #include "yds_mouse.h"
 
+#include <string>
+
 class ysInputSystem;
 
 class ysInputDevice : public ysWindowSystemObject {
     friend ysInputSystem;
 
 public:
-    static const int MAX_NAME_LENGTH = 256;
-
     enum class InputDeviceType {
         KEYBOARD,
         MOUSE,
@@ -28,8 +28,8 @@ public:
 
     InputDeviceType GetType() const { return m_type; }
 
-    void SetName(const char *name);
-    const char *GetName() const { return m_name; }
+    void SetName(std::string name);
+    std::string GetName() const { return m_name; }
 
     void SetType(InputDeviceType type);
 
@@ -53,7 +53,7 @@ private:
     void Destroy();
 
     InputDeviceType m_type;
-    char m_name[MAX_NAME_LENGTH];
+    std::string m_name;
 
     int m_deviceID;
     int m_dependencyCount;
