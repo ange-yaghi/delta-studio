@@ -1,6 +1,7 @@
 #include "../include/yds_geometry_export_file.h"
 
 #include <math.h>
+#include <float.h>
 
 ysGeometryExportFile::ysGeometryExportFile() : ysObject("ysGeometryExportFile") {
     /* void */
@@ -27,14 +28,15 @@ void ysGeometryExportFile::Close() {
 void ysGeometryExportFile::FillOutputHeader(ysObjectData* object, ObjectOutputHeader* header) {
     memset(header, 0, sizeof(ObjectOutputHeader));
 
-    strcpy_s(header->ObjectName, 64, object->m_name);
-    strcpy_s(header->ObjectMaterial, 64, object->m_materialName);
+    // Will be implicitly null-terminated due to memset
+    strncpy(header->ObjectName, object->m_name, sizeof(header->ObjectName) - 1);
+    strncpy(header->ObjectMaterial, object->m_materialName, sizeof(header->ObjectMaterial) - 1);
 
     header->ModelIndex = object->m_objectInformation.ModelIndex;
     header->ParentIndex = object->m_objectInformation.ParentIndex;
     header->ParentInstanceIndex = object->m_objectInformation.ParentInstance;
     header->SkeletonIndex = object->m_objectInformation.SkeletonIndex;
-    header->ObjectType = static_cast<int>(object->m_objectInformation.ObjectType);
+    header->ObjectType = static_cast<int>(object->m_objectInformation.objectType);
 
     header->Position = object->m_objectTransformation.Position;
     header->OrientationEuler = object->m_objectTransformation.OrientationEuler;
@@ -56,7 +58,7 @@ void ysGeometryExportFile::FillOutputHeader(ysObjectData* object, ObjectOutputHe
     if (object->m_objectStatistics.NumUVChannels)    header->Flags |= MDF_TEXTURE_DATA;
 
     float minx = FLT_MAX, miny = FLT_MAX, minz = FLT_MAX, maxx = -FLT_MAX, maxy = -FLT_MAX, maxz = -FLT_MAX;
-    if (object->m_objectInformation.ObjectType == ysObjectData::ObjectType::Geometry) {
+    if (object->m_objectInformation.objectType == ysObjectData::ObjectType::Geometry) {
         for (int vert = 0; vert < object->m_objectStatistics.NumVertices; vert++) {
             const ysVector3 vertex = object->m_vertices[vert];
             if (vertex.x > maxx) maxx = vertex.x;
@@ -75,8 +77,9 @@ void ysGeometryExportFile::FillOutputHeader(ysObjectData* object, ObjectOutputHe
 void ysGeometryExportFile::FillOutputHeader(const ysInterchangeObject *object, const VertexInfo *info, ObjectOutputHeader *header) {
     memset(header, 0, sizeof(ObjectOutputHeader));
 
-    strcpy_s(header->ObjectName, 64, object->Name.c_str());
-    strcpy_s(header->ObjectMaterial, 64, object->MaterialName.c_str());
+    // Will be implicitly null-terminated due to memset
+    strncpy(header->ObjectName, object->Name.c_str(), sizeof(header->ObjectName) - 1);
+    strncpy(header->ObjectMaterial, object->MaterialName.c_str(), sizeof(header->ObjectMaterial) - 1);
 
     header->ModelIndex = object->ModelIndex;
     header->ParentIndex = object->ParentIndex;
@@ -178,12 +181,12 @@ int ysGeometryExportFile::PackVertexData(ysObjectData *object, int maxBonesPerVe
             }
         }
     }
-    
+
     char *data = (char *)malloc(packedSize);
     char *location = data;
 
     for (int vert = 0; vert < object->m_objectStatistics.NumVertices; ++vert) {
-        ysVector3 &vertex = object->m_vertices[vert]; 
+        ysVector3 &vertex = object->m_vertices[vert];
 
         WriteFloatToBuffer(vertex.x, &location);
         WriteFloatToBuffer(vertex.y, &location);
@@ -205,7 +208,7 @@ int ysGeometryExportFile::PackVertexData(ysObjectData *object, int maxBonesPerVe
         }
 
         if (object->m_normals.IsActive()) {
-            ysVector3 &normal = object->m_normals[vert]; 
+            ysVector3 &normal = object->m_normals[vert];
 
             WriteFloatToBuffer(normal.x, &location);
             WriteFloatToBuffer(normal.y, &location);
@@ -233,9 +236,9 @@ int ysGeometryExportFile::PackVertexData(ysObjectData *object, int maxBonesPerVe
                 }
             }
         }
-    
+
         if (object->m_tangents.IsActive()) {
-            ysVector4 &tangent = object->m_tangents[vert]; 
+            ysVector4 &tangent = object->m_tangents[vert];
 
             WriteFloatToBuffer(tangent.x, &location);
             WriteFloatToBuffer(tangent.y, &location);
@@ -405,7 +408,7 @@ ysError ysGeometryExportFile::WriteObject(ysObjectData *object) {
     void *vertexData = nullptr;
     int vertexDataSize = 0;
 
-    if (object->m_objectInformation.ObjectType == ysObjectData::ObjectType::Geometry) {
+    if (object->m_objectInformation.objectType == ysObjectData::ObjectType::Geometry) {
         vertexDataSize = PackVertexData(object, 4 /* TEMP */, &vertexData);
         header.VertexDataSize = vertexDataSize;
     }
@@ -413,7 +416,7 @@ ysError ysGeometryExportFile::WriteObject(ysObjectData *object) {
     m_file.write((char *)&header, sizeof(ObjectOutputHeader));
 
     // Geometry Data
-    if (object->m_objectInformation.ObjectType == ysObjectData::ObjectType::Geometry) {
+    if (object->m_objectInformation.objectType == ysObjectData::ObjectType::Geometry) {
         m_file.write((char *)vertexData, vertexDataSize);
 
         for (int i  =0; i < object->m_objectStatistics.NumFaces; ++i) {
@@ -431,7 +434,7 @@ ysError ysGeometryExportFile::WriteObject(ysObjectData *object) {
     }
 
     // Primitive Data
-    if (object->m_objectInformation.ObjectType == ysObjectData::ObjectType::Plane) {
+    if (object->m_objectInformation.objectType == ysObjectData::ObjectType::Plane) {
         m_file.write((char *)&object->m_length, sizeof(float));
         m_file.write((char *)&object->m_width, sizeof(float));
     }

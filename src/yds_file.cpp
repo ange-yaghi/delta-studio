@@ -4,7 +4,7 @@ ysFile::ysFile() : ysObject("FILE") {
     m_name[0] = '\0';
 }
 
-ysFile::ysFile(const char *fname) : ysObject("FILE") {
+ysFile::ysFile(std::string fname) : ysObject("FILE") {
     OpenFile(fname);
 }
 
@@ -14,12 +14,12 @@ ysFile::~ysFile() {
     }
 }
 
-ysError ysFile::OpenFile(const char *fname, unsigned int filemode) {
+ysError ysFile::OpenFile(std::string fname, unsigned int filemode) {
     YDS_ERROR_DECLARE("OpenFile");
 
-    strcpy_s(m_name, MAX_FILE_NAME_LENGTH, fname);
+    m_name = fname;
 
-    unsigned int openMode=0;
+    std::ios_base::openmode openMode = {};
     if (filemode & FILE_READ) openMode |= std::ios::in;
     else openMode |= std::ios::out;
 

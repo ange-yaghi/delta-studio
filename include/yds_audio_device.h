@@ -6,6 +6,8 @@
 
 #include "yds_window.h"
 
+#include <string>
+
 class ysAudioSource;
 class ysAudioBuffer;
 
@@ -13,15 +15,12 @@ class ysAudioDevice : public ysAudioSystemObject {
     friend class ysAudioSystem;
 
 public:
-    static constexpr int MaxDeviceNameLength = 256;
-
-public:
     ysAudioDevice();
     ysAudioDevice(API api);
     ~ysAudioDevice();
 
     bool IsConnected() const { return m_connected; }
-    void SetDeviceName(const char *newName) { strcpy_s(m_deviceName, MaxDeviceNameLength, newName); }
+    void SetDeviceName(std::string newName) { m_deviceName = newName; }
 
     virtual ysAudioBuffer *CreateBuffer(const ysAudioParameters *parameters, SampleOffset size) = 0;
 
@@ -35,7 +34,7 @@ public:
     ysError DestroyAudioBuffers();
 
 protected:
-    char m_deviceName[MaxDeviceNameLength];
+    std::string m_deviceName;
     ysWindow *m_windowAssociation;
 
     ysDynamicArray<ysAudioBuffer, 4> m_audioBuffers;

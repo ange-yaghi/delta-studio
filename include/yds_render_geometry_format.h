@@ -3,6 +3,8 @@
 
 #include "yds_render_geometry_channel.h"
 
+#include <string>
+
 class ysRenderGeometryFormat : public ysObject {
 public:
     ysRenderGeometryFormat();
@@ -11,10 +13,10 @@ public:
     int GetChannelCount() const;
     int GetFormatSize() const;
 
-    void AddChannel(const char *name, int offset, ysRenderGeometryChannel::ChannelFormat format);
+    void AddChannel(std::string name, int offset, ysRenderGeometryChannel::ChannelFormat format);
 
     const ysRenderGeometryChannel *GetChannel(int index) const {
-        return m_channels.Get(index); 
+        return m_channels.Get(index);
     }
 
 protected:

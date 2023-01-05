@@ -194,7 +194,7 @@ ysError ysD3D10Device::UpdateRenderingContext(ysRenderingContext *context) {
     if (!context->GetWindow()->IsVisible()) return YDS_ERROR_RETURN(ysError::None);
 
     ysD3D10Context *d3d11Context = static_cast<ysD3D10Context *>(context);
-    
+
     const int width = context->GetWindow()->GetGameWidth();
     const int height = context->GetWindow()->GetGameHeight();
 
@@ -240,7 +240,7 @@ ysError ysD3D10Device::DestroyRenderingContext(ysRenderingContext *&context) {
         ysD3D10Context *d3d10Context = static_cast<ysD3D10Context *>(context);
         ULONG result;
 
-        if (d3d10Context->m_swapChain) 
+        if (d3d10Context->m_swapChain)
             result = d3d10Context->m_swapChain->Release();
     }
 
@@ -478,7 +478,7 @@ ysError ysD3D10Device::CreateVertexBuffer(ysGPUBuffer **newBuffer, int size, cha
 
     if (newBuffer == nullptr) return YDS_ERROR_RETURN(ysError::InvalidParameter);
     *newBuffer = nullptr;
-    
+
     D3D10_BUFFER_DESC bd;
     ZeroMemory(&bd, sizeof(bd));
     bd.Usage = D3D10_USAGE_DEFAULT;
@@ -522,7 +522,7 @@ ysError ysD3D10Device::CreateIndexBuffer(ysGPUBuffer **newBuffer, int size, char
 
     if (newBuffer == nullptr) return YDS_ERROR_RETURN(ysError::InvalidParameter);
     *newBuffer = nullptr;
-    
+
     D3D10_BUFFER_DESC bd;
     ZeroMemory(&bd, sizeof(bd));
     bd.Usage = D3D10_USAGE_DEFAULT;
@@ -567,7 +567,7 @@ ysError ysD3D10Device::CreateConstantBuffer(ysGPUBuffer **newBuffer, int size, c
 
     if (newBuffer == nullptr) return YDS_ERROR_RETURN(ysError::InvalidParameter);
     *newBuffer = nullptr;
-    
+
     D3D10_BUFFER_DESC bd;
     ZeroMemory(&bd, sizeof(bd));
     bd.Usage = D3D10_USAGE_DEFAULT;
@@ -763,7 +763,7 @@ ysError ysD3D10Device::CreateVertexShader(ysShader **newShader, const char *shad
 
     if (newShader == nullptr) return YDS_ERROR_RETURN(ysError::InvalidParameter);
     *newShader = nullptr;
-    
+
     if (shaderFilename == nullptr) return YDS_ERROR_RETURN(ysError::InvalidParameter);
     if (shaderName == nullptr) return YDS_ERROR_RETURN(ysError::InvalidParameter);
 
@@ -775,7 +775,7 @@ ysError ysD3D10Device::CreateVertexShader(ysShader **newShader, const char *shad
     HRESULT result;
 
     result = D3DX10CompileFromFile(shaderFilename, nullptr, nullptr, shaderName, "vs_4_0", D3D10_SHADER_ENABLE_STRICTNESS, 0, nullptr, &shaderBlob, &error, nullptr);
-    
+
     if (FAILED(result)) {
         return YDS_ERROR_RETURN_MSG(ysError::VertexShaderCompilationError, errorBuffer);
     }
@@ -850,7 +850,7 @@ ysError ysD3D10Device::DestroyShader(ysShader *&shader) {
     bool active = (m_activeShaderProgram != nullptr) && (m_activeShaderProgram->GetShader(shader->GetShaderType()) == shader);
 
     d3d10Shader->m_shaderBlob->Release();
-    
+
     switch(shader->GetShaderType()) {
     case ysShader::ShaderType::Vertex:
         {
@@ -965,9 +965,9 @@ ysError ysD3D10Device::CreateInputLayout(ysInputLayout **newInputLayout, ysShade
     ID3D10InputLayout *layout;
 
     result = m_device->CreateInputLayout(
-        descArray, 
-        nChannels, 
-        d3d10Shader->m_shaderBlob->GetBufferPointer(), 
+        descArray,
+        nChannels,
+        d3d10Shader->m_shaderBlob->GetBufferPointer(),
         d3d10Shader->m_shaderBlob->GetBufferSize(),
         &layout);
 
@@ -977,7 +977,7 @@ ysError ysD3D10Device::CreateInputLayout(ysInputLayout **newInputLayout, ysShade
 
     ysD3D10InputLayout *newD3D10Layout = m_inputLayouts.NewGeneric<ysD3D10InputLayout>();
     newD3D10Layout->m_layout = layout;
-    
+
     *newInputLayout = static_cast<ysInputLayout *>(newD3D10Layout);
 
     return YDS_ERROR_RETURN(ysError::None);
@@ -1037,7 +1037,7 @@ ysError ysD3D10Device::CreateTexture(ysTexture **newTexture, const char *fname) 
     D3D10_SHADER_RESOURCE_VIEW_DESC srvDesc;
     D3D10_TEXTURE2D_DESC desc;
     HRESULT result;
-    
+
     result = D3DX10CreateTextureFromFile(m_device, fname, nullptr, nullptr, (ID3D10Resource **)&newD3DTexture, nullptr);
     if (FAILED(result)) {
         return YDS_ERROR_RETURN_MSG(ysError::CouldNotOpenTexture, fname);
@@ -1230,7 +1230,7 @@ ysError ysD3D10Device::DestroyD3D10DepthBuffer(ID3D10DepthStencilView *&depthSte
 
 ysError ysD3D10Device::CreateD3D10OnScreenRenderTarget(ysRenderTarget *newTarget, ysRenderingContext *context, bool depthBuffer) {
     YDS_ERROR_DECLARE("CreateD3D10OnScreenRenderTarget");
-    
+
     ysD3D10Context *d3d10Context = static_cast<ysD3D10Context *>(context);
 
     ID3D10Texture2D *backBuffer;
@@ -1242,7 +1242,7 @@ ysError ysD3D10Device::CreateD3D10OnScreenRenderTarget(ysRenderTarget *newTarget
     if (FAILED(result)) {
         return YDS_ERROR_RETURN(ysError::CouldNotGetBackBuffer);
     }
-    
+
     result = m_device->CreateRenderTargetView(backBuffer, nullptr, &newRenderTargetView);
     backBuffer->Release();
 
@@ -1395,3 +1395,6 @@ ysError ysD3D10Device::DestroyD3D10RenderTarget(ysRenderTarget *target) {
 
     return YDS_ERROR_RETURN(ysError::None);
 }
+
+// ctor magic to register as a subclass
+static ysRegisterSubclass<ysD3D10Device> reg();

@@ -2,6 +2,7 @@
 #define YDS_WINDOW_EVENT_HANDLER_H
 
 #include "yds_base.h"
+#include "yds_window.h"
 
 // Window Event Handler
 class ysWindowEventHandler : public ysObject {
@@ -20,7 +21,7 @@ public:
 
 protected:
     inline ysWindow *GetWindow() { return m_window; }
-     
+
 private:
     ysWindow *m_window;
 };

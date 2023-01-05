@@ -3,18 +3,17 @@
 
 #include "yds_window_system_object.h"
 
+#include <string>
+
 class ysMonitor : public ysWindowSystemObject {
 public:
     ysMonitor();
     ysMonitor(Platform platform);
-    virtual ~ysMonitor();
-
-    void InitializeDeviceName(int maxLength);
 
     void SetOrigin(int x, int y);
     void SetLogicalSize(int w, int h);
     void SetPhysicalSize(int w, int h);
-    void SetDeviceName(const char *name);
+    void SetDeviceName(std::string name);
 
     int GetPhysicalWidth() const { return m_physicalWidth; }
     int GetPhysicalHeight() const { return m_physicalHeight; }
@@ -30,11 +29,10 @@ public:
     int GetOriginX() const { return m_originx; }
     int GetOriginY() const { return m_originy; }
 
-    const char *GetDeviceName() const { return m_deviceName; }
+    std::string GetDeviceName() const { return m_deviceName; }
 
 protected:
-    char *m_deviceName;
-    int m_maxDeviceNameLength;
+    std::string m_deviceName;
 
     int m_originx;
     int m_originy;

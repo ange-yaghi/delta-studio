@@ -59,12 +59,12 @@ float pow5(float v) {
 float f_diffuse(vec3 i, vec3 o, vec3 h, vec3 normal, float power, float roughness) {
 	float h_dot_i = dot(h, i);
 	float h_dot_i_2 = h_dot_i * h_dot_i;
-	float f_d90 = 0.5 + 2 * h_dot_i_2 * roughness;
+	float f_d90 = 0.5 + 2.0 * h_dot_i_2 * roughness;
 
 	float cos_theta_i = dot(i, normal);
 	float cos_theta_o = dot(o, normal);
 
-	float f_d = (1 + (f_d90 - 1) * pow5(1 - cos_theta_i)) * (1 + (f_d90 - 1) * pow5(1 - cos_theta_o));
+	float f_d = (1.0 + (f_d90 - 1.0) * pow5(1.0 - cos_theta_i)) * (1.0 + (f_d90 - 1.0) * pow5(1.0 - cos_theta_o));
 	return clamp(f_d * power * cos_theta_i, 0.0, 1.0);
 }
 
@@ -72,13 +72,13 @@ float f_specular(vec3 i, vec3 o, vec3 h, vec3 normal, float F0, float power, flo
 	vec3 reflected = -reflect(i, normal);
 	float intensity = dot(reflected, o);
 
-	if (intensity < 0) return 0;
+	if (intensity < 0.0) return 0.0;
 
 	// Fresnel approximation
 	float F0_scaled = 0.08 * F0;
 	float o_dot_h = dot(o, h);
-	float s = pow5(1 - o_dot_h);
-	float F = F0_scaled + s * (1 - F0_scaled);
+	float s = pow5(1.0 - o_dot_h);
+	float F = F0_scaled + s * (1.0 - F0_scaled);
 
 	return clamp(pow(intensity, specularPower) * F * power, 0.0, 1.0);
 }
@@ -87,8 +87,8 @@ float f_specular_ambient(vec3 o, vec3 normal, float F0, float power) {
 	// Fresnel approximation
 	float F0_scaled = 0.08 * F0;
 	float o_dot_n = dot(o, normal);
-	float s = pow5(1 - o_dot_n);
-	float F = F0_scaled + s * (1 - F0_scaled);
+	float s = pow5(1.0 - o_dot_n);
+	float F = F0_scaled + s * (1.0 - F0_scaled);
 
 	return clamp(F * power, 0.0, 1.0);
 }
@@ -100,7 +100,7 @@ float linearToSrgb(float u) {
 		return 12.92 * u;
 	}
 	else {
-		return 1.055 * pow(u, 1 / 2.4) - 0.055;
+		return 1.055 * pow(u, 1.0 / 2.4) - 0.055;
 	}
 }
 
@@ -132,7 +132,7 @@ vec3 srgbToLinear(vec3 v) {
 }
 
 void main(void) {
-	const float FullSpecular = 1 / 0.08;
+	const float FullSpecular = 1.0 / 0.08;
 
 	vec3 totalLighting = vec3(1.0, 1.0, 1.0);
 	vec3 normal = normalize(ex_Normal.xyz);
@@ -174,16 +174,16 @@ void main(void) {
 
 			float cos_theta_i = dot(i, normal);
 
-			if (cos_theta_i < 0) continue;
-			if (cos_theta_o < 0) continue;
+			if (cos_theta_i < 0.0) continue;
+			if (cos_theta_o < 0.0) continue;
 
 			vec3 h = normalize(i + o);
 			vec3 diffuse = f_diffuse(i, o, h, normal, DiffuseMix, DiffuseRoughness) * baseColor.rgb * Lights[li].Color.rgb;
 			vec3 specular = f_specular(i, o, h, normal, IncidentSpecular, SpecularMix, SpecularPower) * Lights[li].Color.rgb;
 			vec3 metallic = vec3(0.0, 0.0, 0.0);
 
-			if (Metallic > 0) {
-				metallic = f_specular(i, o, h, normal, FullSpecular, 1, SpecularPower) * Lights[li].Color.rgb * baseColor.rgb;
+			if (Metallic > 0.0) {
+				metallic = f_specular(i, o, h, normal, FullSpecular, 1.0, SpecularPower) * Lights[li].Color.rgb * baseColor.rgb;
 			}
 
 			// Spotlight calculation
@@ -193,7 +193,7 @@ void main(void) {
 			else if (spotCoherence < Lights[li].Attenuation1) spotAttenuation = 0.0;
 			else {
 				float t = Lights[li].Attenuation0 - Lights[li].Attenuation1;
-				if (t == 0) spotAttenuation = 1.0;
+				if (t == 0.0) spotAttenuation = 1.0;
 				else spotAttenuation = (spotCoherence - Lights[li].Attenuation1) / t;
 			}
 
@@ -211,8 +211,8 @@ void main(void) {
 		}
 	}
 
-	const float distanceToCamera = length(CameraEye.xyz - ex_Pos.xyz);
-	const float fogAttenuation = (clamp(distanceToCamera, FogNear, FogFar) - FogNear) / (FogFar - FogNear);
+	float distanceToCamera = length(CameraEye.xyz - ex_Pos.xyz);
+	float fogAttenuation = (clamp(distanceToCamera, FogNear, FogFar) - FogNear) / (FogFar - FogNear);
 
 	out_Color = vec4(
 		linearToSrgb(

@@ -29,7 +29,7 @@ void ysLogger::LogMessage(const char *message, const char *fname, int line, int 
 
 void ysLogger::AddMessageLevel(int level, const char *name) {
     m_messageLevels[level].m_level = level;
-    strcpy_s(m_messageLevels[level].m_name, 256, name);
+    m_messageLevels[level].m_name = name;
     m_messageLevels[level].m_valid = true;
 }
 
@@ -58,13 +58,12 @@ void ysLogger::End() {
     }
 }
 
-ysLoggerMessageLevel::ysLoggerMessageLevel() {
-    ysLoggerMessageLevel::ysLoggerMessageLevel("", -1);
+ysLoggerMessageLevel::ysLoggerMessageLevel() : ysLoggerMessageLevel("", -1) {
     m_valid = false;
 }
 
-ysLoggerMessageLevel::ysLoggerMessageLevel(const char *name, int level) {
-    strcpy_s(m_name, 256, name);
+ysLoggerMessageLevel::ysLoggerMessageLevel(std::string name, int level) {
+    m_name = name;
     m_level = level;
     m_valid = true;
 }

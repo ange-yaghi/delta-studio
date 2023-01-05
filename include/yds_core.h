@@ -9,7 +9,7 @@
 #include "yds_audio_buffer.h"
 #include "yds_audio_source.h"
 #include "yds_audio_system.h"
-#include "yds_windows_audio_wave_file.h"
+#include "yds_audio_wave_file.h"
 #include "yds_audio_device.h"
 
 // Input

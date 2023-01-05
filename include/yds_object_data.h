@@ -82,7 +82,7 @@ public:
         int ModelIndex;
         int ParentIndex;
         int ParentInstance;
-        ObjectType ObjectType;
+        ObjectType objectType;
         int UsesBones;
         int SkeletonIndex;
     } m_objectInformation;

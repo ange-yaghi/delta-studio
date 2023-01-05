@@ -5,13 +5,15 @@
 
 class ysKeyMaps {
 public:
-    ysKeyMaps() { m_windowsKeyMap = nullptr; }
+    ysKeyMaps() {}
     ~ysKeyMaps() {}
 
     static const ysKey::Code *GetWindowsKeyMap();
+    static const ysKey::Code *GetSdlKeyMap();
 
 protected:
     static ysKey::Code *m_windowsKeyMap;
+    static ysKey::Code *m_sdlKeyMap;
 };
 
 #endif /* YDS_KEY_MAPS_H */

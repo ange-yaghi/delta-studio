@@ -3,6 +3,8 @@
 #include "../include/animation_export_file.h"
 #include "../include/delta_engine.h"
 
+#include "../../../include/yds_audio_wave_file.h"
+
 #include <set>
 #include <sys/stat.h>
 
@@ -127,7 +129,7 @@ ysError dbasic::AssetManager::CompileSceneFile(const char *fname, float scale, b
         YDS_NESTED_ERROR_CALL(toolFile.ReadObject(&objects[i]));
         Material *material = FindMaterial(objects[i]->m_materialName);
 
-        if (objects[i]->m_objectInformation.ObjectType == ysObjectData::ObjectType::Geometry) {
+        if (objects[i]->m_objectInformation.objectType == ysObjectData::ObjectType::Geometry) {
             ysGeometryPreprocessing::ResolveSmoothingGroupAmbiguity(objects[i]);
             ysGeometryPreprocessing::CreateAutomaticSmoothingGroups(objects[i]);
             ysGeometryPreprocessing::SeparateBySmoothingGroups(objects[i]);
@@ -544,7 +546,7 @@ dbasic::TextureAsset *dbasic::AssetManager::GetTexture(const char *name) {
 ysError dbasic::AssetManager::LoadAudioFile(const char *fname, const char *name) {
     YDS_ERROR_DECLARE("LoadAudioFile");
 
-    ysWindowsAudioWaveFile waveFile;
+    ysAudioWaveFile waveFile;
     waveFile.OpenFile(fname);
 
     ysAudioBuffer *newBuffer = m_engine->GetAudioDevice()->CreateBuffer(

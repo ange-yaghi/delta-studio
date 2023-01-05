@@ -5,6 +5,7 @@
 #include "yds_allocator.h"
 
 #include <memory>
+#include <cstring>
 
 class ysDynamicArrayElement {
 public:
@@ -214,7 +215,7 @@ protected:
 
     void Condense() {
         TYPE **newArray = new TYPE * [m_maxSize / 2 + 1];
-        memcpy(newArray, m_array, sizeof(TYPE *) * m_nObjects);
+        std::memcpy(newArray, m_array, sizeof(TYPE *) * m_nObjects);
 
         delete[] m_array;
 

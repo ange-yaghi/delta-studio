@@ -12,7 +12,7 @@ dphysics::RigidBody::RigidBody() {
 
     m_inverseInertiaTensor = ysMath::LoadMatrix(ysMath::Constants::Zero, ysMath::Constants::Zero, ysMath::Constants::Zero, ysMath::Constants::IdentityRow4);
 
-    CollisionGeometry.SetParent(this);
+    m_collisionGeometry.SetParent(this);
 
     m_parent = nullptr;
 
@@ -254,10 +254,10 @@ void dphysics::RigidBody::ClearAccumulators() {
 void dphysics::RigidBody::WriteInfo(std::fstream &target) {
     target << "<RigidBody>" << "\n";
 
-    int collisionObjects = CollisionGeometry.GetNumObjects();
+    int collisionObjects = m_collisionGeometry.GetNumObjects();
     int count = 0;
     for (int i = 0; i < collisionObjects; ++i) {
-        CollisionObject *object = CollisionGeometry.GetCollisionObject(i);
+        CollisionObject *object = m_collisionGeometry.GetCollisionObject(i);
         if (object->GetMode() == CollisionObject::Mode::Fine) {
             object->WriteInfo(target);
         }
