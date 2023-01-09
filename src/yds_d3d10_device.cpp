@@ -10,7 +10,7 @@
 
 #include "../include/yds_windows_window.h"
 
-#include <D3D10.h>
+#include <d3d10.h>
 
 #pragma warning(push, 0)
 #include <d3dx10.h>
@@ -33,10 +33,17 @@ ysD3D10Device::~ysD3D10Device() {
 ysError ysD3D10Device::InitializeDevice() {
     YDS_ERROR_DECLARE("InitializeDevice");
 
+    UINT flags = 0;
+    #ifdef _DEBUG
+
+    flags |= D3D10_CREATE_DEVICE_DEBUG;
+
+    #endif
+
     HRESULT result = D3D10CreateDevice(nullptr,
         D3D10_DRIVER_TYPE_HARDWARE,
         nullptr,
-        D3D10_CREATE_DEVICE_DEBUG,
+        flags,
         D3D10_SDK_VERSION,
         &m_device);
 
@@ -770,14 +777,12 @@ ysError ysD3D10Device::CreateVertexShader(ysShader **newShader, const char *shad
     ID3D10VertexShader *vertexShader;
     ID3D10Blob *error;
     ID3D10Blob *shaderBlob;
-    char errorBuffer[2048];
 
     HRESULT result;
-
     result = D3DX10CompileFromFile(shaderFilename, nullptr, nullptr, shaderName, "vs_4_0", D3D10_SHADER_ENABLE_STRICTNESS, 0, nullptr, &shaderBlob, &error, nullptr);
     
     if (FAILED(result)) {
-        return YDS_ERROR_RETURN_MSG(ysError::VertexShaderCompilationError, errorBuffer);
+        return YDS_ERROR_RETURN_MSG(ysError::VertexShaderCompilationError, (const char *)error->GetBufferPointer());
     }
 
     result = m_device->CreateVertexShader(shaderBlob->GetBufferPointer(), shaderBlob->GetBufferSize(), &vertexShader);
@@ -812,13 +817,13 @@ ysError ysD3D10Device::CreatePixelShader(ysShader **newShader, const char *shade
     ID3D10PixelShader *pixelShader;
     ID3D10Blob *error;
     ID3D10Blob *shaderBlob;
-    char errorBuffer[2048];
 
     HRESULT result;
     result = D3DX10CompileFromFile(shaderFilename, nullptr, nullptr, shaderName, "ps_4_0", D3D10_SHADER_ENABLE_STRICTNESS, 0, nullptr, &shaderBlob, &error, nullptr);
 
     if (FAILED(result)) {
-        return YDS_ERROR_RETURN_MSG(ysError::FragmentShaderCompilationError, errorBuffer);
+        return YDS_ERROR_RETURN_MSG(ysError::FragmentShaderCompilationError,
+                                    (const char *) error->GetBufferPointer());
     }
 
     result = m_device->CreatePixelShader(shaderBlob->GetBufferPointer(), shaderBlob->GetBufferSize(), &pixelShader);
@@ -1161,6 +1166,8 @@ DXGI_FORMAT ysD3D10Device::ConvertInputLayoutFormat(ysRenderGeometryChannel::Cha
         return DXGI_FORMAT_R32G32B32_FLOAT;
     case ysRenderGeometryChannel::ChannelFormat::R32G32_FLOAT:
         return DXGI_FORMAT_R32G32_FLOAT;
+    case ysRenderGeometryChannel::ChannelFormat::R32G32B32A32_INT:
+        return DXGI_FORMAT_R32G32B32A32_SINT;
     case ysRenderGeometryChannel::ChannelFormat::R32G32B32A32_UINT:
         return DXGI_FORMAT_R32G32B32A32_UINT;
     case ysRenderGeometryChannel::ChannelFormat::R32G32B32_UINT:

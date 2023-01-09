@@ -13,6 +13,7 @@ public:
         R32G32_FLOAT,
         R32G32B32_FLOAT,
         R32G32B32A32_FLOAT,
+        R32G32B32A32_INT,
         R32G32B32A32_UINT,
         R32G32B32_UINT,
         Undefined
@@ -22,11 +23,11 @@ public:
     ysRenderGeometryChannel();
     ~ysRenderGeometryChannel();
 
-    const char *    GetName()    const { return m_name; }
-    int                GetOffset() const { return m_offset; }
-    int                GetSize()    const { return GetFormatSize(m_format); }
-    int                GetLength() const { return GetFormatLength(m_format); }
-    ChannelFormat    GetFormat() const { return m_format; }
+    const char *GetName() const { return m_name; }
+    int GetOffset() const { return m_offset; }
+    int GetSize() const { return GetFormatSize(m_format); }
+    int GetLength() const { return GetFormatLength(m_format); }
+    ChannelFormat GetFormat() const { return m_format; }
 
     static int GetFormatSize(ChannelFormat format) {
         switch (format) {
@@ -36,6 +37,8 @@ public:
             return 3 * sizeof(float);
         case ChannelFormat::R32G32B32A32_FLOAT:
             return 4 * sizeof(float);
+        case ChannelFormat::R32G32B32A32_INT:
+            return 4 * sizeof(int);
         case ChannelFormat::R32G32B32A32_UINT:
             return 4 * sizeof(unsigned int);
         case ChannelFormat::R32G32B32_UINT:
@@ -54,6 +57,8 @@ public:
             return 3;
         case ChannelFormat::R32G32B32A32_FLOAT:
             return 4;
+        case ChannelFormat::R32G32B32A32_INT:
+            return 4;
         case ChannelFormat::R32G32B32A32_UINT:
             return 4;
         case ChannelFormat::R32G32B32_UINT:
@@ -65,9 +70,9 @@ public:
     }
 
 protected:
-    char            m_name[MAX_NAME_LENGTH];
-    int                m_offset;
-    ChannelFormat    m_format;
+    char m_name[MAX_NAME_LENGTH];
+    int  m_offset;
+    ChannelFormat m_format;
 };
 
 #endif /* YDS_RENDER_GEOMETRY_CHANNEL_H */

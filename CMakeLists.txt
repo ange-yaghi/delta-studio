@@ -310,23 +310,27 @@ add_library(delta-core STATIC
     include/yds_window_system_object.h
 )
 
-
 target_link_libraries(delta-core PUBLIC
     # SDL
     ${SDL2_LIBRARY}
     ${SDL2_IMAGE_LIBRARIES}
 
+    d3d9.lib
+    d3d10.lib
+    d3d11.lib
+
     # D3DX
-    d3d9
-    d3d10
-    d3d11
-    ${D3DX_LIBS}/d3dx9.lib
-    ${D3DX_LIBS}/d3dx9d.lib
-    ${D3DX_LIBS}/d3dx10d.lib
-    ${D3DX_LIBS}/d3dx10.lib
-    ${D3DX_LIBS}/d3dx11.lib
-    ${D3DX_LIBS}/d3dx11d.lib
+    $<$<CONFIG:Debug>:${D3DX_LIBS}/d3dx9d.lib>
+    $<$<NOT:$<CONFIG:Debug>>:${D3DX_LIBS}/d3dx9.lib>
+
+    $<$<CONFIG:Debug>:${D3DX_LIBS}/d3dx10d.lib>
+    $<$<NOT:$<CONFIG:Debug>>:${D3DX_LIBS}/d3dx10.lib>
+
+    $<$<CONFIG:Debug>:${D3DX_LIBS}/d3dx11d.lib>
+    $<$<NOT:$<CONFIG:Debug>>:${D3DX_LIBS}/d3dx11.lib>
+
     ${D3DX_LIBS}/d3dxof.lib
+    ${D3DX_LIBS}/d3dcompiler.lib
 
     # DXGI
     ${DXGI_LIBS}/DxErr.lib

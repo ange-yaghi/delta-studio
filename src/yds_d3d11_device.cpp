@@ -16,6 +16,7 @@
 #pragma warning(push, 0)
 #include <d3dx11async.h>
 #include <d3dx11tex.h>
+#include <d3dcompiler.h>
 
 #ifdef _DEBUG
 #include <dxgi1_3.h>
@@ -994,15 +995,32 @@ ysError ysD3D11Device::CreateVertexShader(ysShader **newShader, const char *shad
     if (shaderFilename == nullptr) return YDS_ERROR_RETURN(ysError::InvalidParameter);
     if (shaderName == nullptr) return YDS_ERROR_RETURN(ysError::InvalidParameter);
 
-    ID3D11VertexShader *vertexShader;
-    ID3D10Blob *error;
-    ID3D10Blob *shaderBlob;
+    ID3D11VertexShader *vertexShader = nullptr;
+    ID3D10Blob *error = nullptr;
+    ID3D10Blob *shaderBlob = nullptr;
+    
+    const int length =
+            MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, shaderFilename,
+                                           strlen(shaderFilename) + 1,
+                        nullptr, 0);
+    wchar_t *wShaderFilename = new wchar_t[length];
+    MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, shaderFilename,
+                        strlen(shaderFilename) + 1,
+                        wShaderFilename, length);
 
-    HRESULT result;
-    result = D3DX11CompileFromFile(shaderFilename, nullptr, nullptr, shaderName, "vs_4_0", D3D10_SHADER_ENABLE_STRICTNESS, 0, nullptr, &shaderBlob, &error, nullptr);
+    HRESULT result = D3DCompileFromFile(wShaderFilename, nullptr, nullptr, shaderName,
+                                "vs_4_0", D3D10_SHADER_ENABLE_STRICTNESS, 0,
+                                &shaderBlob, &error);
+    delete[] wShaderFilename;
 
-    if (FAILED(result)) {
-        return YDS_ERROR_RETURN_MSG(ysError::VertexShaderCompilationError, (char *)error->GetBufferPointer());
+    if (FAILED(result) || shaderBlob == nullptr) {
+        if (error != nullptr) {
+            return YDS_ERROR_RETURN_MSG(ysError::VertexShaderCompilationError,
+                                        (char *) error->GetBufferPointer());
+        } else {
+            return YDS_ERROR_RETURN_MSG(ysError::VertexShaderCompilationError,
+                                        "No error blob");
+        }
     }
 
     result = m_device->CreateVertexShader(shaderBlob->GetBufferPointer(), shaderBlob->GetBufferSize(), nullptr, &vertexShader);
@@ -1036,15 +1054,31 @@ ysError ysD3D11Device::CreatePixelShader(ysShader **newShader, const char *shade
     if (shaderFilename == nullptr) return YDS_ERROR_RETURN(ysError::InvalidParameter);
     if (shaderName == nullptr) return YDS_ERROR_RETURN(ysError::InvalidParameter);
 
-    ID3D11PixelShader *pixelShader;
-    ID3D10Blob *error;
-    ID3D10Blob *shaderBlob;
+    ID3D11PixelShader *pixelShader = nullptr;
+    ID3D10Blob *error = nullptr;
+    ID3D10Blob *shaderBlob = nullptr;
 
-    HRESULT result;
-    result = D3DX11CompileFromFile(shaderFilename, nullptr, nullptr, shaderName, "ps_4_0", D3D10_SHADER_ENABLE_STRICTNESS, 0, nullptr, &shaderBlob, &error, nullptr);
+    const int length =
+            MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, shaderFilename,
+                                strlen(shaderFilename) + 1, nullptr, 0);
+    wchar_t *wShaderFilename = new wchar_t[length];
+    MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, shaderFilename,
+                        strlen(shaderFilename) + 1,
+                        wShaderFilename, length);
 
-    if (FAILED(result)) {
-        return YDS_ERROR_RETURN_MSG(ysError::FragmentShaderCompilationError, (char *)error->GetBufferPointer());
+    HRESULT result = D3DCompileFromFile(
+            wShaderFilename, nullptr, nullptr, shaderName, "ps_4_0",
+            D3D10_SHADER_ENABLE_STRICTNESS, 0, &shaderBlob, &error);
+    delete[] wShaderFilename;
+
+    if (FAILED(result) || shaderBlob == nullptr) {
+        if (error != nullptr) {
+            return YDS_ERROR_RETURN_MSG(ysError::FragmentShaderCompilationError,
+                                        (char *) error->GetBufferPointer());
+        } else {
+            return YDS_ERROR_RETURN_MSG(ysError::FragmentShaderCompilationError,
+                                        "No error blob");
+        }
     }
 
     result = m_device->CreatePixelShader(shaderBlob->GetBufferPointer(), shaderBlob->GetBufferSize(), nullptr, &pixelShader);
@@ -1066,7 +1100,6 @@ ysError ysD3D11Device::CreatePixelShader(ysShader **newShader, const char *shade
     D3D11SetDebugName(newD3D11Shader->m_pixelShader, newD3D11Shader->m_filename);
 
     // TEMP ----------------------------------------------------
-
     GetImmediateContext()->PSSetShader(pixelShader, 0, 0);
 
     if (m_samplerState == nullptr) {
@@ -1082,7 +1115,11 @@ ysError ysD3D11Device::CreatePixelShader(ysShader **newShader, const char *shade
         desc.MaxAnisotropy = 16;
         desc.ComparisonFunc = D3D11_COMPARISON_NEVER;
 
-        HRESULT err = m_device->CreateSamplerState(&desc, &m_samplerState);
+        result = m_device->CreateSamplerState(&desc, &m_samplerState);
+        if (FAILED(result)) {
+            return YDS_ERROR_RETURN(ysError::CouldNotCreateSamplerState);
+        }
+
         GetImmediateContext()->PSSetSamplers(0, 1, &m_samplerState);
     }
 
@@ -1531,6 +1568,8 @@ DXGI_FORMAT ysD3D11Device::ConvertInputLayoutFormat(ysRenderGeometryChannel::Cha
         return DXGI_FORMAT_R32G32B32_FLOAT;
     case ysRenderGeometryChannel::ChannelFormat::R32G32_FLOAT:
         return DXGI_FORMAT_R32G32_FLOAT;
+    case ysRenderGeometryChannel::ChannelFormat::R32G32B32A32_INT:
+        return DXGI_FORMAT_R32G32B32A32_SINT;
     case ysRenderGeometryChannel::ChannelFormat::R32G32B32A32_UINT:
         return DXGI_FORMAT_R32G32B32A32_UINT;
     case ysRenderGeometryChannel::ChannelFormat::R32G32B32_UINT:

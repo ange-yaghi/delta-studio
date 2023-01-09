@@ -72,7 +72,7 @@ enum class ysError {
     // Shaders
     VertexShaderCompilationError,
     FragmentShaderCompilationError,
-    CouldNotCreateShader,
+    CouldNotCreateShader, 
 
     // Input Formats
     IncompatibleInputFormat,
@@ -109,6 +109,8 @@ enum class ysError {
     CorruptedFile,
 
     UnsupportedType,
+
+    CouldNotCreateSamplerState
 };
 
 #endif /* YDS_ERROR_CODES_H */

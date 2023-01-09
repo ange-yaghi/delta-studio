@@ -86,15 +86,15 @@ VS_OUTPUT VS_SKINNED(VS_INPUT_SKINNED input) {
 
 	if (input.BoneIndices.x >= 0) {
 		final += mul(BoneTransform[input.BoneIndices.x], inputPos) * input.BoneWeights.x;
-		finalNormal += mul(BoneTransform[input.BoneIndices.x], output.Normal) * input.BoneWeights.x;
+		finalNormal += mul(BoneTransform[input.BoneIndices.x], float4(output.Normal, 0.0f)) * input.BoneWeights.x;
 
 		if (input.BoneIndices.y >= 0) {
 			final += mul(BoneTransform[input.BoneIndices.y], inputPos) * input.BoneWeights.y;
-			finalNormal += mul(BoneTransform[input.BoneIndices.y], output.Normal) * input.BoneWeights.y;
+			finalNormal += mul(BoneTransform[input.BoneIndices.y], float4(output.Normal, 0.0f)) * input.BoneWeights.y;
 
 			if (input.BoneIndices.z >= 0) {
 				final += mul(BoneTransform[input.BoneIndices.z], inputPos) * input.BoneWeights.z;
-				finalNormal += mul(BoneTransform[input.BoneIndices.z], output.Normal) * input.BoneWeights.z;
+				finalNormal += mul(BoneTransform[input.BoneIndices.z], float4(output.Normal, 0.0f)) * input.BoneWeights.z;
 			}
 		}
 	}
@@ -151,7 +151,7 @@ VS_OUTPUT VS_STANDARD(VS_INPUT_STANDARD input) {
 	output.TexCoord = ( (input.TexCoord) * TexScale) + TexOffset;
 	output.TexCoord = float2(output.TexCoord.x, output.TexCoord.y);
 
-	output.Normal = finalNormal;
+	output.Normal = finalNormal.xyz;
 	output.BoneWeight = 0.0;
 
 	return output;
@@ -177,15 +177,13 @@ float f_specular(float3 i, float3 o, float3 h, float3 normal, float F0, float po
 	float3 reflected = -reflect(i, normal);
 	float intensity = dot(reflected, o);
 
-	if (intensity < 0) return 0;
-
 	// Fresnel approximation
 	float F0_scaled = 0.08 * F0;
 	float o_dot_h = dot(o, h);
 	float s = pow5(1 - o_dot_h);
 	float F = F0_scaled + s * (1 - F0_scaled);
 
-	return clamp(pow(intensity, specularPower) * F * power, 0.0, 1.0);
+	return clamp(pow(max(intensity, 0), specularPower) * F * power, 0.0, 1.0);
 }
 
 float f_specular_ambient(float3 o, float3 normal, float F0, float power) {
@@ -205,7 +203,7 @@ float linearToSrgb(float u) {
 		return 12.92 * u;
 	}
 	else {
-		return 1.055 * pow(u, 1 / 2.4) - 0.055;
+		return 1.055 * pow(abs(u), 1 / 2.4) - 0.055;
 	}
 }
 
@@ -216,7 +214,7 @@ float srgbToLinear(float u) {
         return u / 12.92;
     }
     else {
-        return pow((u + 0.055) / 1.055, 2.4);
+        return pow((abs(u) + 0.055) / 1.055, 2.4);
     }
 }
 
@@ -260,8 +258,8 @@ float4 PS(VS_OUTPUT input) : SV_Target {
 		float3 o = normalize(CameraEye.xyz - input.VertexPosition.xyz);
 		float cos_theta_o = dot(o, normal);
 
-		float3 ambientSpecular = f_specular_ambient(o, normal, IncidentSpecular, SpecularMix) * AmbientLighting;
-		float3 ambientDiffuse = f_diffuse(o, o, o, normal, DiffuseMix, DiffuseRoughness) * AmbientLighting * baseColor;
+		float3 ambientSpecular = f_specular_ambient(o, normal, IncidentSpecular, SpecularMix) * AmbientLighting.rgb;
+		float3 ambientDiffuse = f_diffuse(o, o, o, normal, DiffuseMix, DiffuseRoughness) * AmbientLighting.rgb * baseColor.rgb;
 		float3 ambientMetallic = f_specular_ambient(o, normal, FullSpecular, 1.0) * AmbientLighting.rgb * baseColor.rgb;
 
 		totalLighting = lerp(
@@ -283,12 +281,12 @@ float4 PS(VS_OUTPUT input) : SV_Target {
 			if (cos_theta_i < 0) continue;
 
 			float3 h = normalize(i + o);
-			float3 diffuse = f_diffuse(i, o, h, normal, DiffuseMix, DiffuseRoughness) * baseColor.rgb * light.Color;
-			float3 specular = f_specular(i, o, h, normal, IncidentSpecular, SpecularMix, SpecularPower) * light.Color;
+			float3 diffuse = f_diffuse(i, o, h, normal, DiffuseMix, DiffuseRoughness) * baseColor.rgb * light.Color.rgb;
+			float3 specular = f_specular(i, o, h, normal, IncidentSpecular, SpecularMix, SpecularPower) * light.Color.rgb;
 			float3 metallic = 0;
 
 			if (Metallic > 0) {
-				metallic = f_specular(i, o, h, normal, FullSpecular, 1, SpecularPower) * light.Color * baseColor.rgb;
+				metallic = f_specular(i, o, h, normal, FullSpecular, 1, SpecularPower) * light.Color.rgb * baseColor.rgb;
 			}
 
 			// Spotlight calculation
