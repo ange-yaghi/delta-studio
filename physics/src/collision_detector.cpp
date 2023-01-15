@@ -7,6 +7,9 @@
 #define THRESH_0_POSITIVE 10e-9
 #define THRESH_0_NEGATIVE (-THRESH_0_POSITIVE)
 
+#define min(a, b) (((a) < (b)) ? (a) : (b))
+#define max(a, b) (((a) > (b)) ? (a) : (b))
+
 dphysics::CollisionDetector::CollisionDetector() {
     /* void */
 }

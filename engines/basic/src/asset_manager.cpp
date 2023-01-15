@@ -200,12 +200,23 @@ ysError dbasic::AssetManager::CompileInterchangeFile(const char *fname, float sc
     ysInterchangeObject *objects = new ysInterchangeObject[objectCount];
 
     CompiledHeader header;
-    header.ObjectCount = objectCount;
+    header.ObjectCount = 0;
+    for (int i = 0; i < objectCount; ++i) {
+        YDS_NESTED_ERROR_CALL(toolFile.ReadObject(&objects[i]));
+        if (objects[i].Type == ysInterchangeObject::ObjectType::Undefined) {
+            continue;
+        }
+
+        header.ObjectCount++;
+    }
 
     YDS_NESTED_ERROR_CALL(exportFile.WriteCustomData(&header, sizeof(CompiledHeader)));
 
     for (int i = 0; i < objectCount; i++) {
-        YDS_NESTED_ERROR_CALL(toolFile.ReadObject(&objects[i]));
+        if (objects[i].Type == ysInterchangeObject::ObjectType::Undefined) {
+            continue;
+        }
+
         Material *material = FindMaterial(objects[i].MaterialName.c_str());
 
         ysGeometryExportFile::VertexInfo vertexInfo;

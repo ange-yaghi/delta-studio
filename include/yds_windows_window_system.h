@@ -3,6 +3,7 @@
 
 #include "yds_window_system.h"
 
+#define NOMINMAX
 #include <Windows.h>
 
 class ysWindowsWindowSystem : public ysWindowSystem {

@@ -1,6 +1,7 @@
 #ifndef YDS_VULKAN_H
 #define YDS_VULKAN_H
 
+#define NOMINMAX
 #include <Windows.h>
 #include <vulkan/vulkan_core.h>
 #include <vulkan/vulkan_win32.h>

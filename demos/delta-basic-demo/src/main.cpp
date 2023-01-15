@@ -1,3 +1,4 @@
+#define NOMINMAX
 #include <Windows.h>
 
 #include "../include/demo_list.h"

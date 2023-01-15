@@ -3,6 +3,7 @@
 
 #include "yds_audio_file.h"
 
+#define NOMINMAX
 #include <Windows.h>
 
 class ysWindowsAudioWaveFile : public ysAudioFile {

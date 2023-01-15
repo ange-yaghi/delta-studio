@@ -3,6 +3,7 @@
 
 #include "yds_input_system.h"
 
+#define NOMINMAX
 #include <Windows.h>
 
 class ysWindowsInputDevice;
