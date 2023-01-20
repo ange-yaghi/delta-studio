@@ -76,7 +76,8 @@ int ysInputSystem::GetNextDeviceID(ysInputDevice::InputDeviceType type) {
     for (int i = 0; i < deviceCount; i++) {
         if (m_inputDeviceArray.Get(i)->GetDeviceID() < deviceCount &&
             m_inputDeviceArray.Get(i)->GetType() == type &&
-            m_inputDeviceArray.Get(i)->IsConnected())
+            m_inputDeviceArray.Get(i)->IsConnected() &&
+            m_inputDeviceArray.Get(i)->GetDeviceID() != -1)
         {
             arr[m_inputDeviceArray.Get(i)->GetDeviceID()] = 1;
         }

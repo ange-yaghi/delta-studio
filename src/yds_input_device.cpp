@@ -6,6 +6,7 @@ ysInputDevice::ysInputDevice() : ysWindowSystemObject("INPUT DEVICE", Platform::
     m_type = InputDeviceType::UNKNOWN;
     m_connected = false;
     m_generic = true;
+    m_virtual = false;
     m_dependencyCount = 0;
 
     m_deviceID = -1;
@@ -20,6 +21,7 @@ ysInputDevice::ysInputDevice(Platform platform, InputDeviceType type) : ysWindow
     m_type = type;
     m_connected = false;
     m_generic = true;
+    m_virtual = false;
     m_dependencyCount = 0;
 
     m_deviceID = -1;

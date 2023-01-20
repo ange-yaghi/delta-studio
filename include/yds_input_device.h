@@ -24,7 +24,7 @@ public:
 public:
     ysInputDevice();
     ysInputDevice(Platform platform, InputDeviceType type);
-    ~ysInputDevice();
+    virtual ~ysInputDevice();
 
     InputDeviceType GetType() const { return m_type; }
 
@@ -49,6 +49,9 @@ public:
     bool IsGeneric() const { return m_generic; }
     void SetGeneric(bool newGeneric) { m_generic = newGeneric; }
 
+    void SetVirtual(bool isVirtual) { m_virtual = isVirtual; }
+    bool IsVirtual() const { return m_virtual; }
+
 private:
     void Destroy();
 
@@ -68,6 +71,7 @@ private:
 
     bool m_connected;
     bool m_generic;
+    bool m_virtual;
 };
 
 #endif /* YDS_INPUT_DEVICE_H */

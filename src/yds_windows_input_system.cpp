@@ -204,6 +204,7 @@ ysWindowsInputSystem::CreateDevice(ysInputDevice::InputDeviceType type,
     newDevice->SetDeviceID(deviceID);
     newDevice->m_deviceHandle = NULL;
     newDevice->SetGeneric(true);
+    newDevice->SetVirtual(false);
 
     memset(&newDevice->m_info, 0, sizeof(newDevice->m_info));
 
@@ -246,6 +247,8 @@ ysWindowsInputSystem::CreateVirtualDevice(ysInputDevice::InputDeviceType type) {
     newDevice->SetDeviceID(-1);
     newDevice->m_deviceHandle = NULL;
     newDevice->SetGeneric(true);
+    newDevice->SetConnected(true);
+    newDevice->SetVirtual(true);
 
     memset(&newDevice->m_info, 0, sizeof(newDevice->m_info));
 
@@ -469,11 +472,14 @@ int ysWindowsInputSystem::OnOsMouseWheel(LPARAM lParam, WPARAM wParam) {
 
 int ysWindowsInputSystem::OnOsMouseMove(LPARAM lParam, WPARAM wParam) {
     const int x_pos = GET_X_LPARAM(lParam);
-    const int y_pos = GET_X_LPARAM(lParam);
+    const int y_pos = GET_Y_LPARAM(lParam);
 
     ysMouse *mouse = GetDefaultMouse();
     const WORD scrollDelta = GET_WHEEL_DELTA_WPARAM(wParam);
     mouse->UpdatePosition(x_pos, y_pos, false);
+    
+    POINT p;
+    if (GetCursorPos(&p)) { mouse->SetOsPosition(p.x, p.y); }
 
     return 0;
 }

@@ -145,19 +145,18 @@ LRESULT WINAPI ysWindowsWindowSystem::WinProc(HWND hWnd, UINT msg, WPARAM wParam
             case WM_KILLFOCUS:
                 target->OnDeactivate();
                 return 0;
-            case WM_KEYDOWN:
-                target->OnKeyDown(wParam);
-                return 0;
             case WM_INPUT:
                 if (inputSystem != nullptr) {
                     if (inputSystem->IsGlobalInputEnabled() ||
                         target->IsActive()) {
                         return inputSystem->ProcessInputMessage(
                                 (HRAWINPUT) lParam);
-                    } else
+                    } else {
                         return 0;
-                } else
+                    }
+                } else {
                     return 0;
+                }
         }
 
         if (inputSystem != nullptr) {
