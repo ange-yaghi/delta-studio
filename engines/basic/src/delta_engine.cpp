@@ -122,8 +122,8 @@ ysError dbasic::DeltaEngine::CreateGameWindow(const GameEngineSettings &settings
     m_windowSystem->AssignInputSystem(m_inputSystem);
     m_inputSystem->Initialize();
 
-    m_mainKeyboard = m_inputSystem->GetKeyboardAggregator();
-    m_mainMouse = m_inputSystem->GetMouseAggregator();
+    m_mainKeyboard = m_inputSystem->GetDefaultKeyboard();
+    m_mainMouse = m_inputSystem->GetDefaultMouse();
 
     // Create the graphics device
     YDS_NESTED_ERROR_CALL(ysDevice::CreateDevice(&m_device, settings.API));

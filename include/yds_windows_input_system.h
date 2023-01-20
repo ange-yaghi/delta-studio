@@ -14,6 +14,11 @@ public:
     virtual ~ysWindowsInputSystem();
 
     int ProcessInputMessage(HRAWINPUT lparam);
+    int OnOsKey(LPARAM lParam, WPARAM wParam);
+    int OnOsMouseButtonDown(ysMouse::Button button);
+    int OnOsMouseButtonUp(ysMouse::Button button);
+    int OnOsMouseWheel(LPARAM lParam, WPARAM wParam);
+    int OnOsMouseMove(LPARAM lParam, WPARAM wParam);
 
 protected:
     virtual ysError CreateDevices();
@@ -21,7 +26,8 @@ protected:
     virtual ysError CheckDeviceStatus(ysInputDevice *device);
     virtual ysError CheckAllDevices();
 
-    virtual ysInputDevice *CreateDevice(ysInputDevice::InputDeviceType type, int id);
+    virtual ysInputDevice *CreateDevice(ysInputDevice::InputDeviceType type, int id) override;
+    virtual ysInputDevice *CreateVirtualDevice(ysInputDevice::InputDeviceType type) override;
     ysWindowsInputDevice *AddDevice(RAWINPUT *rawInput);
 
     ysWindowsInputDevice *DeviceLookup(HANDLE hDevice);

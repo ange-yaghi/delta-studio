@@ -46,6 +46,9 @@ public:
     ysKeyboardAggregator *GetKeyboardAggregator() { return &m_keyboardAggregator; }
     ysMouseAggregator *GetMouseAggregator() { return &m_mouseAggregator; }
 
+    ysKeyboard *GetDefaultKeyboard() { return m_osKeyboard->GetAsKeyboard(); }
+    ysMouse *GetDefaultMouse() { return m_osMouse->GetAsMouse(); }
+
     bool IsGlobalInputEnabled() const { return m_enableGlobalInput; }
     void SetGlobalInputEnabled(bool enabled) { m_enableGlobalInput = enabled; }
 
@@ -57,6 +60,7 @@ protected:
     // Create a new generic device. This device will not be attached to a 
     // physical device until one is sensed at which point it will be connected.
     virtual ysInputDevice *CreateDevice(ysInputDevice::InputDeviceType type, int id) = 0;
+    virtual ysInputDevice *CreateVirtualDevice(ysInputDevice::InputDeviceType type) = 0;
 
     void RegisterDevice(ysInputDevice *device);
     void UnregisterDevice(ysInputDevice *device);
@@ -72,6 +76,9 @@ protected:
 protected:
     ysKeyboardAggregator m_keyboardAggregator;
     ysMouseAggregator m_mouseAggregator;
+
+    ysInputDevice *m_osKeyboard;
+    ysInputDevice *m_osMouse;
 
     // Input device array
     ysDynamicArray<ysInputDevice, 4> m_inputDeviceArray;

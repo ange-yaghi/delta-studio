@@ -50,6 +50,10 @@ ysError ysInputSystem::Initialize() {
 
     YDS_NESTED_ERROR_CALL(CreateDevices());
 
+    m_osKeyboard =
+            CreateVirtualDevice(ysInputDevice::InputDeviceType::KEYBOARD);
+    m_osMouse = CreateVirtualDevice(ysInputDevice::InputDeviceType::MOUSE);
+
     return YDS_ERROR_RETURN(ysError::None);
 }
 

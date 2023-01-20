@@ -106,56 +106,87 @@ LRESULT WINAPI ysWindowsWindowSystem::WinProc(HWND hWnd, UINT msg, WPARAM wParam
 
     if (target != nullptr) {
         switch (msg) {
-        case WM_DESTROY:
-            PostQuitMessage(0);
-            return 0;
-        case WM_PAINT:
-            hdc = BeginPaint(hWnd, &ps);
-            EndPaint(hWnd, &ps);
-            break;
-        case WM_CLOSE:
-            target->OnCloseWindow();
-            ysWindowSystem::Get()->CloseWindow(target);
-            return 0;
-        case WM_SIZE:
-            if (!target->IsResizing()) {
-                target->OnResizeWindow(LOWORD(lParam), HIWORD(lParam));
-            }
-            return 0;
-        case WM_ENTERSIZEMOVE:
-            target->StartResizing();
-            return 0;
-        case WM_EXITSIZEMOVE:
-        {
-            RECT rect;
-            if (GetClientRect(hWnd, &rect)) {
-                target->OnResizeWindow(rect.right - rect.left, rect.bottom - rect.top);
-            }
-            
-            target->EndResizing();
-
-            return 0;
-        }
-        case WM_MOVE:
-            target->OnMoveWindow(LOWORD(lParam), HIWORD(lParam));
-            return 0;
-        case WM_SETFOCUS:
-            target->OnActivate();
-            return 0;
-        case WM_KILLFOCUS:
-            target->OnDeactivate();
-            return 0;
-        case WM_KEYDOWN:
-            target->OnKeyDown(wParam);
-            return 0;
-        case WM_INPUT:
-            if (inputSystem != nullptr) {
-                if (inputSystem->IsGlobalInputEnabled() || target->IsActive()) {
-                    return inputSystem->ProcessInputMessage((HRAWINPUT)lParam);
+            case WM_DESTROY:
+                PostQuitMessage(0);
+                return 0;
+            case WM_PAINT:
+                hdc = BeginPaint(hWnd, &ps);
+                EndPaint(hWnd, &ps);
+                break;
+            case WM_CLOSE:
+                target->OnCloseWindow();
+                ysWindowSystem::Get()->CloseWindow(target);
+                return 0;
+            case WM_SIZE:
+                if (!target->IsResizing()) {
+                    target->OnResizeWindow(LOWORD(lParam), HIWORD(lParam));
                 }
-                else return 0;
+                return 0;
+            case WM_ENTERSIZEMOVE:
+                target->StartResizing();
+                return 0;
+            case WM_EXITSIZEMOVE: {
+                RECT rect;
+                if (GetClientRect(hWnd, &rect)) {
+                    target->OnResizeWindow(rect.right - rect.left,
+                                           rect.bottom - rect.top);
+                }
+
+                target->EndResizing();
+
+                return 0;
             }
-            else return 0;
+            case WM_MOVE:
+                target->OnMoveWindow(LOWORD(lParam), HIWORD(lParam));
+                return 0;
+            case WM_SETFOCUS:
+                target->OnActivate();
+                return 0;
+            case WM_KILLFOCUS:
+                target->OnDeactivate();
+                return 0;
+            case WM_KEYDOWN:
+                target->OnKeyDown(wParam);
+                return 0;
+            case WM_INPUT:
+                if (inputSystem != nullptr) {
+                    if (inputSystem->IsGlobalInputEnabled() ||
+                        target->IsActive()) {
+                        return inputSystem->ProcessInputMessage(
+                                (HRAWINPUT) lParam);
+                    } else
+                        return 0;
+                } else
+                    return 0;
+        }
+
+        if (inputSystem != nullptr) {
+            if (inputSystem->IsGlobalInputEnabled() || target->IsActive()) {
+                switch (msg) {
+                    case WM_KEYDOWN:
+                    case WM_KEYUP:
+                    case WM_SYSKEYDOWN:
+                    case WM_SYSKEYUP:
+                        return inputSystem->OnOsKey(lParam, wParam);
+                    case WM_RBUTTONDOWN:
+                        return inputSystem->OnOsMouseButtonDown(
+                                ysMouse::Button::Right);
+                    case WM_RBUTTONUP:
+                        return inputSystem->OnOsMouseButtonUp(
+                                ysMouse::Button::Right);
+                    case WM_LBUTTONDOWN:
+                        return inputSystem->OnOsMouseButtonDown(
+                                ysMouse::Button::Left);
+                    case WM_LBUTTONUP:
+                        return inputSystem->OnOsMouseButtonUp(
+                                ysMouse::Button::Left);
+                    case WM_MOUSEWHEEL:
+                        return inputSystem->OnOsMouseWheel(
+                                lParam, wParam);
+                    case WM_MOUSEMOVE:
+                        return inputSystem->OnOsMouseMove(lParam, wParam);
+                }
+            }
         }
     }
 
