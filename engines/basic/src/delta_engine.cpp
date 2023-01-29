@@ -433,6 +433,12 @@ ysError dbasic::DeltaEngine::InitializeBreakdownTimer(const char *loggingDirecto
     std::string logFile = loggingDirectory;
     logFile += "/frame_breakdown_log.csv";
 
+#ifdef _DEBUG
+    m_breakdownTimer.SetEnabled(true);
+#else
+    m_breakdownTimer.SetEnabled(false);
+#endif
+
     m_breakdownTimer.OpenLogFile(logFile);
 
     return YDS_ERROR_RETURN(ysError::None);

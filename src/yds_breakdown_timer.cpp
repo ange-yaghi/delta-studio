@@ -7,6 +7,7 @@
 
 ysBreakdownTimer::ysBreakdownTimer() {
     m_frameCount = 0;
+    m_enabled = true;
 }
 
 ysBreakdownTimer::~ysBreakdownTimer() {
@@ -75,6 +76,8 @@ ysBreakdownTimerChannel *ysBreakdownTimer::CreateChannel(const std::string &time
 }
 
 void ysBreakdownTimer::OpenLogFile(const std::string &filename) {
+    if (!m_enabled) return;
+
     m_logFile.open(filename.c_str(), std::ios::out);
 
     m_logFile << "Frame";
@@ -88,6 +91,7 @@ void ysBreakdownTimer::OpenLogFile(const std::string &filename) {
 }
 
 void ysBreakdownTimer::WriteLastFrameToLogFile() {
+    if (!m_enabled) return;
     if (m_frameCount == 0) return;
     if (!m_logFile.is_open()) return;
 
@@ -106,7 +110,7 @@ void ysBreakdownTimer::WriteLastFrameToLogFile() {
 }
 
 void ysBreakdownTimer::CloseLogFile() {
-    m_logFile.close();
+    if (m_logFile.is_open()) { m_logFile.close(); }
 }
 
 ysBreakdownTimerChannel *ysBreakdownTimer::FindChannel(const std::string &s) {

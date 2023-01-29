@@ -33,6 +33,7 @@ public:
 
     uint64_t GetFrameCount() const { return m_frameCount; }
 
+    void SetEnabled(bool enabled) { m_enabled = enabled; }
     void OpenLogFile(const std::string &filename);
     void WriteLastFrameToLogFile();
     void CloseLogFile();
@@ -46,6 +47,7 @@ protected:
     std::fstream m_logFile;
 
     uint64_t m_frameCount;
+    bool m_enabled;
 };
 
 #endif /* YDS_BREAKDOWN_TIMER_H */
