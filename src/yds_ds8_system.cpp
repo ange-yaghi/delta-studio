@@ -34,9 +34,19 @@ void ysDS8System::ConnectDevice(ysAudioDevice *device, ysWindow *windowAssociati
     }
 
     //RaiseError(windowAssociation->GetPlatform() == ysWindow::Platform::Windows, "Incompatible platform for audio device window association.");
-    ysWindowsWindow *windowsWindow = static_cast<ysWindowsWindow *>(windowAssociation);
+    
+    if (windowAssociation != nullptr) {
+        ysWindowsWindow *windowsWindow = static_cast<ysWindowsWindow *>(windowAssociation);
+        result = ds8Device->m_device->SetCooperativeLevel(windowsWindow->GetWindowHandle(), DSSCL_PRIORITY);
+    }
+    else {
+        HWND hWnd = GetForegroundWindow();
+        if (hWnd == NULL) {
+          hWnd = GetDesktopWindow();
+        }
 
-    result = ds8Device->m_device->SetCooperativeLevel(windowsWindow->GetWindowHandle(), DSSCL_PRIORITY);
+        result = ds8Device->m_device->SetCooperativeLevel(hWnd, DSSCL_PRIORITY);
+    }
 
     if (FAILED(result)) {
         // Error message
