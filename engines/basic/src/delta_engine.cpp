@@ -276,12 +276,11 @@ ysError dbasic::DeltaEngine::Destroy() {
     m_mainKeyboard = nullptr;
     m_mainMouse = nullptr;
 
-    YDS_NESTED_ERROR_CALL(ysInputSystem::DestroyInputSystem(m_inputSystem));
-
     m_windowSystem->DeleteAllWindows();
     m_gameWindow = nullptr;
 
     ysWindowSystem::DestroyWindowSystem(m_windowSystem);
+    YDS_NESTED_ERROR_CALL(ysInputSystem::DestroyInputSystem(m_inputSystem));
 
     return YDS_ERROR_RETURN(ysError::None);
 }
