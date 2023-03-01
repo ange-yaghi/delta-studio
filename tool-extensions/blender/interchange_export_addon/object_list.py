@@ -76,7 +76,7 @@ class ObjectList(object):
 
     def expand_object(self, obj, parent_transform):
         if obj.is_instancer:
-            if obj.instance_type == 'COLLECTION':
+            if obj.instance_type == 'COLLECTION' and obj.instance_collection is not None:
                 collection = self.expand_collection(obj.instance_collection)
                 new_object = self.add_instance(obj, collection.index)
             else:

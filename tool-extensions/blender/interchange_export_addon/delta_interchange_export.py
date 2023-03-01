@@ -369,15 +369,25 @@ def write_scene_file(context, filepath, *,
 
     object_list = ObjectList()
     object_list.generate_object_list(objects)
-            
+
     with open(filepath, 'wb') as f:
         write_id_header(f)
         
         scene_header = SceneHeader()
         scene_header.object_count = object_list.get_object_count()
         scene_header.write(f)
+
+        bpy.context.window_manager.progress_begin(0, object_list.get_object_count())
+        
+        n_exported = 0
+        bpy.context.window_manager.progress_update(n_exported)
         
         for obj in object_list.object_list:
             write_object_mesh(obj, object_list, global_matrix, use_mesh_modifiers, depsgraph, f)
+
+            n_exported += 1
+            bpy.context.window_manager.progress_update(n_exported)
+
+        bpy.context.window_manager.progress_end()
         
     return {'FINISHED'}
