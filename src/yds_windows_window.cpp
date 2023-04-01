@@ -20,7 +20,7 @@ ATOM ysWindowsWindow::RegisterWindowsClass() {
     wc.cbClsExtra = 0;
     wc.cbWndExtra = 0;
     wc.hInstance = m_instance;
-    wc.hIcon = NULL;
+    wc.hIcon = LoadIcon(m_instance, "IDI_ICON1");
     wc.hCursor = LoadCursor(NULL, IDC_ARROW);
     wc.hbrBackground = NULL;
     wc.lpszMenuName = NULL;
