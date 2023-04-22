@@ -16,15 +16,15 @@ else()
 endif()
 
 # =========================================================
-# D3DX
+# DXGI/D3DX
 
 set(
     D3DX_LIBS
     ${CMAKE_CURRENT_SOURCE_DIR}/dependencies/libraries/D3DX/lib/${TARGET_ARCHITECTURE})
+
 set(
     DXGI_LIBS
     ${CMAKE_CURRENT_SOURCE_DIR}/dependencies/libraries/DXGI/lib/${TARGET_ARCHITECTURE})
-include_directories(dependencies/libraries/D3DX/include)
 
 # =========================================================
 # DirectSound
@@ -320,15 +320,6 @@ target_link_libraries(delta-core PUBLIC
     d3d11.lib
 
     # D3DX
-    $<$<CONFIG:Debug>:${D3DX_LIBS}/d3dx9d.lib>
-    $<$<NOT:$<CONFIG:Debug>>:${D3DX_LIBS}/d3dx9.lib>
-
-    $<$<CONFIG:Debug>:${D3DX_LIBS}/d3dx10d.lib>
-    $<$<NOT:$<CONFIG:Debug>>:${D3DX_LIBS}/d3dx10.lib>
-
-    $<$<CONFIG:Debug>:${D3DX_LIBS}/d3dx11d.lib>
-    $<$<NOT:$<CONFIG:Debug>>:${D3DX_LIBS}/d3dx11.lib>
-
     ${D3DX_LIBS}/d3dxof.lib
     ${D3DX_LIBS}/d3dcompiler.lib
 

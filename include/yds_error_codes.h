@@ -110,7 +110,8 @@ enum class ysError {
 
     UnsupportedType,
 
-    CouldNotCreateSamplerState
+    CouldNotCreateSamplerState,
+    Unsupported
 };
 
 #endif /* YDS_ERROR_CODES_H */

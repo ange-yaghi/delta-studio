@@ -27,6 +27,7 @@ ysError ysVulkanWindowsContext::Create(
 
     ysWindowsWindow *win32Window = static_cast<ysWindowsWindow *>(window);
 
+#if DELTA_ENABLE_VULKAN
     VkWin32SurfaceCreateInfoKHR win32Info = {};
     win32Info.sType = VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR;
     win32Info.pNext = nullptr;
@@ -40,14 +41,20 @@ ysError ysVulkanWindowsContext::Create(
     }
 
     return YDS_ERROR_RETURN(ysError::None);
+#else
+    return YDS_ERROR_RETURN(ysError::Unsupported);
+#endif
 }
 
 ysError ysVulkanWindowsContext::Destroy() {
     YDS_ERROR_DECLARE("Destroy");
 
+#if DELTA_ENABLE_VULKAN
     vkDestroySurfaceKHR(m_device->GetInstance(), m_surface, nullptr);
-
     m_surface = nullptr;
 
     return YDS_ERROR_RETURN(ysError::None);
+#else
+    return YDS_ERROR_RETURN(ysError::Unsupported);
+#endif 
 }

@@ -12,11 +12,11 @@
 
 #include <d3d10.h>
 
+#include <SDL.h>
+#include <SDL_image.h>
+
 #pragma warning(push, 0)
-#include <d3dx10.h>
-#include <d3dx10async.h>
-#include <d3dx10tex.h>
-#pragma warning(pop)
+#include <d3dcompiler.h>
 
 ysD3D10Device::ysD3D10Device() : ysDevice(DeviceAPI::DirectX10) {
     m_device = nullptr;
@@ -778,9 +778,20 @@ ysError ysD3D10Device::CreateVertexShader(ysShader **newShader, const char *shad
     ID3D10Blob *error;
     ID3D10Blob *shaderBlob;
 
-    HRESULT result;
-    result = D3DX10CompileFromFile(shaderFilename, nullptr, nullptr, shaderName, "vs_4_0", D3D10_SHADER_ENABLE_STRICTNESS, 0, nullptr, &shaderBlob, &error, nullptr);
-    
+    const int length =
+            MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, shaderFilename,
+                                           strlen(shaderFilename) + 1,
+                        nullptr, 0);
+    wchar_t *wShaderFilename = new wchar_t[length];
+    MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, shaderFilename,
+                        strlen(shaderFilename) + 1,
+                        wShaderFilename, length);
+
+    HRESULT result = D3DCompileFromFile(wShaderFilename, nullptr, nullptr, shaderName,
+                                "vs_4_0", D3DCOMPILE_ENABLE_STRICTNESS, 0,
+                                &shaderBlob, &error);
+    delete[] wShaderFilename;
+
     if (FAILED(result)) {
         return YDS_ERROR_RETURN_MSG(ysError::VertexShaderCompilationError, (const char *)error->GetBufferPointer());
     }
@@ -818,8 +829,18 @@ ysError ysD3D10Device::CreatePixelShader(ysShader **newShader, const char *shade
     ID3D10Blob *error;
     ID3D10Blob *shaderBlob;
 
-    HRESULT result;
-    result = D3DX10CompileFromFile(shaderFilename, nullptr, nullptr, shaderName, "ps_4_0", D3D10_SHADER_ENABLE_STRICTNESS, 0, nullptr, &shaderBlob, &error, nullptr);
+    const int length =
+            MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, shaderFilename,
+                                strlen(shaderFilename) + 1, nullptr, 0);
+    wchar_t *wShaderFilename = new wchar_t[length];
+    MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, shaderFilename,
+                        strlen(shaderFilename) + 1,
+                        wShaderFilename, length);
+    
+    HRESULT result = D3DCompileFromFile(
+            wShaderFilename, nullptr, nullptr, shaderName, "ps_4_0",
+            D3DCOMPILE_ENABLE_STRICTNESS, 0, &shaderBlob, &error);
+    delete[] wShaderFilename;
 
     if (FAILED(result)) {
         return YDS_ERROR_RETURN_MSG(ysError::FragmentShaderCompilationError,
@@ -1040,13 +1061,36 @@ ysError ysD3D10Device::CreateTexture(ysTexture **newTexture, const char *fname) 
     ID3D10ShaderResourceView *resourceView;
 
     D3D10_SHADER_RESOURCE_VIEW_DESC srvDesc;
-    D3D10_TEXTURE2D_DESC desc;
-    HRESULT result;
-    
-    result = D3DX10CreateTextureFromFile(m_device, fname, nullptr, nullptr, (ID3D10Resource **)&newD3DTexture, nullptr);
-    if (FAILED(result)) {
-        return YDS_ERROR_RETURN_MSG(ysError::CouldNotOpenTexture, fname);
+
+    SDL_Surface *pTexSurface = IMG_Load(fname);
+    if (pTexSurface == nullptr) {
+        return YDS_ERROR_RETURN(ysError::CouldNotOpenTexture);
     }
+
+    D3D10_TEXTURE2D_DESC desc;
+    ZeroMemory(&desc, sizeof(D3D10_TEXTURE2D_DESC));
+    desc.Width = pTexSurface->w;
+    desc.Height = pTexSurface->h;
+    desc.MipLevels = desc.ArraySize = 1;
+    desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+    desc.SampleDesc.Count = 1;
+    desc.SampleDesc.Quality = 0;
+    desc.Usage = D3D10_USAGE_DYNAMIC;
+    desc.BindFlags = D3D10_BIND_SHADER_RESOURCE;
+    desc.CPUAccessFlags = D3D10_CPU_ACCESS_WRITE;
+    desc.MiscFlags = 0;
+
+    D3D10_SUBRESOURCE_DATA data;
+    data.pSysMem = pTexSurface->pixels;
+    data.SysMemPitch = desc.Width * sizeof(unsigned char) * 4;
+    data.SysMemSlicePitch = 0;
+
+    HRESULT result = m_device->CreateTexture2D(&desc, &data, &newD3DTexture);
+    if (FAILED(result)) {
+        return YDS_ERROR_RETURN(ysError::CouldNotOpenTexture);
+    }
+
+    SDL_FreeSurface(pTexSurface);
 
     newD3DTexture->GetDesc(&desc);
     ZeroMemory(&srvDesc, sizeof(srvDesc));

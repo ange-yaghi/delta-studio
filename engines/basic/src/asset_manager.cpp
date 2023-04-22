@@ -255,8 +255,8 @@ ysError dbasic::AssetManager::LoadSceneFile(const char *fname, bool placeInVram)
     CompiledHeader fileHeader;
     file.read((char *)&fileHeader, sizeof(CompiledHeader));
 
-    unsigned short *indicesFile = new unsigned short[1024 * 1024]; // 1 MB
-    char *verticesFile = (char *)malloc(4 * 1024 * 1024); // 4 MB
+    unsigned short *indicesFile = new unsigned short[16 * 1024 * 1024]; // 1 MB
+    char *verticesFile = (char *)malloc(16 * 4 * 1024 * 1024); // 4 MB
 
     int currentIndexOffset = 0;
     int currentVertexByteOffset = 0;
@@ -267,8 +267,8 @@ ysError dbasic::AssetManager::LoadSceneFile(const char *fname, bool placeInVram)
     ysGPUBuffer *vertexBuffer = nullptr;
 
     if (placeInVram) {
-        m_engine->GetDevice()->CreateIndexBuffer(&indexBuffer, 1 * 1024 * 1024, nullptr, false);
-        m_engine->GetDevice()->CreateVertexBuffer(&vertexBuffer, 4 * 1024 * 1024, nullptr, false);
+        m_engine->GetDevice()->CreateIndexBuffer(&indexBuffer, 16 * 1024 * 1024, nullptr, false);
+        m_engine->GetDevice()->CreateVertexBuffer(&vertexBuffer, 16 * 4 * 1024 * 1024, nullptr, false);
     }
 
     std::set<int> lights;

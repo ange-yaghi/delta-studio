@@ -28,9 +28,12 @@ ysError ysVulkanDevice::InitializeDevice() {
 ysError ysVulkanDevice::DestroyDevice() {
     YDS_ERROR_DECLARE("DestroyDevice");
 
+#if DELTA_ENABLE_VULKAN
     vkDestroyInstance(m_instance, nullptr);
-
     return YDS_ERROR_RETURN(ysError::None);
+#else
+    return YDS_ERROR_RETURN(ysError::Unsupported);
+#endif 
 }
 
 bool ysVulkanDevice::CheckSupport() {
@@ -280,6 +283,7 @@ void ysVulkanDevice::Draw(int numFaces, int indexOffset, int vertexOffset) {
 ysError ysVulkanDevice::CreateVulkanInstance() {
     YDS_ERROR_DECLARE("CreateVulkanInstance");
 
+#if DELTA_ENABLE_VULKAN
     const char *extensions[] = {
     VK_KHR_WIN32_SURFACE_EXTENSION_NAME,
     VK_KHR_SURFACE_EXTENSION_NAME
@@ -312,11 +316,15 @@ ysError ysVulkanDevice::CreateVulkanInstance() {
     }
 
     return YDS_ERROR_RETURN(ysError::None);
+#else
+    return YDS_ERROR_RETURN(ysError::Unsupported);
+#endif
 }
 
 ysError ysVulkanDevice::CreateVulkanDevice(VkSurfaceKHR surface) {
     YDS_ERROR_DECLARE("CreateVulkanDevice");
 
+#if DELTA_ENABLE_VULKAN
     uint32_t deviceCount = 0;
     if (vkEnumeratePhysicalDevices(m_instance, &deviceCount, nullptr) != VkResult::VK_SUCCESS) {
         return YDS_ERROR_RETURN(ysError::ApiError);
@@ -392,4 +400,7 @@ ysError ysVulkanDevice::CreateVulkanDevice(VkSurfaceKHR surface) {
     }
 
     return YDS_ERROR_RETURN(ysError::None);
+#else
+    return YDS_ERROR_RETURN(ysError::Unsupported);
+#endif
 }

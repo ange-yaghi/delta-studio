@@ -13,9 +13,10 @@
 
 #include <d3d11.h>
 
+#include <SDL.h>
+#include <SDL_image.h>
+
 #pragma warning(push, 0)
-#include <d3dx11async.h>
-#include <d3dx11tex.h>
 #include <d3dcompiler.h>
 
 #ifdef _DEBUG
@@ -1009,7 +1010,7 @@ ysError ysD3D11Device::CreateVertexShader(ysShader **newShader, const char *shad
                         wShaderFilename, length);
 
     HRESULT result = D3DCompileFromFile(wShaderFilename, nullptr, nullptr, shaderName,
-                                "vs_4_0", D3D10_SHADER_ENABLE_STRICTNESS, 0,
+                                "vs_4_0", D3DCOMPILE_ENABLE_STRICTNESS, 0,
                                 &shaderBlob, &error);
     delete[] wShaderFilename;
 
@@ -1068,7 +1069,7 @@ ysError ysD3D11Device::CreatePixelShader(ysShader **newShader, const char *shade
 
     HRESULT result = D3DCompileFromFile(
             wShaderFilename, nullptr, nullptr, shaderName, "ps_4_0",
-            D3D10_SHADER_ENABLE_STRICTNESS, 0, &shaderBlob, &error);
+            D3DCOMPILE_ENABLE_STRICTNESS, 0, &shaderBlob, &error);
     delete[] wShaderFilename;
 
     if (FAILED(result) || shaderBlob == nullptr) {
@@ -1323,16 +1324,36 @@ ysError ysD3D11Device::CreateTexture(ysTexture **newTexture, const char *fname) 
     ID3D11ShaderResourceView *resourceView;
 
     D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc;
-    D3D11_TEXTURE2D_DESC desc;
-    HRESULT result;
-
-    D3DX11_IMAGE_LOAD_INFO info;
-    memset((void *)&info, 0, sizeof(D3DX11_IMAGE_LOAD_INFO));
-
-    result = D3DX11CreateTextureFromFile(m_device, fname, nullptr, nullptr, (ID3D11Resource **)&newD3DTexture, nullptr);
-    if (FAILED(result)) {
-        return YDS_ERROR_RETURN_MSG(ysError::CouldNotOpenTexture, fname);
+    
+    SDL_Surface *pTexSurface = IMG_Load(fname);
+    if (pTexSurface == nullptr) {
+        return YDS_ERROR_RETURN(ysError::CouldNotOpenTexture);
     }
+
+    D3D11_TEXTURE2D_DESC desc;
+    ZeroMemory(&desc, sizeof(D3D11_TEXTURE2D_DESC));
+    desc.Width = pTexSurface->w;
+    desc.Height = pTexSurface->h;
+    desc.MipLevels = desc.ArraySize = 1;
+    desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+    desc.SampleDesc.Count = 1;
+    desc.SampleDesc.Quality = 0;
+    desc.Usage = D3D11_USAGE_DYNAMIC;
+    desc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+    desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+    desc.MiscFlags = 0;
+
+    D3D11_SUBRESOURCE_DATA data;
+    data.pSysMem = pTexSurface->pixels;
+    data.SysMemPitch = desc.Width * sizeof(unsigned char) * 4;
+    data.SysMemSlicePitch = 0;
+
+    HRESULT result = m_device->CreateTexture2D(&desc, &data, &newD3DTexture);
+    if (FAILED(result)) {
+        return YDS_ERROR_RETURN(ysError::CouldNotOpenTexture);
+    }
+
+    SDL_FreeSurface(pTexSurface);
 
     newD3DTexture->GetDesc(&desc);
     ZeroMemory(&srvDesc, sizeof(srvDesc));
