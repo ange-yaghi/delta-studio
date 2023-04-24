@@ -4,7 +4,7 @@
 #include "yds_error_codes.h"
 #include "yds_allocator.h"
 
-#include <memory>
+#include <cstring>
 
 class ysDynamicArrayElement {
 public:
