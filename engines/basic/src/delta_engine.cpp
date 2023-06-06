@@ -103,11 +103,12 @@ ysError dbasic::DeltaEngine::CreateGameWindow(const GameEngineSettings &settings
     m_windowSystem->ConnectInstance(settings.Instance);
 
     // Find the monitor setup
-    m_windowSystem->SurveyMonitors();
+    YDS_NESTED_ERROR_CALL(m_windowSystem->SurveyMonitors());
     ysMonitor *mainMonitor = m_windowSystem->GetMonitor(0);
 
     // Create the game window
     YDS_NESTED_ERROR_CALL(m_windowSystem->NewWindow(&m_gameWindow));
+
     YDS_NESTED_ERROR_CALL(m_gameWindow->InitializeWindow(
         nullptr,
         settings.WindowTitle,
@@ -119,8 +120,8 @@ ysError dbasic::DeltaEngine::CreateGameWindow(const GameEngineSettings &settings
     m_gameWindow->AttachEventHandler(&m_windowHandler);
 
     YDS_NESTED_ERROR_CALL(ysInputSystem::CreateInputSystem(&m_inputSystem, ysWindowSystemObject::Platform::Windows));
-    m_windowSystem->AssignInputSystem(m_inputSystem);
-    m_inputSystem->Initialize();
+    YDS_NESTED_ERROR_CALL(m_windowSystem->AssignInputSystem(m_inputSystem));
+    YDS_NESTED_ERROR_CALL(m_inputSystem->Initialize());
 
     m_mainKeyboard = m_inputSystem->GetDefaultKeyboard();
     m_mainMouse = m_inputSystem->GetDefaultMouse();
@@ -131,9 +132,14 @@ ysError dbasic::DeltaEngine::CreateGameWindow(const GameEngineSettings &settings
 
     // Create the audio device
     YDS_NESTED_ERROR_CALL(ysAudioSystem::CreateAudioSystem(&m_audioSystem, ysAudioSystem::API::DirectSound8));
-    m_audioSystem->EnumerateDevices();
+    YDS_NESTED_ERROR_CALL(m_audioSystem->EnumerateDevices());
+
     m_audioDevice = m_audioSystem->GetPrimaryDevice();
-    m_audioSystem->ConnectDevice(m_audioDevice, m_gameWindow);
+    if (m_audioDevice == nullptr) {
+        return YDS_ERROR_RETURN(ysError::NoAudioDevice);
+    }
+
+    YDS_NESTED_ERROR_CALL(m_audioSystem->ConnectDevice(m_audioDevice, m_gameWindow));
 
     // Create the rendering context
     YDS_NESTED_ERROR_CALL(m_device->CreateRenderingContext(&m_renderingContext, m_gameWindow));

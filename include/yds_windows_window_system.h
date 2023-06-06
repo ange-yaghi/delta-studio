@@ -14,7 +14,7 @@ public:
     virtual ysError NewWindow(ysWindow **newWindow);
 
     virtual ysMonitor *NewMonitor();
-    virtual void SurveyMonitors();
+    virtual ysError SurveyMonitors() override;
 
     virtual void ProcessMessages();
 

@@ -58,10 +58,16 @@ BOOL CALLBACK MonitorEnum(HMONITOR hMonitor, HDC hdcMonitor, LPRECT lprcMonitor,
     return TRUE;
 }
 
-void ysWindowsWindowSystem::SurveyMonitors() {
-    ysWindowSystem::SurveyMonitors();
+ysError ysWindowsWindowSystem::SurveyMonitors() {
+    YDS_ERROR_DECLARE("SurveyMonitors");
+    YDS_NESTED_ERROR_CALL(ysWindowSystem::SurveyMonitors());
 
-    EnumDisplayMonitors(NULL, NULL, MonitorEnum, (LPARAM)this);
+    const BOOL result = EnumDisplayMonitors(NULL, NULL, MonitorEnum, (LPARAM)this);
+    if (result == FALSE) {
+        return YDS_ERROR_RETURN(ysError::CouldNotEnumerateMonitors);
+    }
+
+    return YDS_ERROR_RETURN(ysError::None);
 }
 
 void ysWindowsWindowSystem::ProcessMessages() {

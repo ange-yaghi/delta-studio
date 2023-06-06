@@ -11,26 +11,29 @@ ysDS8System::~ysDS8System() {
     /* void */
 }
 
-void ysDS8System::EnumerateDevices() {
-    ysAudioSystem::EnumerateDevices();
+ysError ysDS8System::EnumerateDevices() {
+    YDS_ERROR_DECLARE("EnumerateDevices");
+
+    YDS_NESTED_ERROR_CALL(ysAudioSystem::EnumerateDevices());
 
     if (FAILED(DirectSoundEnumerate((LPDSENUMCALLBACK)DirectSoundEnumProc, (void *)this))) {
-        // Could not enumerate devices
-        int breakHere=0;
+        return YDS_ERROR_RETURN(ysError::CouldNotEnumerateAudioDevices);
     }
+
+    return YDS_ERROR_RETURN(ysError::None);
 }
 
-void ysDS8System::ConnectDevice(ysAudioDevice *device, ysWindow *windowAssociation) {
-    ysAudioSystem::ConnectDevice(device, windowAssociation);
+ysError ysDS8System::ConnectDevice(ysAudioDevice *device, ysWindow *windowAssociation) {
+    YDS_ERROR_DECLARE("ConnectDevice");
+
+    YDS_NESTED_ERROR_CALL(ysAudioSystem::ConnectDevice(device, windowAssociation));
 
     ysDS8Device *ds8Device = static_cast<ysDS8Device *>(device);
     HRESULT result;
 
     result = DirectSoundCreate8(&ds8Device->m_guid, &ds8Device->m_device, NULL);
-
     if (FAILED(result)) {
-        // Error message
-        int breakHere=0;
+        return YDS_ERROR_RETURN(ysError::CouldNotCreateDS8Device);
     }
 
     //RaiseError(windowAssociation->GetPlatform() == ysWindow::Platform::Windows, "Incompatible platform for audio device window association.");
@@ -49,37 +52,42 @@ void ysDS8System::ConnectDevice(ysAudioDevice *device, ysWindow *windowAssociati
     }
 
     if (FAILED(result)) {
-        // Error message
-        int breakHere=0;
+        return YDS_ERROR_RETURN(ysError::CouldNotSetDeviceCooperativeLevel);
     }
+
+    return YDS_ERROR_RETURN(ysError::None);
 }
 
-void ysDS8System::ConnectDeviceConsole(ysAudioDevice *device) {
-    ysAudioSystem::ConnectDeviceConsole(device);
+ysError ysDS8System::ConnectDeviceConsole(ysAudioDevice *device) {
+    YDS_ERROR_DECLARE("ConnectDeviceConsole");
+
+    YDS_NESTED_ERROR_CALL(ysAudioSystem::ConnectDeviceConsole(device));
 
     ysDS8Device *ds8Device = static_cast<ysDS8Device *>(device);
     HRESULT result;
 
     result = DirectSoundCreate8(&ds8Device->m_guid, &ds8Device->m_device, NULL);
-
     if (FAILED(result)) {
-        // Error message
-        int a = 0;
+        return YDS_ERROR_RETURN(ysError::CouldNotCreateDS8Device);
     }
 
     result = ds8Device->m_device->SetCooperativeLevel(GetConsoleWindow(), DSSCL_PRIORITY);
-
     if (FAILED(result)) {
-        // Error message
-        int a = 0;
+        return YDS_ERROR_RETURN(ysError::CouldNotSetDeviceCooperativeLevel);
     }
+
+    return YDS_ERROR_RETURN(ysError::None);
 }
 
-void ysDS8System::DisconnectDevice(ysAudioDevice *device) {
-    ysAudioSystem::DisconnectDevice(device);
+ysError ysDS8System::DisconnectDevice(ysAudioDevice *device) {
+    YDS_ERROR_DECLARE("DisconnectDevice");
+
+    YDS_NESTED_ERROR_CALL(ysAudioSystem::DisconnectDevice(device));
 
     ysDS8Device *ds8Device = static_cast<ysDS8Device *>(device);
     ds8Device->m_device->Release();
+
+    return YDS_ERROR_RETURN(ysError::None);
 }
 
 ysDS8Device *ysDS8System::AddDS8Device() {
@@ -90,7 +98,9 @@ BOOL CALLBACK ysDS8System::DirectSoundEnumProc(LPGUID lpGUID, LPCTSTR lpszDesc, 
     ysDS8System *system = static_cast<ysDS8System *>(lpContext);
 
     GUID actual;
-    GetDeviceID(&DSDEVID_DefaultPlayback, &actual);
+    if (FAILED(GetDeviceID(&DSDEVID_DefaultPlayback, &actual))) {
+        return FALSE;
+    }
 
     if (lpGUID != nullptr) {
         if (actual == *lpGUID) {

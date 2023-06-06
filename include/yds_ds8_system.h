@@ -13,10 +13,10 @@ public:
     ysDS8System();
     virtual ~ysDS8System();
 
-    virtual void EnumerateDevices();
-    virtual void ConnectDevice(ysAudioDevice *device, ysWindow *windowAssociation);
-    virtual void ConnectDeviceConsole(ysAudioDevice *device);
-    virtual void DisconnectDevice(ysAudioDevice *device);
+    virtual ysError EnumerateDevices() override;
+    virtual ysError ConnectDevice(ysAudioDevice *device, ysWindow *windowAssociation) override;
+    virtual ysError ConnectDeviceConsole(ysAudioDevice *device) override;
+    virtual ysError DisconnectDevice(ysAudioDevice *device) override;
 
 protected:
     ysDS8Device *AddDS8Device();

@@ -132,8 +132,11 @@ ysMonitor *ysWindowSystem::GetMonitor(int index) {
     return m_monitorArray.Get(index);
 }
 
-void ysWindowSystem::SurveyMonitors() {
+ysError ysWindowSystem::SurveyMonitors() {
+    YDS_ERROR_DECLARE("SurveyMonitors");
     ClearMonitors();
+
+    return YDS_ERROR_RETURN(ysError::None);
 }
 
 ysError ysWindowSystem::AssignInputSystem(ysInputSystem *system) {

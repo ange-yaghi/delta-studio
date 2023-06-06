@@ -111,7 +111,13 @@ enum class ysError {
     UnsupportedType,
 
     CouldNotCreateSamplerState,
-    Unsupported
+    Unsupported,
+
+    CouldNotEnumerateMonitors,
+    CouldNotEnumerateAudioDevices,
+    CouldNotCreateDS8Device,
+    CouldNotSetDeviceCooperativeLevel,
+    NoAudioDevice
 };
 
 #endif /* YDS_ERROR_CODES_H */

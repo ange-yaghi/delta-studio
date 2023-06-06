@@ -46,12 +46,16 @@ ysError ysAudioSystem::DestroyAudioSystem(ysAudioSystem **audioSystem) {
     return YDS_ERROR_RETURN_STATIC(ysError::None);
 }
 
-void ysAudioSystem::EnumerateDevices() {
+ysError ysAudioSystem::EnumerateDevices() {
+    YDS_ERROR_DECLARE("EnumerateDevices");
+
     m_devices.Clear();
+
+    return YDS_ERROR_RETURN(ysError::None);
 }
 
 ysAudioDevice *ysAudioSystem::GetPrimaryDevice() {
-    if (m_devices.GetNumObjects() == 0) return 0;
+    if (m_devices.GetNumObjects() == 0) { return nullptr; }
     else {
         // Zeroeth device is always the default
         return m_devices.Get(0);
@@ -63,17 +67,29 @@ ysAudioDevice *ysAudioSystem::GetAuxDevice(int device) {
     return m_devices.Get(device + 1);
 }
 
-void ysAudioSystem::ConnectDevice(ysAudioDevice *device, ysWindow *windowAssociation) {
+ysError ysAudioSystem::ConnectDevice(ysAudioDevice *device, ysWindow *windowAssociation) {
+    YDS_ERROR_DECLARE("ConnectDevice");
+
     device->m_connected = true;
     device->m_windowAssociation = windowAssociation;
+
+    return YDS_ERROR_RETURN(ysError::None);
 }
 
-void ysAudioSystem::ConnectDeviceConsole(ysAudioDevice *device) {
+ysError ysAudioSystem::ConnectDeviceConsole(ysAudioDevice *device) {
+    YDS_ERROR_DECLARE("ConnectDeviceConsole");
+
     device->m_connected = true;
     device->m_windowAssociation = NULL;
+
+    return YDS_ERROR_RETURN(ysError::None);
 }
 
-void ysAudioSystem::DisconnectDevice(ysAudioDevice *device) {
+ysError ysAudioSystem::DisconnectDevice(ysAudioDevice *device) {
+    YDS_ERROR_DECLARE("DisconnectDevice");
+
     device->m_connected = false;
     device->m_windowAssociation = 0;
+
+    return YDS_ERROR_RETURN(ysError::None);
 }

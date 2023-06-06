@@ -40,7 +40,7 @@ public:
 
     // Monitor Interface
     virtual ysMonitor *NewMonitor() = 0;
-    virtual void SurveyMonitors();
+    virtual ysError SurveyMonitors();
 
     void ClearMonitors();
     ysMonitor *GetPrimaryMonitor();

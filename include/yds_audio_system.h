@@ -16,10 +16,10 @@ public:
     static ysError CreateAudioSystem(ysAudioSystem **newAudioSystem, API api);
     static ysError DestroyAudioSystem(ysAudioSystem **audioSystem);
 
-    virtual void EnumerateDevices();
-    virtual void ConnectDevice(ysAudioDevice *device, ysWindow *windowAssociation);
-    virtual void ConnectDeviceConsole(ysAudioDevice *device);
-    virtual void DisconnectDevice(ysAudioDevice *device);
+    virtual ysError EnumerateDevices();
+    virtual ysError ConnectDevice(ysAudioDevice *device, ysWindow *windowAssociation);
+    virtual ysError ConnectDeviceConsole(ysAudioDevice *device);
+    virtual ysError DisconnectDevice(ysAudioDevice *device);
 
     ysAudioDevice *GetPrimaryDevice();
     ysAudioDevice *GetAuxDevice(int device);
