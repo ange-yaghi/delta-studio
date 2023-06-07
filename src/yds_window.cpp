@@ -55,7 +55,10 @@ ysWindow::~ysWindow() {
     /* void */
 }
 
-ysError ysWindow::InitializeWindow(ysWindow *parent, const wchar_t *title, WindowStyle style, int x, int y, int width, int height, ysMonitor *monitor) {
+ysError ysWindow::InitializeWindow(ysWindow *parent, const wchar_t *title,
+                                   WindowStyle style, int x, int y, int width,
+                                   int height, ysMonitor *monitor,
+                                   const ysVector &color) {
     YDS_ERROR_DECLARE("InitializeWindow");
 
     m_width = width;

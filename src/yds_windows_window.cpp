@@ -11,18 +11,21 @@ ysWindowsWindow::~ysWindowsWindow() {
     /* void */
 }
 
-ATOM ysWindowsWindow::RegisterWindowsClass() {
+ATOM ysWindowsWindow::RegisterWindowsClass(const ysVector &color) {
+    const ysVector c_srgb = ysColor::linearToSrgb(color);
+
     WNDCLASSEX wc;
     wc.cbSize = sizeof(WNDCLASSEX);
-
     wc.style = CS_HREDRAW | CS_VREDRAW;
     wc.lpfnWndProc = (WNDPROC)(ysWindowsWindowSystem::WinProc);
     wc.cbClsExtra = 0;
     wc.cbWndExtra = 0;
     wc.hInstance = m_instance;
     wc.hIcon = LoadIcon(m_instance, L"IDI_ICON1");
-    wc.hCursor = LoadCursor(NULL, IDC_ARROW);
-    wc.hbrBackground = NULL;
+    wc.hCursor = LoadCursor(NULL, IDC_ARROW);  
+    wc.hbrBackground = CreateSolidBrush(RGB((int)(ysMath::GetX(c_srgb) * 255.0f),
+                                            (int)(ysMath::GetY(c_srgb) * 255.0f),
+                                            (int)(ysMath::GetZ(c_srgb) * 255.0f)));
     wc.lpszMenuName = NULL;
     wc.lpszClassName = L"GAME_ENGINE_WINDOW";
     wc.hIconSm = NULL;
@@ -30,7 +33,9 @@ ATOM ysWindowsWindow::RegisterWindowsClass() {
     return RegisterClassEx(&wc);
 }
 
-ysError ysWindowsWindow::InitializeWindow(ysWindow *parent, const wchar_t *title, WindowStyle style, int x, int y, int width, int height, ysMonitor *monitor) {
+ysError ysWindowsWindow::InitializeWindow(
+        ysWindow *parent, const wchar_t *title, WindowStyle style, int x, int y,
+        int width, int height, ysMonitor *monitor, const ysVector &color) {
     YDS_ERROR_DECLARE("InitializeWindow");
 
     if (!CheckCompatibility(parent)) return YDS_ERROR_RETURN(ysError::IncompatiblePlatforms);
@@ -44,7 +49,7 @@ ysError ysWindowsWindow::InitializeWindow(ysWindow *parent, const wchar_t *title
         ? parentWindow->m_hwnd 
         : NULL;
 
-    RegisterWindowsClass();
+    RegisterWindowsClass(color);
 
     m_hwnd = CreateWindow(
         L"GAME_ENGINE_WINDOW",
@@ -70,7 +75,10 @@ ysError ysWindowsWindow::InitializeWindow(ysWindow *parent, const wchar_t *title
 ysError ysWindowsWindow::InitializeWindow(ysWindow *parent, const wchar_t *title, WindowStyle style, ysMonitor *monitor) {
     YDS_ERROR_DECLARE("InitializeWindow");
 
-    YDS_NESTED_ERROR_CALL(InitializeWindow(parent, title, style, monitor->GetOriginX(), monitor->GetOriginY(), monitor->GetPhysicalWidth(), monitor->GetPhysicalHeight(), monitor));
+    YDS_NESTED_ERROR_CALL(InitializeWindow(
+            parent, title, style, monitor->GetOriginX(), monitor->GetOriginY(),
+            monitor->GetPhysicalWidth(), monitor->GetPhysicalHeight(), monitor,
+            {0.0f, 0.0f, 0.0f, 1.0f}));
 
     return YDS_ERROR_RETURN(ysError::None);
 }

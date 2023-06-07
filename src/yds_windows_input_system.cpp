@@ -40,12 +40,12 @@ ysWindowsInputDevice *ysWindowsInputSystem::DeviceLookup(HANDLE hDevice) {
 }
 
 ysWindowsInputDevice *
-ysWindowsInputSystem::SystemNameDeviceLookup(char *systemName) {
+ysWindowsInputSystem::SystemNameDeviceLookup(wchar_t *systemName) {
     const int n = m_inputDeviceArray.GetNumObjects();
     for (int i = 0; i < n; i++) {
         ysWindowsInputDevice *windowsDevice =
                 static_cast<ysWindowsInputDevice *>(m_inputDeviceArray.Get(i));
-        if (strcmp(systemName, windowsDevice->m_systemName) == 0)
+        if (wcscmp(systemName, windowsDevice->m_systemName) == 0)
             return windowsDevice;
     }
 
@@ -270,7 +270,7 @@ ysWindowsInputDevice *ysWindowsInputSystem::AddDevice(RAWINPUT *rawInput) {
     UINT size = sizeof(info);
 
     UINT nameSize = 256;
-    char systemName[256];
+    wchar_t systemName[256];
 
     ysInputDevice::InputDeviceType type =
             TranslateType(rawInput->header.dwType);
@@ -295,7 +295,7 @@ ysWindowsInputDevice *ysWindowsInputSystem::AddDevice(RAWINPUT *rawInput) {
     newDevice->m_info = info;
     newDevice->SetGeneric(false);
     newDevice->SetConnected(true);
-    strcpy_s(newDevice->m_systemName, 256, systemName);
+    wcscpy_s(newDevice->m_systemName, 256, systemName);
 
     return newDevice;
 }

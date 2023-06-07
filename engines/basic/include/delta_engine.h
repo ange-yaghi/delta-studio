@@ -53,6 +53,7 @@ namespace dbasic {
             int WindowHeight = 1080;
             int WindowPositionX = 0;
             int WindowPositionY = 0;
+            ysVector WindowColor = {0.0f, 0.0f, 0.0f, 1.0f};
         };
 
         static const GameEngineSettings DefaultSettings;

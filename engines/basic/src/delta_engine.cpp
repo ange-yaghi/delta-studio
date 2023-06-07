@@ -115,7 +115,7 @@ ysError dbasic::DeltaEngine::CreateGameWindow(const GameEngineSettings &settings
         settings.WindowStyle,
         settings.WindowPositionX, settings.WindowPositionY,
         settings.WindowWidth, settings.WindowHeight,
-        mainMonitor));
+        mainMonitor, settings.WindowColor));
 
     m_gameWindow->AttachEventHandler(&m_windowHandler);
 

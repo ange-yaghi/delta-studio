@@ -19,7 +19,7 @@ public:
 protected:
     HANDLE m_deviceHandle;
     RID_DEVICE_INFO m_info;
-    char m_systemName[256];
+    wchar_t m_systemName[256];
 };
 
 #endif /* YDS_WINDOWS_INPUT_DEVICE_H */

@@ -3,6 +3,7 @@
 
 #include "yds_window_system_object.h"
 #include "yds_monitor.h"
+#include "yds_color.h"
 
 class ysWindowEventHandler;
 class ysWindowSystem;
@@ -33,7 +34,10 @@ public:
     virtual ~ysWindow();
 
     /* Interface */
-    virtual ysError InitializeWindow(ysWindow *parent, const wchar_t *title, WindowStyle style, int x, int y, int width, int height, ysMonitor *monitor);
+    virtual ysError InitializeWindow(ysWindow *parent, const wchar_t *title,
+                                     WindowStyle style, int x, int y, int width,
+                                     int height, ysMonitor *monitor,
+                     const ysVector &color = {0.0f, 0.0f, 0.0f, 1.0f});
     virtual ysError InitializeWindow(ysWindow *parent, const wchar_t *title, WindowStyle style, ysMonitor *monitor);
 
     virtual void Close() { SetState(WindowState::Closed); }

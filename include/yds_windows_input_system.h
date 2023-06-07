@@ -31,7 +31,7 @@ protected:
     ysWindowsInputDevice *AddDevice(RAWINPUT *rawInput);
 
     ysWindowsInputDevice *DeviceLookup(HANDLE hDevice);
-    ysWindowsInputDevice *SystemNameDeviceLookup(char *systemName);
+    ysWindowsInputDevice *SystemNameDeviceLookup(wchar_t *systemName);
 
     // Translate a windows device type to INPUT_DEVICE_TYPE
     static ysInputDevice::InputDeviceType TranslateType(int type);

@@ -17,7 +17,10 @@ public:
 
     // Overrides
 
-    virtual ysError InitializeWindow(ysWindow *parent, const wchar_t *title, WindowStyle style, int x, int y, int width, int height, ysMonitor *monitor) override;
+    virtual ysError
+    InitializeWindow(ysWindow *parent, const wchar_t *title, WindowStyle style,
+                     int x, int y, int width, int height,
+                     ysMonitor *monitor, const ysVector &color) override;
     virtual ysError InitializeWindow(ysWindow *parent, const wchar_t *title, WindowStyle style, ysMonitor *monitor) override;
 
     virtual bool SetWindowStyle(WindowStyle style);
@@ -52,7 +55,7 @@ protected:
     virtual void AL_SetLocation(int x, int y) override;
 
 protected:
-    ATOM RegisterWindowsClass();
+    ATOM RegisterWindowsClass(const ysVector &color);
 
     HINSTANCE m_instance;
     HWND m_hwnd;
