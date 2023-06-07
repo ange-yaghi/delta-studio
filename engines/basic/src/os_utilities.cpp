@@ -6,8 +6,8 @@
 
 dbasic::Path dbasic::GetModulePath() {
     // Windows only implementation for now
-    char path[256];
-    DWORD result = GetModuleFileName(NULL, path, 256);
+    wchar_t path[MAX_PATH];
+    DWORD result = GetModuleFileName(NULL, path, MAX_PATH);
 
     Path fullPath = Path(path);
     Path parentPath;

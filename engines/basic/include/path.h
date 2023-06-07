@@ -14,15 +14,15 @@ namespace dbasic {
     class Path {
     protected: Path(const boost::filesystem::path &path);
     public:
-        Path(const std::string &path);
-        Path(const char *path);
+        Path(const std::wstring &path);
+        Path(const wchar_t *path);
         Path(const Path &path);
         Path();
         ~Path();
 
-        std::string ToString() const;
+        std::wstring ToString() const;
 
-        void SetPath(const std::string &path);
+        void SetPath(const std::wstring &path);
         bool operator==(const Path &path) const;
         Path Append(const Path &path) const;
 
@@ -30,8 +30,8 @@ namespace dbasic {
 
         const Path &operator=(const Path &b);
 
-        std::string GetExtension() const;
-        std::string GetStem() const;
+        std::wstring GetExtension() const;
+        std::wstring GetStem() const;
 
         Path GetAbsolute() const;
 

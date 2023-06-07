@@ -12,12 +12,12 @@ ysWindowsAudioWaveFile::~ysWindowsAudioWaveFile() {
     if (m_fileHandle) mmioClose(m_fileHandle, 0);
 }
 
-ysAudioFile::Error ysWindowsAudioWaveFile::OpenFile(const char *fname) {
+ysAudioFile::Error ysWindowsAudioWaveFile::OpenFile(const wchar_t *fname) {
     ysAudioFile::Error error = ysAudioFile::OpenFile(fname);
     if (error != Error::None) return error;
 
-    char localFname[256];
-    strcpy_s(localFname, 256, fname);
+    wchar_t localFname[256];
+    wcscpy_s(localFname, 256, fname);
 
     // Attempt to open the file
     HMMIO file = mmioOpen(localFname, 0, MMIO_READ);

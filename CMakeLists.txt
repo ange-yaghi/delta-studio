@@ -310,6 +310,8 @@ add_library(delta-core STATIC
     include/yds_window_system_object.h
 )
 
+target_compile_definitions(delta-core PUBLIC _UNICODE UNICODE)
+
 target_link_libraries(delta-core PUBLIC
     # SDL
     ${SDL2_LIBRARY}

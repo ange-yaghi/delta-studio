@@ -1,28 +1,30 @@
 #include "../include/yds_windows_window_system.h"
 
-#include "../include/yds_windows_window.h"
-#include "../include/yds_windows_monitor.h"
 #include "../include/yds_windows_input_system.h"
+#include "../include/yds_windows_monitor.h"
+#include "../include/yds_windows_window.h"
 
 #include <shellscalingapi.h>
 
-ysWindowsWindowSystem::ysWindowsWindowSystem() : ysWindowSystem(Platform::Windows) {
+ysWindowsWindowSystem::ysWindowsWindowSystem()
+    : ysWindowSystem(Platform::Windows) {
     m_instance = NULL;
     m_oldCursor = NULL;
     m_oldCursorClip = RECT();
 }
 
-ysWindowsWindowSystem::~ysWindowsWindowSystem() {
-    /* void */
+ysWindowsWindowSystem::~ysWindowsWindowSystem() { /* void */
 }
 
 ysError ysWindowsWindowSystem::NewWindow(ysWindow **newWindow) {
     YDS_ERROR_DECLARE("NewWindow");
 
-    if (newWindow == nullptr) return YDS_ERROR_RETURN(ysError::InvalidParameter);
+    if (newWindow == nullptr)
+        return YDS_ERROR_RETURN(ysError::InvalidParameter);
     if (m_instance == NULL) return YDS_ERROR_RETURN(ysError::NoContext);
 
-    ysWindowsWindow *windowsWindow = m_windowArray.NewGeneric<ysWindowsWindow>();
+    ysWindowsWindow *windowsWindow =
+            m_windowArray.NewGeneric<ysWindowsWindow>();
     windowsWindow->SetInstance(m_instance);
 
     *newWindow = static_cast<ysWindow *>(windowsWindow);
@@ -34,26 +36,43 @@ ysMonitor *ysWindowsWindowSystem::NewMonitor() {
     return m_monitorArray.NewGeneric<ysWindowsMonitor>();
 }
 
-BOOL CALLBACK MonitorEnum(HMONITOR hMonitor, HDC hdcMonitor, LPRECT lprcMonitor, LPARAM dwData) {
-    ysWindowSystem *windowSystem = (ysWindowSystem *)dwData;
-    ysMonitor *newMonitor = windowSystem->NewMonitor();
+ysMonitor *ysWindowsWindowSystem::MonitorFromWindow(ysWindow *window) {
+    this->SurveyMonitors();
+
+    ysWindowsWindow *windowsWindow = static_cast<ysWindowsWindow *>(window);
+    HMONITOR monitorHandle = ::MonitorFromWindow(
+            windowsWindow->GetWindowHandle(), MONITOR_DEFAULTTONEAREST);
+    return FindMonitorFromHandle(monitorHandle);
+}
+
+BOOL CALLBACK MonitorEnum(HMONITOR hMonitor, HDC hdcMonitor, LPRECT lprcMonitor,
+                          LPARAM dwData) {
+    ysWindowsWindowSystem *windowSystem =
+            reinterpret_cast<ysWindowsWindowSystem *>(dwData);
+    ysMonitor *monitorObject = windowSystem->FindMonitorFromHandle(hMonitor);
+
+    if (monitorObject == nullptr) {
+        monitorObject = windowSystem->NewMonitor();
+    }
 
     MONITORINFOEX info;
     info.cbSize = sizeof(MONITORINFOEX);
     GetMonitorInfo(hMonitor, &info);
 
-    newMonitor->SetOrigin(lprcMonitor->left, lprcMonitor->top);
-    newMonitor->SetLogicalSize(lprcMonitor->right - lprcMonitor->left,
-        lprcMonitor->bottom - lprcMonitor->top);
-    newMonitor->SetDeviceName(info.szDevice);
+    static_cast<ysWindowsMonitor *>(monitorObject)->Initialize(hMonitor);
+    monitorObject->SetOrigin(lprcMonitor->left, lprcMonitor->top);
+    monitorObject->SetLogicalSize(lprcMonitor->right - lprcMonitor->left,
+                                  lprcMonitor->bottom - lprcMonitor->top);
+    monitorObject->SetDeviceName(info.szDevice);
 
     DEVMODE devMode;
     devMode.dmSize = sizeof(devMode);
     devMode.dmDriverExtra = 0;
     EnumDisplaySettings(info.szDevice, ENUM_CURRENT_SETTINGS, &devMode);
-    
-    newMonitor->SetPhysicalSize(devMode.dmPelsWidth, devMode.dmPelsHeight);
-    newMonitor->CalculateScaling();
+
+    monitorObject->SetPhysicalSize(devMode.dmPelsWidth, devMode.dmPelsHeight);
+    monitorObject->CalculateScaling();
+    monitorObject->SetConnected(true);
 
     return TRUE;
 }
@@ -62,7 +81,15 @@ ysError ysWindowsWindowSystem::SurveyMonitors() {
     YDS_ERROR_DECLARE("SurveyMonitors");
     YDS_NESTED_ERROR_CALL(ysWindowSystem::SurveyMonitors());
 
-    const BOOL result = EnumDisplayMonitors(NULL, NULL, MonitorEnum, (LPARAM)this);
+    {
+        const int monitorCount = m_monitorArray.GetNumObjects();
+        for (int i = 0; i < monitorCount; ++i) {
+            m_monitorArray.Get(i)->SetConnected(false);
+        }
+    }
+
+    const BOOL result =
+            EnumDisplayMonitors(NULL, NULL, MonitorEnum, (LPARAM) this);
     if (result == FALSE) {
         return YDS_ERROR_RETURN(ysError::CouldNotEnumerateMonitors);
     }
@@ -81,7 +108,8 @@ void ysWindowsWindowSystem::ProcessMessages() {
 
 ysWindow *ysWindowsWindowSystem::FindWindowFromHandle(HWND handle) {
     for (int i = 0; i < m_windowArray.GetNumObjects(); i++) {
-        ysWindowsWindow *windowsWindow = static_cast<ysWindowsWindow *>(m_windowArray.Get(i));
+        ysWindowsWindow *windowsWindow =
+                static_cast<ysWindowsWindow *>(m_windowArray.Get(i));
 
         if (windowsWindow->GetWindowHandle() == handle) return windowsWindow;
     }
@@ -97,13 +125,16 @@ void ysWindowsWindowSystem::ConnectInstance(void *genericInstanceConnection) {
     m_instance = *instance;
 }
 
-LRESULT WINAPI ysWindowsWindowSystem::WinProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
+LRESULT WINAPI ysWindowsWindowSystem::WinProc(HWND hWnd, UINT msg,
+                                              WPARAM wParam, LPARAM lParam) {
     const DWORD id = GetCurrentThreadId();
 
     ysWindowSystem *system = ysWindowSystem::Get();
 
-    ysWindowsWindowSystem *windowsSystem = static_cast<ysWindowsWindowSystem *>(system);
-    ysWindowsInputSystem *inputSystem = static_cast<ysWindowsInputSystem *>(windowsSystem->GetInputSystem());
+    ysWindowsWindowSystem *windowsSystem =
+            static_cast<ysWindowsWindowSystem *>(system);
+    ysWindowsInputSystem *inputSystem = static_cast<ysWindowsInputSystem *>(
+            windowsSystem->GetInputSystem());
 
     ysWindow *target = windowsSystem->FindWindowFromHandle(hWnd);
 
@@ -163,10 +194,18 @@ LRESULT WINAPI ysWindowsWindowSystem::WinProc(HWND hWnd, UINT msg, WPARAM wParam
                 } else {
                     return 0;
                 }
+            case WM_SETCURSOR:
+                if (LOWORD(lParam) == HTCLIENT) {
+                    system->SetCursor(system->GetCursor());
+                    return TRUE;
+                } else {
+                    return 0;
+                }
         }
 
         if (inputSystem != nullptr) {
-            if (inputSystem->IsGlobalInputEnabled() || target->IsActive()) {
+            /* if (inputSystem->IsGlobalInputEnabled() || target->IsActive()) */
+            {
                 switch (msg) {
                     case WM_KEYDOWN:
                     case WM_KEYUP:
@@ -186,8 +225,7 @@ LRESULT WINAPI ysWindowsWindowSystem::WinProc(HWND hWnd, UINT msg, WPARAM wParam
                         return inputSystem->OnOsMouseButtonUp(
                                 ysMouse::Button::Left);
                     case WM_MOUSEWHEEL:
-                        return inputSystem->OnOsMouseWheel(
-                                lParam, wParam);
+                        return inputSystem->OnOsMouseWheel(lParam, wParam);
                     case WM_MOUSEMOVE:
                         return inputSystem->OnOsMouseMove(lParam, wParam);
                 }
@@ -240,7 +278,7 @@ void ysWindowsWindowSystem::SetCursorPosition(int x, int y) {
 void ysWindowsWindowSystem::SetCursorVisible(bool visible) {
     ysWindowSystem::SetCursorVisible(visible);
 
-    m_oldCursor = GetCursor();
+    m_oldCursor = ::GetCursor();
 
     int displayCount = ShowCursor(visible ? TRUE : FALSE);
 
@@ -249,16 +287,41 @@ void ysWindowsWindowSystem::SetCursorVisible(bool visible) {
     // to be displayed. The code below ensures that the cursor will be
     // displayed or hidden by forcing the final value of the counter
     if (visible) {
-        while (displayCount < 0) {
-            displayCount = ShowCursor(TRUE);
-        }
-    }
-    else {
-        while (displayCount >= 0) {
-            displayCount = ShowCursor(FALSE);
-        }
+        while (displayCount < 0) { displayCount = ShowCursor(TRUE); }
+    } else {
+        while (displayCount >= 0) { displayCount = ShowCursor(FALSE); }
     }
 
     // This step may not be necessary but doesn't hurt anything
-    if (visible) SetCursor(m_oldCursor);
+    if (visible) ::SetCursor(m_oldCursor);
+}
+
+void ysWindowsWindowSystem::SetCursor(Cursor cursor) {
+    ysWindowSystem::SetCursor(cursor);
+
+    LPCTSTR winapiCursor = IDC_ARROW;
+    switch (cursor) {
+        case Cursor::Hand:
+            winapiCursor = IDC_HAND;
+            break;
+        case Cursor::Pan:
+            winapiCursor = IDC_SIZEALL;
+            break;
+        case Cursor::Arrow:
+            winapiCursor = IDC_ARROW;
+            break;
+    }
+
+    ::SetCursor(LoadCursor(NULL, winapiCursor));
+}
+
+ysMonitor *ysWindowsWindowSystem::FindMonitorFromHandle(HMONITOR handle) {
+    const int monitorCount = m_monitorArray.GetNumObjects();
+    for (int i = 0; i < monitorCount; ++i) {
+        ysWindowsMonitor *monitor =
+                static_cast<ysWindowsMonitor *>(m_monitorArray.Get(i));
+        if (monitor->Handle() == handle) { return monitor; }
+    }
+
+    return nullptr;
 }

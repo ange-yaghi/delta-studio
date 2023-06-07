@@ -2,14 +2,14 @@
 
 #include <boost/filesystem.hpp>
 
-dbasic::Path::Path(const std::string &path) {
+dbasic::Path::Path(const std::wstring &path) {
     m_path = nullptr;
     SetPath(path);
 }
 
-dbasic::Path::Path(const char *path) {
+dbasic::Path::Path(const wchar_t *path) {
     m_path = nullptr;
-    SetPath(std::string(path));
+    SetPath(std::wstring(path));
 }
 
 dbasic::Path::Path(const Path &path) {
@@ -30,11 +30,11 @@ dbasic::Path::~Path() {
     delete m_path;
 }
 
-std::string dbasic::Path::ToString() const {
-    return m_path->string();
+std::wstring dbasic::Path::ToString() const {
+    return m_path->wstring();
 }
 
-void dbasic::Path::SetPath(const std::string &path) {
+void dbasic::Path::SetPath(const std::wstring &path) {
     if (m_path != nullptr) delete m_path;
 
     m_path = new boost::filesystem::path(path);
@@ -62,12 +62,12 @@ const dbasic::Path &dbasic::Path::operator=(const Path &b) {
     return *this;
 }
 
-std::string dbasic::Path::GetExtension() const {
-    return m_path->extension().string();
+std::wstring dbasic::Path::GetExtension() const {
+    return m_path->extension().wstring();
 }
 
-std::string dbasic::Path::GetStem() const {
-    return m_path->stem().string();
+std::wstring dbasic::Path::GetStem() const {
+    return m_path->stem().wstring();
 }
 
 dbasic::Path dbasic::Path::GetAbsolute() const {

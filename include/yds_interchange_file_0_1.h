@@ -75,7 +75,7 @@ public:
     ysInterchangeFile0_1();
     ~ysInterchangeFile0_1();
 
-    ysError Open(const char *fname);
+    ysError Open(const wchar_t *fname);
     ysError Close();
 
     unsigned int GetMinorVersion() const { return m_minorVersion; }

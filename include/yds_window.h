@@ -33,8 +33,8 @@ public:
     virtual ~ysWindow();
 
     /* Interface */
-    virtual ysError InitializeWindow(ysWindow *parent, const char *title, WindowStyle style, int x, int y, int width, int height, ysMonitor *monitor);
-    virtual ysError InitializeWindow(ysWindow *parent, const char *title, WindowStyle style, ysMonitor *monitor);
+    virtual ysError InitializeWindow(ysWindow *parent, const wchar_t *title, WindowStyle style, int x, int y, int width, int height, ysMonitor *monitor);
+    virtual ysError InitializeWindow(ysWindow *parent, const wchar_t *title, WindowStyle style, ysMonitor *monitor);
 
     virtual void Close() { SetState(WindowState::Closed); }
     virtual void SetState(WindowState state = WindowState::Visible) { m_windowState = state; }
@@ -46,6 +46,8 @@ public:
     virtual int GetScreenWidth() const { return m_width; }
     virtual int GetScreenHeight() const { return m_height; }
     WindowStyle GetWindowStyle() const { return m_windowStyle; }
+
+    void SetMonitor(ysMonitor *monitor) { m_monitor = monitor; }
     ysMonitor *GetMonitor() const { return m_monitor; }
 
     const int GetGameWidth() const;
@@ -64,7 +66,7 @@ public:
     virtual void SetScreenSize(int width, int height);
     virtual void SetWindowSize(int width, int height);
     virtual void SetLocation(int x, int y);
-    virtual void SetTitle(const char *title);
+    virtual void SetTitle(const wchar_t *title);
 
     virtual void StartResizing() { m_resizing = true; }
     virtual void EndResizing() { m_resizing = false; }
@@ -112,7 +114,7 @@ protected:
     int m_locationy;
 
     // Title
-    char m_title[MAX_NAME_LENGTH];
+    wchar_t m_title[MAX_NAME_LENGTH];
 
     // Current Window State
     WindowState m_windowState;

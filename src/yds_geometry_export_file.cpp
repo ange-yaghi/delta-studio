@@ -10,7 +10,7 @@ ysGeometryExportFile::~ysGeometryExportFile() {
     /* void */
 }
 
-ysError ysGeometryExportFile::Open(const char *fname) {
+ysError ysGeometryExportFile::Open(const wchar_t *fname) {
     YDS_ERROR_DECLARE("Open");
 
     m_file.open(fname, std::ios::binary);

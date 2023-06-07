@@ -14,7 +14,7 @@ public:
     ysTexture(DeviceAPI API);
     virtual ~ysTexture();
 
-    const char *GetFilename() { return m_filename; }
+    const wchar_t *GetFilename() { return m_filename; }
     int GetWidth() const { return m_width; }
     int GetHeight() const { return m_height; }
 
@@ -22,7 +22,7 @@ protected:
     int m_width;
     int m_height;
 
-    char m_filename[MAX_FILENAME_LENGTH + 1];
+    wchar_t m_filename[MAX_FILENAME_LENGTH + 1];
 };
 
 #endif /* YDS_TEXTURE_H */

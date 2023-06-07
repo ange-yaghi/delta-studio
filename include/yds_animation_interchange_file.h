@@ -28,7 +28,7 @@ public:
     ysAnimationInterchangeFile();
     virtual ~ysAnimationInterchangeFile();
 
-    ysError Open(const char *fname);
+    ysError Open(const wchar_t *fname);
     ysError Close();
 
     unsigned int GetMinorVersion() const { return m_minorVersion; }

@@ -28,7 +28,7 @@ void delta_demo::EmptyWindowDemo::Initialize(void *instance, ysContextObject::De
 
     result = m_window->InitializeWindow(
         nullptr,
-        "01-Empty Window Demo",
+        L"01-Empty Window Demo",
         ysWindow::WindowStyle::Windowed,
         mainMonitor);
     if (result != ysError::None) return;

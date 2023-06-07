@@ -34,7 +34,7 @@ ysAudioFile::~ysAudioFile() {
     if (m_buffer) delete[] m_buffer;
 }
 
-ysAudioFile::Error ysAudioFile::OpenFile(const char *fname) {
+ysAudioFile::Error ysAudioFile::OpenFile(const wchar_t *fname) {
     if (m_fileOpen) return Error::FileAlreadyOpen;
 
     return Error::None;

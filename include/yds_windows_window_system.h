@@ -11,9 +11,10 @@ public:
     ysWindowsWindowSystem();
     ~ysWindowsWindowSystem();
 
-    virtual ysError NewWindow(ysWindow **newWindow);
+    virtual ysError NewWindow(ysWindow **newWindow) override;
 
-    virtual ysMonitor *NewMonitor();
+    virtual ysMonitor *NewMonitor() override;
+    virtual ysMonitor *MonitorFromWindow(ysWindow *window) override;
     virtual ysError SurveyMonitors() override;
 
     virtual void ProcessMessages();
@@ -29,6 +30,10 @@ public:
 
     virtual void SetCursorPosition(int x, int y);
     virtual void SetCursorVisible(bool visible);
+
+    virtual void SetCursor(Cursor cursor);
+
+    ysMonitor *FindMonitorFromHandle(HMONITOR handle);
 
 protected:
     HINSTANCE m_instance;

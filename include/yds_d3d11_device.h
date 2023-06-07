@@ -60,8 +60,8 @@ public:
     virtual ysError DestroyGPUBuffer(ysGPUBuffer *&buffer);
 
     // Shaders
-    virtual ysError CreateVertexShader(ysShader **newShader, const char *shaderFilename, const char *shaderName);
-    virtual ysError CreatePixelShader(ysShader **newShader, const char *shaderFilename, const char *shaderName);
+    virtual ysError CreateVertexShader(ysShader **newShader, const wchar_t *shaderFilename, const char *shaderName);
+    virtual ysError CreatePixelShader(ysShader **newShader, const wchar_t *shaderFilename, const char *shaderName);
     virtual ysError DestroyShader(ysShader *&shader);
 
     // Shader Programs
@@ -77,13 +77,13 @@ public:
     virtual ysError DestroyInputLayout(ysInputLayout *&layout);
 
     // Textures 
-    virtual ysError CreateTexture(ysTexture **texture, const char *fname);
-    virtual ysError CreateTexture(ysTexture **texture, int width, int height, const unsigned char *buffer);
-    virtual ysError CreateAlphaTexture(ysTexture **texture, int width, int height, const unsigned char *buffer);
-    virtual ysError UpdateTexture(ysTexture *texture, const unsigned char *buffer);
-    virtual ysError DestroyTexture(ysTexture *&texture);
-    virtual ysError UseTexture(ysTexture *texture, int slot);
-    virtual ysError UseRenderTargetAsTexture(ysRenderTarget *renderTarget, int slot);
+    virtual ysError CreateTexture(ysTexture **texture, const wchar_t *fname) override;
+    virtual ysError CreateTexture(ysTexture **texture, int width, int height, const unsigned char *buffer) override;
+    virtual ysError CreateAlphaTexture(ysTexture **texture, int width, int height, const unsigned char *buffer) override;
+    virtual ysError UpdateTexture(ysTexture *texture, const unsigned char *buffer) override;
+    virtual ysError DestroyTexture(ysTexture *&texture) override;
+    virtual ysError UseTexture(ysTexture *texture, int slot) override;
+    virtual ysError UseRenderTargetAsTexture(ysRenderTarget *renderTarget, int slot) override;
 
     virtual void Draw(int numFaces, int indexOffset, int vertexOffset);
 

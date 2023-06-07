@@ -17,8 +17,8 @@ public:
 
     // Overrides
 
-    virtual ysError InitializeWindow(ysWindow *parent, const char *title, WindowStyle style, int x, int y, int width, int height, ysMonitor *monitor);
-    virtual ysError InitializeWindow(ysWindow *parent, const char *title, WindowStyle style, ysMonitor *monitor);
+    virtual ysError InitializeWindow(ysWindow *parent, const wchar_t *title, WindowStyle style, int x, int y, int width, int height, ysMonitor *monitor) override;
+    virtual ysError InitializeWindow(ysWindow *parent, const wchar_t *title, WindowStyle style, ysMonitor *monitor) override;
 
     virtual bool SetWindowStyle(WindowStyle style);
 
@@ -44,12 +44,12 @@ public:
 protected:
     // Abstraction Layer
 
-    virtual void Close();
-    virtual void SetTitle(const char *title);
-    virtual void SetState(WindowState state = WindowState::Visible);
+    virtual void Close() override;
+    virtual void SetTitle(const wchar_t *title) override;
+    virtual void SetState(WindowState state = WindowState::Visible) override;
 
-    virtual void AL_SetSize(int width, int height);
-    virtual void AL_SetLocation(int x, int y);
+    virtual void AL_SetSize(int width, int height) override;
+    virtual void AL_SetLocation(int x, int y) override;
 
 protected:
     ATOM RegisterWindowsClass();

@@ -345,45 +345,45 @@ ysError dbasic::DeltaEngine::InitializeGeometry() {
     return YDS_ERROR_RETURN(ysError::None);
 }
 
-ysError dbasic::DeltaEngine::InitializeShaders(const char *shaderDirectory) {
+ysError dbasic::DeltaEngine::InitializeShaders(const wchar_t *shaderDirectory) {
     YDS_ERROR_DECLARE("InitializeShaders");
 
-    char buffer[256];
+    wchar_t buffer[MAX_PATH];
 
     if (m_device->GetAPI() == ysContextObject::DeviceAPI::DirectX11 ||
         m_device->GetAPI() == ysContextObject::DeviceAPI::DirectX10)
     {
-        sprintf_s(buffer, "%s%s", shaderDirectory, "/hlsl/delta_engine_shader.fx");
+        swprintf_s(buffer, L"%s%s", shaderDirectory, L"/hlsl/delta_engine_shader.fx");
         YDS_NESTED_ERROR_CALL(m_device->CreateVertexShader(&m_vertexShader, buffer, "VS_STANDARD")); 
         YDS_NESTED_ERROR_CALL(m_device->CreateVertexShader(&m_vertexSkinnedShader, buffer, "VS_SKINNED"));
         YDS_NESTED_ERROR_CALL(m_device->CreatePixelShader(&m_pixelShader, buffer, "PS"));
 
-        sprintf_s(buffer, "%s%s", shaderDirectory, "/hlsl/delta_console_shader.fx");
+        swprintf_s(buffer, L"%s%s", shaderDirectory, L"/hlsl/delta_console_shader.fx");
         YDS_NESTED_ERROR_CALL(m_device->CreateVertexShader(&m_consoleVertexShader, buffer, "VS_CONSOLE"));
         YDS_NESTED_ERROR_CALL(m_device->CreatePixelShader(&m_consolePixelShader, buffer, "PS_CONSOLE"));
 
-        sprintf_s(buffer, "%s%s", shaderDirectory, "/hlsl/delta_saq_shader.fx");
+        swprintf_s(buffer, L"%s%s", shaderDirectory, L"/hlsl/delta_saq_shader.fx");
         YDS_NESTED_ERROR_CALL(m_device->CreateVertexShader(&m_saqVertexShader, buffer, "VS_SAQ"));
         YDS_NESTED_ERROR_CALL(m_device->CreatePixelShader(&m_saqPixelShader, buffer, "PS_SAQ"));
     }
     else if (m_device->GetAPI() == ysContextObject::DeviceAPI::OpenGL4_0) {
-        sprintf_s(buffer, "%s%s", shaderDirectory, "/glsl/delta_engine_shader.vert");
+        swprintf_s(buffer, L"%s%s", shaderDirectory, L"/glsl/delta_engine_shader.vert");
         YDS_NESTED_ERROR_CALL(m_device->CreateVertexShader(&m_vertexShader, buffer, "VS"));
         YDS_NESTED_ERROR_CALL(m_device->CreateVertexShader(&m_vertexSkinnedShader, buffer, "VS"));
 
-        sprintf_s(buffer, "%s%s", shaderDirectory, "/glsl/delta_engine_shader.frag");
+        swprintf_s(buffer, L"%s%s", shaderDirectory, L"/glsl/delta_engine_shader.frag");
         YDS_NESTED_ERROR_CALL(m_device->CreatePixelShader(&m_pixelShader, buffer, "PS"));
 
-        sprintf_s(buffer, "%s%s", shaderDirectory, "/glsl/delta_console_shader.vert");
+        swprintf_s(buffer, L"%s%s", shaderDirectory, L"/glsl/delta_console_shader.vert");
         YDS_NESTED_ERROR_CALL(m_device->CreateVertexShader(&m_consoleVertexShader, buffer, "VS"));
 
-        sprintf_s(buffer, "%s%s", shaderDirectory, "/glsl/delta_console_shader.frag");
+        swprintf_s(buffer, L"%s%s", shaderDirectory, L"/glsl/delta_console_shader.frag");
         YDS_NESTED_ERROR_CALL(m_device->CreatePixelShader(&m_consolePixelShader, buffer, "PS"));
 
-        sprintf_s(buffer, "%s%s", shaderDirectory, "/glsl/delta_saq_shader.vert");
+        swprintf_s(buffer, L"%s%s", shaderDirectory, L"/glsl/delta_saq_shader.vert");
         YDS_NESTED_ERROR_CALL(m_device->CreateVertexShader(&m_saqVertexShader, buffer, "VS"));
 
-        sprintf_s(buffer, "%s%s", shaderDirectory, "/glsl/delta_saq_shader.frag");
+        swprintf_s(buffer, L"%s%s", shaderDirectory, L"/glsl/delta_saq_shader.frag");
         YDS_NESTED_ERROR_CALL(m_device->CreatePixelShader(&m_saqPixelShader, buffer, "PS"));
     }
 
@@ -429,17 +429,17 @@ ysError dbasic::DeltaEngine::InitializeShaders(const char *shaderDirectory) {
     return YDS_ERROR_RETURN(ysError::None);
 }
 
-ysError dbasic::DeltaEngine::InitializeBreakdownTimer(const char *loggingDirectory) {
+ysError dbasic::DeltaEngine::InitializeBreakdownTimer(const wchar_t *loggingDirectory) {
     YDS_ERROR_DECLARE("InitializeBreakdownTimer");
 
     ysBreakdownTimerChannel *full = m_breakdownTimer.CreateChannel(FrameBreakdownFull);
     ysBreakdownTimerChannel *scene = m_breakdownTimer.CreateChannel(FrameBreakdownRenderScene);
 
-    std::string logFile = loggingDirectory;
-    logFile += "/frame_breakdown_log.csv";
+    std::wstring logFile = loggingDirectory;
+    logFile += L"/frame_breakdown_log.csv";
 
 #ifdef _DEBUG
-    m_breakdownTimer.SetEnabled(true);
+    m_breakdownTimer.SetEnabled(false);
 #else
     m_breakdownTimer.SetEnabled(false);
 #endif
@@ -449,7 +449,7 @@ ysError dbasic::DeltaEngine::InitializeBreakdownTimer(const char *loggingDirecto
     return YDS_ERROR_RETURN(ysError::None);
 }
 
-ysError dbasic::DeltaEngine::LoadTexture(ysTexture **image, const char *fname) {
+ysError dbasic::DeltaEngine::LoadTexture(ysTexture **image, const wchar_t *fname) {
     YDS_ERROR_DECLARE("LoadTexture");
 
     YDS_NESTED_ERROR_CALL(m_device->CreateTexture(image, fname));
@@ -457,13 +457,13 @@ ysError dbasic::DeltaEngine::LoadTexture(ysTexture **image, const char *fname) {
     return YDS_ERROR_RETURN(ysError::None);
 }
 
-ysError dbasic::DeltaEngine::LoadAnimation(Animation **animation, const char *path, int start, int end) {
+ysError dbasic::DeltaEngine::LoadAnimation(Animation **animation, const wchar_t *path, int start, int end) {
     YDS_ERROR_DECLARE("LoadAnimation");
 
     ysTexture **list = new ysTexture *[end - start + 1];
-    char buffer[256];
+    wchar_t buffer[256];
     for (int i = start; i <= end; ++i) {
-        sprintf_s(buffer, 256, "%s/%.4i.png", path, i);
+        swprintf_s(buffer, 256, L"%s/%.4i.png", path, i);
 
         YDS_NESTED_ERROR_CALL(m_device->CreateTexture(&list[i - start], buffer));
     }
@@ -478,14 +478,14 @@ ysError dbasic::DeltaEngine::LoadAnimation(Animation **animation, const char *pa
     return YDS_ERROR_RETURN(ysError::None);
 }
 
-ysError dbasic::DeltaEngine::LoadFont(Font **font, const char *path, int size, int fontSize) {
+ysError dbasic::DeltaEngine::LoadFont(Font **font, const wchar_t *path, int size, int fontSize) {
     YDS_ERROR_DECLARE("LoadFont");
 
     unsigned char *ttfBuffer = new unsigned char[1 << 20];
     unsigned char *bitmapData = new unsigned char[size * size];
 
     FILE *f = nullptr;
-    fopen_s(&f, path, "rb");
+    _wfopen_s(&f, path, L"rb");
 
     if (f == nullptr) {
         return YDS_ERROR_RETURN(ysError::CouldNotOpenFile);

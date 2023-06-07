@@ -150,10 +150,10 @@ public:
     /* Shaders */
 
     // Create a vertex shader from a file
-    virtual ysError CreateVertexShader(ysShader **newShader, const char *shaderFilename, const char *shaderName) = 0;
+    virtual ysError CreateVertexShader(ysShader **newShader, const wchar_t *shaderFilename, const char *shaderName) = 0;
 
     // Create a pixel shader from a file
-    virtual ysError CreatePixelShader(ysShader **newShader, const char *shaderFilename, const char *shaderName) = 0;
+    virtual ysError CreatePixelShader(ysShader **newShader, const wchar_t *shaderFilename, const char *shaderName) = 0;
 
     // Destroy a shader
     virtual ysError DestroyShader(ysShader *&shader);
@@ -192,7 +192,7 @@ public:
     /* Textures */
 
     // Create a texture from a file
-    virtual ysError CreateTexture(ysTexture **texture, const char *fname) = 0;
+    virtual ysError CreateTexture(ysTexture **texture, const wchar_t *fname) = 0;
 
     // Create an rgb texture from an in-memory buffer
     virtual ysError CreateTexture(ysTexture **texture, int width, int height, const unsigned char *buffer) = 0;

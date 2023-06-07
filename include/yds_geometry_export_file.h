@@ -60,7 +60,7 @@ public:
     ysGeometryExportFile();
     ~ysGeometryExportFile();
 
-    ysError Open(const char *fname);
+    ysError Open(const wchar_t *fname);
     void Close();
 
     ysError WriteCustomData(void *data, int size);

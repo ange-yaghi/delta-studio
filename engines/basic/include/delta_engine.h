@@ -41,12 +41,12 @@ namespace dbasic {
         };
 
         struct GameEngineSettings {
-            const char *WindowTitle = "Delta_GameWindow";
+            const wchar_t *WindowTitle = L"Delta_GameWindow";
             void *Instance = nullptr;
             ysWindow::WindowStyle WindowStyle = ysWindow::WindowStyle::Windowed;
             ysContextObject::DeviceAPI API = ysContextObject::DeviceAPI::DirectX11;
-            const char *ShaderDirectory = "../DeltaEngineTullahoma/Shaders/";
-            const char *LoggingDirectory = "";
+            const wchar_t *ShaderDirectory = L"../DeltaEngineTullahoma/Shaders/";
+            const wchar_t *LoggingDirectory = L"";
             bool DepthBuffer = true;
             bool FrameLogging = false;
             int WindowWidth = 1920;
@@ -86,9 +86,9 @@ namespace dbasic {
         ysError DrawGeneric(
             StageEnableFlags flags, ysGPUBuffer *indexBuffer, ysGPUBuffer *vertexBuffer, int vertexSize,
             int baseIndex, int baseVertex, int faceCount, bool depthTest = true, int layer = 0);
-        ysError LoadTexture(ysTexture **image, const char *fname);
-        ysError LoadAnimation(Animation **animation, const char *path, int start, int end);
-        ysError LoadFont(Font **font, const char *path, int size = 4096, int fontSize = 64);
+        ysError LoadTexture(ysTexture **image, const wchar_t *fname);
+        ysError LoadAnimation(Animation **animation, const wchar_t *path, int start, int end);
+        ysError LoadFont(Font **font, const wchar_t *path, int size = 4096, int fontSize = 64);
 
         ysError PlayAudio(AudioAsset *audio);
 
@@ -222,9 +222,9 @@ namespace dbasic {
     protected:
         // Initialization Routines
         ysError InitializeGeometry();
-        ysError InitializeShaders(const char *shaderDirectory);
+        ysError InitializeShaders(const wchar_t *shaderDirectory);
 
-        ysError InitializeBreakdownTimer(const char *loggingDirectory);
+        ysError InitializeBreakdownTimer(const wchar_t *loggingDirectory);
 
     protected:
         // Drawing queues

@@ -8,6 +8,13 @@
 class ysInputSystem;
 
 class ysWindowSystem : public ysWindowSystemObject {
+public:
+    enum class Cursor {
+        Hand,
+        Pan,
+        Arrow
+    };
+
 protected:
     // Singelton interface (necessary for WndProc which is a global function)
     static ysWindowSystem *Get();
@@ -39,6 +46,7 @@ public:
     bool IsMouseVisible() const { return m_cursorVisible; };
 
     // Monitor Interface
+    virtual ysMonitor *MonitorFromWindow(ysWindow *window) = 0;
     virtual ysMonitor *NewMonitor() = 0;
     virtual ysError SurveyMonitors();
 
@@ -59,7 +67,12 @@ public:
 
     virtual void ConnectInstance(void *genericInstanceConnection) { (void)genericInstanceConnection; }
 
+    virtual void SetCursor(Cursor cursor);
+    inline Cursor GetCursor() const { return m_cursor; }
+
 protected:
+    Cursor m_cursor;
+
     ysDynamicArray<ysMonitor, 4> m_monitorArray;
     ysDynamicArray<ysWindow, 4> m_windowArray;
 

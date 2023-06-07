@@ -55,8 +55,8 @@ public:
     virtual ysError DestroyGPUBuffer(ysGPUBuffer *&buffer);
 
     // Shaders
-    virtual ysError CreateVertexShader(ysShader **newShader, const char *shaderFilename, const char *shaderName);
-    virtual ysError CreatePixelShader(ysShader **newShader, const char *shaderFilename, const char *shaderName);
+    virtual ysError CreateVertexShader(ysShader **newShader, const wchar_t *shaderFilename, const char *shaderName);
+    virtual ysError CreatePixelShader(ysShader **newShader, const wchar_t *shaderFilename, const char *shaderName);
     virtual ysError DestroyShader(ysShader *&shader);
 
     // Shader Programs
@@ -72,7 +72,7 @@ public:
     virtual ysError DestroyInputLayout(ysInputLayout *&layout);
 
     // Textures 
-    virtual ysError CreateTexture(ysTexture **texture, const char *fname);
+    virtual ysError CreateTexture(ysTexture **texture, const wchar_t *fname);
     virtual ysError CreateTexture(ysTexture **texture, int width, int height, const unsigned char *buffer);
     virtual ysError UpdateTexture(ysTexture *texture, const unsigned char *buffer);
     virtual ysError CreateAlphaTexture(ysTexture **texture, int width, int height, const unsigned char *buffer);

@@ -21,10 +21,10 @@ public:
 
 public:
     ysFile();
-    ysFile(const char *fname);
+    ysFile(const wchar_t *fname);
     ~ysFile();
 
-    ysError OpenFile(const char *fname, unsigned int filemode = FILE_READ);
+    ysError OpenFile(const wchar_t *fname, unsigned int filemode = FILE_READ);
     void CloseFile();
 
     int GetFileLength();
@@ -33,7 +33,7 @@ public:
     bool IsOpen() { return m_file.is_open(); }
 
 protected:
-    char m_name[MAX_FILE_NAME_LENGTH];
+    wchar_t m_name[MAX_FILE_NAME_LENGTH];
     unsigned int m_filemode;
 
     std::fstream m_file;

@@ -34,7 +34,7 @@ public:
     uint64_t GetFrameCount() const { return m_frameCount; }
 
     void SetEnabled(bool enabled) { m_enabled = enabled; }
-    void OpenLogFile(const std::string &filename);
+    void OpenLogFile(const std::wstring &filename);
     void WriteLastFrameToLogFile();
     void CloseLogFile();
 

@@ -31,8 +31,8 @@ namespace dbasic {
 
         ysError UpdateGeometry();
 
-        void SetDefaultFontDirectory(const std::string &s) { m_defaultFontDirectory = s; }
-        std::string GetDefaultFontDirectory() const { return m_defaultFontDirectory; }
+        void SetDefaultFontDirectory(const std::wstring &s) { m_defaultFontDirectory = s; }
+        std::wstring GetDefaultFontDirectory() const { return m_defaultFontDirectory; }
 
         void SetEngine(DeltaEngine *engine) { m_engine = engine; }
         DeltaEngine *GetEngine() const { return m_engine; }
@@ -44,7 +44,7 @@ namespace dbasic {
 
     protected:
         // Settings
-        std::string m_defaultFontDirectory;
+        std::wstring m_defaultFontDirectory;
 
     protected:
         // Window metrics

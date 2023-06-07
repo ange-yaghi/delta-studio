@@ -18,6 +18,9 @@
 #pragma warning(push, 0)
 #include <d3dcompiler.h>
 
+#include <codecvt>
+#include <locale>
+
 ysD3D10Device::ysD3D10Device() : ysDevice(DeviceAPI::DirectX10) {
     m_device = nullptr;
     m_DXGIFactory = nullptr;
@@ -765,7 +768,7 @@ ysError ysD3D10Device::DestroyGPUBuffer(ysGPUBuffer *&buffer) {
 
 // Shaders
 
-ysError ysD3D10Device::CreateVertexShader(ysShader **newShader, const char *shaderFilename, const char *shaderName) {
+ysError ysD3D10Device::CreateVertexShader(ysShader **newShader, const wchar_t *shaderFilename, const char *shaderName) {
     YDS_ERROR_DECLARE("CreateVertexShader");
 
     if (newShader == nullptr) return YDS_ERROR_RETURN(ysError::InvalidParameter);
@@ -778,19 +781,9 @@ ysError ysD3D10Device::CreateVertexShader(ysShader **newShader, const char *shad
     ID3D10Blob *error;
     ID3D10Blob *shaderBlob;
 
-    const int length =
-            MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, shaderFilename,
-                                           strlen(shaderFilename) + 1,
-                        nullptr, 0);
-    wchar_t *wShaderFilename = new wchar_t[length];
-    MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, shaderFilename,
-                        strlen(shaderFilename) + 1,
-                        wShaderFilename, length);
-
-    HRESULT result = D3DCompileFromFile(wShaderFilename, nullptr, nullptr, shaderName,
+    HRESULT result = D3DCompileFromFile(shaderFilename, nullptr, nullptr, shaderName,
                                 "vs_4_0", D3DCOMPILE_ENABLE_STRICTNESS, 0,
                                 &shaderBlob, &error);
-    delete[] wShaderFilename;
 
     if (FAILED(result)) {
         return YDS_ERROR_RETURN_MSG(ysError::VertexShaderCompilationError, (const char *)error->GetBufferPointer());
@@ -807,7 +800,7 @@ ysError ysD3D10Device::CreateVertexShader(ysShader **newShader, const char *shad
     newD3D10Shader->m_vertexShader = vertexShader;
     newD3D10Shader->m_shaderBlob = shaderBlob;
 
-    strcpy_s(newD3D10Shader->m_filename, 256, shaderFilename);
+    wcscpy_s(newD3D10Shader->m_filename, 256, shaderFilename);
     strcpy_s(newD3D10Shader->m_shaderName, 64, shaderName);
     newD3D10Shader->m_shaderType = ysShader::ShaderType::Vertex;
 
@@ -816,7 +809,7 @@ ysError ysD3D10Device::CreateVertexShader(ysShader **newShader, const char *shad
     return YDS_ERROR_RETURN(ysError::None);
 }
 
-ysError ysD3D10Device::CreatePixelShader(ysShader **newShader, const char *shaderFilename, const char *shaderName) {
+ysError ysD3D10Device::CreatePixelShader(ysShader **newShader, const wchar_t *shaderFilename, const char *shaderName) {
     YDS_ERROR_DECLARE("CreatePixelShader");
 
     if (newShader == nullptr) return YDS_ERROR_RETURN(ysError::InvalidParameter);
@@ -828,19 +821,10 @@ ysError ysD3D10Device::CreatePixelShader(ysShader **newShader, const char *shade
     ID3D10PixelShader *pixelShader;
     ID3D10Blob *error;
     ID3D10Blob *shaderBlob;
-
-    const int length =
-            MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, shaderFilename,
-                                strlen(shaderFilename) + 1, nullptr, 0);
-    wchar_t *wShaderFilename = new wchar_t[length];
-    MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, shaderFilename,
-                        strlen(shaderFilename) + 1,
-                        wShaderFilename, length);
     
     HRESULT result = D3DCompileFromFile(
-            wShaderFilename, nullptr, nullptr, shaderName, "ps_4_0",
+            shaderFilename, nullptr, nullptr, shaderName, "ps_4_0",
             D3DCOMPILE_ENABLE_STRICTNESS, 0, &shaderBlob, &error);
-    delete[] wShaderFilename;
 
     if (FAILED(result)) {
         return YDS_ERROR_RETURN_MSG(ysError::FragmentShaderCompilationError,
@@ -857,7 +841,7 @@ ysError ysD3D10Device::CreatePixelShader(ysShader **newShader, const char *shade
     newD3D10Shader->m_shaderBlob = shaderBlob;
     newD3D10Shader->m_pixelShader = pixelShader;
 
-    strcpy_s(newD3D10Shader->m_filename, 256, shaderFilename);
+    wcscpy_s(newD3D10Shader->m_filename, 256, shaderFilename);
     strcpy_s(newD3D10Shader->m_shaderName, 64, shaderName);
     newD3D10Shader->m_shaderType = ysShader::ShaderType::Pixel;
 
@@ -1049,7 +1033,7 @@ ysError ysD3D10Device::DestroyInputLayout(ysInputLayout *&layout) {
 }
 
 // Textures
-ysError ysD3D10Device::CreateTexture(ysTexture **newTexture, const char *fname) {
+ysError ysD3D10Device::CreateTexture(ysTexture **newTexture, const wchar_t *fname) {
     YDS_ERROR_DECLARE("CreateTexture");
 
     if (newTexture == nullptr) return YDS_ERROR_RETURN(ysError::InvalidParameter);
@@ -1062,7 +1046,8 @@ ysError ysD3D10Device::CreateTexture(ysTexture **newTexture, const char *fname) 
 
     D3D10_SHADER_RESOURCE_VIEW_DESC srvDesc;
 
-    SDL_Surface *pTexSurface = IMG_Load(fname);
+    std::wstring_convert<std::codecvt_utf8<wchar_t>> utf8_conv;
+    SDL_Surface *pTexSurface = IMG_Load(utf8_conv.to_bytes(std::wstring(fname)).c_str());
     if (pTexSurface == nullptr) {
         return YDS_ERROR_RETURN(ysError::CouldNotOpenTexture);
     }

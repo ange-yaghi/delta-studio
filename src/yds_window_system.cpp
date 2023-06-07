@@ -149,3 +149,7 @@ ysError ysWindowSystem::AssignInputSystem(ysInputSystem *system) {
 
     return YDS_ERROR_RETURN(ysError::None);
 }
+
+void ysWindowSystem::SetCursor(Cursor cursor) {
+    m_cursor = cursor;
+}

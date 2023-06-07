@@ -14,7 +14,7 @@ public:
     void SetOrigin(int x, int y);
     void SetLogicalSize(int w, int h);
     void SetPhysicalSize(int w, int h);
-    void SetDeviceName(const char *name);
+    void SetDeviceName(const wchar_t *name);
 
     int GetPhysicalWidth() const { return m_physicalWidth; }
     int GetPhysicalHeight() const { return m_physicalHeight; }
@@ -30,10 +30,12 @@ public:
     int GetOriginX() const { return m_originx; }
     int GetOriginY() const { return m_originy; }
 
-    const char *GetDeviceName() const { return m_deviceName; }
+    const wchar_t *GetDeviceName() const { return m_deviceName; }
+    bool IsConnected() const { return m_connected; }
+    void SetConnected(bool connected) { m_connected = connected; }
 
 protected:
-    char *m_deviceName;
+    wchar_t *m_deviceName;
     int m_maxDeviceNameLength;
 
     int m_originx;
@@ -47,6 +49,8 @@ protected:
 
     float m_horizontalScaling;
     float m_verticalScaling;
+
+    bool m_connected;
 };
 
 #endif /* YDS_MONITOR_H */

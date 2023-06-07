@@ -15,7 +15,7 @@ dbasic::Console::Console() {
     m_buffer = nullptr;
 
     m_engine = nullptr;
-    m_defaultFontDirectory = "";
+    m_defaultFontDirectory = L"";
 
     m_font = nullptr;
 }
@@ -27,7 +27,7 @@ dbasic::Console::~Console() {
 ysError dbasic::Console::Initialize() {
     YDS_ERROR_DECLARE("Initialize");
 
-    m_engine->LoadFont(&m_font, (m_defaultFontDirectory + "Silkscreen/slkscr.ttf").c_str());
+    m_engine->LoadFont(&m_font, (m_defaultFontDirectory + L"Silkscreen/slkscr.ttf").c_str());
     m_buffer = new char[BufferSize];
 
     Clear();

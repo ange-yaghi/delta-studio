@@ -88,23 +88,23 @@ dbasic::ModelAsset *dbasic::AssetManager::GetModelAsset(const char *name) {
     return nullptr;
 }
 
-ysError dbasic::AssetManager::CompileSceneFile(const char *fname, float scale, bool force) {
+ysError dbasic::AssetManager::CompileSceneFile(const wchar_t *fname, float scale, bool force) {
     YDS_ERROR_DECLARE("CompileSceneFile");
 
-    char total_path[512];
-    strcpy_s(total_path, 512, fname);
+    wchar_t total_path[512];
+    wcscpy_s(total_path, 512, fname);
 
     ysToolGeometryFile toolFile;
-    strcat_s(total_path, 512, ".ysc");
+    wcscat_s(total_path, 512, L".ysc");
     YDS_NESTED_ERROR_CALL(toolFile.Open(total_path));
 
-    strcpy_s(total_path, 512, fname);
-    strcat_s(total_path, 512, ".ysce");
+    wcscpy_s(total_path, 512, fname);
+    wcscat_s(total_path, 512, L".ysce");
 
     if (toolFile.GetCompilationStatus() == ysToolGeometryFile::CompilationStatus::Compiled && !force) {
         // Check if the file actually exists
-        struct stat buffer;
-        if (stat(total_path, &buffer) == 0) {
+        struct _stat buffer;
+        if (_wstat(total_path, &buffer) == 0) {
             YDS_NESTED_ERROR_CALL(toolFile.Close());
 
             // File already exists, no compilation required
@@ -169,23 +169,23 @@ ysError dbasic::AssetManager::CompileSceneFile(const char *fname, float scale, b
     return YDS_ERROR_RETURN(ysError::None);
 }
 
-ysError dbasic::AssetManager::CompileInterchangeFile(const char *fname, float scale, bool force) {
+ysError dbasic::AssetManager::CompileInterchangeFile(const wchar_t *fname, float scale, bool force) {
     YDS_ERROR_DECLARE("CompileInterchangeFile");
 
-    char completePath[512];
-    strcpy_s(completePath, 512, fname);
+    wchar_t completePath[512];
+    wcscpy_s(completePath, 512, fname);
 
     ysInterchangeFile0_1 toolFile;
-    strcat_s(completePath, 512, ".dia");
+    wcscat_s(completePath, 512, L".dia");
     YDS_NESTED_ERROR_CALL(toolFile.Open(completePath));
 
-    strcpy_s(completePath, 512, fname);
-    strcat_s(completePath, 512, ".ysce");
+    wcscpy_s(completePath, 512, fname);
+    wcscat_s(completePath, 512, L".ysce");
 
     if (toolFile.GetCompilationStatus() && !force) {
         // Check if the file actually exists
-        struct stat buffer;
-        if (stat(completePath, &buffer) == 0) {
+        struct _stat buffer;
+        if (_wstat(completePath, &buffer) == 0) {
             YDS_NESTED_ERROR_CALL(toolFile.Close());
 
             // File already exists, no compilation required
@@ -243,12 +243,12 @@ ysError dbasic::AssetManager::CompileInterchangeFile(const char *fname, float sc
     return YDS_ERROR_RETURN(ysError::None);
 }
 
-ysError dbasic::AssetManager::LoadSceneFile(const char *fname, bool placeInVram) {
+ysError dbasic::AssetManager::LoadSceneFile(const wchar_t *fname, bool placeInVram) {
     YDS_ERROR_DECLARE("LoadSceneFile");
 
-    char fullPath[512];
-    strcpy_s(fullPath, 512, fname);
-    strcat_s(fullPath, 512, ".ysce");
+    wchar_t fullPath[512];
+    wcscpy_s(fullPath, 512, fname);
+    wcscat_s(fullPath, 512, L".ysce");
 
     std::fstream file(fullPath, std::ios::in | std::ios::binary);
 
@@ -447,11 +447,11 @@ ysError dbasic::AssetManager::LoadSceneFile(const char *fname, bool placeInVram)
     return YDS_ERROR_RETURN(ysError::None);
 }
 
-ysError dbasic::AssetManager::CompileAnimationFileLegacy(const char *fname) {
+ysError dbasic::AssetManager::CompileAnimationFileLegacy(const wchar_t *fname) {
     YDS_ERROR_DECLARE("CompileAnimationFileLegacy");
 
-    char buffer[1024];
-    sprintf_s(buffer, 1024, "%s.daf", fname);
+    wchar_t buffer[1024];
+    swprintf_s(buffer, 1024, L"%s.daf", fname);
 
     ysToolAnimationFile animationFile;
 
@@ -473,7 +473,7 @@ ysError dbasic::AssetManager::CompileAnimationFileLegacy(const char *fname) {
 
     exportAnimation.LoadTimeTagData(timeTagData);
 
-    sprintf_s(buffer, 1024, "%s.dafc", fname);
+    swprintf_s(buffer, 1024, L"%s.dafc", fname);
 
     AnimationExportFile animationExportFile;
     animationExportFile.Open(buffer);
@@ -483,14 +483,14 @@ ysError dbasic::AssetManager::CompileAnimationFileLegacy(const char *fname) {
     return YDS_ERROR_RETURN(ysError::None);
 }
 
-ysError dbasic::AssetManager::LoadAnimationFileLegacy(const char *fname) {
+ysError dbasic::AssetManager::LoadAnimationFileLegacy(const wchar_t *fname) {
     YDS_ERROR_DECLARE("LoadAnimationFileLegacy");
 
     AnimationExportData *exportAnimationRead = m_animationExportData.New();
     AnimationExportFile animationExportFile;
 
-    char buffer[1024];
-    sprintf_s(buffer, 1024, "%s.dafc", fname);
+    wchar_t buffer[1024];
+    swprintf_s(buffer, 1024, L"%s.dafc", fname);
 
     animationExportFile.Open(buffer, AnimationExportFile::Mode::Read);
     animationExportFile.ReadObjectAnimationData(exportAnimationRead);
@@ -500,7 +500,7 @@ ysError dbasic::AssetManager::LoadAnimationFileLegacy(const char *fname) {
 }
 
 
-ysError dbasic::AssetManager::LoadAnimationFile(const char *fname) {
+ysError dbasic::AssetManager::LoadAnimationFile(const wchar_t *fname) {
     YDS_ERROR_DECLARE("LoadAnimationFile");
 
     ysAnimationInterchangeFile animationFile;
@@ -528,7 +528,7 @@ ysAnimationAction *dbasic::AssetManager::GetAction(const char *name) {
     return nullptr;
 }
 
-ysError dbasic::AssetManager::LoadTexture(const char *fname, const char *name) {
+ysError dbasic::AssetManager::LoadTexture(const wchar_t *fname, const char *name) {
     YDS_ERROR_DECLARE("LoadTexture");
 
     ysTexture *texture;
@@ -552,7 +552,7 @@ dbasic::TextureAsset *dbasic::AssetManager::GetTexture(const char *name) {
     return nullptr;
 }
 
-ysError dbasic::AssetManager::LoadAudioFile(const char *fname, const char *name) {
+ysError dbasic::AssetManager::LoadAudioFile(const wchar_t *fname, const char *name) {
     YDS_ERROR_DECLARE("LoadAudioFile");
 
     ysWindowsAudioWaveFile waveFile;

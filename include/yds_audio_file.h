@@ -37,7 +37,7 @@ public:
     ysAudioFile(Platform platform, AudioFormat format);
     ~ysAudioFile();
 
-    virtual Error OpenFile(const char *fname);
+    virtual Error OpenFile(const wchar_t *fname);
     Error FillBuffer(SampleOffset offset);
     virtual Error CloseFile();
 

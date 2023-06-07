@@ -193,11 +193,11 @@ ysError ysVulkanDevice::DestroyGPUBuffer(ysGPUBuffer *&buffer) {
     return ysError();
 }
 
-ysError ysVulkanDevice::CreateVertexShader(ysShader **newShader, const char *shaderFilename, const char *shaderName) {
+ysError ysVulkanDevice::CreateVertexShader(ysShader **newShader, const wchar_t *shaderFilename, const char *shaderName) {
     return ysError();
 }
 
-ysError ysVulkanDevice::CreatePixelShader(ysShader **newShader, const char *shaderFilename, const char *shaderName) {
+ysError ysVulkanDevice::CreatePixelShader(ysShader **newShader, const wchar_t *shaderFilename, const char *shaderName) {
     return ysError();
 }
 
@@ -237,7 +237,7 @@ ysError ysVulkanDevice::DestroyInputLayout(ysInputLayout *&layout) {
     return ysError();
 }
 
-ysError ysVulkanDevice::CreateTexture(ysTexture **texture, const char *fname) {
+ysError ysVulkanDevice::CreateTexture(ysTexture **texture, const wchar_t *fname) {
     return ysError();
 }
 
@@ -256,7 +256,7 @@ ysError ysVulkanDevice::CreateAlphaTexture(ysTexture **texture, int width, int h
     *texture = nullptr;
 
     ysVulkanTexture *newTexture = m_textures.NewGeneric<ysVulkanTexture>();
-    strcpy_s(newTexture->m_filename, 257, "");
+    wcscpy_s(newTexture->m_filename, 257, L"");
     newTexture->m_width = width;
     newTexture->m_height = height;
 

@@ -48,12 +48,12 @@ ysError ysOpenGLWindowsContext::CreateRenderingContext(ysOpenGLDevice *device, y
     wc.hCursor = LoadCursor(NULL, IDC_ARROW);
     wc.hbrBackground = (HBRUSH)GetStockObject(WHITE_BRUSH);
     wc.lpszMenuName = NULL;
-    wc.lpszClassName = "DUMMY_WINDOW";
+    wc.lpszClassName = L"DUMMY_WINDOW";
     wc.hIconSm = NULL;
 
     RegisterClassEx(&wc);
 
-    HWND dummyWnd = CreateWindow("DUMMY_WINDOW", "", 0, 0, 0, 0, 0, 0, 0, windowsWindow->GetInstance(), 0);
+    HWND dummyWnd = CreateWindow(L"DUMMY_WINDOW", L"", 0, 0, 0, 0, 0, 0, 0, windowsWindow->GetInstance(), 0);
     HDC dummyDeviceHandle = GetDC(dummyWnd);
 
     PIXELFORMATDESCRIPTOR pfd;

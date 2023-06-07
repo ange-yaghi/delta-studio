@@ -1,6 +1,7 @@
 #include "../include/yds_monitor.h"
 
 #include <cmath>
+#include <wchar.h>
 
 ysMonitor::ysMonitor() : ysWindowSystemObject("DISPLAY_MONITOR", Platform::Windows) {
     m_maxDeviceNameLength = 0;
@@ -14,6 +15,7 @@ ysMonitor::ysMonitor() : ysWindowSystemObject("DISPLAY_MONITOR", Platform::Windo
 
     m_logicalWidth = 0;
     m_logicalHeight = 0;
+    m_connected = false;
 }
 
 ysMonitor::ysMonitor(Platform platform) : ysWindowSystemObject("DISPLAY_MONITOR", platform) {
@@ -28,6 +30,7 @@ ysMonitor::ysMonitor(Platform platform) : ysWindowSystemObject("DISPLAY_MONITOR"
 
     m_logicalWidth = 0;
     m_logicalHeight = 0;
+    m_connected = false;
 }
 
 ysMonitor::~ysMonitor() {
@@ -36,7 +39,7 @@ ysMonitor::~ysMonitor() {
 
 void ysMonitor::InitializeDeviceName(int maxLength) {
     m_maxDeviceNameLength = maxLength;
-    m_deviceName = new char[maxLength];
+    m_deviceName = new wchar_t[maxLength];
 }
 
 void ysMonitor::SetOrigin(int x, int y) {
@@ -54,9 +57,9 @@ void ysMonitor::SetPhysicalSize(int w, int h) {
     m_physicalHeight = h;
 }
 
-void ysMonitor::SetDeviceName(const char *deviceName) {
+void ysMonitor::SetDeviceName(const wchar_t *deviceName) {
     //RaiseError(m_deviceName != NULL, "Monitor device name is not initialized.");
-    strcpy_s(m_deviceName, m_maxDeviceNameLength, deviceName);
+    wcscpy(m_deviceName, deviceName);
 }
 
 void ysMonitor::CalculateScaling() {

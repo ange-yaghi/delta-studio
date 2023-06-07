@@ -22,13 +22,13 @@ public:
     ysShader(DeviceAPI API);
     virtual ~ysShader();
 
-    const char *GetFilename() const { return m_filename; }
+    const wchar_t *GetFilename() const { return m_filename; }
     const char *GetShaderName() const { return m_shaderName; }
 
     ShaderType GetShaderType() const { return m_shaderType; }
 
 protected:
-    char m_filename[MaxShaderFilenameLength];
+    wchar_t m_filename[MaxShaderFilenameLength];
     char m_shaderName[MaxShaderNameLength];
 
     ShaderType m_shaderType;

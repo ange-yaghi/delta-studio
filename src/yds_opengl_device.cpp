@@ -15,6 +15,9 @@
 
 #include "../include/yds_file.h"
 
+#include <codecvt>
+#include <locale>
+
 ysOpenGLDevice::ysOpenGLDevice() : ysDevice(DeviceAPI::OpenGL4_0) {
     m_deviceCreated = false;
     m_realContext = nullptr;
@@ -655,7 +658,7 @@ ysError ysOpenGLDevice::EditBufferData(ysGPUBuffer *buffer, char *data) {
 }
 
 // Shaders
-ysError ysOpenGLDevice::CreateVertexShader(ysShader **newShader, const char *shaderFilename, const char *shaderName) {
+ysError ysOpenGLDevice::CreateVertexShader(ysShader **newShader, const wchar_t *shaderFilename, const char *shaderName) {
     YDS_ERROR_DECLARE("CreateVertexShader");
 
     if (newShader == nullptr) return YDS_ERROR_RETURN(ysError::InvalidParameter);
@@ -697,7 +700,7 @@ ysError ysOpenGLDevice::CreateVertexShader(ysShader **newShader, const char *sha
 
     ysOpenGLShader *newOpenGLShader = m_shaders.NewGeneric<ysOpenGLShader>();
     strcpy_s(newOpenGLShader->m_shaderName, 64, shaderName);
-    strcpy_s(newOpenGLShader->m_filename, 256, shaderFilename);
+    wcscpy_s(newOpenGLShader->m_filename, 256, shaderFilename);
     newOpenGLShader->m_shaderType = ysShader::ShaderType::Vertex;
     newOpenGLShader->m_handle = handle;
 
@@ -706,7 +709,7 @@ ysError ysOpenGLDevice::CreateVertexShader(ysShader **newShader, const char *sha
     return YDS_ERROR_RETURN(ysError::None);
 }
 
-ysError ysOpenGLDevice::CreatePixelShader(ysShader **newShader, const char *shaderFilename, const char *shaderName) {
+ysError ysOpenGLDevice::CreatePixelShader(ysShader **newShader, const wchar_t *shaderFilename, const char *shaderName) {
     YDS_ERROR_DECLARE("CreatePixelShader");
 
     if (newShader == nullptr) return YDS_ERROR_RETURN(ysError::InvalidParameter);
@@ -750,7 +753,7 @@ ysError ysOpenGLDevice::CreatePixelShader(ysShader **newShader, const char *shad
 
     ysOpenGLShader *newOpenGLShader = m_shaders.NewGeneric<ysOpenGLShader>();
     strcpy_s(newOpenGLShader->m_shaderName, 64, shaderName);
-    strcpy_s(newOpenGLShader->m_filename, 256, shaderFilename);
+    wcscpy_s(newOpenGLShader->m_filename, 256, shaderFilename);
     newOpenGLShader->m_shaderType = ysShader::ShaderType::Pixel;
     newOpenGLShader->m_handle = shaderHandle;
 
@@ -933,7 +936,7 @@ unsigned int ysOpenGLDevice::GetPixel(SDL_Surface *surface, int x, int y) {
     }
 }
 
-ysError ysOpenGLDevice::CreateTexture(ysTexture **texture, const char *fname) {
+ysError ysOpenGLDevice::CreateTexture(ysTexture **texture, const wchar_t *fname) {
     YDS_ERROR_DECLARE("CreateTexture");
 
     if (texture == nullptr) return YDS_ERROR_RETURN(ysError::InvalidParameter);
@@ -944,15 +947,15 @@ ysError ysOpenGLDevice::CreateTexture(ysTexture **texture, const char *fname) {
     bool useAlpha = true;
 
     // Use SDL to load the image
-    SDL_Surface *pTexSurface = IMG_Load(fname); 
-
+    std::wstring_convert<std::codecvt_utf8<wchar_t>> utf8_conv;
+    SDL_Surface *pTexSurface = IMG_Load(utf8_conv.to_bytes(std::wstring(fname)).c_str());
     if (pTexSurface == nullptr) {
         const char *err = IMG_GetError();
-        return YDS_ERROR_RETURN_MSG(ysError::CouldNotOpenFile, fname);
+        return YDS_ERROR_RETURN(ysError::CouldNotOpenFile);
     }
 
     ysOpenGLTexture *newTexture = m_textures.NewGeneric<ysOpenGLTexture>();
-    strcpy_s(newTexture->m_filename, 257, fname);
+    wcscpy_s(newTexture->m_filename, 257, fname);
 
     glGenTextures(1, &newTexture->m_handle);
     glBindTexture(GL_TEXTURE_2D, newTexture->m_handle);
@@ -1020,7 +1023,7 @@ ysError ysOpenGLDevice::CreateTexture(ysTexture **texture, int width, int height
     *texture = nullptr;
 
     ysOpenGLTexture *newTexture = m_textures.NewGeneric<ysOpenGLTexture>();
-    strcpy_s(newTexture->m_filename, 257, "");
+    wcscpy_s(newTexture->m_filename, 257, L"");
 
     glGenTextures(1, &newTexture->m_handle);
     glBindTexture(GL_TEXTURE_2D, newTexture->m_handle);
@@ -1050,7 +1053,7 @@ ysError ysOpenGLDevice::CreateAlphaTexture(ysTexture **texture, int width, int h
     *texture = nullptr;
 
     ysOpenGLTexture *newTexture = m_textures.NewGeneric<ysOpenGLTexture>();
-    strcpy_s(newTexture->m_filename, 257, "");
+    wcscpy_s(newTexture->m_filename, 257, L"");
 
     glGenTextures(1, &newTexture->m_handle);
     glBindTexture(GL_TEXTURE_2D, newTexture->m_handle);

@@ -9,7 +9,7 @@ dbasic::AnimationExportFile::~AnimationExportFile() {
     /* void */
 }
 
-ysError dbasic::AnimationExportFile::Open(const char *fname, Mode mode) {
+ysError dbasic::AnimationExportFile::Open(const wchar_t *fname, Mode mode) {
     YDS_ERROR_DECLARE("Open");
 
     if (mode != Mode::Write &&

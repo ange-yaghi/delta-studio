@@ -30,24 +30,24 @@ namespace dbasic {
 
         ysError Destroy();
 
-        ysError CompileSceneFile(const char *fname, float scale = 1.0f, bool force = false);
-        ysError CompileInterchangeFile(const char *fname, float scale = 1.0f, bool force = false);
-        ysError LoadSceneFile(const char *fname, bool placeInVram = true);
+        ysError CompileSceneFile(const wchar_t *fname, float scale = 1.0f, bool force = false);
+        ysError CompileInterchangeFile(const wchar_t *fname, float scale = 1.0f, bool force = false);
+        ysError LoadSceneFile(const wchar_t *fname, bool placeInVram = true);
 
-        ysError LoadAnimationFile(const char *fname);
+        ysError LoadAnimationFile(const wchar_t *fname);
         ysAnimationAction *GetAction(const char *name);
         int GetActionCount() const { return m_actions.GetNumObjects(); }
 
-        ysError LoadTexture(const char *fname, const char *name);
+        ysError LoadTexture(const wchar_t *fname, const char *name);
         TextureAsset *GetTexture(const char *name);
         int GetTextureCount() const { return m_textures.GetNumObjects(); }
 
-        ysError LoadAudioFile(const char *fname, const char *name);
+        ysError LoadAudioFile(const wchar_t *fname, const char *name);
         AudioAsset *GetAudioAsset(const char *name);
         int GetAudioAssetCount() const { return m_audioAssets.GetNumObjects(); }
 
-        ysError CompileAnimationFileLegacy(const char *fname);
-        ysError LoadAnimationFileLegacy(const char *fname);
+        ysError CompileAnimationFileLegacy(const wchar_t *fname);
+        ysError LoadAnimationFileLegacy(const wchar_t *fname);
 
         Material *NewMaterial();
         Material *FindMaterial(const char *name);

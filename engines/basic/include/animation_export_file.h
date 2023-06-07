@@ -67,7 +67,7 @@ namespace dbasic {
         AnimationExportFile();
         ~AnimationExportFile();
 
-        ysError Open(const char *fname, Mode mode = Mode::Write);
+        ysError Open(const wchar_t *fname, Mode mode = Mode::Write);
         void Close();
 
         // Write Functions

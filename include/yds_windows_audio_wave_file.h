@@ -11,7 +11,7 @@ public:
     ysWindowsAudioWaveFile();
     ~ysWindowsAudioWaveFile();
 
-    virtual Error OpenFile(const char *fname);
+    virtual Error OpenFile(const wchar_t *fname) override;
     virtual Error CloseFile();
 
 protected:

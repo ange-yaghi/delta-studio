@@ -21,7 +21,7 @@ public:
     ~ysAudioDevice();
 
     bool IsConnected() const { return m_connected; }
-    void SetDeviceName(const char *newName) { strcpy_s(m_deviceName, MaxDeviceNameLength, newName); }
+    void SetDeviceName(const wchar_t *newName) { wcscpy_s(m_deviceName, MaxDeviceNameLength, newName); }
 
     virtual ysAudioBuffer *CreateBuffer(const ysAudioParameters *parameters, SampleOffset size) = 0;
 
@@ -35,7 +35,7 @@ public:
     ysError DestroyAudioBuffers();
 
 protected:
-    char m_deviceName[MaxDeviceNameLength];
+    wchar_t m_deviceName[MaxDeviceNameLength];
     ysWindow *m_windowAssociation;
 
     ysDynamicArray<ysAudioBuffer, 4> m_audioBuffers;

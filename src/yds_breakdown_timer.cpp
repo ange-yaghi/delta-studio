@@ -75,13 +75,13 @@ ysBreakdownTimerChannel *ysBreakdownTimer::CreateChannel(const std::string &time
     return newChannel;
 }
 
-void ysBreakdownTimer::OpenLogFile(const std::string &filename) {
+void ysBreakdownTimer::OpenLogFile(const std::wstring &filename) {
     if (!m_enabled) return;
 
     m_logFile.open(filename.c_str(), std::ios::out);
 
     m_logFile << "Frame";
-    int n = GetChannelCount();
+    const int n = GetChannelCount();
     for (int i = 0; i < n; ++i) {
         ysBreakdownTimerChannel *channel = m_channels.Get(i);
         m_logFile << ", " << channel->GetName();

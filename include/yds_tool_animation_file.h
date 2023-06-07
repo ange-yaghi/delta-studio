@@ -47,7 +47,7 @@ public:
     ysToolAnimationFile();
     ~ysToolAnimationFile();
 
-    ysError Open(const char *fname);
+    ysError Open(const wchar_t *fname);
     ysError Close();
 
     int GetFileVersion() const { return m_fileVersion; }

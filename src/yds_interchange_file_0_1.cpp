@@ -13,11 +13,11 @@ ysInterchangeFile0_1::~ysInterchangeFile0_1() {
     /* void */
 }
 
-ysError ysInterchangeFile0_1::Open(const char *fname) {
+ysError ysInterchangeFile0_1::Open(const wchar_t *fname) {
     YDS_ERROR_DECLARE("Open");
 
     m_file.open(fname, std::ios::binary | std::ios::in | std::ios::out);
-    if (!m_file.is_open()) return YDS_ERROR_RETURN_MSG(ysError::CouldNotOpenFile, fname);
+    if (!m_file.is_open()) return YDS_ERROR_RETURN(ysError::CouldNotOpenFile);
 
     IdHeader idHeader;
     m_file.read((char *)&idHeader, sizeof(IdHeader));

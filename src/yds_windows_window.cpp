@@ -20,17 +20,17 @@ ATOM ysWindowsWindow::RegisterWindowsClass() {
     wc.cbClsExtra = 0;
     wc.cbWndExtra = 0;
     wc.hInstance = m_instance;
-    wc.hIcon = LoadIcon(m_instance, "IDI_ICON1");
+    wc.hIcon = LoadIcon(m_instance, L"IDI_ICON1");
     wc.hCursor = LoadCursor(NULL, IDC_ARROW);
     wc.hbrBackground = NULL;
     wc.lpszMenuName = NULL;
-    wc.lpszClassName = "GAME_ENGINE_WINDOW";
+    wc.lpszClassName = L"GAME_ENGINE_WINDOW";
     wc.hIconSm = NULL;
 
     return RegisterClassEx(&wc);
 }
 
-ysError ysWindowsWindow::InitializeWindow(ysWindow *parent, const char *title, WindowStyle style, int x, int y, int width, int height, ysMonitor *monitor) {
+ysError ysWindowsWindow::InitializeWindow(ysWindow *parent, const wchar_t *title, WindowStyle style, int x, int y, int width, int height, ysMonitor *monitor) {
     YDS_ERROR_DECLARE("InitializeWindow");
 
     if (!CheckCompatibility(parent)) return YDS_ERROR_RETURN(ysError::IncompatiblePlatforms);
@@ -47,7 +47,7 @@ ysError ysWindowsWindow::InitializeWindow(ysWindow *parent, const char *title, W
     RegisterWindowsClass();
 
     m_hwnd = CreateWindow(
-        "GAME_ENGINE_WINDOW",
+        L"GAME_ENGINE_WINDOW",
         title,
         win32Style,
         CW_USEDEFAULT,
@@ -67,7 +67,7 @@ ysError ysWindowsWindow::InitializeWindow(ysWindow *parent, const char *title, W
     return YDS_ERROR_RETURN(ysError::None);
 }
 
-ysError ysWindowsWindow::InitializeWindow(ysWindow *parent, const char *title, WindowStyle style, ysMonitor *monitor) {
+ysError ysWindowsWindow::InitializeWindow(ysWindow *parent, const wchar_t *title, WindowStyle style, ysMonitor *monitor) {
     YDS_ERROR_DECLARE("InitializeWindow");
 
     YDS_NESTED_ERROR_CALL(InitializeWindow(parent, title, style, monitor->GetOriginX(), monitor->GetOriginY(), monitor->GetPhysicalWidth(), monitor->GetPhysicalHeight(), monitor));
@@ -81,43 +81,28 @@ bool ysWindowsWindow::SetWindowStyle(WindowStyle style) {
     if (!ysWindow::SetWindowStyle(style)) return false;
 
     if (style == WindowStyle::Windowed) {
-        const int width = GetScreenWidth();
-        const int height = GetScreenHeight();
-
-        const int x = GetPositionX();
-        const int y = GetPositionY();
-
         SetWindowLongPtr(m_hwnd, GWL_STYLE, GetWindowsStyle());
-        SetWindowPos(m_hwnd, NULL, 0, 0, 0, 0, SWP_FRAMECHANGED);
-
-        SetLocation(x, y);
-        SetWindowSize(width, height);
+        SetWindowPos(m_hwnd, NULL, 0, 0, 0, 0,
+            SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_FRAMECHANGED);
 
         ShowWindow(m_hwnd, SW_SHOW);
         SetForegroundWindow(m_hwnd);
     }
     else if (style == WindowStyle::Fullscreen) {
         SetWindowLongPtr(m_hwnd, GWL_STYLE, GetWindowsStyle());
-        SetWindowPos(m_hwnd, NULL, 0, 0, 0, 0, SWP_FRAMECHANGED);
+        SetWindowPos(m_hwnd, NULL, 0, 0, 0, 0,
+            SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_FRAMECHANGED);
 
         SetLocation(m_monitor->GetOriginX(), m_monitor->GetOriginY());
-        SetWindowSize(m_monitor->GetPhysicalWidth(), m_monitor->GetPhysicalHeight());
+        SetWindowSize(m_monitor->GetLogicalWidth(), m_monitor->GetLogicalHeight());
 
         ShowWindow(m_hwnd, SW_SHOW);
         SetForegroundWindow(m_hwnd);
     }
     else if (style == WindowStyle::Popup) {
-        const int width = GetScreenWidth();
-        const int height = GetScreenHeight();
-
-        const int x = GetPositionX();
-        const int y = GetPositionY();
-
         SetWindowLongPtr(m_hwnd, GWL_STYLE, GetWindowsStyle());
-        SetWindowPos(m_hwnd, NULL, 0, 0, 0, 0, SWP_FRAMECHANGED);
-
-        SetLocation(x, y);
-        SetWindowSize(width, height);
+        SetWindowPos(m_hwnd, NULL, 0, 0, 0, 0,
+            SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_FRAMECHANGED);
 
         ShowWindow(m_hwnd, SW_SHOW);
         SetForegroundWindow(m_hwnd);
@@ -205,7 +190,7 @@ void ysWindowsWindow::Close() {
     m_hwnd = NULL;
 }
 
-void ysWindowsWindow::SetTitle(const char *title) {
+void ysWindowsWindow::SetTitle(const wchar_t *title) {
     ysWindow::SetTitle(title);
 
     SetWindowText(m_hwnd, title);
