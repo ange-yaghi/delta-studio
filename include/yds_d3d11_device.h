@@ -85,7 +85,8 @@ public:
     virtual ysError UseTexture(ysTexture *texture, int slot) override;
     virtual ysError UseRenderTargetAsTexture(ysRenderTarget *renderTarget, int slot) override;
 
-    virtual void Draw(int numFaces, int indexOffset, int vertexOffset);
+    virtual void Draw(int numFaces, int indexOffset, int vertexOffset) override;
+    virtual void DrawLines(int numIndices, int indexOffset, int vertexOffset) override;
 
 public:
     // Non-standard interface

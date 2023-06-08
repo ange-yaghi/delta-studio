@@ -1555,7 +1555,16 @@ ysError ysD3D11Device::DestroyTexture(ysTexture *&texture) {
 }
 
 void ysD3D11Device::Draw(int numFaces, int indexOffset, int vertexOffset) {
+    GetImmediateContext()
+            ->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
     GetImmediateContext()->DrawIndexed(numFaces * 3, indexOffset, vertexOffset);
+}
+
+void ysD3D11Device::DrawLines(int numIndices, int indexOffset,
+                              int vertexOffset) {
+    GetImmediateContext()
+            ->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
+    GetImmediateContext()->DrawIndexed(numIndices, indexOffset, vertexOffset);
 }
 
 // Non-standard interface

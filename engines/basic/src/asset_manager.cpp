@@ -171,6 +171,14 @@ ysError dbasic::AssetManager::CompileSceneFile(const wchar_t *fname, float scale
 
 ysError dbasic::AssetManager::CompileInterchangeFile(const wchar_t *fname, float scale, bool force) {
     YDS_ERROR_DECLARE("CompileInterchangeFile");
+    YDS_NESTED_ERROR_CALL(CompileInterchangeFile(fname, fname, scale, force));
+    return YDS_ERROR_RETURN(ysError::None);
+}
+
+ysError dbasic::AssetManager::CompileInterchangeFile(const wchar_t *fname,
+    const wchar_t *target,
+    float scale, bool force) {
+    YDS_ERROR_DECLARE("CompileInterchangeFile");
 
     wchar_t completePath[512];
     wcscpy_s(completePath, 512, fname);
@@ -179,7 +187,7 @@ ysError dbasic::AssetManager::CompileInterchangeFile(const wchar_t *fname, float
     wcscat_s(completePath, 512, L".dia");
     YDS_NESTED_ERROR_CALL(toolFile.Open(completePath));
 
-    wcscpy_s(completePath, 512, fname);
+    wcscpy_s(completePath, 512, target);
     wcscat_s(completePath, 512, L".ysce");
 
     if (toolFile.GetCompilationStatus() && !force) {

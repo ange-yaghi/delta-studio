@@ -198,8 +198,6 @@ LRESULT WINAPI ysWindowsWindowSystem::WinProc(HWND hWnd, UINT msg,
                 if (LOWORD(lParam) == HTCLIENT) {
                     system->SetCursor(system->GetCursor());
                     return TRUE;
-                } else {
-                    return 0;
                 }
         }
 

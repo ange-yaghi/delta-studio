@@ -219,6 +219,7 @@ public:
 
     // TEMP
     virtual void Draw(int numFaces, int indexOffset, int vertexOffset) { (void)numFaces; (void)indexOffset; (void)vertexOffset; }
+    virtual void DrawLines(int numIndices, int indexOffset, int vertexOffset) { (void)numIndices; (void)indexOffset; (void)vertexOffset; }
 
     ysRenderTarget *GetActiveRenderTarget(int slot=0) const { return m_activeRenderTarget[slot]; }
 

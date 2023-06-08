@@ -36,8 +36,9 @@ namespace dbasic {
             int VertexSize = 0;
             int BaseIndex = 0;
             int BaseVertex = 0;
-            int FaceCount = 0;
+            int PrimitiveCount = 0;
             bool DepthTest = true;
+            bool Lines = false;
         };
 
         struct GameEngineSettings {
@@ -87,6 +88,9 @@ namespace dbasic {
         ysError DrawGeneric(
             StageEnableFlags flags, ysGPUBuffer *indexBuffer, ysGPUBuffer *vertexBuffer, int vertexSize,
             int baseIndex, int baseVertex, int faceCount, bool depthTest = true, int layer = 0);
+        ysError DrawGenericLines(
+            StageEnableFlags flags, ysGPUBuffer *indexBuffer, ysGPUBuffer *vertexBuffer, int vertexSize,
+            int baseIndex, int baseVertex, int segmentCount, bool depthTest = true, int layer = 0);
         ysError LoadTexture(ysTexture **image, const wchar_t *fname);
         ysError LoadAnimation(Animation **animation, const wchar_t *path, int start, int end);
         ysError LoadFont(Font **font, const wchar_t *path, int size = 4096, int fontSize = 64);

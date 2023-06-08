@@ -697,7 +697,8 @@ ysError dbasic::DeltaEngine::DrawModel(StageEnableFlags flags, ModelAsset *model
         newCall->VertexBuffer = model->GetVertexBuffer();
         newCall->BaseVertex = model->GetBaseVertex();
         newCall->BaseIndex = model->GetBaseIndex();
-        newCall->FaceCount = model->GetFaceCount();
+        newCall->PrimitiveCount = model->GetFaceCount();
+        newCall->Lines = false;
         newCall->Flags = flags;
     }
 
@@ -739,9 +740,33 @@ ysError dbasic::DeltaEngine::DrawGeneric(
         newCall->VertexBuffer = vertexBuffer;
         newCall->BaseVertex = baseVertex;
         newCall->BaseIndex = baseIndex;
-        newCall->FaceCount = faceCount;
+        newCall->PrimitiveCount = faceCount;
         newCall->Flags = flags;
         newCall->DepthTest = depthTest;
+        newCall->Lines = false;
+    }
+
+    return YDS_ERROR_RETURN(ysError::None);
+}
+
+ysError dbasic::DeltaEngine::DrawGenericLines(
+    StageEnableFlags flags, ysGPUBuffer *indexBuffer, ysGPUBuffer *vertexBuffer, 
+    int vertexSize, int baseIndex, int baseVertex, int segmentCount, bool depthTest, int layer)
+{
+    YDS_ERROR_DECLARE("DrawGeneric");
+
+    DrawCall *newCall = NewDrawCall(layer, m_shaderSet->GetObjectDataSize());
+    if (newCall != nullptr) {
+        YDS_NESTED_ERROR_CALL(m_shaderSet->CacheObjectData(newCall->ObjectData, m_shaderSet->GetObjectDataSize()));
+        newCall->VertexSize = vertexSize;
+        newCall->IndexBuffer = indexBuffer;
+        newCall->VertexBuffer = vertexBuffer;
+        newCall->BaseVertex = baseVertex;
+        newCall->BaseIndex = baseIndex;
+        newCall->PrimitiveCount = segmentCount;
+        newCall->Flags = flags;
+        newCall->DepthTest = depthTest;
+        newCall->Lines = true;
     }
 
     return YDS_ERROR_RETURN(ysError::None);
@@ -781,7 +806,12 @@ ysError dbasic::DeltaEngine::ExecuteShaderStage(int stageIndex) {
                     m_device->UseIndexBuffer(call->IndexBuffer, 0);
                     m_device->UseVertexBuffer(call->VertexBuffer, call->VertexSize, 0);
 
-                    m_device->Draw(call->FaceCount, call->BaseIndex, call->BaseVertex);
+                    if (!call->Lines) {
+                        m_device->Draw(call->PrimitiveCount, call->BaseIndex, call->BaseVertex);
+                    }
+                    else {
+                        m_device->DrawLines(call->PrimitiveCount * 2, call->BaseIndex, call->BaseVertex);
+                    }
                 }
                 else {
                     m_device->SetDepthTestEnabled(stage->GetRenderTarget(), call->DepthTest);
