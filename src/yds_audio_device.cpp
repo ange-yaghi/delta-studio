@@ -39,7 +39,7 @@ ysError ysAudioDevice::DestroyAudioSource(ysAudioSource *&source) {
 
     source->Destroy();
 
-    m_audioBuffers.Delete(source->GetIndex());
+    m_audioSources.Delete(source->GetIndex());
     source = nullptr;
 
     return YDS_ERROR_RETURN(ysError::None);

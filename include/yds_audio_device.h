@@ -23,10 +23,9 @@ public:
     bool IsConnected() const { return m_connected; }
     void SetDeviceName(const wchar_t *newName) { wcscpy_s(m_deviceName, MaxDeviceNameLength, newName); }
 
-    virtual ysAudioBuffer *CreateBuffer(const ysAudioParameters *parameters, SampleOffset size) = 0;
-
-    virtual ysAudioSource *CreateSource(const ysAudioParameters *parameters, SampleOffset size) = 0;
-    virtual ysAudioSource *CreateSource(ysAudioBuffer *sourceBuffer) = 0;
+    virtual ysError CreateBuffer(const ysAudioParameters *parameters, SampleOffset size, ysAudioBuffer **buffer) = 0;
+    virtual ysError CreateSource(const ysAudioParameters *parameters, SampleOffset size, ysAudioSource **source) = 0;
+    virtual ysError CreateSource(ysAudioBuffer *sourceBuffer, ysAudioSource **source) = 0;
 
     virtual void UpdateAudioSources() = 0;
 

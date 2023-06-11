@@ -518,7 +518,8 @@ ysError dbasic::DeltaEngine::LoadFont(Font **font, const wchar_t *path, int size
 ysError dbasic::DeltaEngine::PlayAudio(AudioAsset *audio) {
     YDS_ERROR_DECLARE("PlayAudio");
 
-    ysAudioSource *newSource = m_audioDevice->CreateSource(audio->GetBuffer());
+    ysAudioSource *newSource = nullptr;
+    YDS_NESTED_ERROR_CALL(m_audioDevice->CreateSource(audio->GetBuffer(), &newSource));
     newSource->SetMode(ysAudioSource::Mode::PlayOnce);
     newSource->SetPan(0.0f);
     newSource->SetVolume(1.0f);

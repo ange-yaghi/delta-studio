@@ -117,6 +117,7 @@ enum class ysError {
     CouldNotEnumerateAudioDevices,
     CouldNotCreateDS8Device,
     CouldNotSetDeviceCooperativeLevel,
+    CouldNotCreateSoundBuffer,
     NoAudioDevice
 };
 

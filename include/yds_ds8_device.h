@@ -14,10 +14,10 @@ public:
     ysDS8Device();
     virtual ~ysDS8Device();
 
-    virtual ysAudioBuffer *CreateBuffer(const ysAudioParameters *parameters, SampleOffset size);
+    virtual ysError CreateBuffer(const ysAudioParameters *parameters, SampleOffset size, ysAudioBuffer **buffer) override;
 
-    virtual ysAudioSource *CreateSource(const ysAudioParameters *parameters, SampleOffset size);
-    virtual ysAudioSource *CreateSource(ysAudioBuffer *sourceBuffer);
+    virtual ysError CreateSource(const ysAudioParameters *parameters, SampleOffset size, ysAudioSource **source) override;
+    virtual ysError CreateSource(ysAudioBuffer *sourceBuffer, ysAudioSource **source) override;
 
     virtual void UpdateAudioSources();
 

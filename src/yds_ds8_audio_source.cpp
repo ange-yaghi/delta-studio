@@ -4,6 +4,7 @@
 
 #define _USE_MATH_DEFINES
 #include <math.h>
+#include <assert.h>
 
 ysDS8AudioSource::ysDS8AudioSource() : ysAudioSource(API::DirectSound8) {
     m_buffer = nullptr;
@@ -209,7 +210,9 @@ ysError ysDS8AudioSource::Destroy() {
 
     YDS_NESTED_ERROR_CALL(ysAudioSource::Destroy());
 
-    m_buffer->Release();
+    m_buffer->Stop();
+    const ULONG referenceCount = m_buffer->Release();
+    assert(referenceCount == 0);
     m_buffer = nullptr;
 
     return YDS_ERROR_RETURN(ysError::None);

@@ -566,8 +566,9 @@ ysError dbasic::AssetManager::LoadAudioFile(const wchar_t *fname, const char *na
     ysWindowsAudioWaveFile waveFile;
     waveFile.OpenFile(fname);
 
-    ysAudioBuffer *newBuffer = m_engine->GetAudioDevice()->CreateBuffer(
-        waveFile.GetAudioParameters(), waveFile.GetSampleCount());
+    ysAudioBuffer *newBuffer = nullptr;
+    YDS_NESTED_ERROR_CALL(m_engine->GetAudioDevice()->CreateBuffer(
+        waveFile.GetAudioParameters(), waveFile.GetSampleCount(), &newBuffer));
 
     waveFile.AttachExternalBuffer(newBuffer);
     waveFile.FillBuffer(0);

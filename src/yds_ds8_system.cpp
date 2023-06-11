@@ -110,6 +110,7 @@ BOOL CALLBACK ysDS8System::DirectSoundEnumProc(LPGUID lpGUID, LPCTSTR lpszDesc, 
         else {
             ysDS8Device *newDevice = system->AddDS8Device();
             newDevice->m_guid = *lpGUID;
+            newDevice->SetDeviceName(lpszDesc);
         }
     }
     else {

@@ -12,15 +12,20 @@ ysDS8Device::~ysDS8Device() {
     /* void */
 }
 
-ysAudioBuffer *ysDS8Device::CreateBuffer(const ysAudioParameters *parameters, SampleOffset size) {
-    ysDS8AudioBuffer *newBuffer = m_audioBuffers.NewGeneric<ysDS8AudioBuffer>();
-    newBuffer->Initialize(size, *parameters);
+ysError ysDS8Device::CreateBuffer(const ysAudioParameters *parameters, SampleOffset size, ysAudioBuffer **buffer) {
+    YDS_ERROR_DECLARE("CreateBuffer");
 
-    return newBuffer;
+    *buffer = m_audioBuffers.NewGeneric<ysDS8AudioBuffer>();
+    YDS_NESTED_ERROR_CALL((*buffer)->Initialize(size, *parameters));
+
+    return YDS_ERROR_RETURN(ysError::None);
 }
 
-ysAudioSource *ysDS8Device::CreateSource(const ysAudioParameters *parameters, SampleOffset size) {
+ysError ysDS8Device::CreateSource(const ysAudioParameters *parameters, SampleOffset size, ysAudioSource **source) {
+    YDS_ERROR_DECLARE("CreateSource");
+
     ysDS8AudioSource *newSource = m_audioSources.NewGeneric<ysDS8AudioSource>();
+    *source = newSource;
 
     // --------------------------------------------------------
     // TEMP
@@ -57,26 +62,32 @@ ysAudioSource *ysDS8Device::CreateSource(const ysAudioParameters *parameters, Sa
     dsbdesc.lpwfxFormat = &wfx; 
  
     // Create buffer. 
- 
-    hr = m_device->CreateSoundBuffer(&dsbdesc, &newSource->m_buffer, NULL); 
+    IDirectSoundBuffer *buffer = nullptr;
+    hr = m_device->CreateSoundBuffer(&dsbdesc, &buffer, NULL); 
     if (SUCCEEDED(hr)) { 
-        hr = newSource->m_buffer->QueryInterface(IID_IDirectSoundBuffer8, (LPVOID *)&newSource->m_buffer);
-        newSource->m_buffer->Release();
+        if (!SUCCEEDED(buffer->QueryInterface(
+            IID_IDirectSoundBuffer8, (LPVOID *)&newSource->m_buffer))) {
+            return YDS_ERROR_RETURN(ysError::CouldNotCreateSoundBuffer);
+        }
+
+        buffer->Release();
     } 
     else {
-        /* void */
+        return YDS_ERROR_RETURN(ysError::CouldNotCreateSoundBuffer);
     }
 
     // --------------------------------------------------------
 
-    return newSource;
+    return YDS_ERROR_RETURN(ysError::None);
 }
 
-ysAudioSource *ysDS8Device::CreateSource(ysAudioBuffer *sourceBuffer) {
-    ysAudioSource *newSource = CreateSource(sourceBuffer->GetAudioParameters(), sourceBuffer->GetSampleCount());
-    newSource->SetDataBuffer(sourceBuffer);
+ysError ysDS8Device::CreateSource(ysAudioBuffer *sourceBuffer, ysAudioSource **source) {
+    YDS_ERROR_DECLARE("CreateSource");
 
-    return newSource;
+    YDS_NESTED_ERROR_CALL(CreateSource(sourceBuffer->GetAudioParameters(), sourceBuffer->GetSampleCount(), source));
+    (*source)->SetDataBuffer(sourceBuffer);
+
+    return YDS_ERROR_RETURN(ysError::None);
 }
 
 void ysDS8Device::UpdateAudioSources() {
