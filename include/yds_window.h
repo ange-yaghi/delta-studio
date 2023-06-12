@@ -42,6 +42,8 @@ public:
 
     virtual void Close() { SetState(WindowState::Closed); }
     virtual void SetState(WindowState state = WindowState::Visible) { m_windowState = state; }
+    virtual void CaptureMouse() {}
+    virtual void ReleaseMouse() {}
 
     void RestoreWindow();
 

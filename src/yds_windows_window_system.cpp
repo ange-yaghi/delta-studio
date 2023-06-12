@@ -222,6 +222,12 @@ LRESULT WINAPI ysWindowsWindowSystem::WinProc(HWND hWnd, UINT msg,
                     case WM_LBUTTONUP:
                         return inputSystem->OnOsMouseButtonUp(
                                 ysMouse::Button::Left);
+                    case WM_MBUTTONDOWN:
+                        return inputSystem->OnOsMouseButtonDown(
+                                ysMouse::Button::Middle);
+                    case WM_MBUTTONUP:
+                        return inputSystem->OnOsMouseButtonUp(
+                                ysMouse::Button::Middle);
                     case WM_MOUSEWHEEL:
                         return inputSystem->OnOsMouseWheel(lParam, wParam);
                     case WM_MOUSEMOVE:

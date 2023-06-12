@@ -83,6 +83,10 @@ ysError ysWindowsWindow::InitializeWindow(ysWindow *parent, const wchar_t *title
     return YDS_ERROR_RETURN(ysError::None);
 }
 
+void ysWindowsWindow::ReleaseMouse() { ReleaseCapture(); }
+
+void ysWindowsWindow::CaptureMouse() { SetCapture(m_hwnd); }
+
 bool ysWindowsWindow::SetWindowStyle(WindowStyle style) {
     if (m_hwnd == NULL) return false;
 

@@ -22,6 +22,8 @@ public:
                      int x, int y, int width, int height,
                      ysMonitor *monitor, const ysVector &color) override;
     virtual ysError InitializeWindow(ysWindow *parent, const wchar_t *title, WindowStyle style, ysMonitor *monitor) override;
+    virtual void CaptureMouse() override;
+    virtual void ReleaseMouse() override;
 
     virtual bool SetWindowStyle(WindowStyle style);
 
