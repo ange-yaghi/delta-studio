@@ -44,7 +44,7 @@ public:
     // Get Win32 window handle
     HWND GetWindowHandle() const { return m_hwnd; }
 
-    int GetWindowsStyle() const;
+    static int GetWindowsStyle(WindowStyle style);
 
 protected:
     // Abstraction Layer
@@ -61,6 +61,7 @@ protected:
 
     HINSTANCE m_instance;
     HWND m_hwnd;
+    int m_previousCmdShow;
 };
 
 #endif /* YDS_WINDOWS_WINDOW_H */

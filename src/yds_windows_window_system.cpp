@@ -173,9 +173,12 @@ LRESULT WINAPI ysWindowsWindowSystem::WinProc(HWND hWnd, UINT msg,
 
                 return 0;
             }
-            case WM_MOVE:
-                target->OnMoveWindow(LOWORD(lParam), HIWORD(lParam));
+            case WM_MOVE: {
+                const int x = int(short(LOWORD(lParam)));
+                const int y = int(short(HIWORD(lParam)));
+                target->OnMoveWindow(x, y);
                 return 0;
+            }
             case WM_SETFOCUS:
                 target->OnActivate();
                 return 0;

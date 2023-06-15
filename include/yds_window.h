@@ -105,19 +105,21 @@ protected:
     virtual void AL_SetLocation(int x, int y);
 
 protected:
-    /* Common Members */
-
-    // Window width
+    // Window size
     int m_width;
-
-    // Window height
     int m_height;
 
-    // Location x
+    // Window location
     int m_locationx;
-
-    // Location y
     int m_locationy;
+
+    // Windowed size
+    int m_windowedWidth;
+    int m_windowedHeight;
+
+    // Window location
+    int m_windowedLocationx;
+    int m_windowedLocationy;
 
     // Title
     wchar_t m_title[MAX_NAME_LENGTH];

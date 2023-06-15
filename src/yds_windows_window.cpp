@@ -5,6 +5,7 @@
 ysWindowsWindow::ysWindowsWindow() : ysWindow(Platform::Windows) {
     m_instance = 0;
     m_hwnd = 0;
+    m_previousCmdShow = SW_SHOW;
 }
 
 ysWindowsWindow::~ysWindowsWindow() {
@@ -44,7 +45,7 @@ ysError ysWindowsWindow::InitializeWindow(
 
     ysWindowsWindow *parentWindow = static_cast<ysWindowsWindow *>(parent);
 
-    const int win32Style = GetWindowsStyle();
+    const int win32Style = GetWindowsStyle(style);
     HWND parentHandle = (parentWindow) 
         ? parentWindow->m_hwnd 
         : NULL;
@@ -88,20 +89,33 @@ void ysWindowsWindow::ReleaseMouse() { ReleaseCapture(); }
 void ysWindowsWindow::CaptureMouse() { SetCapture(m_hwnd); }
 
 bool ysWindowsWindow::SetWindowStyle(WindowStyle style) {
-    if (m_hwnd == NULL) return false;
+    if (m_hwnd == NULL) { return false; }
 
-    if (!ysWindow::SetWindowStyle(style)) return false;
+    if (!ysWindow::SetWindowStyle(style)) { return false; }
 
     if (style == WindowStyle::Windowed) {
-        SetWindowLongPtr(m_hwnd, GWL_STYLE, GetWindowsStyle());
+        const int windowedLocationx = m_windowedLocationx;
+        const int windowedLocationy = m_windowedLocationy;
+
+        const int windowedWidth = m_windowedWidth;
+        const int windowedHeight = m_windowedHeight;
+
+        SetWindowLongPtr(m_hwnd, GWL_STYLE, GetWindowsStyle(style));
         SetWindowPos(m_hwnd, NULL, 0, 0, 0, 0,
             SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_FRAMECHANGED);
 
-        ShowWindow(m_hwnd, SW_SHOW);
+        SetLocation(windowedLocationx, windowedLocationy);
+        SetWindowSize(windowedWidth, windowedHeight);
+
+        ShowWindow(m_hwnd, m_previousCmdShow);
         SetForegroundWindow(m_hwnd);
     }
     else if (style == WindowStyle::Fullscreen) {
-        SetWindowLongPtr(m_hwnd, GWL_STYLE, GetWindowsStyle());
+        WINDOWPLACEMENT placement = {};
+        GetWindowPlacement(m_hwnd, &placement);
+        m_previousCmdShow = placement.showCmd;
+
+        SetWindowLongPtr(m_hwnd, GWL_STYLE, GetWindowsStyle(style));
         SetWindowPos(m_hwnd, NULL, 0, 0, 0, 0,
             SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_FRAMECHANGED);
 
@@ -112,7 +126,7 @@ bool ysWindowsWindow::SetWindowStyle(WindowStyle style) {
         SetForegroundWindow(m_hwnd);
     }
     else if (style == WindowStyle::Popup) {
-        SetWindowLongPtr(m_hwnd, GWL_STYLE, GetWindowsStyle());
+        SetWindowLongPtr(m_hwnd, GWL_STYLE, GetWindowsStyle(style));
         SetWindowPos(m_hwnd, NULL, 0, 0, 0, 0,
             SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_FRAMECHANGED);
 
@@ -180,8 +194,8 @@ int ysWindowsWindow::GetScreenHeight() const {
         : 0;
 }
 
-int ysWindowsWindow::GetWindowsStyle() const {
-    switch (m_windowStyle) {
+int ysWindowsWindow::GetWindowsStyle(WindowStyle style) {
+    switch (style) {
     case WindowStyle::Fullscreen:
         return WS_POPUP | WS_VISIBLE;
     case WindowStyle::Windowed:
@@ -237,7 +251,20 @@ void ysWindowsWindow::AL_SetSize(int width, int height) {
 
     ysWindow::AL_SetSize(width, height);
 
-    SetWindowPos(m_hwnd, NULL, 0, 0, width, height, SWP_NOMOVE | SWP_NOZORDER);
+    int adjustedWidth = width, adjustedHeight = height;
+    if (GetWindowStyle() == WindowStyle::Windowed) {
+        RECT rect;
+        rect.left = 0;
+        rect.right = width;
+        rect.top = 0;
+        rect.bottom = height;
+        AdjustWindowRect(&rect, WS_OVERLAPPEDWINDOW, FALSE);
+
+        adjustedWidth = rect.right - rect.left;
+        adjustedHeight = rect.bottom - rect.top;
+    }
+
+    SetWindowPos(m_hwnd, NULL, 0, 0, adjustedWidth, adjustedHeight, SWP_NOMOVE | SWP_NOZORDER);
 }
 
 void ysWindowsWindow::AL_SetLocation(int x, int y) {
@@ -245,5 +272,20 @@ void ysWindowsWindow::AL_SetLocation(int x, int y) {
 
     ysWindow::AL_SetLocation(x, y);
 
-    SetWindowPos(m_hwnd, NULL, x, y, 0, 0, SWP_NOSIZE | SWP_NOZORDER);
+    int adjusted_x = x, adjusted_y = y;
+    if (GetWindowStyle() == WindowStyle::Windowed) {
+        RECT rect;
+        rect.left = x;
+        rect.right = 0;
+        rect.top = y;
+        rect.bottom = 0;
+        AdjustWindowRect(&rect, WS_OVERLAPPEDWINDOW, FALSE);
+
+        adjusted_x = rect.left;
+        adjusted_y = rect.top;
+    }
+
+    POINT p = {x, y};
+    ScreenToClient(m_hwnd, &p);
+    SetWindowPos(m_hwnd, NULL, adjusted_x, adjusted_y, 0, 0, SWP_NOSIZE | SWP_NOZORDER);
 }
