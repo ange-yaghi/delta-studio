@@ -29,15 +29,22 @@ ysError ysDS8System::ConnectDevice(ysAudioDevice *device, ysWindow *windowAssoci
     YDS_NESTED_ERROR_CALL(ysAudioSystem::ConnectDevice(device, windowAssociation));
 
     ysDS8Device *ds8Device = static_cast<ysDS8Device *>(device);
-    HRESULT result;
-
-    result = DirectSoundCreate8(&ds8Device->m_guid, &ds8Device->m_device, NULL);
+    HRESULT result = DirectSoundCreate8(&ds8Device->m_guid, &ds8Device->m_device, NULL);
     if (FAILED(result)) {
-        return YDS_ERROR_RETURN(ysError::CouldNotCreateDS8Device);
+        // Try one more time
+        result = DirectSoundCreate8(NULL, &ds8Device->m_device, NULL);
+
+        switch (result) {
+        case DSERR_NODRIVER:
+            return YDS_ERROR_RETURN(ysError::CouldNotCreateDS8DeviceNoDriver);
+        case DSERR_INVALIDPARAM:
+            return YDS_ERROR_RETURN(ysError::CouldNotCreateDS8DeviceInvalidParam);
+        default:
+            return YDS_ERROR_RETURN(ysError::CouldNotCreateDS8DeviceOther);
+        }
+        
     }
 
-    //RaiseError(windowAssociation->GetPlatform() == ysWindow::Platform::Windows, "Incompatible platform for audio device window association.");
-    
     if (windowAssociation != nullptr) {
         ysWindowsWindow *windowsWindow = static_cast<ysWindowsWindow *>(windowAssociation);
         result = ds8Device->m_device->SetCooperativeLevel(windowsWindow->GetWindowHandle(), DSSCL_PRIORITY);
@@ -116,6 +123,9 @@ BOOL CALLBACK ysDS8System::DirectSoundEnumProc(LPGUID lpGUID, LPCTSTR lpszDesc, 
     else {
         // Create blank device
         ysDS8Device *newDevice = system->AddDS8Device();
+        newDevice->m_guid = actual;
+
+        system->m_primaryDevice = newDevice;
     }
 
     return TRUE;

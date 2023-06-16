@@ -27,6 +27,7 @@ public:
 
 protected:
     ysDynamicArray<ysAudioDevice, 4> m_devices;
+    ysAudioDevice *m_primaryDevice;
 };
 
 #endif /* YDS_AUDIO_SYSTEM_H */

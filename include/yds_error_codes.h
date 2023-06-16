@@ -118,7 +118,10 @@ enum class ysError {
     CouldNotCreateDS8Device,
     CouldNotSetDeviceCooperativeLevel,
     CouldNotCreateSoundBuffer,
-    NoAudioDevice
+    NoAudioDevice,
+    CouldNotCreateDS8DeviceInvalidParam,
+    CouldNotCreateDS8DeviceNoDriver,
+    CouldNotCreateDS8DeviceOther
 };
 
 #endif /* YDS_ERROR_CODES_H */

@@ -20,7 +20,7 @@ ysAudioDevice::~ysAudioDevice() {
 }
 
 ysError ysAudioDevice::DestroyAudioBuffer(ysAudioBuffer *&buffer) {
-    YDS_ERROR_DECLARE("DestroyaAudioBuffer");
+    YDS_ERROR_DECLARE("DestroyAudioBuffer");
 
     if (buffer == nullptr) return YDS_ERROR_RETURN(ysError::InvalidParameter);
 

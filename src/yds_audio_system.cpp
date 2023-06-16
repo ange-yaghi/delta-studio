@@ -4,11 +4,11 @@
 #include "../include/yds_ds8_system.h"
 
 ysAudioSystem::ysAudioSystem() : ysAudioSystemObject("AUDIO_SYSTEM", API::Undefined) {
-    /* void */
+    m_primaryDevice = nullptr;
 }
 
 ysAudioSystem::ysAudioSystem(API api) : ysAudioSystemObject("AUDIO_SYSTEM", api) {
-    /* void */
+    m_primaryDevice = nullptr;
 }
 
 ysAudioSystem::~ysAudioSystem() {
@@ -55,11 +55,7 @@ ysError ysAudioSystem::EnumerateDevices() {
 }
 
 ysAudioDevice *ysAudioSystem::GetPrimaryDevice() {
-    if (m_devices.GetNumObjects() == 0) { return nullptr; }
-    else {
-        // Zeroeth device is always the default
-        return m_devices.Get(0);
-    }
+    return m_primaryDevice;
 }
 
 ysAudioDevice *ysAudioSystem::GetAuxDevice(int device) {

@@ -91,7 +91,7 @@ ysError ysDS8Device::CreateSource(ysAudioBuffer *sourceBuffer, ysAudioSource **s
 }
 
 void ysDS8Device::UpdateAudioSources() {
-    int sourceCount = m_audioSources.GetNumObjects();
+    const int sourceCount = m_audioSources.GetNumObjects();
     for(int i = sourceCount - 1; i >= 0; --i) {
         ysDS8AudioSource *ds8Buffer = static_cast<ysDS8AudioSource *>(m_audioSources.Get(i));
 

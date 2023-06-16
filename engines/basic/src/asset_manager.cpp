@@ -269,15 +269,8 @@ ysError dbasic::AssetManager::LoadSceneFile(const wchar_t *fname, bool placeInVr
     int currentIndexOffset = 0;
     int currentVertexByteOffset = 0;
 
-    int initialIndex = m_sceneObjects.GetNumObjects();
-
-    ysGPUBuffer *indexBuffer = nullptr;
-    ysGPUBuffer *vertexBuffer = nullptr;
-
-    if (placeInVram) {
-        m_engine->GetDevice()->CreateIndexBuffer(&indexBuffer, 16 * 1024 * 1024, nullptr, false);
-        m_engine->GetDevice()->CreateVertexBuffer(&vertexBuffer, 16 * 4 * 1024 * 1024, nullptr, false);
-    }
+    const int initialIndex = m_sceneObjects.GetNumObjects();
+    const int initialModelIndex = m_modelAssets.GetNumObjects();
 
     std::set<int> lights;
     std::map<int, int> modelIndexMap;
@@ -398,8 +391,8 @@ ysError dbasic::AssetManager::LoadSceneFile(const wchar_t *fname, bool placeInVr
             newModelAsset->m_faceCount = header.NumFaces;
             newModelAsset->m_baseIndex = currentIndexOffset;
             newModelAsset->m_baseVertex = currentVertexByteOffset / stride;
-            newModelAsset->m_vertexBuffer = vertexBuffer;
-            newModelAsset->m_indexBuffer = indexBuffer;
+            newModelAsset->m_vertexBuffer = nullptr;
+            newModelAsset->m_indexBuffer = nullptr;
 
             strcpy_s(newObject->m_name, 64, header.ObjectName);
             strcpy_s(newModelAsset->m_name, 64, header.ObjectName);
@@ -439,9 +432,17 @@ ysError dbasic::AssetManager::LoadSceneFile(const wchar_t *fname, bool placeInVr
         }
     }
 
+    ysGPUBuffer *indexBuffer = nullptr;
+    ysGPUBuffer *vertexBuffer = nullptr;
+
     if (placeInVram) {
-        m_engine->GetDevice()->EditBufferData(indexBuffer, (char *)indicesFile);
-        m_engine->GetDevice()->EditBufferData(vertexBuffer, (char *)verticesFile);
+        m_engine->GetDevice()->CreateIndexBuffer(&indexBuffer, currentIndexOffset * sizeof(unsigned short), (char *)indicesFile, false);
+        m_engine->GetDevice()->CreateVertexBuffer(&vertexBuffer, currentVertexByteOffset, (char *)verticesFile, false);
+    }
+
+    for (int i = initialModelIndex; i < m_modelAssets.GetNumObjects(); ++i) {
+        m_modelAssets.Get(i)->m_vertexBuffer = vertexBuffer;
+        m_modelAssets.Get(i)->m_indexBuffer = indexBuffer;
     }
 
     delete[] indicesFile;
