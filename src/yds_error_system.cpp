@@ -1,4 +1,5 @@
 // TEMP
+#define NOMINMAX
 #include <Windows.h>
 #include <WinBase.h>
 

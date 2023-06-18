@@ -11,6 +11,12 @@
 #include "yds_shader_program.h"
 #include "yds_texture.h"
 
+#if defined(_DEBUG)
+#define YDS_SUPPORTS_SHADER_COMPILATION 1
+#else
+#define YDS_SUPPORTS_SHADER_COMPILATION 0
+#endif
+
 struct ysTextureSlot {
     ysRenderTarget *RenderTarget;
     ysTexture *Texture;
@@ -150,10 +156,12 @@ public:
     /* Shaders */
 
     // Create a vertex shader from a file
-    virtual ysError CreateVertexShader(ysShader **newShader, const wchar_t *shaderFilename, const char *shaderName) = 0;
+    virtual ysError CreateVertexShader(ysShader **newShader, const wchar_t *shaderFilename, const wchar_t *compiledFilename, const char *shaderName, bool compile) = 0;
+    ysError CreateVertexShader(ysShader **newShader, const wchar_t *shaderFilename, const char *shaderName, bool compile = true);
 
     // Create a pixel shader from a file
-    virtual ysError CreatePixelShader(ysShader **newShader, const wchar_t *shaderFilename, const char *shaderName) = 0;
+    virtual ysError CreatePixelShader(ysShader **newShader, const wchar_t *shaderFilename, const wchar_t *compiledFilename, const char *shaderName, bool compile) = 0;
+    ysError CreatePixelShader(ysShader **newShader, const wchar_t *shaderFilename, const char *shaderName, bool compile = true);
 
     // Destroy a shader
     virtual ysError DestroyShader(ysShader *&shader);

@@ -164,7 +164,7 @@ ysError dbasic::DeltaEngine::CreateGameWindow(const GameEngineSettings &settings
     YDS_NESTED_ERROR_CALL(m_console.Initialize());
 
     // Initialize Shaders
-    YDS_NESTED_ERROR_CALL(InitializeShaders(settings.ShaderDirectory));
+    YDS_NESTED_ERROR_CALL(InitializeShaders(settings.ShaderDirectory, settings.ShaderCompiledDirectory, settings.CompileShaders));
 
     // Timing System
     m_timingSystem = ysTimingSystem::Get();
@@ -345,46 +345,60 @@ ysError dbasic::DeltaEngine::InitializeGeometry() {
     return YDS_ERROR_RETURN(ysError::None);
 }
 
-ysError dbasic::DeltaEngine::InitializeShaders(const wchar_t *shaderDirectory) {
+ysError dbasic::DeltaEngine::InitializeShaders(const wchar_t *shaderDirectory, const wchar_t *shaderCompiledDirectory, bool compile) {
     YDS_ERROR_DECLARE("InitializeShaders");
 
-    wchar_t buffer[MAX_PATH];
+    std::wstring basePath = shaderDirectory;
+    std::wstring compiledPath = shaderCompiledDirectory;
 
     if (m_device->GetAPI() == ysContextObject::DeviceAPI::DirectX11 ||
         m_device->GetAPI() == ysContextObject::DeviceAPI::DirectX10)
     {
-        swprintf_s(buffer, L"%s%s", shaderDirectory, L"/hlsl/delta_engine_shader.fx");
-        YDS_NESTED_ERROR_CALL(m_device->CreateVertexShader(&m_vertexShader, buffer, "VS_STANDARD")); 
-        YDS_NESTED_ERROR_CALL(m_device->CreateVertexShader(&m_vertexSkinnedShader, buffer, "VS_SKINNED"));
-        YDS_NESTED_ERROR_CALL(m_device->CreatePixelShader(&m_pixelShader, buffer, "PS"));
+        YDS_NESTED_ERROR_CALL(m_device->CreateVertexShader(
+                &m_vertexShader, (basePath + L"/hlsl/delta_engine_shader.fx").c_str(),
+                (compiledPath + L"vs_standard.fx.compiled").c_str(), "VS_STANDARD", compile));
+        YDS_NESTED_ERROR_CALL(m_device->CreateVertexShader(
+                &m_vertexSkinnedShader, (basePath + L"/hlsl/delta_engine_shader.fx").c_str(),
+                (compiledPath + L"vs_skinned.fx.compiled").c_str(), "VS_SKINNED", compile));
+        YDS_NESTED_ERROR_CALL(m_device->CreatePixelShader(
+                &m_pixelShader, (basePath + L"/hlsl/delta_engine_shader.fx").c_str(),
+                (compiledPath + L"ps.fx.compiled").c_str(), "PS", compile));
 
-        swprintf_s(buffer, L"%s%s", shaderDirectory, L"/hlsl/delta_console_shader.fx");
-        YDS_NESTED_ERROR_CALL(m_device->CreateVertexShader(&m_consoleVertexShader, buffer, "VS_CONSOLE"));
-        YDS_NESTED_ERROR_CALL(m_device->CreatePixelShader(&m_consolePixelShader, buffer, "PS_CONSOLE"));
+        YDS_NESTED_ERROR_CALL(m_device->CreateVertexShader(
+                &m_consoleVertexShader, (basePath + L"/hlsl/delta_console_shader.fx").c_str(),
+                (compiledPath + L"vs_console.fx.compiled").c_str(), "VS_CONSOLE", compile));
+        YDS_NESTED_ERROR_CALL(m_device->CreatePixelShader(
+                &m_consolePixelShader, (basePath + L"/hlsl/delta_console_shader.fx").c_str(),
+                (compiledPath + L"ps_console.fx.compiled").c_str(), "PS_CONSOLE", compile));
 
-        swprintf_s(buffer, L"%s%s", shaderDirectory, L"/hlsl/delta_saq_shader.fx");
-        YDS_NESTED_ERROR_CALL(m_device->CreateVertexShader(&m_saqVertexShader, buffer, "VS_SAQ"));
-        YDS_NESTED_ERROR_CALL(m_device->CreatePixelShader(&m_saqPixelShader, buffer, "PS_SAQ"));
+        YDS_NESTED_ERROR_CALL(m_device->CreateVertexShader(
+                &m_saqVertexShader, (basePath + L"/hlsl/delta_saq_shader.fx").c_str(),
+                (compiledPath + L"vs_saq.fx.compiled").c_str(), "VS_SAQ", compile));
+        YDS_NESTED_ERROR_CALL(m_device->CreatePixelShader(
+                &m_saqPixelShader, (basePath + L"/hlsl/delta_saq_shader.fx").c_str(),
+                (compiledPath + L"ps_saq.fx.compiled").c_str(), "PS_SAQ", compile));
     }
     else if (m_device->GetAPI() == ysContextObject::DeviceAPI::OpenGL4_0) {
-        swprintf_s(buffer, L"%s%s", shaderDirectory, L"/glsl/delta_engine_shader.vert");
-        YDS_NESTED_ERROR_CALL(m_device->CreateVertexShader(&m_vertexShader, buffer, "VS"));
-        YDS_NESTED_ERROR_CALL(m_device->CreateVertexShader(&m_vertexSkinnedShader, buffer, "VS"));
+        YDS_NESTED_ERROR_CALL(m_device->CreateVertexShader(
+                &m_vertexShader, (basePath + L"/glsl/delta_engine_shader.vert").c_str(),
+                (compiledPath + L"vs_standard.vert.compiled").c_str(), "VS_STANDARD", compile));
+        YDS_NESTED_ERROR_CALL(m_device->CreateVertexShader(
+                &m_vertexShader, (basePath + L"/glsl/delta_engine_shader.frag").c_str(),
+                (compiledPath + L"ps_standard.frag.compiled").c_str(), "PS", compile));
 
-        swprintf_s(buffer, L"%s%s", shaderDirectory, L"/glsl/delta_engine_shader.frag");
-        YDS_NESTED_ERROR_CALL(m_device->CreatePixelShader(&m_pixelShader, buffer, "PS"));
+        YDS_NESTED_ERROR_CALL(m_device->CreateVertexShader(
+                &m_consoleVertexShader, (basePath + L"/glsl/delta_console_shader.vert").c_str(),
+                (compiledPath + L"vs_console.vert.compiled").c_str(), "VS_CONSOLE", compile));
+        YDS_NESTED_ERROR_CALL(m_device->CreateVertexShader(
+                &m_consolePixelShader, (basePath + L"/glsl/delta_console_shader.frag").c_str(),
+                (compiledPath + L"ps_console.frag.compiled").c_str(), "PS_CONSOLE", compile));
 
-        swprintf_s(buffer, L"%s%s", shaderDirectory, L"/glsl/delta_console_shader.vert");
-        YDS_NESTED_ERROR_CALL(m_device->CreateVertexShader(&m_consoleVertexShader, buffer, "VS"));
-
-        swprintf_s(buffer, L"%s%s", shaderDirectory, L"/glsl/delta_console_shader.frag");
-        YDS_NESTED_ERROR_CALL(m_device->CreatePixelShader(&m_consolePixelShader, buffer, "PS"));
-
-        swprintf_s(buffer, L"%s%s", shaderDirectory, L"/glsl/delta_saq_shader.vert");
-        YDS_NESTED_ERROR_CALL(m_device->CreateVertexShader(&m_saqVertexShader, buffer, "VS"));
-
-        swprintf_s(buffer, L"%s%s", shaderDirectory, L"/glsl/delta_saq_shader.frag");
-        YDS_NESTED_ERROR_CALL(m_device->CreatePixelShader(&m_saqPixelShader, buffer, "PS"));
+        YDS_NESTED_ERROR_CALL(m_device->CreateVertexShader(
+                &m_saqVertexShader, (basePath + L"/glsl/delta_saq_shader.vert").c_str(),
+                (compiledPath + L"vs_saq.vert.compiled").c_str(), "VS_SAQ", compile));
+        YDS_NESTED_ERROR_CALL(m_device->CreateVertexShader(
+                &m_saqPixelShader, (basePath + L"/glsl/delta_saq_shader.frag").c_str(),
+                (compiledPath + L"ps_saq.frag.compiled").c_str(), "PS_SAQ", compile));
     }
 
     m_skinnedFormat.AddChannel("POSITION", 0, ysRenderGeometryChannel::ChannelFormat::R32G32B32A32_FLOAT);

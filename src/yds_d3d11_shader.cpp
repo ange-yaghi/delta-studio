@@ -6,7 +6,8 @@ ysD3D11Shader::ysD3D11Shader() : ysShader(DeviceAPI::DirectX11) {
     m_geometryShader = nullptr;
     m_vertexShader = nullptr;
     m_pixelShader = nullptr;
-    m_shaderBlob = nullptr;
+    m_shaderByteCode = nullptr;
+    m_shaderSize = 0U;
 }
 
 ysD3D11Shader::~ysD3D11Shader() {

@@ -297,6 +297,24 @@ ysError ysDevice::DestroyGPUBuffer(ysGPUBuffer *&buffer) {
     return YDS_ERROR_RETURN(ysError::None); 
 }
 
+ysError ysDevice::CreateVertexShader(ysShader **newShader,
+                                     const wchar_t *shaderFilename,
+                                     const char *shaderName,
+                                     bool compile) {
+    const std::wstring baseFilename = shaderFilename;
+    const std::wstring compiledFilename = baseFilename + L".compiled";
+    return CreateVertexShader(newShader, baseFilename.c_str(), compiledFilename.c_str(), shaderName, compile);
+}
+
+ysError ysDevice::CreatePixelShader(ysShader **newShader,
+                                    const wchar_t *shaderFilename,
+                                    const char *shaderName,
+                                    bool compile) {
+    const std::wstring baseFilename = shaderFilename;
+    const std::wstring compiledFilename = baseFilename + L".compiled";
+    return CreatePixelShader(newShader, baseFilename.c_str(), compiledFilename.c_str(), shaderName, compile);
+}
+
 ysError ysDevice::DestroyShader(ysShader *&shader) {
     YDS_ERROR_DECLARE("DestroyShader");
 

@@ -193,11 +193,11 @@ ysError ysVulkanDevice::DestroyGPUBuffer(ysGPUBuffer *&buffer) {
     return ysError();
 }
 
-ysError ysVulkanDevice::CreateVertexShader(ysShader **newShader, const wchar_t *shaderFilename, const char *shaderName) {
+ysError ysVulkanDevice::CreateVertexShader(ysShader **newShader, const wchar_t *shaderFilename, const wchar_t *compiledFilename, const char *shaderName, bool compile) {
     return ysError();
 }
 
-ysError ysVulkanDevice::CreatePixelShader(ysShader **newShader, const wchar_t *shaderFilename, const char *shaderName) {
+ysError ysVulkanDevice::CreatePixelShader(ysShader **newShader, const wchar_t *shaderFilename, const wchar_t *compiledFilename, const char *shaderName, bool compile) {
     return ysError();
 }
 

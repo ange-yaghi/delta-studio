@@ -2,6 +2,7 @@
 
 #include "../include/path.h"
 
+#define NOMINMAX
 #include <Windows.h>
 
 dbasic::Path dbasic::GetModulePath() {

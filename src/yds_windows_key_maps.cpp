@@ -1,5 +1,6 @@
 #include "../include/yds_key_maps.h"
 
+#define NOMINMAX
 #include <Windows.h>
 
 ysKey::Code *ysKeyMaps::m_windowsKeyMap;

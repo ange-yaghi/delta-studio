@@ -47,6 +47,8 @@ namespace dbasic {
             ysWindow::WindowStyle WindowStyle = ysWindow::WindowStyle::Windowed;
             ysContextObject::DeviceAPI API = ysContextObject::DeviceAPI::DirectX11;
             const wchar_t *ShaderDirectory = L"../DeltaEngineTullahoma/Shaders/";
+            const wchar_t *ShaderCompiledDirectory = L"../DeltaEngineTullahoma/Shaders/";
+            bool CompileShaders = true;
             const wchar_t *LoggingDirectory = L"";
             bool DepthBuffer = true;
             bool FrameLogging = false;
@@ -227,7 +229,7 @@ namespace dbasic {
     protected:
         // Initialization Routines
         ysError InitializeGeometry();
-        ysError InitializeShaders(const wchar_t *shaderDirectory);
+        ysError InitializeShaders(const wchar_t *shaderDirectory, const wchar_t *shaderCompiledDirectory, bool compile);
 
         ysError InitializeBreakdownTimer(const wchar_t *loggingDirectory);
 

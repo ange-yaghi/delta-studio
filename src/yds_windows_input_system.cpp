@@ -5,6 +5,7 @@
 #include "../include/yds_windows_window.h"
 #include "../include/yds_windows_window_system.h"
 
+#define NOMINMAX
 #include <Windows.h>
 #include <windowsx.h>
 

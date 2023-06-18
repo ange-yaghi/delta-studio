@@ -90,6 +90,9 @@ public:
     void SetGameResolutionScaleVertical(float scale);
     float GetGameResolutionScaleVertical() const { return m_gameResolutionScaleVertical; }
 
+    inline void SetBackgroundColor(const ysVector &color) { m_backgroundColor = color; }
+    inline ysVector GetBackgroundColor() const { return m_backgroundColor; }
+
 public:
     // Handlers
     void OnMoveWindow(int x, int y);
@@ -144,6 +147,8 @@ protected:
 
     float m_gameResolutionScaleHorizontal;
     float m_gameResolutionScaleVertical;
+
+    ysVector m_backgroundColor;
 
 protected:
     // Event handler

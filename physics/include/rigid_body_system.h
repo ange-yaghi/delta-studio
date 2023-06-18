@@ -9,6 +9,7 @@
 #include "rigid_body_link.h"
 #include "grid_partition_system.h"
 
+#define NOMINMAX
 #include <Windows.h>
 #include <fstream>
 

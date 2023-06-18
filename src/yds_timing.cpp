@@ -1,6 +1,7 @@
 #include "../include/yds_timing.h"
 
-#include <windows.h>
+#define NOMINMAX
+#include <Windows.h>
 #include <mmsystem.h>
 
 #include <intrin.h>

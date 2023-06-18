@@ -15,7 +15,8 @@ public:
     virtual void SetDebugName(const std::string &debugName);
 
 protected:
-    ID3D10Blob *m_shaderBlob;
+    void *m_shaderByteCode;
+    SIZE_T m_shaderSize;
 
     union {
         ID3D11VertexShader *    m_vertexShader;

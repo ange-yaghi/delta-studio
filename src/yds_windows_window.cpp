@@ -41,7 +41,7 @@ ysError ysWindowsWindow::InitializeWindow(
 
     if (!CheckCompatibility(parent)) return YDS_ERROR_RETURN(ysError::IncompatiblePlatforms);
 
-    YDS_NESTED_ERROR_CALL(ysWindow::InitializeWindow(parent, title, style, x, y, width, height, monitor));
+    YDS_NESTED_ERROR_CALL(ysWindow::InitializeWindow(parent, title, style, x, y, width, height, monitor, color));
 
     ysWindowsWindow *parentWindow = static_cast<ysWindowsWindow *>(parent);
 

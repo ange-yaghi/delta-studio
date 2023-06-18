@@ -121,7 +121,9 @@ enum class ysError {
     NoAudioDevice,
     CouldNotCreateDS8DeviceInvalidParam,
     CouldNotCreateDS8DeviceNoDriver,
-    CouldNotCreateDS8DeviceOther
+    CouldNotCreateDS8DeviceOther,
+
+    CouldNotLoadCompiledShader
 };
 
 #endif /* YDS_ERROR_CODES_H */

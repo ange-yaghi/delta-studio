@@ -146,6 +146,18 @@ LRESULT WINAPI ysWindowsWindowSystem::WinProc(HWND hWnd, UINT msg,
             case WM_DESTROY:
                 PostQuitMessage(0);
                 return 0;
+            case WM_ERASEBKGND: {
+                const ysVector color = ysColor::linearToSrgb(target->GetBackgroundColor());
+                HBRUSH brush = CreateSolidBrush(RGB(
+                    (int)(ysMath::GetX(color) * 255.0f),
+                    (int)(ysMath::GetY(color) * 255.0f),
+                    (int)(ysMath::GetZ(color) * 255.0f)));
+
+                RECT rc;
+                GetClientRect(hWnd, &rc);
+                FillRect(reinterpret_cast<HDC>(wParam), &rc, brush);
+                return TRUE;
+            }
             case WM_PAINT:
                 hdc = BeginPaint(hWnd, &ps);
                 EndPaint(hWnd, &ps);

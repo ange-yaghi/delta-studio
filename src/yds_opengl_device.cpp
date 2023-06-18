@@ -658,7 +658,8 @@ ysError ysOpenGLDevice::EditBufferData(ysGPUBuffer *buffer, char *data) {
 }
 
 // Shaders
-ysError ysOpenGLDevice::CreateVertexShader(ysShader **newShader, const wchar_t *shaderFilename, const char *shaderName) {
+ysError ysOpenGLDevice::CreateVertexShader(ysShader **newShader, const wchar_t *shaderFilename,
+    const wchar_t *compiledFilename, const char *shaderName, bool compile) {
     YDS_ERROR_DECLARE("CreateVertexShader");
 
     if (newShader == nullptr) return YDS_ERROR_RETURN(ysError::InvalidParameter);
@@ -709,7 +710,8 @@ ysError ysOpenGLDevice::CreateVertexShader(ysShader **newShader, const wchar_t *
     return YDS_ERROR_RETURN(ysError::None);
 }
 
-ysError ysOpenGLDevice::CreatePixelShader(ysShader **newShader, const wchar_t *shaderFilename, const char *shaderName) {
+ysError ysOpenGLDevice::CreatePixelShader(ysShader **newShader, const wchar_t *shaderFilename,
+    const wchar_t *compiledFilename, const char *shaderName, bool compile) {
     YDS_ERROR_DECLARE("CreatePixelShader");
 
     if (newShader == nullptr) return YDS_ERROR_RETURN(ysError::InvalidParameter);
@@ -742,7 +744,6 @@ ysError ysOpenGLDevice::CreatePixelShader(ysShader **newShader, const wchar_t *s
 
     // Check Compilation
     int shaderCompiled;
-
     m_realContext->glGetShaderiv(shaderHandle, GL_COMPILE_STATUS, &shaderCompiled);
 
     if (!shaderCompiled) {

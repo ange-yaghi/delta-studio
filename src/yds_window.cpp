@@ -60,12 +60,12 @@ ysWindow::ysWindow(Platform platform)
     m_resizing = false;
 
     m_eventHandler = nullptr;
+    m_backgroundColor = ysMath::LoadVector(0.0f, 0.0f, 0.0f, 1.0f);
 
     m_gameResolutionScaleHorizontal = m_gameResolutionScaleVertical = 1.0f;
 }
 
-ysWindow::~ysWindow() { /* void */
-}
+ysWindow::~ysWindow() {}
 
 ysError ysWindow::InitializeWindow(ysWindow *parent, const wchar_t *title,
                                    WindowStyle style, int x, int y, int width,
@@ -90,6 +90,7 @@ ysError ysWindow::InitializeWindow(ysWindow *parent, const wchar_t *title,
     m_windowState = WindowState::Hidden;// DEFAULT
     m_windowStyle = style;
 
+    m_backgroundColor = color;
     m_monitor = monitor;
 
     return YDS_ERROR_RETURN(ysError::None);

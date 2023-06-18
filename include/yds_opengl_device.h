@@ -52,9 +52,9 @@ public:
     virtual ysError DestroyGPUBuffer(ysGPUBuffer *&buffer);
 
     // Shaders
-    virtual ysError CreateVertexShader(ysShader **newShader, const wchar_t *shaderFilename, const char *shaderName);
-    virtual ysError CreatePixelShader(ysShader **newShader, const wchar_t *shaderFilename, const char *shaderName);
-    virtual ysError DestroyShader(ysShader *&shader);
+    virtual ysError CreateVertexShader(ysShader **newShader, const wchar_t *shaderFilename, const wchar_t *compiledFilename, const char *shaderName, bool compile) override;
+    virtual ysError CreatePixelShader(ysShader **newShader, const wchar_t *shaderFilename, const wchar_t *compiledFilename, const char *shaderName, bool compile) override;
+    virtual ysError DestroyShader(ysShader *&shader) override;
 
     // Shader Programs
     virtual ysError CreateShaderProgram(ysShaderProgram **newProgram);

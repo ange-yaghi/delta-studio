@@ -1,5 +1,6 @@
 #include "../include/yds_d3d11_device.h"
 
+#define NOMINMAX
 #include "../include/yds_d3d11_context.h"
 #include "../include/yds_d3d11_render_target.h"
 #include "../include/yds_d3d11_gpu_buffer.h"
@@ -16,8 +17,13 @@
 #include <SDL.h>
 #include <SDL_image.h>
 
+#include <fstream>
+
 #pragma warning(push, 0)
+
+#if YDS_SUPPORTS_SHADER_COMPILATION
 #include <d3dcompiler.h>
+#endif
 
 #ifdef _DEBUG
 #include <dxgi1_3.h>
@@ -990,7 +996,9 @@ ysError ysD3D11Device::DestroyGPUBuffer(ysGPUBuffer *&buffer) {
 }
 
 // Shaders
-ysError ysD3D11Device::CreateVertexShader(ysShader **newShader, const wchar_t *shaderFilename, const char *shaderName) {
+ysError ysD3D11Device::CreateVertexShader(
+    ysShader **newShader, const wchar_t *shaderFilename,
+    const wchar_t *compiledFilename, const char *shaderName, bool compile) {
     YDS_ERROR_DECLARE("CreateVertexShader");
 
     if (newShader == nullptr) return YDS_ERROR_RETURN(ysError::InvalidParameter);
@@ -999,34 +1007,77 @@ ysError ysD3D11Device::CreateVertexShader(ysShader **newShader, const wchar_t *s
     if (shaderFilename == nullptr) return YDS_ERROR_RETURN(ysError::InvalidParameter);
     if (shaderName == nullptr) return YDS_ERROR_RETURN(ysError::InvalidParameter);
 
-    ID3D11VertexShader *vertexShader = nullptr;
-    ID3D10Blob *error = nullptr;
-    ID3D10Blob *shaderBlob = nullptr;
+    HRESULT result;
+    void *shaderByteCode = nullptr;
+    SIZE_T shaderSize = 0;
 
-    HRESULT result = D3DCompileFromFile(shaderFilename, nullptr, nullptr, shaderName,
-                                "vs_4_0", D3DCOMPILE_ENABLE_STRICTNESS, 0,
-                                &shaderBlob, &error);
+#if YDS_SUPPORTS_SHADER_COMPILATION
+    if (compile) {
+        ID3D10Blob *error = nullptr;
+        ID3D10Blob *shaderBlob = nullptr;
 
-    if (FAILED(result) || shaderBlob == nullptr) {
-        if (error != nullptr) {
-            return YDS_ERROR_RETURN_MSG(ysError::VertexShaderCompilationError,
-                                        (char *) error->GetBufferPointer());
-        } else {
-            return YDS_ERROR_RETURN_MSG(ysError::VertexShaderCompilationError,
-                                        "No error blob");
+        result = D3DCompileFromFile(shaderFilename, nullptr, nullptr, shaderName,
+                                    "vs_4_0", D3DCOMPILE_ENABLE_STRICTNESS, 0,
+                                    &shaderBlob, &error);
+
+        if (FAILED(result) || shaderBlob == nullptr) {
+            if (error != nullptr) {
+                return YDS_ERROR_RETURN_MSG(ysError::VertexShaderCompilationError,
+                                            (char *) error->GetBufferPointer());
+            } else {
+                return YDS_ERROR_RETURN_MSG(ysError::VertexShaderCompilationError,
+                                            "No error blob");
+            }
         }
+    
+        std::fstream output(compiledFilename, std::ios::out | std::ios::binary);
+        if (!output.is_open()) {
+            return YDS_ERROR_RETURN(ysError::VertexShaderCompilationError);
+        }
+
+        output.write((char *)shaderBlob->GetBufferPointer(), shaderBlob->GetBufferSize());
+        output.close();
+
+        shaderByteCode = malloc(shaderBlob->GetBufferSize());
+        if (shaderByteCode == nullptr) {
+            return YDS_ERROR_RETURN(ysError::VertexShaderCompilationError);
+        }
+
+        shaderSize = shaderBlob->GetBufferSize();
+        memcpy(shaderByteCode, shaderBlob->GetBufferPointer(), shaderSize);
+
+        shaderBlob->Release();
+    }
+#endif
+
+    if (shaderByteCode == nullptr) {
+        std::fstream input(compiledFilename, std::ios::in | std::ios::binary);
+        if (!input.is_open()) {
+            return YDS_ERROR_RETURN(ysError::CouldNotLoadCompiledShader);
+        }
+
+        input.ignore( std::numeric_limits<std::streamsize>::max() );
+        std::streamsize length = input.gcount();
+
+        input.clear();
+        input.seekg(0, std::ios_base::beg);
+
+        shaderSize = size_t(length);
+        shaderByteCode = malloc(shaderSize);
+        input.read(static_cast<char *>(shaderByteCode), shaderSize);
     }
 
-    result = m_device->CreateVertexShader(shaderBlob->GetBufferPointer(), shaderBlob->GetBufferSize(), nullptr, &vertexShader);
+    ID3D11VertexShader *vertexShader = nullptr;
+    result = m_device->CreateVertexShader(shaderByteCode, shaderSize, nullptr, &vertexShader);
     if (FAILED(result)) {
-        shaderBlob->Release();
-
+        free(shaderByteCode);
         return YDS_ERROR_RETURN(ysError::CouldNotCreateShader);
     }
 
     ysD3D11Shader *newD3D11Shader = m_shaders.NewGeneric<ysD3D11Shader>();
     newD3D11Shader->m_vertexShader = vertexShader;
-    newD3D11Shader->m_shaderBlob = shaderBlob;
+    newD3D11Shader->m_shaderByteCode = shaderByteCode;
+    newD3D11Shader->m_shaderSize = shaderSize;
 
     wcscpy_s(newD3D11Shader->m_filename, 256, shaderFilename);
     strcpy_s(newD3D11Shader->m_shaderName, 64, shaderName);
@@ -1041,7 +1092,9 @@ ysError ysD3D11Device::CreateVertexShader(ysShader **newShader, const wchar_t *s
     return YDS_ERROR_RETURN(ysError::None);
 }
 
-ysError ysD3D11Device::CreatePixelShader(ysShader **newShader, const wchar_t *shaderFilename, const char *shaderName) {
+ysError ysD3D11Device::CreatePixelShader(ysShader **newShader,
+    const wchar_t *shaderFilename, const wchar_t *compiledFilename,
+    const char *shaderName, bool compile) {
     YDS_ERROR_DECLARE("CreatePixelShader");
 
     if (newShader == nullptr) return YDS_ERROR_RETURN(ysError::InvalidParameter);
@@ -1050,32 +1103,76 @@ ysError ysD3D11Device::CreatePixelShader(ysShader **newShader, const wchar_t *sh
     if (shaderFilename == nullptr) return YDS_ERROR_RETURN(ysError::InvalidParameter);
     if (shaderName == nullptr) return YDS_ERROR_RETURN(ysError::InvalidParameter);
 
-    ID3D11PixelShader *pixelShader = nullptr;
-    ID3D10Blob *error = nullptr;
-    ID3D10Blob *shaderBlob = nullptr;
+    void *shaderByteCode = nullptr;
+    SIZE_T shaderSize = 0U;
 
-    HRESULT result = D3DCompileFromFile(
-            shaderFilename, nullptr, nullptr, shaderName, "ps_4_0",
-            D3DCOMPILE_ENABLE_STRICTNESS, 0, &shaderBlob, &error);
+    HRESULT result;
+#if YDS_SUPPORTS_SHADER_COMPILATION
+    if (compile) {
+        ID3D10Blob *error = nullptr;
+        ID3D10Blob *shaderBlob = nullptr;
 
-    if (FAILED(result) || shaderBlob == nullptr) {
-        if (error != nullptr) {
-            return YDS_ERROR_RETURN_MSG(ysError::FragmentShaderCompilationError,
-                                        (char *) error->GetBufferPointer());
-        } else {
-            return YDS_ERROR_RETURN_MSG(ysError::FragmentShaderCompilationError,
-                                        "No error blob");
+        result = D3DCompileFromFile(
+                shaderFilename, nullptr, nullptr, shaderName, "ps_4_0",
+                D3DCOMPILE_ENABLE_STRICTNESS, 0, &shaderBlob, &error);
+
+        if (FAILED(result) || shaderBlob == nullptr) {
+            if (error != nullptr) {
+                return YDS_ERROR_RETURN_MSG(ysError::FragmentShaderCompilationError,
+                                            (char *) error->GetBufferPointer());
+            } else {
+                return YDS_ERROR_RETURN_MSG(ysError::FragmentShaderCompilationError,
+                                            "No error blob");
+            }
         }
+
+        std::fstream output(compiledFilename, std::ios::out | std::ios::binary);
+        if (!output.is_open()) {
+            return YDS_ERROR_RETURN(ysError::VertexShaderCompilationError);
+        }
+
+        output.write((char *)shaderBlob->GetBufferPointer(), shaderBlob->GetBufferSize());
+        output.close();
+
+        shaderByteCode = malloc(shaderBlob->GetBufferSize());
+        if (shaderByteCode == nullptr) {
+            return YDS_ERROR_RETURN(ysError::VertexShaderCompilationError);
+        }
+
+        shaderSize = shaderBlob->GetBufferSize();
+        memcpy(shaderByteCode, shaderBlob->GetBufferPointer(), shaderSize);
+
+        shaderBlob->Release();
+    }
+#endif
+
+    if (shaderByteCode == nullptr) {
+        std::fstream input(compiledFilename, std::ios::in | std::ios::binary);
+        if (!input.is_open()) {
+            return YDS_ERROR_RETURN(ysError::CouldNotLoadCompiledShader);
+        }
+
+        input.ignore( std::numeric_limits<std::streamsize>::max() );
+        std::streamsize length = input.gcount();
+
+        input.clear();
+        input.seekg(0, std::ios_base::beg);
+
+        shaderSize = size_t(length);
+        shaderByteCode = malloc(shaderSize);
+        input.read(static_cast<char *>(shaderByteCode), shaderSize);
     }
 
-    result = m_device->CreatePixelShader(shaderBlob->GetBufferPointer(), shaderBlob->GetBufferSize(), nullptr, &pixelShader);
+    ID3D11PixelShader *pixelShader = nullptr;
+    result = m_device->CreatePixelShader(shaderByteCode, shaderSize, nullptr, &pixelShader);
     if (FAILED(result)) {
-        shaderBlob->Release();
+        free(shaderByteCode);
         return YDS_ERROR_RETURN(ysError::CouldNotCreateShader);
     }
 
     ysD3D11Shader *newD3D11Shader = m_shaders.NewGeneric<ysD3D11Shader>();
-    newD3D11Shader->m_shaderBlob = shaderBlob;
+    newD3D11Shader->m_shaderByteCode = shaderByteCode;
+    newD3D11Shader->m_shaderSize = shaderSize;
     newD3D11Shader->m_pixelShader = pixelShader;
 
     wcscpy_s(newD3D11Shader->m_filename, 256, shaderFilename);
@@ -1124,7 +1221,7 @@ ysError ysD3D11Device::DestroyShader(ysShader *&shader) {
     ysD3D11Shader *d3d11Shader = static_cast<ysD3D11Shader *>(shader);
     bool active = (m_activeShaderProgram != nullptr) && (m_activeShaderProgram->GetShader(shader->GetShaderType()) == shader);
 
-    d3d11Shader->m_shaderBlob->Release();
+    free(d3d11Shader->m_shaderByteCode);
 
     switch (shader->GetShaderType()) {
     case ysShader::ShaderType::Vertex:
@@ -1242,8 +1339,8 @@ ysError ysD3D11Device::CreateInputLayout(ysInputLayout **newInputLayout, ysShade
     result = m_device->CreateInputLayout(
         descArray,
         nChannels,
-        d3d11Shader->m_shaderBlob->GetBufferPointer(),
-        d3d11Shader->m_shaderBlob->GetBufferSize(),
+        d3d11Shader->m_shaderByteCode,
+        d3d11Shader->m_shaderSize,
         &layout);
 
     if (FAILED(result)) {

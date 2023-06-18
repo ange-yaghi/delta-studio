@@ -16,8 +16,8 @@ public:
     virtual ~ysD3D10Shader();
 
 protected:
-
-    ID3D10Blob *m_shaderBlob;
+    void *m_shaderByteCode;
+    SIZE_T m_shaderSize;
 
     union
     {
