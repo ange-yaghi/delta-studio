@@ -45,15 +45,13 @@ ysError ysDS8AudioSource::UnlockBuffer(void *buffer, SampleOffset samples) {
     }
 
     return YDS_ERROR_RETURN(ysError::None);
-
-    return YDS_ERROR_RETURN(ysError::None);
 }
 
 ysError ysDS8AudioSource::LockBufferSegment(SampleOffset offset, SampleOffset samples, void **segment1, SampleOffset* size1, void **segment2, SampleOffset* size2) {
     YDS_ERROR_DECLARE("LockBufferSegment");
 
     HRESULT result;
-    YDS_NESTED_ERROR_CALL( ysAudioSource::LockBufferSegment(offset, samples, segment1, size1, segment2, size2) );
+    YDS_NESTED_ERROR_CALL(ysAudioSource::LockBufferSegment(offset, samples, segment1, size1, segment2, size2));
 
     DWORD totalSize = m_audioParameters.GetSizeFromSamples(samples);
     DWORD byteOffset = m_audioParameters.GetSizeFromSamples(offset);
@@ -63,6 +61,9 @@ ysError ysDS8AudioSource::LockBufferSegment(SampleOffset offset, SampleOffset sa
     result = m_buffer->Lock(byteOffset, totalSize, segment1, &segment1Size, segment2, &segment2Size, 0);
 
     if (FAILED(result)) {
+        if (result == DSERR_BUFFERLOST) { m_buffer->Restore(); }
+        YDS_NESTED_ERROR_CALL(ysAudioSource::UnlockBufferSegments(segment1, segment1Size, segment2, segment2Size));
+
         ResetLock();
         return YDS_ERROR_RETURN(ysError::ApiError);
     }
@@ -74,7 +75,7 @@ ysError ysDS8AudioSource::UnlockBufferSegments(void *segment1, SampleOffset segm
     YDS_ERROR_DECLARE("UnlockBufferSegments");
 
     HRESULT result;
-    YDS_NESTED_ERROR_CALL( ysAudioSource::UnlockBufferSegments(segment1, segment1Size, segment2, segment2Size) );
+    YDS_NESTED_ERROR_CALL(ysAudioSource::UnlockBufferSegments(segment1, segment1Size, segment2, segment2Size));
 
     result = m_buffer->Unlock(segment1, segment1Size, segment2, segment2Size);
 
