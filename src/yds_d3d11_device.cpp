@@ -12,10 +12,8 @@
 
 #include "../include/yds_windows_window.h"
 
+#include "../include/yds_stb_image.h"
 #include <d3d11.h>
-
-#include <SDL.h>
-#include <SDL_image.h>
 
 #include <fstream>
 
@@ -1409,15 +1407,16 @@ ysError ysD3D11Device::CreateTexture(ysTexture **newTexture, const wchar_t *fnam
     D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc;
     
     std::wstring_convert<std::codecvt_utf8<wchar_t>> utf8_conv;
-    SDL_Surface *pTexSurface = IMG_Load(utf8_conv.to_bytes(std::wstring(fname)).c_str());
-    if (pTexSurface == nullptr) {
+    int width, height, channels;
+    stbi_uc *pixels = stbi_load(utf8_conv.to_bytes(std::wstring(fname)).c_str(), &width, &height, &channels, 4);
+    if (pixels == nullptr) {
         return YDS_ERROR_RETURN(ysError::CouldNotOpenTexture);
     }
 
     D3D11_TEXTURE2D_DESC desc;
     ZeroMemory(&desc, sizeof(D3D11_TEXTURE2D_DESC));
-    desc.Width = pTexSurface->w;
-    desc.Height = pTexSurface->h;
+    desc.Width = width;
+    desc.Height = height;
     desc.MipLevels = desc.ArraySize = 1;
     desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
     desc.SampleDesc.Count = 1;
@@ -1428,7 +1427,7 @@ ysError ysD3D11Device::CreateTexture(ysTexture **newTexture, const wchar_t *fnam
     desc.MiscFlags = 0;
 
     D3D11_SUBRESOURCE_DATA data;
-    data.pSysMem = pTexSurface->pixels;
+    data.pSysMem = pixels;
     data.SysMemPitch = desc.Width * sizeof(unsigned char) * 4;
     data.SysMemSlicePitch = 0;
 
@@ -1437,7 +1436,7 @@ ysError ysD3D11Device::CreateTexture(ysTexture **newTexture, const wchar_t *fnam
         return YDS_ERROR_RETURN(ysError::CouldNotOpenTexture);
     }
 
-    SDL_FreeSurface(pTexSurface);
+    stbi_image_free(pixels);
 
     newD3DTexture->GetDesc(&desc);
     ZeroMemory(&srvDesc, sizeof(srvDesc));

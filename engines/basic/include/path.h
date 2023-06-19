@@ -2,17 +2,12 @@
 #define DELTA_BASIC_PATH_H
 
 #include <string>
-
-namespace boost {
-    namespace filesystem {
-        class path;
-    } /* namespace filesystem */
-} /* namespace boost */
+#include <filesystem>
 
 namespace dbasic {
 
     class Path {
-    protected: Path(const boost::filesystem::path &path);
+    protected: Path(const std::filesystem::path &path);
     public:
         Path(const std::wstring &path);
         Path(const wchar_t *path);
@@ -39,10 +34,10 @@ namespace dbasic {
         bool Exists() const;
 
     protected:
-        boost::filesystem::path *m_path;
+        std::filesystem::path *m_path;
 
     protected:
-        const boost::filesystem::path &GetBoostPath() const { return *m_path; }
+        const std::filesystem::path &GetBoostPath() const { return *m_path; }
     };
 
 } /* namespace dbasic */

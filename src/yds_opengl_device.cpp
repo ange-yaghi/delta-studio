@@ -10,9 +10,8 @@
 #include "../include/yds_opengl_windows_context.h"
 
 #include "OpenGL.h"
-#include <SDL.h>
-#include <SDL_image.h>
 
+#include "../include/yds_stb_image.h"
 #include "../include/yds_file.h"
 
 #include <codecvt>
@@ -912,31 +911,6 @@ ysError ysOpenGLDevice::DestroyInputLayout(ysInputLayout *&layout) {
     return YDS_ERROR_RETURN(ysError::None);
 }
 
-unsigned int ysOpenGLDevice::GetPixel(SDL_Surface *surface, int x, int y) {
-    const int bpp = surface->format->BytesPerPixel;
-    Uint8 *p = (Uint8 *)surface->pixels + y * surface->pitch + x * bpp;
-
-    switch (bpp) {
-    case 1:
-        return *p;
-        break;
-    case 2:
-        return *(Uint16 *)p;
-        break;
-    case 3:
-        if (SDL_BYTEORDER == SDL_BIG_ENDIAN)
-            return p[0] << 16 | p[1] << 8 | p[2];
-        else
-            return p[0] | p[1] << 8 | p[2] << 16;
-        break;
-    case 4:
-        return *(Uint32 *)p;
-        break; 
-    default:
-        return 0; // Avoid warnings
-    }
-}
-
 ysError ysOpenGLDevice::CreateTexture(ysTexture **texture, const wchar_t *fname) {
     YDS_ERROR_DECLARE("CreateTexture");
 
@@ -947,12 +921,11 @@ ysError ysOpenGLDevice::CreateTexture(ysTexture **texture, const wchar_t *fname)
 
     bool useAlpha = true;
 
-    // Use SDL to load the image
     std::wstring_convert<std::codecvt_utf8<wchar_t>> utf8_conv;
-    SDL_Surface *pTexSurface = IMG_Load(utf8_conv.to_bytes(std::wstring(fname)).c_str());
-    if (pTexSurface == nullptr) {
-        const char *err = IMG_GetError();
-        return YDS_ERROR_RETURN(ysError::CouldNotOpenFile);
+    int width, height, channels;
+    stbi_uc *pixels = stbi_load(utf8_conv.to_bytes(std::wstring(fname)).c_str(), &width, &height, &channels, (useAlpha ? 4 : 3));
+    if (pixels == nullptr) {
+        return YDS_ERROR_RETURN(ysError::CouldNotOpenTexture);
     }
 
     ysOpenGLTexture *newTexture = m_textures.NewGeneric<ysOpenGLTexture>();
@@ -964,53 +937,21 @@ ysError ysOpenGLDevice::CreateTexture(ysTexture **texture, const wchar_t *fname)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
-    newTexture->m_width = pTexSurface->w;
-    newTexture->m_height = pTexSurface->h;
+    newTexture->m_width = width;
+    newTexture->m_height = height;
 
     int nBytes = newTexture->m_width * newTexture->m_height * (useAlpha ? 4 : 3);
     int size = 0;
-
-    Uint8 *imageData = new Uint8[nBytes];
-
-    int pos = 0;
-    int y;
-    int x;
-
-    int index = 0;
-
-    for (y = (newTexture->m_height - 1); y > -1; y--) {
-        for (x = 0; x < newTexture->m_width; x++) {
-            Uint8 r = 0, g = 0, b = 0, a = 0;
-
-            Uint32 colour = GetPixel(pTexSurface, x, y);
-
-            if (!useAlpha) {
-                SDL_GetRGB(colour, pTexSurface->format, &r, &g, &b);
-            }
-            else {
-                SDL_GetRGBA(colour, pTexSurface->format, &r, &g, &b, &a);
-            }
-
-            imageData[index] = r; ++index;
-            imageData[index] = g; ++index;
-            imageData[index] = b; ++index;
-
-            if (useAlpha) {
-                imageData[index] = a; index++;
-            }
-        }
-    }
 
     const int texType = (useAlpha) ? GL_RGBA : GL_RGB;
 
     if (!useAlpha) glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
     else glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
 
-    glTexImage2D(GL_TEXTURE_2D, 0, texType, newTexture->m_width, newTexture->m_height, 0, texType, GL_UNSIGNED_BYTE, imageData);
+    glTexImage2D(GL_TEXTURE_2D, 0, texType, newTexture->m_width, newTexture->m_height, 0, texType, GL_UNSIGNED_BYTE, pixels);
     m_realContext->glGenerateMipmap(GL_TEXTURE_2D); // TEMP
 
-    SDL_FreeSurface(pTexSurface);
-    delete[] imageData;
+    stbi_image_free(pixels);
 
     *texture = static_cast<ysTexture *>(newTexture);
 

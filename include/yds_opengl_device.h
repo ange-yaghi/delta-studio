@@ -93,9 +93,6 @@ protected:
     // Static functions
     // --------------------------------------------------------------
 
-    // Retrieve a pixel from an SDL surface
-    static unsigned int GetPixel(SDL_Surface *surface, int x, int y);
-
     // Get a GL type from a geometry channel format
     static int GetFormatGLType(ysRenderGeometryChannel::ChannelFormat format);
     static int GetFramebufferName(int slot);

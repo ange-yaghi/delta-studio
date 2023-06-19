@@ -6,7 +6,7 @@ set_property(GLOBAL PROPERTY PREDEFINED_TARGETS_FOLDER "cmake")
 
 project(delta-studio)
 
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake/")
 
 if (CMAKE_SIZEOF_VOID_P EQUAL 8)
@@ -45,21 +45,6 @@ set(
     VULKAN_LIBS
     ${CMAKE_CURRENT_SOURCE_DIR}/dependencies/libraries/vulkan/lib/${TARGET_ARCHITECTURE})
 include_directories(dependencies/libraries/vulkan/include)
-
-# =========================================================
-# SDL2
-
-find_package(SDL2 REQUIRED)
-find_package(SDL2_image REQUIRED)
-include_directories(${SDL2_INCLUDE_DIRS} ${SDL2_IMAGE_INCLUDE_DIRS})
-
-# =========================================================
-# Boost
-
-set(Boost_USE_STATIC_LIBS ON)
-set(Boost_USE_MULTITHREADED ON)
-set(Boost_USE_STATIC_RUNTIME OFF)
-find_package(Boost 1.40 COMPONENTS filesystem REQUIRED)
 
 # =========================================================
 # STB
@@ -155,6 +140,7 @@ add_library(delta-core STATIC
     src/yds_shader.cpp
     src/yds_shader_program.cpp
     src/yds_stat.cpp
+    src/yds_stb_image.cpp
     src/yds_texture.cpp
     src/yds_time_tag_data.cpp
     src/yds_timing.cpp
@@ -281,6 +267,7 @@ add_library(delta-core STATIC
     include/yds_shader.h
     include/yds_shader_program.h
     include/yds_stat.h
+    include/yds_stb_image.h
     include/yds_texture.h
     include/yds_time_tag_data.h
     include/yds_timing.h
@@ -313,10 +300,6 @@ add_library(delta-core STATIC
 target_compile_definitions(delta-core PUBLIC _UNICODE UNICODE)
 
 target_link_libraries(delta-core PUBLIC
-    # SDL
-    ${SDL2_LIBRARY}
-    ${SDL2_IMAGE_LIBRARIES}
-
     d3d9.lib
     d3d10.lib
     d3d11.lib
@@ -335,9 +318,6 @@ target_link_libraries(delta-core PUBLIC
 
     # Vulkan
     ${VULKAN_LIBS}/vulkan-1.lib
-
-    # Boost
-    Boost::filesystem
 
     winmm
     OpenGL32
