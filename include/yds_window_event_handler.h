@@ -11,6 +11,8 @@ public:
     ysWindowEventHandler();
     virtual ~ysWindowEventHandler();
 
+    virtual void OnStartMoveResize() {}
+    virtual void OnEndMoveResize() {}
     virtual void OnMoveWindow(int x, int y) { (void)x; (void)y; }
     virtual void OnResizeWindow(int w, int h) { (void)w; (void)h; }
     virtual void OnActivate() { /* void */ }

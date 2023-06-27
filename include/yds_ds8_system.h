@@ -22,6 +22,7 @@ protected:
     ysDS8Device *AddDS8Device();
 
     static BOOL CALLBACK DirectSoundEnumProc(LPGUID lpGUID, LPCTSTR lpszDesc, LPCTSTR lpszDrvName, LPVOID lpContext);
+    GUID m_primaryDeviceGuid;
 };
 
 #endif /* YDS_DS8_SYSTEM_H */

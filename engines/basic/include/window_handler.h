@@ -5,23 +5,26 @@
 
 namespace dbasic {
 
-    class DeltaEngine;
+class DeltaEngine;
 
-    class WindowHandler : public ysWindowEventHandler {
-    public:
-        WindowHandler();
-        virtual ~WindowHandler();
+class WindowHandler : public ysWindowEventHandler {
+public:
+    WindowHandler();
+    virtual ~WindowHandler();
 
-        void Initialize(ysDevice *device, ysRenderingContext *context, DeltaEngine *engine);
+    void Initialize(ysDevice *device, ysRenderingContext *context,
+                    DeltaEngine *engine);
 
-        virtual void OnResizeWindow(int width, int height);
+    virtual void OnStartMoveResize() override;
+    virtual void OnEndMoveResize() override;
+    virtual void OnResizeWindow(int width, int height) override;
 
-    protected:
-        ysDevice *m_device;
-        ysRenderingContext *m_context;
-        DeltaEngine *m_engine;
-    };
+protected:
+    ysDevice *m_device;
+    ysRenderingContext *m_context;
+    DeltaEngine *m_engine;
+};
 
-} /* namesapce dbasic */
+}// namespace dbasic
 
 #endif /* DELTA_BASIC_DELTA_WINDOW_HANDLER_H */

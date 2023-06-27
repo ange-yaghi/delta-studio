@@ -18,6 +18,7 @@ public:
 
     virtual ysError EnumerateDevices();
     virtual ysError ConnectDevice(ysAudioDevice *device, ysWindow *windowAssociation);
+    virtual ysError ConnectDevice(ysWindow *windowAssociation, ysAudioDevice **device);
     virtual ysError ConnectDeviceConsole(ysAudioDevice *device);
     virtual ysError DisconnectDevice(ysAudioDevice *device);
 

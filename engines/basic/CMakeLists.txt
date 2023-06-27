@@ -18,6 +18,7 @@ add_library(delta-basic STATIC
     include/delta_core.h
     include/delta_engine.h
     include/delta_physics.h
+    include/event_handler.h
     include/font.h
     include/font_map.h
     include/keyframe.h
@@ -55,6 +56,7 @@ add_library(delta-basic STATIC
     src/default_shaders.cpp
     src/default_ui_shaders.cpp
     src/delta_engine.cpp
+    src/event_handler.cpp
     src/font.cpp
     src/font_map.cpp
     src/keyframe.cpp

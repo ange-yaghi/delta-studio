@@ -123,7 +123,11 @@ enum class ysError {
     CouldNotCreateDS8DeviceNoDriver,
     CouldNotCreateDS8DeviceOther,
 
-    CouldNotLoadCompiledShader
+    CouldNotLoadCompiledShader,
+
+    CouldNotCreateDS8DeviceDeviceInUse,
+    CouldNotCreateDS8DeviceNoAggregation,
+    CouldNotCreateDS8DeviceOutOfMemory,
 };
 
 #endif /* YDS_ERROR_CODES_H */

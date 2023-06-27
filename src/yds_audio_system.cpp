@@ -3,6 +3,8 @@
 #include "../include/yds_audio_device.h"
 #include "../include/yds_ds8_system.h"
 
+#include <fstream>
+
 ysAudioSystem::ysAudioSystem() : ysAudioSystemObject("AUDIO_SYSTEM", API::Undefined) {
     m_primaryDevice = nullptr;
 }
@@ -59,8 +61,8 @@ ysAudioDevice *ysAudioSystem::GetPrimaryDevice() {
 }
 
 ysAudioDevice *ysAudioSystem::GetAuxDevice(int device) {
-    if ((device + 1) >= GetDeviceCount()) return 0;
-    return m_devices.Get(device + 1);
+    if (device >= GetDeviceCount()) { return nullptr; }
+    return m_devices.Get(device);
 }
 
 ysError ysAudioSystem::ConnectDevice(ysAudioDevice *device, ysWindow *windowAssociation) {
@@ -70,6 +72,24 @@ ysError ysAudioSystem::ConnectDevice(ysAudioDevice *device, ysWindow *windowAsso
     device->m_windowAssociation = windowAssociation;
 
     return YDS_ERROR_RETURN(ysError::None);
+}
+
+ysError ysAudioSystem::ConnectDevice(ysWindow *windowAssociation, ysAudioDevice **device) {
+    YDS_ERROR_DECLARE("ConnectDevice");
+
+    *device = nullptr;
+
+    if (GetPrimaryDevice() == nullptr) {
+        return YDS_ERROR_RETURN(ysError::NoAudioDevice);
+    }
+
+    ysError err = ConnectDevice(GetPrimaryDevice(), windowAssociation);
+    if (err == ysError::None) {
+        *device = GetPrimaryDevice();
+        return YDS_ERROR_RETURN(ysError::None);
+    }
+
+    return YDS_ERROR_RETURN(ysError::NoAudioDevice);
 }
 
 ysError ysAudioSystem::ConnectDeviceConsole(ysAudioDevice *device) {
@@ -84,8 +104,10 @@ ysError ysAudioSystem::ConnectDeviceConsole(ysAudioDevice *device) {
 ysError ysAudioSystem::DisconnectDevice(ysAudioDevice *device) {
     YDS_ERROR_DECLARE("DisconnectDevice");
 
-    device->m_connected = false;
-    device->m_windowAssociation = 0;
+    if (device != nullptr) {
+        device->m_connected = false;
+        device->m_windowAssociation = 0;
+    }
 
     return YDS_ERROR_RETURN(ysError::None);
 }

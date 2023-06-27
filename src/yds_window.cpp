@@ -153,6 +153,16 @@ void ysWindow::SetWindowSize(int width, int height) {
 
 void ysWindow::SetTitle(const wchar_t *title) { wcscpy(m_title, title); }
 
+void ysWindow::StartResizing() {
+    m_resizing = true;
+    if (m_eventHandler != nullptr) { m_eventHandler->OnStartMoveResize(); }
+}
+
+void ysWindow::EndResizing() {
+    m_resizing = false;
+    if (m_eventHandler != nullptr) { m_eventHandler->OnEndMoveResize(); }
+}
+
 bool ysWindow::SetWindowStyle(WindowStyle style) {
     if (style == m_windowStyle) return false;
 

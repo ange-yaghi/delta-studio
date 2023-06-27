@@ -74,8 +74,8 @@ public:
     virtual void SetLocation(int x, int y);
     virtual void SetTitle(const wchar_t *title);
 
-    virtual void StartResizing() { m_resizing = true; }
-    virtual void EndResizing() { m_resizing = false; }
+    virtual void StartResizing();
+    virtual void EndResizing();
     bool IsResizing() const { return m_resizing; }
 
     virtual bool SetWindowStyle(WindowStyle style);

@@ -4,8 +4,9 @@
 #include "yds_base.h"
 #include "yds_error_codes.h"
 
-class ysErrorHandler;
+#include <mutex>
 
+class ysErrorHandler;
 class ysErrorSystem : public ysObject {
 protected:
     ysErrorSystem();
@@ -20,11 +21,6 @@ public:
     static const int MAX_STACK_LEVEL = 256;
 
     ysError RaiseError(ysError error, unsigned int line, ysObject *object, const char *file, const char *msg, bool affectStack = true);
-
-    void StackRaise(const char *callName);
-    void StackDescend();
-
-    const char *GetCall() const { return (m_stackLevel > 0) ? m_callStack[m_stackLevel - 1] : "<NO CALL>"; }
 
     template<typename T_ErrorHandler>
     ysError AttachErrorHandler(T_ErrorHandler **handler) {
@@ -41,8 +37,8 @@ public:
 protected:
     ysDynamicArray<ysErrorHandler, 4> m_errorHandlers;
 
-    int m_stackLevel;
-    const char *m_callStack[MAX_STACK_LEVEL];
+private:
+    std::mutex m_lock;
 };
 
 #define _YDS_WIDE(_String) L ## _String
@@ -50,8 +46,7 @@ protected:
 
 #define YDS_ERROR_RETURN(error) ysErrorSystem::GetInstance()->RaiseError(error, __LINE__, this, __FILE__, "")
 
-#define YDS_ERROR_RETURN_MANUAL()                \
-    ysErrorSystem::GetInstance()->StackDescend()
+#define YDS_ERROR_RETURN_MANUAL()
 
 #define YDS_ERROR_RETURN_STATIC(error) ysErrorSystem::GetInstance()->RaiseError(error, __LINE__, NULL, __FILE__, "")
 
@@ -65,13 +60,12 @@ protected:
     ysError code = (call);                              \
     if (code != ysError::None)                          \
     {                                                   \
-        ysErrorSystem::GetInstance()->StackDescend();   \
         return code;                                    \
     }                                                   \
                                                         \
 }
 
 #define YDS_ERROR_DECLARE(call) \
-    ysErrorSystem::GetInstance()->StackRaise(call)
+    (call)
 
 #endif /* YDS_ERROR_SYSTEM_H */

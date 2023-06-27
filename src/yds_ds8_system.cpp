@@ -15,6 +15,10 @@ ysError ysDS8System::EnumerateDevices() {
     YDS_ERROR_DECLARE("EnumerateDevices");
 
     YDS_NESTED_ERROR_CALL(ysAudioSystem::EnumerateDevices());
+        
+    if (FAILED(GetDeviceID(&DSDEVID_DefaultPlayback, &m_primaryDeviceGuid))) {
+        return YDS_ERROR_RETURN(ysError::CouldNotEnumerateAudioDevices);
+    }
 
     if (FAILED(DirectSoundEnumerate((LPDSENUMCALLBACK)DirectSoundEnumProc, (void *)this))) {
         return YDS_ERROR_RETURN(ysError::CouldNotEnumerateAudioDevices);
@@ -30,19 +34,25 @@ ysError ysDS8System::ConnectDevice(ysAudioDevice *device, ysWindow *windowAssoci
 
     ysDS8Device *ds8Device = static_cast<ysDS8Device *>(device);
     HRESULT result = DirectSoundCreate8(&ds8Device->m_guid, &ds8Device->m_device, NULL);
-    if (FAILED(result)) {
-        // Try one more time
+    if (FAILED(result) && device == GetPrimaryDevice()) {
         result = DirectSoundCreate8(NULL, &ds8Device->m_device, NULL);
+    }
 
+    if (FAILED(result)) {
         switch (result) {
         case DSERR_NODRIVER:
             return YDS_ERROR_RETURN(ysError::CouldNotCreateDS8DeviceNoDriver);
         case DSERR_INVALIDPARAM:
             return YDS_ERROR_RETURN(ysError::CouldNotCreateDS8DeviceInvalidParam);
+        case DSERR_ALLOCATED:
+            return YDS_ERROR_RETURN(ysError::CouldNotCreateDS8DeviceDeviceInUse);
+        case DSERR_NOAGGREGATION:
+            return YDS_ERROR_RETURN(ysError::CouldNotCreateDS8DeviceNoAggregation);
+        case DSERR_OUTOFMEMORY:
+            return YDS_ERROR_RETURN(ysError::CouldNotCreateDS8DeviceOutOfMemory);
         default:
             return YDS_ERROR_RETURN(ysError::CouldNotCreateDS8DeviceOther);
         }
-        
     }
 
     if (windowAssociation != nullptr) {
@@ -104,13 +114,8 @@ ysDS8Device *ysDS8System::AddDS8Device() {
 BOOL CALLBACK ysDS8System::DirectSoundEnumProc(LPGUID lpGUID, LPCTSTR lpszDesc, LPCTSTR lpszDrvName, LPVOID lpContext) {
     ysDS8System *system = static_cast<ysDS8System *>(lpContext);
 
-    GUID actual;
-    if (FAILED(GetDeviceID(&DSDEVID_DefaultPlayback, &actual))) {
-        return FALSE;
-    }
-
     if (lpGUID != nullptr) {
-        if (actual == *lpGUID) {
+        if (system->m_primaryDeviceGuid == *lpGUID) {
             ysAudioDevice *primary = system->GetPrimaryDevice();
             primary->SetDeviceName(lpszDesc);
         }
@@ -123,7 +128,7 @@ BOOL CALLBACK ysDS8System::DirectSoundEnumProc(LPGUID lpGUID, LPCTSTR lpszDesc, 
     else {
         // Create blank device
         ysDS8Device *newDevice = system->AddDS8Device();
-        newDevice->m_guid = actual;
+        newDevice->m_guid = system->m_primaryDeviceGuid;
 
         system->m_primaryDevice = newDevice;
     }

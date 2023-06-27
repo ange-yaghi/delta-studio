@@ -8,9 +8,7 @@ dbasic::WindowHandler::WindowHandler() {
     m_engine = nullptr;
 }
 
-dbasic::WindowHandler::~WindowHandler() {
-    /* void */
-}
+dbasic::WindowHandler::~WindowHandler() { /* void */ }
 
 void dbasic::WindowHandler::OnResizeWindow(int width, int height) {
     m_engine->SetWindowSize(width, height);
@@ -18,8 +16,14 @@ void dbasic::WindowHandler::OnResizeWindow(int width, int height) {
     m_engine->GetConsole()->ResetScreenPosition();
 }
 
-void dbasic::WindowHandler::Initialize(ysDevice *device, ysRenderingContext *context, DeltaEngine *engine) {
+void dbasic::WindowHandler::Initialize(ysDevice *device,
+                                       ysRenderingContext *context,
+                                       DeltaEngine *engine) {
     m_device = device;
     m_context = context;
     m_engine = engine;
 }
+
+void dbasic::WindowHandler::OnStartMoveResize() { m_engine->SetPaused(true); }
+
+void dbasic::WindowHandler::OnEndMoveResize() { m_engine->SetPaused(false); }

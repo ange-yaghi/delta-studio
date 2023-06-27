@@ -7,27 +7,24 @@ uint64_t SystemTime();
 
 class ysTimingSystem {
 public:
-    enum class Precision {
-        Microsecond,
-        Millisecond
-    };
+    enum class Precision { Microsecond, Millisecond };
 
 protected:
     static ysTimingSystem *g_instance;
+    static const int DurationSamples = 64;
 
 public:
     ysTimingSystem();
     ~ysTimingSystem();
 
-    static ysTimingSystem *Get() { 
-        if (g_instance == nullptr) {
-            g_instance = new ysTimingSystem;
-        }
+    static ysTimingSystem *Get() {
+        if (g_instance == nullptr) { g_instance = new ysTimingSystem; }
 
         return g_instance;
     }
 
     void Update();
+    void RestartFrame();
     void Initialize();
 
     double GetFrameDuration();
@@ -41,7 +38,10 @@ public:
 
     double ConvertToSeconds(uint64_t t_u);
 
-    float GetFPS() const { return m_fps; }
+    inline float GetFPS() const { return m_fps; }
+    inline double GetAverageFrameDuration() const {
+        return m_averageFrameDuration;
+    }
 
 protected:
     Precision m_precisionMode;
@@ -59,6 +59,10 @@ protected:
 
     double m_averageFrameDuration;
     float m_fps;
+
+    double *m_frameDurations;
+    int m_durationSampleWriteIndex;
+    int m_durationSamples;
 };
 
 #endif /* YS_TIMING_H */

@@ -12,6 +12,7 @@
 #include "font.h"
 #include "default_shaders.h"
 #include "shader_base.h"
+#include "event_handler.h"
 
 #include "../../../physics/include/mass_spring_system.h"
 #include "../../../physics/include/rigid_body_system.h"
@@ -57,6 +58,7 @@ namespace dbasic {
             int WindowPositionX = 0;
             int WindowPositionY = 0;
             ysVector WindowColor = {0.0f, 0.0f, 0.0f, 1.0f};
+            EventHandler *eventHandler = nullptr;
         };
 
         static const GameEngineSettings DefaultSettings;
@@ -129,6 +131,7 @@ namespace dbasic {
 
         float GetFrameLength();
         float GetAverageFramerate();
+        float GetAverageFrameLength();
 
         ysDevice *GetDevice() { return m_device; }
 
@@ -158,8 +161,11 @@ namespace dbasic {
 
         ysRenderTarget *GetScreenRenderTarget() const { return m_mainRenderTarget; }
 
+        void SetPaused(bool paused);
+
     protected:
         ysDevice *m_device;
+        EventHandler *m_eventHandler;
 
         ysWindowSystem *m_windowSystem;
         ysInputSystem *m_inputSystem;

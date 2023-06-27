@@ -98,6 +98,8 @@ dbasic::DeltaEngine::~DeltaEngine() {
 ysError dbasic::DeltaEngine::CreateGameWindow(const GameEngineSettings &settings) {
     YDS_ERROR_DECLARE("CreateGameWindow");
 
+    m_eventHandler = settings.eventHandler;
+
     // Create the window system
     YDS_NESTED_ERROR_CALL(ysWindowSystem::CreateWindowSystem(&m_windowSystem, ysWindowSystemObject::Platform::Windows));
     m_windowSystem->ConnectInstance(settings.Instance);
@@ -134,12 +136,7 @@ ysError dbasic::DeltaEngine::CreateGameWindow(const GameEngineSettings &settings
     YDS_NESTED_ERROR_CALL(ysAudioSystem::CreateAudioSystem(&m_audioSystem, ysAudioSystem::API::DirectSound8));
     YDS_NESTED_ERROR_CALL(m_audioSystem->EnumerateDevices());
 
-    m_audioDevice = m_audioSystem->GetPrimaryDevice();
-    if (m_audioDevice == nullptr) {
-        return YDS_ERROR_RETURN(ysError::NoAudioDevice);
-    }
-
-    YDS_NESTED_ERROR_CALL(m_audioSystem->ConnectDevice(m_audioDevice, m_gameWindow));
+    YDS_NESTED_ERROR_CALL(m_audioSystem->ConnectDevice(m_gameWindow, &m_audioDevice));
 
     // Create the rendering context
     YDS_NESTED_ERROR_CALL(m_device->CreateRenderingContext(&m_renderingContext, m_gameWindow));
@@ -644,6 +641,21 @@ float dbasic::DeltaEngine::GetFrameLength() {
 
 float dbasic::DeltaEngine::GetAverageFramerate() {
     return m_timingSystem->GetFPS();
+}
+
+float dbasic::DeltaEngine::GetAverageFrameLength() {
+    return m_timingSystem->GetAverageFrameDuration();
+}
+
+void dbasic::DeltaEngine::SetPaused(bool paused) {
+    if (paused) {
+        if (m_eventHandler != nullptr) {
+            m_eventHandler->OnPause();
+        }
+    } else {
+        m_eventHandler->OnUnpause();
+        m_timingSystem->RestartFrame();
+    }
 }
 
 int dbasic::DeltaEngine::GetScreenWidth() const {
