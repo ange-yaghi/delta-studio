@@ -1191,7 +1191,7 @@ ysError ysD3D11Device::CreatePixelShader(ysShader **newShader,
         desc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
         desc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
         desc.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
-        desc.Filter = D3D11_FILTER_ANISOTROPIC;
+        desc.Filter = D3D11_FILTER_MIN_MAG_LINEAR_MIP_POINT;
         desc.MinLOD = 0.0f;
         desc.MaxLOD = FLT_MAX;
         desc.MaxAnisotropy = 16;

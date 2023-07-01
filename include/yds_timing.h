@@ -43,6 +43,8 @@ public:
         return m_averageFrameDuration;
     }
 
+    inline int GetDurationSamples() const { return m_durationSamples; }
+
 protected:
     Precision m_precisionMode;
     double m_div;

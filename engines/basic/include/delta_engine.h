@@ -132,6 +132,7 @@ namespace dbasic {
         float GetFrameLength();
         float GetAverageFramerate();
         float GetAverageFrameLength();
+        ysTimingSystem *GetTimingSystem() const { return m_timingSystem; }
 
         ysDevice *GetDevice() { return m_device; }
 
