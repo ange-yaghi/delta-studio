@@ -17,7 +17,7 @@ ysError ysDS8System::EnumerateDevices() {
     YDS_NESTED_ERROR_CALL(ysAudioSystem::EnumerateDevices());
         
     if (FAILED(GetDeviceID(&DSDEVID_DefaultPlayback, &m_primaryDeviceGuid))) {
-        return YDS_ERROR_RETURN(ysError::CouldNotEnumerateAudioDevices);
+        return YDS_ERROR_RETURN(ysError::NoAudioDevice);
     }
 
     if (FAILED(DirectSoundEnumerate((LPDSENUMCALLBACK)DirectSoundEnumProc, (void *)this))) {
