@@ -326,3 +326,8 @@ target_link_libraries(delta-core PUBLIC
 add_subdirectory(physics)
 add_subdirectory(engines)
 add_subdirectory(demos)
+
+set_property(TARGET delta-basic PROPERTY FOLDER "delta")
+set_property(TARGET delta-basic-demo PROPERTY FOLDER "delta")
+set_property(TARGET delta-core PROPERTY FOLDER "delta")
+set_property(TARGET delta-physics PROPERTY FOLDER "delta")

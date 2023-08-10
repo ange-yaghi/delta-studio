@@ -51,7 +51,7 @@ public:
     int GetHeight() const { return m_height; }
     virtual int GetScreenWidth() const { return m_width; }
     virtual int GetScreenHeight() const { return m_height; }
-    WindowStyle GetWindowStyle() const { return m_windowStyle; }
+    WindowStyle GetCurrentWindowStyle() const { return m_windowStyle; }
 
     void SetMonitor(ysMonitor *monitor) { m_monitor = monitor; }
     ysMonitor *GetMonitor() const { return m_monitor; }

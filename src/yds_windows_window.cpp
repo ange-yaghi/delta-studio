@@ -252,7 +252,7 @@ void ysWindowsWindow::AL_SetSize(int width, int height) {
     ysWindow::AL_SetSize(width, height);
 
     int adjustedWidth = width, adjustedHeight = height;
-    if (GetWindowStyle() == WindowStyle::Windowed) {
+    if (GetCurrentWindowStyle() == WindowStyle::Windowed) {
         RECT rect;
         rect.left = 0;
         rect.right = width;
@@ -273,7 +273,7 @@ void ysWindowsWindow::AL_SetLocation(int x, int y) {
     ysWindow::AL_SetLocation(x, y);
 
     int adjusted_x = x, adjusted_y = y;
-    if (GetWindowStyle() == WindowStyle::Windowed) {
+    if (GetCurrentWindowStyle() == WindowStyle::Windowed) {
         RECT rect;
         rect.left = x;
         rect.right = 0;

@@ -187,7 +187,7 @@ void delta_demo::DeltaBasicDemoApplication::Render() {
     }
 
     if (m_engine.ProcessKeyDown(ysKey::Code::F)) {
-        switch (m_engine.GetGameWindow()->GetWindowStyle()) {
+        switch (m_engine.GetGameWindow()->GetCurrentWindowStyle()) {
         case ysWindow::WindowStyle::Windowed:
             m_engine.GetGameWindow()->SetWindowStyle(ysWindow::WindowStyle::Popup);
             break;

@@ -206,7 +206,7 @@ void ysWindow::OnMoveWindow(int x, int y) {
     m_locationx = x;
     m_locationy = y;
 
-    if (GetWindowStyle() == WindowStyle::Windowed) {
+    if (GetCurrentWindowStyle() == WindowStyle::Windowed) {
         m_windowedLocationx = x;
         m_windowedLocationy = y;
     }
@@ -218,7 +218,7 @@ void ysWindow::OnResizeWindow(int w, int h) {
     m_width = w;
     m_height = h;
 
-    if (GetWindowStyle() == WindowStyle::Windowed) {
+    if (GetCurrentWindowStyle() == WindowStyle::Windowed) {
         m_windowedWidth = w;
         m_windowedHeight = h;
     }
@@ -252,7 +252,7 @@ void ysWindow::AL_SetSize(int width, int height) {
     m_width = width;
     m_height = height;
 
-    if (GetWindowStyle() == WindowStyle::Windowed) {
+    if (GetCurrentWindowStyle() == WindowStyle::Windowed) {
         m_windowedWidth = width;
         m_windowedHeight = height;
     }
@@ -262,7 +262,7 @@ void ysWindow::AL_SetLocation(int x, int y) {
     m_locationx = x;
     m_locationy = y;
 
-    if (GetWindowStyle() == WindowStyle::Windowed) {
+    if (GetCurrentWindowStyle() == WindowStyle::Windowed) {
         m_windowedLocationx = x;
         m_windowedLocationy = y;
     }
