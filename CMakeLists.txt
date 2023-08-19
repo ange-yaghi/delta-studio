@@ -214,7 +214,7 @@ if (NOT USE_CXX17_FILESYSTEM)
 endif()
 
 # SSE2NEON
-target_include_directories(delta-core PUBLIC dependencies/libraries/sse2neon-1.5.1)
+target_include_directories(delta-core PUBLIC dependencies/libraries/sse2neon-1.6.0)
 
 if(ENABLE_D3D)
     target_sources(delta-core PRIVATE
