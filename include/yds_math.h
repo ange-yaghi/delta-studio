@@ -75,10 +75,10 @@ struct ysVector3 {
 };
 
 struct ysVector4 {
-    ysVector4() : x(0.0f), y(0.0f), z(0.0f), w(0.0f) { /* void */ }
-    ysVector4(float x, float y, float z, float w = 0.0f) : x(x), y(y), z(z), w(w) { /* void */ }
-    ysVector4(const ysVector3 &v) : x(v.x), y(v.y), z(v.z), w(0.0f) { /* void */ }
-    ysVector4(const ysVector &v);
+    inline ysVector4() : x(0.0f), y(0.0f), z(0.0f), w(0.0f) { /* void */ }
+    inline ysVector4(float x, float y, float z, float w = 0.0f) : x(x), y(y), z(z), w(w) { /* void */ }
+    inline ysVector4(const ysVector3 &v) : x(v.x), y(v.y), z(v.z), w(0.0f) { /* void */ }
+    inline ysVector4(const ysVector &v);
 
     void Set(float x, float y, float z, float w) { this->x = x; this->y = y; this->z = z; this->w = w; }
     void Scale(float s) { this->x *= s; this->y *= s; this->z *= s; this->w *= s; }
@@ -197,9 +197,33 @@ namespace ysMath {
     ysGeneric Lerp(const ysGeneric &a, const ysGeneric &b, float s);
     ysQuaternion LoadQuaternion(float angle, const ysVector &axis);
 
-    ysVector4 GetVector4(const ysVector &v);
-    ysVector3 GetVector3(const ysVector &v);
-    ysVector2 GetVector2(const ysVector &v);
+    inline ysVector4 GetVector4(const ysVector &v) {
+        ysVector4 r;
+        r.x = v.m128_f32[0];
+        r.y = v.m128_f32[1];
+        r.z = v.m128_f32[2];
+        r.w = v.m128_f32[3];
+
+        return r;
+    }
+
+    inline ysVector3 GetVector3(const ysVector &v) {
+        ysVector3 r;
+        r.x = v.m128_f32[0];
+        r.y = v.m128_f32[1];
+        r.z = v.m128_f32[2];
+
+        return r;
+    }
+
+    inline ysVector2 GetVector2(const ysVector &v) {
+        ysVector2 r;
+        r.x = v.m128_f32[0];
+        r.y = v.m128_f32[1];
+
+        return r;
+    }
+
     __forceinline float GetScalar(const ysVector &v) {
         return v.m128_f32[0];
     }
@@ -335,5 +359,7 @@ namespace ysMath {
     bool IsValid(const ysVector &v);
 
 } /* namespace ysMath */
+
+ysVector4::ysVector4(const ysVector &v) { *this = ysMath::GetVector4(v); }
 
 #endif /* YDS_MATH_H */
