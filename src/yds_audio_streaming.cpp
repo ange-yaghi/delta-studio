@@ -121,7 +121,8 @@ void ysStreamingAudio::Transfer() {
     ysError error = m_source->LockBufferSegment(
         writeOffset, m_file->GetBufferSize(), &segment1, &size1, &segment2, &size2);
 
-    SampleOffset writeCursor = m_source->GetCurrentWritePosition();
+    SampleOffset writeCursor;
+    m_source->GetCurrentWritePosition(&writeCursor);
 
     if (segment1 != nullptr) {
         unsigned int size = m_source->GetAudioParameters()->GetSizeFromSamples(size1);
@@ -142,8 +143,8 @@ ysError ysStreamingAudio::Update() {
 
     int readSubdivision;
     SampleOffset readPosition;
+    m_source->GetCurrentPosition(&readPosition);
 
-    readPosition = m_source->GetCurrentPosition();
     readSubdivision = readPosition / m_file->GetBufferSize();
 
     if (readSubdivision != m_currentReadSubdivision) {

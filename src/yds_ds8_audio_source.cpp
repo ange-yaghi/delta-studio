@@ -178,28 +178,30 @@ ysError ysDS8AudioSource::SetPan(float pan) {
     return YDS_ERROR_RETURN(ysError::None);
 }
 
-SampleOffset ysDS8AudioSource::GetCurrentPosition() {
+bool ysDS8AudioSource::GetCurrentPosition(SampleOffset *position) {
     DWORD currentPosition;
     HRESULT result;
 
-    if (m_buffer == nullptr) return 0;
+    if (m_buffer == nullptr) { *position = 0; return false;}
 
     result = m_buffer->GetCurrentPosition(&currentPosition, NULL);
-    if (FAILED(result)) return 0;
+    if (FAILED(result)) { *position = 0; return false; }
 
-    return m_audioParameters.GetSamplesFromSize((unsigned int)currentPosition);
+    *position = m_audioParameters.GetSamplesFromSize((unsigned int)currentPosition);
+    return true;
 }
 
-SampleOffset ysDS8AudioSource::GetCurrentWritePosition() {
+bool ysDS8AudioSource::GetCurrentWritePosition(SampleOffset *position) {
     DWORD currentWrite;
     HRESULT result;
 
-    if (m_buffer == nullptr) return 0;
+    if (m_buffer == nullptr) { *position = 0; return false; }
 
     result = m_buffer->GetCurrentPosition(NULL, &currentWrite);
-    if (FAILED(result)) return 0;
+    if (FAILED(result)) { *position = 0; return false; }
 
-    return m_audioParameters.GetSamplesFromSize((unsigned int)currentWrite);
+    *position = m_audioParameters.GetSamplesFromSize((unsigned int)currentWrite);
+    return true;
 }
 
 void ysDS8AudioSource::Seek(SampleOffset offset) {
