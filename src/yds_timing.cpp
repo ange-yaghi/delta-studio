@@ -15,14 +15,10 @@ uint64_t SystemTime() {
     if (qpcFlag) {
         LARGE_INTEGER currentTime;
         QueryPerformanceCounter(&currentTime);
-
-        currentTime.QuadPart *= 1000000;
-        currentTime.QuadPart /= qpcFrequency.QuadPart;
-
-        return (uint64_t) (currentTime.QuadPart);
+        return uint64_t(currentTime.QuadPart);
     } else {
         // Convert output to microseconds
-        return (uint64_t) (timeGetTime() * 1000);
+        return uint64_t(timeGetTime()) * 1000;
     }
 }
 
@@ -61,7 +57,8 @@ void ysTimingSystem::Update() {
     if (!m_isPaused) { m_frameNumber++; }
 
     const uint64_t thisTime = GetTime();
-    m_lastFrameDuration = (thisTime - m_lastFrameTimestamp);
+    m_lastFrameDuration = ((thisTime - m_lastFrameTimestamp) * 1000000) /
+                          qpcFrequency.QuadPart;
     m_lastFrameTimestamp = thisTime;
 
     const uint64_t thisClock = GetClock();
@@ -74,7 +71,8 @@ void ysTimingSystem::Update() {
         m_averageFrameDuration += 0.05 * (double)m_lastFrameDuration / m_div;
 
         m_fps = (float)(1 / m_averageFrameDuration);*/
-        m_frameDurations[m_durationSampleWriteIndex] = double(m_lastFrameDuration) / m_div;
+        m_frameDurations[m_durationSampleWriteIndex] =
+                double(m_lastFrameDuration) / m_div;
         if (++m_durationSampleWriteIndex >= DurationSamples) {
             m_durationSampleWriteIndex = 0;
         }
