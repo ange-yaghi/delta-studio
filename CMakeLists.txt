@@ -16,15 +16,11 @@ else()
 endif()
 
 # =========================================================
-# DXGI/D3DX
+# D3DX
 
 set(
     D3DX_LIBS
     ${CMAKE_CURRENT_SOURCE_DIR}/dependencies/libraries/D3DX/lib/${TARGET_ARCHITECTURE})
-
-set(
-    DXGI_LIBS
-    ${CMAKE_CURRENT_SOURCE_DIR}/dependencies/libraries/DXGI/lib/${TARGET_ARCHITECTURE})
 
 # =========================================================
 # DirectSound
@@ -309,9 +305,8 @@ target_link_libraries(delta-core PUBLIC
     ${D3DX_LIBS}/d3dcompiler.lib
 
     # DXGI
-    ${DXGI_LIBS}/DxErr.lib
-    ${DXGI_LIBS}/dxgi.lib
-    ${DXGI_LIBS}/dxguid.lib
+    dxguid.lib
+    dxgi.lib
 
     # DirectSound
     ${DIRECT_SOUND_LIBS}/dsound.lib
