@@ -42,7 +42,8 @@ typedef HRESULT(WINAPI *DXGIGetDebugInterface_proc)(const IID &riid,
 ysD3D11Device::ysD3D11Device() : ysDevice(DeviceAPI::DirectX11) {
     m_device = nullptr;
     m_deviceContext = nullptr;
-    m_DXGIFactory = nullptr;
+    m_DXGIFactory1 = nullptr;
+    m_DXGIFactory2 = nullptr;
 
     m_multisampleCount = 0;
     m_multisampleQuality = 0;
@@ -57,7 +58,7 @@ ysD3D11Device::ysD3D11Device() : ysDevice(DeviceAPI::DirectX11) {
     m_blendState = nullptr;
 }
 
-ysD3D11Device::~ysD3D11Device() { /* void */ }
+ysD3D11Device::~ysD3D11Device() {}
 
 ysError ysD3D11Device::InitializeDevice() {
     YDS_ERROR_DECLARE("InitializeDevice");
@@ -99,7 +100,7 @@ ysError ysD3D11Device::InitializeDevice() {
         return YDS_ERROR_RETURN(ysError::CouldNotCreateGraphicsDevice);
     }
 
-    m_DXGIFactory = nullptr;
+    m_DXGIFactory1 = nullptr;
     {
         IDXGIDevice *dxgiDevice = nullptr;
         result = m_device->QueryInterface(
@@ -110,13 +111,18 @@ ysError ysD3D11Device::InitializeDevice() {
             if (SUCCEEDED(result)) {
                 result = adapter->GetParent(
                         __uuidof(IDXGIFactory1),
-                        reinterpret_cast<void **>(&m_DXGIFactory));
+                        reinterpret_cast<void **>(&m_DXGIFactory1));
                 adapter->Release();
             }
 
             dxgiDevice->Release();
         }
     }
+
+    m_DXGIFactory2 = nullptr;
+    result = m_DXGIFactory1->QueryInterface(
+            __uuidof(IDXGIFactory2),
+            reinterpret_cast<void **>(&m_DXGIFactory2));
 
     if (FAILED(result)) {
         m_device->Release();
@@ -147,14 +153,15 @@ ysError ysD3D11Device::DestroyDevice() {
     if (m_depthStencilEnabledState != nullptr)
         m_depthStencilEnabledState->Release();
 
-    if (m_blendState != nullptr) m_blendState->Release();
-    if (m_samplerState != nullptr) m_samplerState->Release();
+    if (m_blendState != nullptr) { m_blendState->Release(); }
+    if (m_samplerState != nullptr) { m_samplerState->Release(); }
 
-    if (m_rasterizerState != nullptr) m_rasterizerState->Release();
+    if (m_rasterizerState != nullptr) { m_rasterizerState->Release(); }
 
-    if (m_DXGIFactory != nullptr) m_DXGIFactory->Release();
-    if (m_deviceContext != nullptr) m_deviceContext->Release();
-    if (m_device != nullptr) m_device->Release();
+    if (m_DXGIFactory1 != nullptr) { m_DXGIFactory1->Release(); }
+    if (m_DXGIFactory2 != nullptr) { m_DXGIFactory2->Release(); }
+    if (m_deviceContext != nullptr) { m_deviceContext->Release(); }
+    if (m_device != nullptr) { m_device->Release(); }
 
 #ifdef _DEBUG
     Microsoft::WRL::ComPtr<IDXGIDebug> dxgiDebug;
@@ -189,25 +196,22 @@ ysError ysD3D11Device::CreateRenderingContext(ysRenderingContext **context,
                                               ysWindow *window) {
     YDS_ERROR_DECLARE("CreateRenderingContext");
 
-    if (window->GetPlatform() != ysWindowSystem::Platform::Windows)
+    if (window->GetPlatform() != ysWindowSystem::Platform::Windows) {
         return YDS_ERROR_RETURN(ysError::IncompatiblePlatforms);
-    if (context == nullptr) return YDS_ERROR_RETURN(ysError::InvalidParameter);
-    if (m_device == nullptr) return YDS_ERROR_RETURN(ysError::NoDevice);
+    } else if (context == nullptr) {
+        return YDS_ERROR_RETURN(ysError::InvalidParameter);
+    } else if (m_device == nullptr) {
+        return YDS_ERROR_RETURN(ysError::NoDevice);
+    }
     *context = nullptr;
 
     ysWindowsWindow *windowsWindow = static_cast<ysWindowsWindow *>(window);
-
-    IDXGIDevice *pDXGIDevice = nullptr;
-    GetDXGIDevice(&pDXGIDevice);
-    if (pDXGIDevice == nullptr) {
-        return YDS_ERROR_RETURN(ysError::CouldNotObtainDevice);
-    }
 
     ysD3D11Context *newContext =
             m_renderingContexts.NewGeneric<ysD3D11Context>();
     newContext->m_targetWindow = window;
 
-    // Get max quality
+    // Get max MSAA quality
     UINT multisamplesPerPixel = 1;
     UINT maxQuality;
     DXGI_FORMAT format = DXGI_FORMAT_R8G8B8A8_UNORM;
@@ -245,12 +249,8 @@ ysError ysD3D11Device::CreateRenderingContext(ysRenderingContext **context,
     swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
     swapChainDesc.Flags = 0;
 
-    IDXGIFactory *factory = GetDXGIFactory();
-
-    HRESULT result = factory->CreateSwapChain(pDXGIDevice, &swapChainDesc,
-                                              &newContext->m_swapChain);
-    pDXGIDevice->Release();
-
+    HRESULT result = m_DXGIFactory1->CreateSwapChain(m_device, &swapChainDesc,
+                                                     &newContext->m_swapChain);
     if (FAILED(result)) {
         m_renderingContexts.Delete(newContext->GetIndex());
         *context = nullptr;
@@ -261,7 +261,6 @@ ysError ysD3D11Device::CreateRenderingContext(ysRenderingContext **context,
     *context = static_cast<ysRenderingContext *>(newContext);
 
     // TEMP
-
     if (m_rasterizerState == nullptr) {
         D3D11_RASTERIZER_DESC rasterizerDescription;
         ZeroMemory(&rasterizerDescription, sizeof(D3D11_RASTERIZER_DESC));
@@ -1831,16 +1830,6 @@ void ysD3D11Device::DrawLines(int numIndices, int indexOffset,
 }
 
 // Non-standard interface
-
-void ysD3D11Device::GetDXGIDevice(IDXGIDevice **device) {
-    if (m_device == nullptr) *device = nullptr;
-    else {
-        HRESULT hr =
-                m_device->QueryInterface(IID_IDXGIDevice, (void **) device);
-        if (FAILED(hr)) (*device) = nullptr;
-    }
-}
-
 DXGI_FORMAT ysD3D11Device::ConvertInputLayoutFormat(
         ysRenderGeometryChannel::ChannelFormat format) {
     switch (format) {

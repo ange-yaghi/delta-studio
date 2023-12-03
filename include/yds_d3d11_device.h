@@ -7,6 +7,7 @@
 struct IDXGIDevice;
 struct ID3D11DeviceContext;
 struct IDXGIFactory1;
+struct IDXGIFactory2;
 struct ID3D11Device;
 struct ID3D11RasterizerState;
 struct ID3D11DepthStencilView;
@@ -22,80 +23,126 @@ private:
 
 public:
     // Setup
-    virtual ysError InitializeDevice();
-    virtual ysError DestroyDevice();
-    virtual bool CheckSupport();
+    virtual ysError InitializeDevice() override;
+    virtual ysError DestroyDevice() override;
+    virtual bool CheckSupport() override;
 
     // State
-    virtual ysError SetFaceCulling(bool faceCulling);
-    virtual ysError SetFaceCullingMode(CullMode cullMode);
+    virtual ysError SetFaceCulling(bool faceCulling) override;
+    virtual ysError SetFaceCullingMode(CullMode cullMode) override;
 
     // Rendering Contexts
-    virtual ysError CreateRenderingContext(ysRenderingContext **renderingContext, ysWindow *window);
-    virtual ysError UpdateRenderingContext(ysRenderingContext *context);
-    virtual ysError DestroyRenderingContext(ysRenderingContext *&context);
-    virtual ysError SetContextMode(ysRenderingContext *context, ysRenderingContext::ContextMode mode);
+    virtual ysError
+    CreateRenderingContext(ysRenderingContext **renderingContext,
+                           ysWindow *window) override;
+    virtual ysError
+    UpdateRenderingContext(ysRenderingContext *context) override;
+    virtual ysError
+    DestroyRenderingContext(ysRenderingContext *&context) override;
+    virtual ysError
+    SetContextMode(ysRenderingContext *context,
+                   ysRenderingContext::ContextMode mode) override;
 
-    virtual ysError CreateOnScreenRenderTarget(ysRenderTarget **newTarget, ysRenderingContext *context, bool depthBuffer);
-    virtual ysError CreateOffScreenRenderTarget(ysRenderTarget **newTarget, int width, int height, ysRenderTarget::Format format, bool colorData, bool depthBuffer);
-    virtual ysError CreateSubRenderTarget(ysRenderTarget **newTarget, ysRenderTarget *parent, int x, int y, int width, int height);
-    virtual ysError ResizeRenderTarget(ysRenderTarget *target, int width, int height, int pwidth, int pheight);
-    virtual ysError DestroyRenderTarget(ysRenderTarget *&target);
-    virtual ysError SetRenderTarget(ysRenderTarget *target, int slot=0);
-    virtual ysError SetDepthTestEnabled(ysRenderTarget *target, bool enable);
-    virtual ysError ReadRenderTarget(ysRenderTarget *src, uint8_t *target);
+    virtual ysError CreateOnScreenRenderTarget(ysRenderTarget **newTarget,
+                                               ysRenderingContext *context,
+                                               bool depthBuffer) override;
+    virtual ysError CreateOffScreenRenderTarget(ysRenderTarget **newTarget,
+                                                int width, int height,
+                                                ysRenderTarget::Format format,
+                                                bool colorData,
+                                                bool depthBuffer) override;
+    virtual ysError CreateSubRenderTarget(ysRenderTarget **newTarget,
+                                          ysRenderTarget *parent, int x, int y,
+                                          int width, int height) override;
+    virtual ysError ResizeRenderTarget(ysRenderTarget *target, int width,
+                                       int height, int pwidth,
+                                       int pheight) override;
+    virtual ysError DestroyRenderTarget(ysRenderTarget *&target) override;
+    virtual ysError SetRenderTarget(ysRenderTarget *target,
+                                    int slot = 0) override;
+    virtual ysError SetDepthTestEnabled(ysRenderTarget *target,
+                                        bool enable) override;
+    virtual ysError ReadRenderTarget(ysRenderTarget *src,
+                                     uint8_t *target) override;
 
-    virtual ysError ClearBuffers(const float *clearColor);
-    virtual ysError Present();
+    virtual ysError ClearBuffers(const float *clearColor) override;
+    virtual ysError Present() override;
 
     // GPU Buffers
-    virtual ysError CreateVertexBuffer(ysGPUBuffer **newBuffer, int size, char *data, bool mirrorToRam = false);
-    virtual ysError CreateIndexBuffer(ysGPUBuffer **newBuffer, int size, char *data, bool mirrorToRam = false);
-    virtual ysError CreateConstantBuffer(ysGPUBuffer **newBuffer, int size, char *data, bool mirrorToRam = false);
-    virtual ysError UseVertexBuffer(ysGPUBuffer *buffer, int stride, int offset);
-    virtual ysError UseIndexBuffer(ysGPUBuffer *buffer, int offset);
-    virtual ysError UseConstantBuffer(ysGPUBuffer *buffer, int slot);
-    virtual ysError EditBufferDataRange(ysGPUBuffer *buffer, char *data, int size, int offset);
-    virtual ysError EditBufferData(ysGPUBuffer *buffer, char *data);
-    virtual ysError DestroyGPUBuffer(ysGPUBuffer *&buffer);
+    virtual ysError CreateVertexBuffer(ysGPUBuffer **newBuffer, int size,
+                                       char *data,
+                                       bool mirrorToRam = false) override;
+    virtual ysError CreateIndexBuffer(ysGPUBuffer **newBuffer, int size,
+                                      char *data,
+                                      bool mirrorToRam = false) override;
+    virtual ysError CreateConstantBuffer(ysGPUBuffer **newBuffer, int size,
+                                         char *data,
+                                         bool mirrorToRam = false) override;
+    virtual ysError UseVertexBuffer(ysGPUBuffer *buffer, int stride,
+                                    int offset) override;
+    virtual ysError UseIndexBuffer(ysGPUBuffer *buffer, int offset) override;
+    virtual ysError UseConstantBuffer(ysGPUBuffer *buffer, int slot) override;
+    virtual ysError EditBufferDataRange(ysGPUBuffer *buffer, char *data,
+                                        int size, int offset) override;
+    virtual ysError EditBufferData(ysGPUBuffer *buffer, char *data) override;
+    virtual ysError DestroyGPUBuffer(ysGPUBuffer *&buffer) override;
 
     // Shaders
-    virtual ysError CreateVertexShader(ysShader **newShader, const wchar_t *shaderFilename, const wchar_t *compiledFilename, const char *shaderName, bool compile) override;
-    virtual ysError CreatePixelShader(ysShader **newShader, const wchar_t *shaderFilename, const wchar_t *compiledFilename, const char *shaderName, bool compile) override;
+    virtual ysError CreateVertexShader(ysShader **newShader,
+                                       const wchar_t *shaderFilename,
+                                       const wchar_t *compiledFilename,
+                                       const char *shaderName,
+                                       bool compile) override;
+    virtual ysError CreatePixelShader(ysShader **newShader,
+                                      const wchar_t *shaderFilename,
+                                      const wchar_t *compiledFilename,
+                                      const char *shaderName,
+                                      bool compile) override;
     virtual ysError DestroyShader(ysShader *&shader) override;
 
     // Shader Programs
-    virtual ysError CreateShaderProgram(ysShaderProgram **newProgram);
-    virtual ysError DestroyShaderProgram(ysShaderProgram *&shader, bool destroyShaders = false);
-    virtual ysError AttachShader(ysShaderProgram *targetProgram, ysShader *shader);
-    virtual ysError LinkProgram(ysShaderProgram *program);
-    virtual ysError UseShaderProgram(ysShaderProgram *);
+    virtual ysError CreateShaderProgram(ysShaderProgram **newProgram) override;
+    virtual ysError DestroyShaderProgram(ysShaderProgram *&shader,
+                                         bool destroyShaders = false) override;
+    virtual ysError AttachShader(ysShaderProgram *targetProgram,
+                                 ysShader *shader) override;
+    virtual ysError LinkProgram(ysShaderProgram *program) override;
+    virtual ysError UseShaderProgram(ysShaderProgram *) override;
 
-    // Input Layouts 
-    virtual ysError CreateInputLayout(ysInputLayout **newLayout, ysShader *shader, const ysRenderGeometryFormat *format);
-    virtual ysError UseInputLayout(ysInputLayout *layout);
-    virtual ysError DestroyInputLayout(ysInputLayout *&layout);
+    // Input Layouts
+    virtual ysError
+    CreateInputLayout(ysInputLayout **newLayout, ysShader *shader,
+                      const ysRenderGeometryFormat *format) override;
+    virtual ysError UseInputLayout(ysInputLayout *layout) override;
+    virtual ysError DestroyInputLayout(ysInputLayout *&layout) override;
 
-    // Textures 
-    virtual ysError CreateTexture(ysTexture **texture, const wchar_t *fname) override;
-    virtual ysError CreateTexture(ysTexture **texture, int width, int height, const unsigned char *buffer) override;
-    virtual ysError CreateAlphaTexture(ysTexture **texture, int width, int height, const unsigned char *buffer) override;
-    virtual ysError UpdateTexture(ysTexture *texture, const unsigned char *buffer) override;
+    // Textures
+    virtual ysError CreateTexture(ysTexture **texture,
+                                  const wchar_t *fname) override;
+    virtual ysError CreateTexture(ysTexture **texture, int width, int height,
+                                  const unsigned char *buffer) override;
+    virtual ysError CreateAlphaTexture(ysTexture **texture, int width,
+                                       int height,
+                                       const unsigned char *buffer) override;
+    virtual ysError UpdateTexture(ysTexture *texture,
+                                  const unsigned char *buffer) override;
     virtual ysError DestroyTexture(ysTexture *&texture) override;
     virtual ysError UseTexture(ysTexture *texture, int slot) override;
-    virtual ysError UseRenderTargetAsTexture(ysRenderTarget *renderTarget, int slot) override;
+    virtual ysError UseRenderTargetAsTexture(ysRenderTarget *renderTarget,
+                                             int slot) override;
 
     virtual void Draw(int numFaces, int indexOffset, int vertexOffset) override;
-    virtual void DrawLines(int numIndices, int indexOffset, int vertexOffset) override;
+    virtual void DrawLines(int numIndices, int indexOffset,
+                           int vertexOffset) override;
 
 public:
     // Non-standard interface
-    void GetDXGIDevice(IDXGIDevice **device);
     ID3D11DeviceContext *GetImmediateContext() { return m_deviceContext; }
-    IDXGIFactory1 *GetDXGIFactory() { return m_DXGIFactory; }
+    IDXGIFactory1 *GetDXGIFactory1() { return m_DXGIFactory1; }
     ID3D11Device *GetDevice() { return m_device; }
 
-    static DXGI_FORMAT ConvertInputLayoutFormat(ysRenderGeometryChannel::ChannelFormat format);
+    static DXGI_FORMAT
+    ConvertInputLayoutFormat(ysRenderGeometryChannel::ChannelFormat format);
 
     // TEMP
     struct ID3D11RasterizerState *m_rasterizerState;
@@ -110,24 +157,28 @@ protected:
 
     struct ID3D11BlendState *m_blendState;
 
-    IDXGIFactory1 *m_DXGIFactory;
+    IDXGIFactory1 *m_DXGIFactory1;
+    IDXGIFactory2 *m_DXGIFactory2;
 
     int m_multisampleCount;
     int m_multisampleQuality;
 
 protected:
     // Platform specific functionality
-    ysError CreateD3D11DepthStencilView(ID3D11DepthStencilView **newDepthStencil, ID3D11ShaderResourceView **shaderResourceView, int width, int height, int count, int quality, bool shaderResource);
+    ysError
+    CreateD3D11DepthStencilView(ID3D11DepthStencilView **newDepthStencil,
+                                ID3D11ShaderResourceView **shaderResourceView,
+                                int width, int height, int count, int quality,
+                                bool shaderResource);
     ysError DestroyD3D11DepthStencilView(ID3D11DepthStencilView *&depthStencil);
 
-    ysError CreateD3D11OnScreenRenderTarget(ysRenderTarget *target, ysRenderingContext *context, bool depthBuffer);
-    ysError CreateD3D11OffScreenRenderTarget(
-        ysRenderTarget *target,
-        int width,
-        int height,
-        ysRenderTarget::Format format,
-        bool colorData,
-        bool depthBuffer);
+    ysError CreateD3D11OnScreenRenderTarget(ysRenderTarget *target,
+                                            ysRenderingContext *context,
+                                            bool depthBuffer);
+    ysError CreateD3D11OffScreenRenderTarget(ysRenderTarget *target, int width,
+                                             int height,
+                                             ysRenderTarget::Format format,
+                                             bool colorData, bool depthBuffer);
 
     ysError DestroyD3D11RenderTarget(ysRenderTarget *target);
 };
