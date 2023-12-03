@@ -6,7 +6,7 @@
 // DirectX forward declarations
 struct IDXGIDevice;
 struct ID3D11DeviceContext;
-struct IDXGIFactory;
+struct IDXGIFactory1;
 struct ID3D11Device;
 struct ID3D11RasterizerState;
 struct ID3D11DepthStencilView;
@@ -92,7 +92,7 @@ public:
     // Non-standard interface
     void GetDXGIDevice(IDXGIDevice **device);
     ID3D11DeviceContext *GetImmediateContext() { return m_deviceContext; }
-    IDXGIFactory *GetDXGIFactory() { return m_DXGIFactory; }
+    IDXGIFactory1 *GetDXGIFactory() { return m_DXGIFactory; }
     ID3D11Device *GetDevice() { return m_device; }
 
     static DXGI_FORMAT ConvertInputLayoutFormat(ysRenderGeometryChannel::ChannelFormat format);
@@ -110,7 +110,7 @@ protected:
 
     struct ID3D11BlendState *m_blendState;
 
-    IDXGIFactory *m_DXGIFactory;
+    IDXGIFactory1 *m_DXGIFactory;
 
     int m_multisampleCount;
     int m_multisampleQuality;

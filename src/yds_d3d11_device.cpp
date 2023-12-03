@@ -13,7 +13,7 @@
 #include "../include/yds_windows_window.h"
 
 #include "../include/yds_stb_image.h"
-#include <d3d11.h>
+#include <d3d11_1.h>
 
 #include <fstream>
 
@@ -71,24 +71,62 @@ ysError ysD3D11Device::InitializeDevice() {
     deviceCreationFlags |= D3D11_CREATE_DEVICE_DEBUG;
 #endif /* _DEBUG */
 
+    const D3D_FEATURE_LEVEL featureLevels[] = {
+        D3D_FEATURE_LEVEL_11_1,
+        D3D_FEATURE_LEVEL_11_0,
+        D3D_FEATURE_LEVEL_10_1,
+        D3D_FEATURE_LEVEL_10_0,
+    };
+
     result = D3D11CreateDevice(
         nullptr,
         D3D_DRIVER_TYPE_HARDWARE,
         nullptr,
         deviceCreationFlags,
-        nullptr,
-        0,
+        featureLevels,
+        sizeof(featureLevels) / sizeof(D3D_FEATURE_LEVEL),
         D3D11_SDK_VERSION,
         &m_device,
         &highestFeatureLevel,
         &m_deviceContext);
+
+    if (result == E_INVALIDARG) {
+        // This is needed because D3D11CreateDevice will fail if on a
+        // 11_0 device since D3D_FEATURE_LEVEL_11_1 won't be recongized
+        result = D3D11CreateDevice(
+            nullptr,
+            D3D_DRIVER_TYPE_HARDWARE,
+            nullptr,
+            deviceCreationFlags,
+            &featureLevels[1],
+            sizeof(featureLevels) / sizeof(D3D_FEATURE_LEVEL),
+            D3D11_SDK_VERSION,
+            &m_device,
+            &highestFeatureLevel,
+            &m_deviceContext);
+    }
 
     if (FAILED(result)) {
         m_device = nullptr;
         return YDS_ERROR_RETURN(ysError::CouldNotCreateGraphicsDevice);
     }
 
-    result = CreateDXGIFactory(IID_IDXGIFactory, (void **)(&m_DXGIFactory));
+    m_DXGIFactory = nullptr;
+    {
+        IDXGIDevice* dxgiDevice = nullptr;
+        result = m_device->QueryInterface( __uuidof(IDXGIDevice), reinterpret_cast<void**>(&dxgiDevice) );
+        if (SUCCEEDED(result)) {
+            IDXGIAdapter* adapter = nullptr;
+            result = dxgiDevice->GetAdapter(&adapter);
+            if (SUCCEEDED(result)) {
+                result = adapter->GetParent( __uuidof(IDXGIFactory1), reinterpret_cast<void**>(&m_DXGIFactory) );
+                adapter->Release();
+            }
+
+            dxgiDevice->Release();
+        }
+    }
+
     if (FAILED(result)) {
         m_device->Release();
         m_device = nullptr;
