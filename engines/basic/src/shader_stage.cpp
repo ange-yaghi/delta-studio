@@ -136,6 +136,7 @@ ysError dbasic::ShaderStage::BindScene() {
 	for (int i = 0; i < OutputSlot::Count; ++i) {
 		m_device->SetRenderTarget(m_renderTarget[i], i);
 	}
+
 	m_device->UseShaderProgram(m_shaderProgram);
 	m_device->UseInputLayout(m_inputLayout);
 

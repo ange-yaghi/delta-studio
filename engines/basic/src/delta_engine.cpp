@@ -190,8 +190,8 @@ ysError dbasic::DeltaEngine::StartFrame() {
     m_timingSystem->Update();
 
     // TEMP
-    if (IsKeyDown(ysKey::Code::B)) m_device->SetDebugFlag(0, true);
-    else m_device->SetDebugFlag(0, false);
+    if (IsKeyDown(ysKey::Code::B)) { m_device->SetDebugFlag(0, true); }
+    else { m_device->SetDebugFlag(0, false); }
 
     if (m_gameWindow->IsActive()) {
         m_windowSystem->SetCursorVisible(!m_cursorHidden);

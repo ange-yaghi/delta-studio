@@ -14,7 +14,7 @@ ysRenderTarget::ysRenderTarget() : ysContextObject("RENDER_TARGET", DeviceAPI::U
     m_sampleCount = 1;
     m_associatedContext = nullptr;
     m_depthBuffer = nullptr;
-    m_parent = nullptr;
+    m_parent = this;
     m_depthTestEnabled = false;
 }
 
@@ -32,7 +32,7 @@ ysRenderTarget::ysRenderTarget(DeviceAPI API) : ysContextObject("RENDER_TARGET",
     m_sampleCount = 1;
     m_associatedContext = nullptr;
     m_depthBuffer = nullptr;
-    m_parent = nullptr;
+    m_parent = this;
     m_depthTestEnabled = false;
 }
 

@@ -47,13 +47,23 @@ public:
 
     bool HasColorData() const { return m_hasColorData; }
 
-    ysRenderingContext *GetAssociatedContext() { return m_associatedContext; }
-    ysRenderTarget *GetParent() { return m_parent; }
+    inline ysRenderingContext *GetAssociatedContext() {
+        return m_associatedContext;
+    }
+
+    inline ysRenderTarget *GetParent() const { return m_parent; }
+    inline ysRenderTarget *GetRoot() {
+        return (GetParent() != this) ? GetParent()->GetRoot() : this;
+    }
 
     bool IsDepthTestEnabled() const { return m_depthTestEnabled; }
     void SetDepthTestEnabled(bool enable) { m_depthTestEnabled = enable; }
 
+    inline int GetMsaa() const { return m_msaa; }
+
 protected:
+    int m_msaa = 1;
+
     int m_posX;
     int m_posY;
 

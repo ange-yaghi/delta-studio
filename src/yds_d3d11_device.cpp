@@ -228,35 +228,86 @@ ysError ysD3D11Device::CreateRenderingContext(ysRenderingContext **context,
     m_multisampleCount = (int) multisamplesPerPixel;
     m_multisampleQuality = (int) maxQuality - 1;
 
-    // Create the swap chain
-    DXGI_SWAP_CHAIN_DESC swapChainDesc = {};
-    ZeroMemory(&swapChainDesc, sizeof(DXGI_SWAP_CHAIN_DESC));
-    swapChainDesc.BufferDesc.Width = window->GetGameWidth();
-    swapChainDesc.BufferDesc.Height = window->GetGameHeight();
-    swapChainDesc.BufferDesc.RefreshRate.Numerator = 60;
-    swapChainDesc.BufferDesc.RefreshRate.Denominator = 1;
-    swapChainDesc.BufferDesc.Format = format;
-    swapChainDesc.BufferDesc.ScanlineOrdering =
-            DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
-    swapChainDesc.BufferDesc.Scaling = DXGI_MODE_SCALING_UNSPECIFIED;
-    swapChainDesc.SampleDesc.Count = m_multisampleCount;
-    swapChainDesc.SampleDesc.Quality = m_multisampleQuality;
-    swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
-    swapChainDesc.BufferCount = 2;
-    swapChainDesc.OutputWindow = windowsWindow->GetWindowHandle();
-    swapChainDesc.Windowed = window->GetCurrentWindowStyle() !=
-                             ysWindow::WindowStyle::Fullscreen;
-    swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
-    swapChainDesc.Flags = 0;
+    if (m_DXGIFactory2 != nullptr) {
+        DXGI_SWAP_CHAIN_DESC1 swapChainDesc = {};
+        ZeroMemory(&swapChainDesc, sizeof(DXGI_SWAP_CHAIN_DESC1));
+        swapChainDesc.Width = window->GetGameWidth();
+        swapChainDesc.Height = window->GetGameHeight();
+        swapChainDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+#if YDS_D3D11_USE_FLIP_MODEL
+        swapChainDesc.SampleDesc.Count = 1;
+        swapChainDesc.SampleDesc.Quality = 0;
+        swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
+#else
+        swapChainDesc.SampleDesc.Count = m_multisampleCount;
+        swapChainDesc.SampleDesc.Quality = m_multisampleQuality;
+        swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
+#endif
+        swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
+        swapChainDesc.BufferCount = 2;
 
-    HRESULT result = m_DXGIFactory1->CreateSwapChain(m_device, &swapChainDesc,
-                                                     &newContext->m_swapChain);
-    if (FAILED(result)) {
-        m_renderingContexts.Delete(newContext->GetIndex());
-        *context = nullptr;
+        newContext->m_swapChain1 = nullptr;
+        HRESULT result = m_DXGIFactory2->CreateSwapChainForHwnd(
+                m_device, windowsWindow->GetWindowHandle(), &swapChainDesc,
+                nullptr, nullptr, &newContext->m_swapChain1);
+        if (SUCCEEDED(result)) {
+            result = newContext->m_swapChain1->QueryInterface(
+                    __uuidof(IDXGISwapChain),
+                    reinterpret_cast<void **>(&newContext->m_swapChain));
+        }
 
-        return YDS_ERROR_RETURN(ysError::CouldNotCreateSwapChain);
+        if (FAILED(result)) {
+            m_renderingContexts.Delete(newContext->GetIndex());
+            *context = nullptr;
+            return YDS_ERROR_RETURN(ysError::CouldNotCreateSwapChain);
+        }
+    } else {
+        DXGI_SWAP_CHAIN_DESC swapChainDesc = {};
+        ZeroMemory(&swapChainDesc, sizeof(DXGI_SWAP_CHAIN_DESC));
+        swapChainDesc.BufferDesc.Width = window->GetGameWidth();
+        swapChainDesc.BufferDesc.Height = window->GetGameHeight();
+        swapChainDesc.BufferDesc.RefreshRate.Numerator = 60;
+        swapChainDesc.BufferDesc.RefreshRate.Denominator = 1;
+        swapChainDesc.BufferDesc.Format = format;
+        swapChainDesc.BufferDesc.ScanlineOrdering =
+                DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
+        swapChainDesc.BufferDesc.Scaling = DXGI_MODE_SCALING_UNSPECIFIED;
+#if YDS_D3D11_USE_FLIP_MODEL
+        swapChainDesc.SampleDesc.Count = 1;
+        swapChainDesc.SampleDesc.Quality = 0;
+        swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
+#else
+        swapChainDesc.SampleDesc.Count = m_multisampleCount;
+        swapChainDesc.SampleDesc.Quality = m_multisampleQuality;
+        swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
+#endif
+        swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
+        swapChainDesc.BufferCount = 2;
+        swapChainDesc.OutputWindow = windowsWindow->GetWindowHandle();
+        swapChainDesc.Windowed = window->GetCurrentWindowStyle() !=
+                                 ysWindow::WindowStyle::Fullscreen;
+        swapChainDesc.Flags = 0;
+
+        HRESULT result = m_DXGIFactory1->CreateSwapChain(
+                m_device, &swapChainDesc, &newContext->m_swapChain);
+        if (FAILED(result)) {
+            m_renderingContexts.Delete(newContext->GetIndex());
+            *context = nullptr;
+            return YDS_ERROR_RETURN(ysError::CouldNotCreateSwapChain);
+        }
     }
+
+    m_DXGIFactory1->MakeWindowAssociation(windowsWindow->GetWindowHandle(),
+                                          DXGI_MWA_NO_ALT_ENTER);
+
+#if YDS_D3D11_USE_FLIP_MODEL
+    newContext->m_msaaRenderTarget =
+            m_renderTargets.NewGeneric<ysD3D11RenderTarget>();
+    YDS_NESTED_ERROR_CALL(CreateD3D11OffScreenRenderTarget(
+            newContext->m_msaaRenderTarget, window->GetGameWidth(),
+            window->GetGameHeight(), ysRenderTarget::Format::R8G8B8A8_UNORM,
+            m_multisampleCount, true, true));
+#endif
 
     *context = static_cast<ysRenderingContext *>(newContext);
 
@@ -373,11 +424,15 @@ ysError ysD3D11Device::UpdateRenderingContext(ysRenderingContext *context) {
 
     // Destroy render target first
     if (attachedTarget != nullptr) {
+#if YDS_D3D11_USE_FLIP_MODEL
+        YDS_NESTED_ERROR_CALL(
+                DestroyD3D11RenderTarget(d3d11Context->m_msaaRenderTarget));
+#endif
         YDS_NESTED_ERROR_CALL(DestroyD3D11RenderTarget(attachedTarget));
     }
 
     HRESULT result = d3d11Context->m_swapChain->ResizeBuffers(
-            1, width, height, DXGI_FORMAT_R8G8B8A8_UNORM,
+            2, width, height, DXGI_FORMAT_R8G8B8A8_UNORM,
             DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH);
     if (FAILED(result)) { return YDS_ERROR_RETURN(ysError::ApiError); }
 
@@ -388,6 +443,11 @@ ysError ysD3D11Device::UpdateRenderingContext(ysRenderingContext *context) {
         YDS_NESTED_ERROR_CALL(
                 ResizeRenderTarget(context->GetAttachedRenderTarget(), width,
                                    height, pwidth, pheight));
+#if YDS_D3D11_USE_FLIP_MODEL
+        YDS_NESTED_ERROR_CALL(
+                ResizeRenderTarget(d3d11Context->m_msaaRenderTarget, width,
+                                   height, pwidth, pheight));
+#endif
     }
 
     return YDS_ERROR_RETURN(ysError::None);
@@ -398,8 +458,13 @@ ysError ysD3D11Device::DestroyRenderingContext(ysRenderingContext *&context) {
 
     if (context != nullptr) {
         ysD3D11Context *d3d11Context = static_cast<ysD3D11Context *>(context);
-        if (d3d11Context->m_swapChain != nullptr)
+        if (d3d11Context->m_swapChain != nullptr) {
             d3d11Context->m_swapChain->Release();
+        }
+
+        if (d3d11Context->m_swapChain1 != nullptr) {
+            d3d11Context->m_swapChain1->Release();
+        }
     }
 
     YDS_NESTED_ERROR_CALL(ysDevice::DestroyRenderingContext(context));
@@ -449,20 +514,25 @@ ysError ysD3D11Device::CreateOnScreenRenderTarget(ysRenderTarget **newTarget,
                                                   bool depthBuffer) {
     YDS_ERROR_DECLARE("CreateOnScreenRenderTarget");
 
-    if (newTarget == nullptr)
+    if (newTarget == nullptr) {
         return YDS_ERROR_RETURN(ysError::InvalidParameter);
+    }
+
     *newTarget = nullptr;
 
-    if (context == nullptr) return YDS_ERROR_RETURN(ysError::InvalidParameter);
-    if (context->GetAttachedRenderTarget() != nullptr)
+    if (context == nullptr) {
+        return YDS_ERROR_RETURN(ysError::InvalidParameter);
+    }
+
+    if (context->GetAttachedRenderTarget() != nullptr) {
         return YDS_ERROR_RETURN(ysError::ContextAlreadyHasRenderTarget);
+    }
 
     ysD3D11RenderTarget *newRenderTarget =
             m_renderTargets.NewGeneric<ysD3D11RenderTarget>();
 
-    ysError result = CreateD3D11OnScreenRenderTarget(newRenderTarget, context,
-                                                     depthBuffer);
-
+    const ysError result = CreateD3D11OnScreenRenderTarget(
+            newRenderTarget, context, depthBuffer);
     if (result != ysError::None) {
         m_renderTargets.Delete(newRenderTarget->GetIndex());
         return YDS_ERROR_RETURN(result);
@@ -486,7 +556,7 @@ ysError ysD3D11Device::CreateOffScreenRenderTarget(
             m_renderTargets.NewGeneric<ysD3D11RenderTarget>();
 
     ysError result = CreateD3D11OffScreenRenderTarget(
-            d3d11Target, width, height, format, colorData, depthBuffer);
+            d3d11Target, width, height, format, 1, colorData, depthBuffer);
 
     if (result != ysError::None) {
         m_renderTargets.Delete(d3d11Target->GetIndex());
@@ -540,14 +610,11 @@ ysError ysD3D11Device::SetRenderTarget(ysRenderTarget *target, int slot) {
             static_cast<ysD3D11RenderTarget *>(target);
     ysD3D11RenderTarget *realTarget =
             (target != nullptr)
-                    ? (target->GetType() == ysRenderTarget::Type::Subdivision)
-                              ? static_cast<ysD3D11RenderTarget *>(
-                                        target->GetParent())
-                              : d3d11Target
+                    ? static_cast<ysD3D11RenderTarget *>(target->GetRoot())
                     : nullptr;
 
     if (target != nullptr) {
-        if (target->IsDepthTestEnabled()) {
+        if (target->IsDepthTestEnabled() && target->HasDepthBuffer()) {
             m_deviceContext->OMSetDepthStencilState(m_depthStencilEnabledState,
                                                     1);
         } else {
@@ -560,28 +627,31 @@ ysError ysD3D11Device::SetRenderTarget(ysRenderTarget *target, int slot) {
         }
 
         D3D11_VIEWPORT vp;
-        vp.Width = (FLOAT) target->GetWidth();
-        vp.Height = (FLOAT) target->GetHeight();
+        vp.Width = FLOAT(target->GetWidth());
+        vp.Height = FLOAT(target->GetHeight());
         vp.MinDepth = 0.0f;
         vp.MaxDepth = 1.0f;
-        vp.TopLeftX = (FLOAT) target->GetPosX();
-        vp.TopLeftY = (FLOAT) target->GetPosY();
+        vp.TopLeftX = FLOAT(target->GetPosX());
+        vp.TopLeftY = FLOAT(target->GetPosY());
         GetImmediateContext()->RSSetViewports(1, &vp);
     }
 
-    if (realTarget != m_activeRenderTarget[slot]) {
+    {
         ID3D11RenderTargetView *views[MaxRenderTargets];
         int colorTargets = 0;
         for (int i = 0; i < MaxRenderTargets; ++i) {
             ysD3D11RenderTarget *activeTarget =
                     static_cast<ysD3D11RenderTarget *>(m_activeRenderTarget[i]);
-            if (activeTarget == nullptr && i != slot) continue;
 
             views[colorTargets++] =
                     (i == slot) ? (realTarget != nullptr)
                                           ? realTarget->m_renderTargetView
                                           : nullptr
-                                : activeTarget->m_renderTargetView;
+                    : (activeTarget != nullptr)
+                            ? static_cast<ysD3D11RenderTarget *>(
+                                      activeTarget->GetRoot())
+                                      ->m_renderTargetView
+                            : nullptr;
         }
 
         GetImmediateContext()->OMSetRenderTargets(
@@ -690,7 +760,7 @@ ysError ysD3D11Device::ResizeRenderTarget(ysRenderTarget *target, int width,
                 target->HasDepthBuffer()));
     } else if (target->GetType() == ysRenderTarget::Type::OffScreen) {
         YDS_NESTED_ERROR_CALL(CreateD3D11OffScreenRenderTarget(
-                target, width, height, target->GetFormat(),
+                target, width, height, target->GetFormat(), target->GetMsaa(),
                 target->HasColorData(), target->HasDepthBuffer()));
     } else if (target->GetType() == ysRenderTarget::Type::Subdivision) {
         // Nothing needs to be done
@@ -724,26 +794,25 @@ ysError ysD3D11Device::DestroyRenderTarget(ysRenderTarget *&target) {
 ysError ysD3D11Device::ClearBuffers(const float *clearColor) {
     YDS_ERROR_DECLARE("ClearBuffers");
 
-    if (GetDevice() == nullptr) return YDS_ERROR_RETURN(ysError::NoDevice);
+    if (GetDevice() == nullptr) { return YDS_ERROR_RETURN(ysError::NoDevice); }
 
     for (int i = 0; i < MaxRenderTargets; ++i) {
         if (m_activeRenderTarget[i] != nullptr) {
             ysD3D11RenderTarget *renderTarget =
                     static_cast<ysD3D11RenderTarget *>(m_activeRenderTarget[i]);
             ysD3D11RenderTarget *actualTarget =
-                    (renderTarget->GetType() ==
-                     ysRenderTarget::Type::Subdivision)
-                            ? static_cast<ysD3D11RenderTarget *>(
-                                      renderTarget->GetParent())
-                            : renderTarget;
+                    static_cast<ysD3D11RenderTarget *>(renderTarget->GetRoot());
 
-            if (actualTarget->HasColorData())
+            if (actualTarget->HasColorData()) {
                 GetImmediateContext()->ClearRenderTargetView(
                         actualTarget->m_renderTargetView, clearColor);
-            if (actualTarget->HasDepthBuffer())
+            }
+
+            if (actualTarget->HasDepthBuffer()) {
                 GetImmediateContext()->ClearDepthStencilView(
                         actualTarget->m_depthStencilView, D3D11_CLEAR_DEPTH,
                         1.0f, 0);
+            }
 
             return YDS_ERROR_RETURN(ysError::None);
         }
@@ -755,17 +824,29 @@ ysError ysD3D11Device::ClearBuffers(const float *clearColor) {
 ysError ysD3D11Device::Present() {
     YDS_ERROR_DECLARE("Present");
 
-    if (m_activeContext == nullptr) return YDS_ERROR_RETURN(ysError::NoContext);
-    if (m_activeRenderTarget[0]->GetType() == ysRenderTarget::Type::Subdivision)
+    if (m_activeContext == nullptr) {
+        return YDS_ERROR_RETURN(ysError::NoContext);
+    } else if (m_activeRenderTarget[0]->GetType() ==
+               ysRenderTarget::Type::Subdivision) {
         return YDS_ERROR_RETURN(ysError::InvalidOperation);
-    if (!m_activeContext->GetWindow()->IsOpen())
+    } else if (!m_activeContext->GetWindow()->IsOpen()) {
         return YDS_ERROR_RETURN(ysError::InvalidOperation);
+    }
 
     ysD3D11Context *context = static_cast<ysD3D11Context *>(m_activeContext);
-    if (context->m_swapChain == nullptr)
+    if (context->m_swapChain == nullptr) {
         return YDS_ERROR_RETURN(ysError::NoContext);
+    }
 
-    context->m_swapChain->Present(1, 0);
+#if YDS_D3D11_USE_FLIP_MODEL
+    ysD3D11RenderTarget *renderTarget =
+            static_cast<ysD3D11RenderTarget *>(context->m_attachedRenderTarget);
+    GetImmediateContext()->ResolveSubresource(
+            renderTarget->m_texture, 0, context->m_msaaRenderTarget->m_texture,
+            0, DXGI_FORMAT_R8G8B8A8_UNORM);
+#endif
+
+    context->m_swapChain->Present(0, 0);
 
     return YDS_ERROR_RETURN(ysError::None);
 }
@@ -792,15 +873,20 @@ ysError ysD3D11Device::CreateVertexBuffer(ysGPUBuffer **newBuffer, int size,
     ZeroMemory(&InitData, sizeof(InitData));
     InitData.pSysMem = data;
 
-    if (data) pInitData = &InitData;
-    else
+    if (data) {
+        pInitData = &InitData;
+    } else {
         pInitData = nullptr;
+    }
 
     ID3D11Buffer *buffer;
     HRESULT result;
-    if (data == nullptr) result = m_device->CreateBuffer(&bd, nullptr, &buffer);
-    else
+    if (data == nullptr) {
+        result = m_device->CreateBuffer(&bd, nullptr, &buffer);
+    } else {
         result = result = m_device->CreateBuffer(&bd, pInitData, &buffer);
+    }
+
     if (FAILED(result)) {
         return YDS_ERROR_RETURN(ysError::CouldNotCreateGpuBuffer);
     }
@@ -848,9 +934,11 @@ ysError ysD3D11Device::CreateIndexBuffer(ysGPUBuffer **newBuffer, int size,
     ZeroMemory(&InitData, sizeof(InitData));
     InitData.pSysMem = data;
 
-    if (data != nullptr) pInitData = &InitData;
-    else
+    if (data != nullptr) {
+        pInitData = &InitData;
+    } else {
         pInitData = nullptr;
+    }
 
     ID3D11Buffer *buffer;
     HRESULT result = m_device->CreateBuffer(&bd, pInitData, &buffer);
@@ -1988,12 +2076,17 @@ ysD3D11Device::CreateD3D11OnScreenRenderTarget(ysRenderTarget *newTarget,
     newRenderTarget->m_resourceView = nullptr;
     newRenderTarget->m_texture = backBuffer;
 
+#if YDS_D3D11_USE_FLIP_MODEL
+    newRenderTarget->m_parent = d3d11Context->m_msaaRenderTarget;
+#endif
+
     return YDS_ERROR_RETURN(ysError::None);
 }
 
 ysError ysD3D11Device::CreateD3D11OffScreenRenderTarget(
         ysRenderTarget *target, int width, int height,
-        ysRenderTarget::Format format, bool colorData, bool depthBuffer) {
+        ysRenderTarget::Format format, int msaa, bool colorData,
+        bool depthBuffer) {
     YDS_ERROR_DECLARE("CreateD3D11OffScreenRenderTarget");
 
     HRESULT result;
@@ -2020,16 +2113,18 @@ ysError ysD3D11Device::CreateD3D11OffScreenRenderTarget(
             descBuffer.Format = DXGI_FORMAT::DXGI_FORMAT_R32_FLOAT;
         }
 
-        descBuffer.SampleDesc.Count = 1;
+        descBuffer.SampleDesc.Count = msaa;
         descBuffer.SampleDesc.Quality = 0;
         descBuffer.Usage = D3D11_USAGE_DEFAULT;
 
         descBuffer.BindFlags = 0;
-        if (colorData) descBuffer.BindFlags |= D3D11_BIND_RENDER_TARGET;
-        else if (depthBuffer)
-            descBuffer.BindFlags |= D3D11_BIND_DEPTH_STENCIL;
-
         descBuffer.BindFlags |= D3D11_BIND_SHADER_RESOURCE;
+        if (colorData) {
+            descBuffer.BindFlags |= D3D11_BIND_RENDER_TARGET;
+        } else if (depthBuffer) {
+            descBuffer.BindFlags |= D3D11_BIND_DEPTH_STENCIL;
+        }
+
         descBuffer.CPUAccessFlags = 0;
         descBuffer.MiscFlags = 0;
         result = m_device->CreateTexture2D(&descBuffer, nullptr, &renderTarget);
@@ -2042,7 +2137,8 @@ ysError ysD3D11Device::CreateD3D11OffScreenRenderTarget(
         D3D11_RENDER_TARGET_VIEW_DESC rtDesc;
         ZeroMemory(&rtDesc, sizeof(rtDesc));
         rtDesc.Format = descBuffer.Format;
-        rtDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
+        rtDesc.ViewDimension = (msaa == 1) ? D3D11_RTV_DIMENSION_TEXTURE2D
+                                           : D3D11_RTV_DIMENSION_TEXTURE2DMS;
         rtDesc.Texture2D.MipSlice = 0;
 
         result = m_device->CreateRenderTargetView(renderTarget, &rtDesc,
@@ -2056,7 +2152,8 @@ ysError ysD3D11Device::CreateD3D11OffScreenRenderTarget(
         D3D11_SHADER_RESOURCE_VIEW_DESC srDesc;
         ZeroMemory(&srDesc, sizeof(srDesc));
         srDesc.Format = descBuffer.Format;
-        srDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+        srDesc.ViewDimension = (msaa == 1) ? D3D11_SRV_DIMENSION_TEXTURE2D
+                                           : D3D11_SRV_DIMENSION_TEXTURE2DMS;
         srDesc.Texture2D.MostDetailedMip = 0;
         srDesc.Texture2D.MipLevels = 1;
 
@@ -2071,17 +2168,19 @@ ysError ysD3D11Device::CreateD3D11OffScreenRenderTarget(
     // Create Depth Buffer
     if (depthBuffer) {
         ysError depthResult;
-
-        if (!colorData)
+        if (!colorData) {
             depthResult = CreateD3D11DepthStencilView(
-                    &newDepthStencil, &shaderResourceView, width, height, 1, 0,
-                    true);
-        else
+                    &newDepthStencil, &shaderResourceView, width, height, msaa,
+                    0, true);
+        } else {
             depthResult = CreateD3D11DepthStencilView(
-                    &newDepthStencil, nullptr, width, height, 1, 0, false);
+                    &newDepthStencil, nullptr, width, height, msaa, 0, false);
+        }
 
         if (depthResult != ysError::None) {
-            if (newRenderTargetView != nullptr) newRenderTargetView->Release();
+            if (newRenderTargetView != nullptr) {
+                newRenderTargetView->Release();
+            }
             return YDS_ERROR_RETURN(depthResult);
         }
     }
@@ -2103,6 +2202,7 @@ ysError ysD3D11Device::CreateD3D11OffScreenRenderTarget(
     newRenderTarget->m_hasColorData = colorData;
     newRenderTarget->m_associatedContext = nullptr;
     newRenderTarget->m_depthTestEnabled = depthBuffer;
+    newRenderTarget->m_msaa = msaa;
 
     newRenderTarget->m_renderTargetView = newRenderTargetView;
     newRenderTarget->m_depthStencilView = newDepthStencil;
@@ -2112,23 +2212,32 @@ ysError ysD3D11Device::CreateD3D11OffScreenRenderTarget(
     return YDS_ERROR_RETURN(ysError::None);
 }
 
+#define RELEASE_RESOURCE(resource)                                             \
+    if (resource != nullptr) {                                                 \
+        resource->Release();                                                   \
+        resource = nullptr;                                                    \
+    }
+
 ysError ysD3D11Device::DestroyD3D11RenderTarget(ysRenderTarget *target) {
     YDS_ERROR_DECLARE("DestroyD3D11RenderTarget");
 
     ysD3D11RenderTarget *d3d11Target =
             static_cast<ysD3D11RenderTarget *>(target);
-    if (d3d11Target->m_renderTargetView != nullptr)
-        d3d11Target->m_renderTargetView->Release();
-    if (d3d11Target->m_depthStencilView != nullptr)
-        d3d11Target->m_depthStencilView->Release();
-    if (d3d11Target->m_resourceView != nullptr)
-        d3d11Target->m_resourceView->Release();
-    if (d3d11Target->m_texture != nullptr) d3d11Target->m_texture->Release();
+    RELEASE_RESOURCE(d3d11Target->m_renderTargetView);
+    RELEASE_RESOURCE(d3d11Target->m_depthStencilView);
+    RELEASE_RESOURCE(d3d11Target->m_resourceView);
+    RELEASE_RESOURCE(d3d11Target->m_texture);
 
     d3d11Target->m_renderTargetView = nullptr;
     d3d11Target->m_depthStencilView = nullptr;
     d3d11Target->m_resourceView = nullptr;
     d3d11Target->m_texture = nullptr;
+
+#if YDS_D3D11_USE_FLIP_MODEL
+    if (d3d11Target->GetType() == ysRenderTarget::Type::OnScreen) {
+        DestroyD3D11RenderTarget(d3d11Target->GetParent());
+    }
+#endif
 
     return YDS_ERROR_RETURN(ysError::None);
 }

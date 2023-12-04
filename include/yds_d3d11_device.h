@@ -148,7 +148,7 @@ public:
     struct ID3D11RasterizerState *m_rasterizerState;
     struct ID3D11SamplerState *m_samplerState;
 
-protected:
+private:
     ID3D11Device *m_device;
     ID3D11DeviceContext *m_deviceContext;
 
@@ -163,7 +163,7 @@ protected:
     int m_multisampleCount;
     int m_multisampleQuality;
 
-protected:
+private:
     // Platform specific functionality
     ysError
     CreateD3D11DepthStencilView(ID3D11DepthStencilView **newDepthStencil,
@@ -178,7 +178,8 @@ protected:
     ysError CreateD3D11OffScreenRenderTarget(ysRenderTarget *target, int width,
                                              int height,
                                              ysRenderTarget::Format format,
-                                             bool colorData, bool depthBuffer);
+                                             int msaa, bool colorData,
+                                             bool depthBuffer);
 
     ysError DestroyD3D11RenderTarget(ysRenderTarget *target);
 };
