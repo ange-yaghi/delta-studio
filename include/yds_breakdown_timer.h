@@ -8,6 +8,7 @@
 
 #include <fstream>
 #include <string>
+#include <vector>
 
 class ysBreakdownTimerChannel;
 
@@ -42,7 +43,7 @@ protected:
     ysBreakdownTimerChannel *FindChannel(const std::string &timerChannelName);
 
     ysDynamicArray<ysBreakdownTimerChannel, 4> m_channels;
-    ysExpandingArray<std::string, 4> m_executionOrder;
+    std::vector<std::string> m_executionOrder;
 
     std::fstream m_logFile;
 
