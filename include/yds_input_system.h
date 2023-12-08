@@ -8,7 +8,7 @@
 #include "yds_mouse_aggregator.h"
 
 class ysWindowSystem;
-
+class ysWindow;
 class ysInputSystem : public ysWindowSystemObject {
 protected:
     ysInputSystem();
@@ -16,8 +16,13 @@ protected:
     virtual ~ysInputSystem();
 
 public:
-    static ysError CreateInputSystem(ysInputSystem **newInputSystem, Platform platform);
+    static ysError CreateInputSystem(ysInputSystem **newInputSystem,
+                                     Platform platform);
     static ysError DestroyInputSystem(ysInputSystem *&inputSystem);
+
+    virtual ysError SetSystemCursorVisible(bool visible) = 0;
+    virtual ysError ConfineSystemCursor(ysWindow *window) = 0;
+    virtual ysError ReleaseSystemCursor() = 0;
 
     /* Public Functions */
 
@@ -36,14 +41,16 @@ public:
     ysInputDevice *GetInputDevice(int id, ysInputDevice::InputDeviceType type);
 
     // Check the current state of a device. If a device is found to no
-    // longer exist, it is either deleted or disconnected depending on 
+    // longer exist, it is either deleted or disconnected depending on
     // whether it has any dependencies.
     virtual ysError CheckDeviceStatus(ysInputDevice *device);
 
     // Check the states of all devices. See CheckDeviceStatus()
     virtual ysError CheckAllDevices();
 
-    ysKeyboardAggregator *GetKeyboardAggregator() { return &m_keyboardAggregator; }
+    ysKeyboardAggregator *GetKeyboardAggregator() {
+        return &m_keyboardAggregator;
+    }
     ysMouseAggregator *GetMouseAggregator() { return &m_mouseAggregator; }
 
     ysKeyboard *GetDefaultKeyboard() { return m_osKeyboard->GetAsKeyboard(); }
@@ -57,10 +64,12 @@ protected:
     // before any input can be processed.
     virtual ysError CreateDevices() = 0;
 
-    // Create a new generic device. This device will not be attached to a 
+    // Create a new generic device. This device will not be attached to a
     // physical device until one is sensed at which point it will be connected.
-    virtual ysInputDevice *CreateDevice(ysInputDevice::InputDeviceType type, int id) = 0;
-    virtual ysInputDevice *CreateVirtualDevice(ysInputDevice::InputDeviceType type) = 0;
+    virtual ysInputDevice *CreateDevice(ysInputDevice::InputDeviceType type,
+                                        int id) = 0;
+    virtual ysInputDevice *
+    CreateVirtualDevice(ysInputDevice::InputDeviceType type) = 0;
 
     void RegisterDevice(ysInputDevice *device);
     void UnregisterDevice(ysInputDevice *device);

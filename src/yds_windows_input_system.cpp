@@ -14,7 +14,8 @@ ysWindowsInputSystem::ysWindowsInputSystem()
     /* void */
 }
 
-ysWindowsInputSystem::~ysWindowsInputSystem() { /* void */ }
+ysWindowsInputSystem::~ysWindowsInputSystem() { /* void */
+}
 
 ysInputDevice::InputDeviceType ysWindowsInputSystem::TranslateType(int type) {
     switch (type) {
@@ -478,9 +479,63 @@ int ysWindowsInputSystem::OnOsMouseMove(LPARAM lParam, WPARAM wParam) {
     ysMouse *mouse = GetDefaultMouse();
     const WORD scrollDelta = GET_WHEEL_DELTA_WPARAM(wParam);
     mouse->UpdatePosition(x_pos, y_pos, false);
-    
+
     POINT p;
     if (GetCursorPos(&p)) { mouse->SetOsPosition(p.x, p.y); }
 
     return 0;
+}
+
+ysError ysWindowsInputSystem::SetSystemCursorVisible(bool visible) {
+    YDS_ERROR_DECLARE("CheckDeviceStatus");
+    CURSORINFO cursorInfo = {};
+    cursorInfo.cbSize = sizeof(CURSORINFO);
+    if (GetCursorInfo(&cursorInfo) == FALSE) {
+        return YDS_ERROR_RETURN(ysError::ApiError);
+    }
+
+    if (visible) {
+        if (cursorInfo.flags == 0) {
+            while (ShowCursor(TRUE) < 0) {}
+        }
+    } else {
+        if (cursorInfo.flags == CURSOR_SHOWING) {
+            while (ShowCursor(FALSE) >= 0) {}
+        }
+    }
+
+    return YDS_ERROR_RETURN(ysError::None);
+}
+
+ysError ysWindowsInputSystem::ConfineSystemCursor(ysWindow *window_) {
+    YDS_ERROR_DECLARE("CheckDeviceStatus");
+    ysWindowsWindow *window = static_cast<ysWindowsWindow *>(window_);
+    RECT clientRect;
+    if (!GetClientRect(window->GetWindowHandle(), &clientRect)) {
+        return YDS_ERROR_RETURN(ysError::ApiError);
+    }
+
+    POINT ul, lr;
+    ul.x = clientRect.left;
+    ul.y = clientRect.top;
+    lr.x = clientRect.right;
+    lr.y = clientRect.bottom;
+
+    MapWindowPoints(window->GetWindowHandle(), nullptr, &ul, 1);
+    MapWindowPoints(window->GetWindowHandle(), nullptr, &lr, 1);
+
+    clientRect.left = ul.x;
+    clientRect.top = ul.y;
+
+    clientRect.right = lr.x;
+    clientRect.bottom = lr.y;
+
+    ClipCursor(&clientRect);
+    return YDS_ERROR_RETURN(ysError::None);
+}
+
+ysError ysWindowsInputSystem::ReleaseSystemCursor() {
+    YDS_ERROR_DECLARE("ReleaseSystemCursor");
+    ClipCursor(nullptr);
+    return YDS_ERROR_RETURN(ysError::None);
 }

@@ -154,6 +154,7 @@ namespace dbasic {
         ysShaderProgram *GetDefaultShaderProgram() const { return m_shaderProgram; }
         ysShaderProgram *GetConsoleShaderProgram() const { return m_consoleProgram; }
 
+        ysInputSystem *GetInputSystem() const { return m_inputSystem; }
         ysInputLayout *GetSaqInputLayout() const { return m_saqInputLayout; }
         ysInputLayout *GetDefaultInputLayout() const { return m_inputLayout; }
         ysInputLayout *GetConsoleInputLayout() const { return m_consoleInputLayout; }

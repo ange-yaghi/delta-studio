@@ -20,6 +20,10 @@ public:
     int OnOsMouseWheel(LPARAM lParam, WPARAM wParam);
     int OnOsMouseMove(LPARAM lParam, WPARAM wParam);
 
+    virtual ysError SetSystemCursorVisible(bool visible) override;
+    virtual ysError ConfineSystemCursor(ysWindow *window) override;
+    virtual ysError ReleaseSystemCursor() override;
+
 protected:
     virtual ysError CreateDevices();
 
