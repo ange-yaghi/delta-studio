@@ -20,10 +20,6 @@ public:
                                      Platform platform);
     static ysError DestroyInputSystem(ysInputSystem *&inputSystem);
 
-    virtual ysError SetSystemCursorVisible(bool visible) = 0;
-    virtual ysError ConfineSystemCursor(ysWindow *window) = 0;
-    virtual ysError ReleaseSystemCursor() = 0;
-
     /* Public Functions */
 
     ysError Initialize();
