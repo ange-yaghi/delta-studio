@@ -600,6 +600,18 @@ ysMatrix ysMath::MatConvert3x3(const ysMatrix &m) {
     );
 }
 
+ysMatrix ysMath::MatNormalize(const ysMatrix &m) {
+    const ysMatrix m_T = Transpose(m);
+    return Transpose(
+        LoadMatrix(
+            ysMath::Normalize(m_T.rows[0]),
+            ysMath::Normalize(m_T.rows[1]),
+            ysMath::Normalize(m_T.rows[2]),
+            ysMath::Constants::IdentityRow4
+        )
+    );
+}
+
 ysMatrix ysMath::FrustrumPerspective(float fovy, float aspect, float near, float far) {
     float sinfov = ::sinf(fovy / 2.0f);
     float cosfov = ::cosf(fovy / 2.0f);

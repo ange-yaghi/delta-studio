@@ -338,6 +338,7 @@ namespace ysMath {
     ysMatrix MatMult(const ysMatrix &m1, const ysMatrix &m2);
     ysMatrix MatAdd(const ysMatrix &m1, const ysMatrix &m2);
     ysMatrix MatConvert3x3(const ysMatrix &m);
+    ysMatrix MatNormalize(const ysMatrix &m);
 
     // Common Matrix Calculations
     ysMatrix FrustrumPerspective(float fovy, float aspect, float near, float far);
