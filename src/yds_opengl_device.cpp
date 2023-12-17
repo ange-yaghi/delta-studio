@@ -857,7 +857,8 @@ ysError ysOpenGLDevice::CreateShaderProgram(ysShaderProgram **program) {
 }
 
 // Input Layouts
-ysError ysOpenGLDevice::CreateInputLayout(ysInputLayout **newInputLayout, ysShader *shader, const ysRenderGeometryFormat *format) {
+ysError ysOpenGLDevice::CreateInputLayout(ysInputLayout **newInputLayout, ysShader *shader, const ysRenderGeometryFormat *format,
+                      const ysRenderGeometryFormat *) {
     YDS_ERROR_DECLARE("CreateInputLayout");
 
     ysOpenGLInputLayout *newLayout = m_inputLayouts.NewGeneric<ysOpenGLInputLayout>();

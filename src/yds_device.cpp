@@ -6,10 +6,13 @@
 #include "../include/yds_vulkan_device.h"
 
 ysDevice::ysDevice() : ysContextObject("API_DEVICE", DeviceAPI::Unknown) {
-    for (int i = 0; i < MaxRenderTargets; ++i)
+    for (int i = 0; i < MaxRenderTargets; ++i) {
         m_activeRenderTarget[i] = nullptr;
+    }
+
     m_activeContext = nullptr;
     m_activeVertexBuffer = nullptr;
+    m_activeInstanceBuffer = nullptr;
     m_activeConstantBuffer = nullptr;
     m_activeIndexBuffer = nullptr;
     m_activeShaderProgram = nullptr;
@@ -21,10 +24,13 @@ ysDevice::ysDevice() : ysContextObject("API_DEVICE", DeviceAPI::Unknown) {
 }
 
 ysDevice::ysDevice(DeviceAPI API) : ysContextObject("API_DEVICE", API) {
-    for (int i = 0; i < MaxRenderTargets; ++i)
+    for (int i = 0; i < MaxRenderTargets; ++i) {
         m_activeRenderTarget[i] = nullptr;
+    }
+
     m_activeContext = nullptr;
     m_activeVertexBuffer = nullptr;
+    m_activeInstanceBuffer = nullptr;
     m_activeIndexBuffer = nullptr;
     m_activeConstantBuffer = nullptr;
     m_activeShaderProgram = nullptr;
@@ -35,7 +41,8 @@ ysDevice::ysDevice(DeviceAPI API) : ysContextObject("API_DEVICE", API) {
     m_debugFlags = 0x00000000;
 }
 
-ysDevice::~ysDevice() { /* void */ }
+ysDevice::~ysDevice() { /* void */
+}
 
 ysError ysDevice::CreateDevice(ysDevice **newDevice, DeviceAPI API) {
     YDS_ERROR_DECLARE("CreateDevice");
@@ -214,6 +221,23 @@ ysError ysDevice::UseVertexBuffer(ysGPUBuffer *buffer, int stride, int offset) {
             return YDS_ERROR_RETURN(ysError::IncompatiblePlatforms);
     } else {
         m_activeVertexBuffer = nullptr;
+    }
+
+    return YDS_ERROR_RETURN(ysError::None);
+}
+
+ysError ysDevice::UseInstanceBuffer(ysGPUBuffer *buffer, int stride,
+                                    int offset) {
+    YDS_ERROR_DECLARE("UseInstanceBuffer");
+
+    if (buffer) {
+        if (buffer->m_bufferType == ysGPUBuffer::GPU_DATA_BUFFER) {
+            m_activeInstanceBuffer = buffer;
+            m_activeInstanceBuffer->m_currentStride = stride;
+        } else
+            return YDS_ERROR_RETURN(ysError::IncompatiblePlatforms);
+    } else {
+        m_activeInstanceBuffer = nullptr;
     }
 
     return YDS_ERROR_RETURN(ysError::None);
@@ -481,3 +505,5 @@ ysError ysDevice::InitializeTextureSlots(int maxSlots) {
 
     return YDS_ERROR_RETURN(ysError::None);
 }
+
+void ysDevice::DrawInstanced(int, int, int, int, int) {}

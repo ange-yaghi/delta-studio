@@ -1027,15 +1027,15 @@ ysError ysD3D11Device::UseVertexBuffer(ysGPUBuffer *buffer, int stride,
                                        int offset) {
     YDS_ERROR_DECLARE("UseVertexBuffer");
 
-    if (!CheckCompatibility(buffer))
+    if (!CheckCompatibility(buffer)) {
         return YDS_ERROR_RETURN(ysError::IncompatiblePlatforms);
+    }
 
     if (buffer != nullptr) {
-        UINT uoffset = (UINT) offset;
-        UINT ustride = (UINT) stride;
+        const UINT uoffset = UINT(offset);
+        const UINT ustride = UINT(stride);
 
         ysD3D11GPUBuffer *d3d11Buffer = static_cast<ysD3D11GPUBuffer *>(buffer);
-
         if (d3d11Buffer->m_bufferType == ysGPUBuffer::GPU_DATA_BUFFER &&
             (buffer != m_activeVertexBuffer ||
              stride != d3d11Buffer->m_currentStride)) {
@@ -1048,8 +1048,35 @@ ysError ysD3D11Device::UseVertexBuffer(ysGPUBuffer *buffer, int stride,
     }
 
     YDS_NESTED_ERROR_CALL(ysDevice::UseVertexBuffer(buffer, stride, offset));
+    return YDS_ERROR_RETURN(ysError::None);
+}
 
-    return YDS_ERROR_RETURN(ysDevice::UseVertexBuffer(buffer, stride, offset));
+ysError ysD3D11Device::UseInstanceBuffer(ysGPUBuffer *buffer, int stride,
+                                         int offset) {
+    YDS_ERROR_DECLARE("UseInstanceBuffer");
+
+    if (!CheckCompatibility(buffer)) {
+        return YDS_ERROR_RETURN(ysError::IncompatiblePlatforms);
+    }
+
+    if (buffer != nullptr) {
+        const UINT uoffset = UINT(offset);
+        const UINT ustride = UINT(stride);
+
+        ysD3D11GPUBuffer *d3d11Buffer = static_cast<ysD3D11GPUBuffer *>(buffer);
+        if (d3d11Buffer->m_bufferType == ysGPUBuffer::GPU_DATA_BUFFER &&
+            (buffer != m_activeInstanceBuffer ||
+             stride != d3d11Buffer->m_currentStride)) {
+            GetImmediateContext()->IASetVertexBuffers(
+                    1, 1, &d3d11Buffer->m_buffer, &ustride, &uoffset);
+        }
+    } else {
+        GetImmediateContext()->IASetVertexBuffers(1, 0, nullptr, nullptr,
+                                                  nullptr);
+    }
+
+    YDS_NESTED_ERROR_CALL(ysDevice::UseInstanceBuffer(buffer, stride, offset));
+    return YDS_ERROR_RETURN(ysError::None);
 }
 
 ysError ysD3D11Device::UseIndexBuffer(ysGPUBuffer *buffer, int offset) {
@@ -1105,13 +1132,21 @@ ysError ysD3D11Device::EditBufferDataRange(ysGPUBuffer *buffer, char *data,
                                            int size, int offset) {
     YDS_ERROR_DECLARE("EditBufferDataRange");
 
-    if (!CheckCompatibility(buffer))
+    if (!CheckCompatibility(buffer)) {
         return YDS_ERROR_RETURN(ysError::IncompatiblePlatforms);
-    if (buffer == nullptr || data == nullptr)
+    }
+
+    if (buffer == nullptr || data == nullptr) {
         return YDS_ERROR_RETURN(ysError::InvalidParameter);
-    if ((size + offset) > buffer->GetSize())
+    }
+
+    if ((size + offset) > buffer->GetSize()) {
         return YDS_ERROR_RETURN(ysError::OutOfBounds);
-    if (size < 0 || offset < 0) return YDS_ERROR_RETURN(ysError::OutOfBounds);
+    }
+
+    if (size < 0 || offset < 0) {
+        return YDS_ERROR_RETURN(ysError::OutOfBounds);
+    }
 
     ysD3D11GPUBuffer *d3d11Buffer = static_cast<ysD3D11GPUBuffer *>(buffer);
 
@@ -1121,7 +1156,6 @@ ysError ysD3D11Device::EditBufferDataRange(ysGPUBuffer *buffer, char *data,
     box.right = offset + size;
     box.bottom = 1;
     box.back = 1;
-
     GetImmediateContext()->UpdateSubresource(d3d11Buffer->m_buffer, 0, &box,
                                              data, buffer->GetSize(), 0);
 
@@ -1300,14 +1334,19 @@ ysError ysD3D11Device::CreatePixelShader(ysShader **newShader,
                                          const char *shaderName, bool compile) {
     YDS_ERROR_DECLARE("CreatePixelShader");
 
-    if (newShader == nullptr)
+    if (newShader == nullptr) {
         return YDS_ERROR_RETURN(ysError::InvalidParameter);
+    }
+
     *newShader = nullptr;
 
-    if (shaderFilename == nullptr)
+    if (shaderFilename == nullptr) {
         return YDS_ERROR_RETURN(ysError::InvalidParameter);
-    if (shaderName == nullptr)
+    }
+
+    if (shaderName == nullptr) {
         return YDS_ERROR_RETURN(ysError::InvalidParameter);
+    }
 
     void *shaderByteCode = nullptr;
     SIZE_T shaderSize = 0U;
@@ -1498,8 +1537,9 @@ ysError ysD3D11Device::LinkProgram(ysShaderProgram *program) {
 ysError ysD3D11Device::UseShaderProgram(ysShaderProgram *program) {
     YDS_ERROR_DECLARE("UseShaderProgram");
 
-    if (!CheckCompatibility(program))
+    if (!CheckCompatibility(program)) {
         return YDS_ERROR_RETURN(ysError::IncompatiblePlatforms);
+    }
 
     ysD3D11ShaderProgram *d3d11Program =
             static_cast<ysD3D11ShaderProgram *>(program);
@@ -1542,28 +1582,32 @@ ysError ysD3D11Device::UseShaderProgram(ysShaderProgram *program) {
     return YDS_ERROR_RETURN(ysError::None);
 }
 
-ysError ysD3D11Device::CreateInputLayout(ysInputLayout **newInputLayout,
-                                         ysShader *shader,
-                                         const ysRenderGeometryFormat *format) {
+ysError
+ysD3D11Device::CreateInputLayout(ysInputLayout **newInputLayout,
+                                 ysShader *shader,
+                                 const ysRenderGeometryFormat *format,
+                                 const ysRenderGeometryFormat *instanceFormat) {
     YDS_ERROR_DECLARE("CreateInputLayout");
 
-    if (newInputLayout == nullptr)
+    if (newInputLayout == nullptr) {
         return YDS_ERROR_RETURN(ysError::InvalidParameter);
+    }
     *newInputLayout = nullptr;
 
-    if (shader == nullptr || format == nullptr)
+    if (shader == nullptr || format == nullptr) {
         return YDS_ERROR_RETURN(ysError::InvalidParameter);
-    if (!CheckCompatibility(shader))
+    }
+
+    if (!CheckCompatibility(shader)) {
         return YDS_ERROR_RETURN(ysError::IncompatiblePlatforms);
+    }
 
     ysD3D11Shader *d3d11Shader = static_cast<ysD3D11Shader *>(shader);
 
-    int nChannels = format->GetChannelCount();
+    const int nChannels = format->GetChannelCount();
     D3D11_INPUT_ELEMENT_DESC descArray[64];
-
-    for (int i = 0; i < nChannels; i++) {
+    for (int i = 0; i < nChannels; ++i) {
         const ysRenderGeometryChannel *channel = format->GetChannel(i);
-
         descArray[i].SemanticName = channel->GetName();
         descArray[i].SemanticIndex = 0;
         descArray[i].Format = ConvertInputLayoutFormat(channel->GetFormat());
@@ -1573,12 +1617,27 @@ ysError ysD3D11Device::CreateInputLayout(ysInputLayout **newInputLayout,
         descArray[i].InstanceDataStepRate = 0;
     }
 
-    HRESULT result;
-    ID3D11InputLayout *layout;
+    const int instanceDataChannels =
+            (instanceFormat != nullptr) ? instanceFormat->GetChannelCount() : 0;
+    if (instanceFormat != nullptr) {
+        for (int i = nChannels; i < nChannels + instanceDataChannels; ++i) {
+            const ysRenderGeometryChannel *channel =
+                    instanceFormat->GetChannel(i - nChannels);
+            descArray[i].SemanticName = channel->GetName();
+            descArray[i].SemanticIndex = 0;
+            descArray[i].Format =
+                    ConvertInputLayoutFormat(channel->GetFormat());
+            descArray[i].InputSlot = 1;
+            descArray[i].AlignedByteOffset = channel->GetOffset();
+            descArray[i].InputSlotClass = D3D11_INPUT_PER_INSTANCE_DATA;
+            descArray[i].InstanceDataStepRate = 1;
+        }
+    }
 
-    result = m_device->CreateInputLayout(descArray, nChannels,
-                                         d3d11Shader->m_shaderByteCode,
-                                         d3d11Shader->m_shaderSize, &layout);
+    ID3D11InputLayout *layout = nullptr;
+    const HRESULT result = m_device->CreateInputLayout(
+            descArray, nChannels + instanceDataChannels,
+            d3d11Shader->m_shaderByteCode, d3d11Shader->m_shaderSize, &layout);
 
     if (FAILED(result)) {
         return YDS_ERROR_RETURN(ysError::IncompatibleInputFormat);
@@ -1596,8 +1655,9 @@ ysError ysD3D11Device::CreateInputLayout(ysInputLayout **newInputLayout,
 ysError ysD3D11Device::UseInputLayout(ysInputLayout *layout) {
     YDS_ERROR_DECLARE("UseInputLayout");
 
-    if (!CheckCompatibility(layout))
+    if (!CheckCompatibility(layout)) {
         return YDS_ERROR_RETURN(ysError::IncompatiblePlatforms);
+    }
 
     ysD3D11InputLayout *d3d11Layout = static_cast<ysD3D11InputLayout *>(layout);
 
@@ -1617,9 +1677,13 @@ ysError ysD3D11Device::UseInputLayout(ysInputLayout *layout) {
 ysError ysD3D11Device::DestroyInputLayout(ysInputLayout *&layout) {
     YDS_ERROR_DECLARE("DestroyInputLayout");
 
-    if (layout == nullptr) return YDS_ERROR_RETURN(ysError::InvalidParameter);
-    if (!CheckCompatibility(layout))
+    if (layout == nullptr) {
+        return YDS_ERROR_RETURN(ysError::InvalidParameter);
+    }
+
+    if (!CheckCompatibility(layout)) {
         return YDS_ERROR_RETURN(ysError::IncompatiblePlatforms);
+    }
 
     if (layout == m_activeInputLayout) { UseInputLayout(nullptr); }
 
@@ -1636,9 +1700,13 @@ ysError ysD3D11Device::CreateTexture(ysTexture **newTexture,
                                      const wchar_t *fname) {
     YDS_ERROR_DECLARE("CreateTexture");
 
-    if (newTexture == nullptr)
+    if (newTexture == nullptr) {
         return YDS_ERROR_RETURN(ysError::InvalidParameter);
-    if (fname == nullptr) return YDS_ERROR_RETURN(ysError::InvalidParameter);
+    }
+
+    if (fname == nullptr) {
+        return YDS_ERROR_RETURN(ysError::InvalidParameter);
+    }
 
     *newTexture = nullptr;
 
@@ -1902,6 +1970,16 @@ ysError ysD3D11Device::DestroyTexture(ysTexture *&texture) {
     YDS_NESTED_ERROR_CALL(ysDevice::DestroyTexture(texture));
 
     return YDS_ERROR_RETURN(ysError::None);
+}
+
+void ysD3D11Device::DrawInstanced(int numFaces, int indexOffset,
+                                  int vertexOffset, int instanceCount,
+                                  int instanceOffset) {
+    GetImmediateContext()->IASetPrimitiveTopology(
+            D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+    GetImmediateContext()->DrawIndexedInstanced(numFaces * 3, instanceCount,
+                                                indexOffset, vertexOffset,
+                                                instanceOffset);
 }
 
 void ysD3D11Device::Draw(int numFaces, int indexOffset, int vertexOffset) {

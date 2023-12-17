@@ -2,14 +2,14 @@
 #define YDS_DEVICE_H
 
 #include "yds_base.h"
-#include "yds_window.h"
 #include "yds_context_object.h"
-#include "yds_rendering_context.h"
 #include "yds_gpu_buffer.h"
-#include "yds_shader.h"
 #include "yds_input_layout.h"
+#include "yds_rendering_context.h"
+#include "yds_shader.h"
 #include "yds_shader_program.h"
 #include "yds_texture.h"
+#include "yds_window.h"
 
 #if defined(_DEBUG)
 #define YDS_SUPPORTS_SHADER_COMPILATION 1
@@ -31,11 +31,7 @@ protected:
     static constexpr int MaxRenderTargets = 2;
 
 public:
-    enum class CullMode {
-        Front,
-        Back,
-        None
-    };
+    enum class CullMode { Front, Back, None };
 
 public:
     static ysError CreateDevice(ysDevice **device, DeviceAPI API);
@@ -55,7 +51,9 @@ public:
     /* Rendering Contexts */
 
     // Create a new rendering context
-    virtual ysError CreateRenderingContext(ysRenderingContext **renderingContext, ysWindow *window) = 0;
+    virtual ysError
+    CreateRenderingContext(ysRenderingContext **renderingContext,
+                           ysWindow *window) = 0;
 
     // Update a rendering context
     virtual ysError UpdateRenderingContext(ysRenderingContext *context) = 0;
@@ -64,10 +62,13 @@ public:
     virtual ysError DestroyRenderingContext(ysRenderingContext *&context);
 
     // Set the mode of a rendering context
-    virtual ysError SetContextMode(ysRenderingContext *context, ysRenderingContext::ContextMode mode);
+    virtual ysError SetContextMode(ysRenderingContext *context,
+                                   ysRenderingContext::ContextMode mode);
 
     // Get the number of created rendering contexts
-    int GetRenderingContextCount() { return m_renderingContexts.GetNumObjects(); }
+    int GetRenderingContextCount() {
+        return m_renderingContexts.GetNumObjects();
+    }
 
 
     /* State */
@@ -82,22 +83,34 @@ public:
     /* Render Targets */
 
     // Create an on-screen render target
-    virtual ysError CreateOnScreenRenderTarget(ysRenderTarget **newTarget, ysRenderingContext *context, bool depthBuffer) = 0;
+    virtual ysError CreateOnScreenRenderTarget(ysRenderTarget **newTarget,
+                                               ysRenderingContext *context,
+                                               bool depthBuffer) = 0;
 
     // Create an off-screen render target
-    virtual ysError CreateOffScreenRenderTarget(ysRenderTarget **newTarget, int width, int height, ysRenderTarget::Format format, bool colorData = true, bool depthBuffer = true) = 0;
+    virtual ysError CreateOffScreenRenderTarget(ysRenderTarget **newTarget,
+                                                int width, int height,
+                                                ysRenderTarget::Format format,
+                                                bool colorData = true,
+                                                bool depthBuffer = true) = 0;
 
     // Create a off-screen copy
-    virtual ysError CreateOffScreenRenderTarget(ysRenderTarget **newTarget, const ysRenderTarget *reference);
+    virtual ysError
+    CreateOffScreenRenderTarget(ysRenderTarget **newTarget,
+                                const ysRenderTarget *reference);
 
     // Create a sub render target
-    virtual ysError CreateSubRenderTarget(ysRenderTarget **newTarget, ysRenderTarget *parent, int x, int y, int width, int height) = 0;
+    virtual ysError CreateSubRenderTarget(ysRenderTarget **newTarget,
+                                          ysRenderTarget *parent, int x, int y,
+                                          int width, int height) = 0;
 
     // Resize a render target
-    virtual ysError ResizeRenderTarget(ysRenderTarget *target, int width, int height, int pwidth, int pheight);
+    virtual ysError ResizeRenderTarget(ysRenderTarget *target, int width,
+                                       int height, int pwidth, int pheight);
 
     // Reposition a render target
-    virtual ysError RepositionRenderTarget(ysRenderTarget *target, int x, int y);
+    virtual ysError RepositionRenderTarget(ysRenderTarget *target, int x,
+                                           int y);
 
     // Enable/disable depth testing
     virtual ysError SetDepthTestEnabled(ysRenderTarget *target, bool enable);
@@ -106,7 +119,7 @@ public:
     virtual ysError DestroyRenderTarget(ysRenderTarget *&target);
 
     // Set the active rendering target
-    virtual ysError SetRenderTarget(ysRenderTarget *target, int slot=0);
+    virtual ysError SetRenderTarget(ysRenderTarget *target, int slot = 0);
 
     // Read render target
     virtual ysError ReadRenderTarget(ysRenderTarget *src, uint8_t *target);
@@ -123,16 +136,26 @@ public:
     /* Buffers */
 
     // Create vertex buffer
-    virtual ysError CreateVertexBuffer(ysGPUBuffer **newBuffer, int size, char *data, bool mirrorToRam = false) = 0;
+    virtual ysError CreateVertexBuffer(ysGPUBuffer **newBuffer, int size,
+                                       char *data,
+                                       bool mirrorToRam = false) = 0;
 
     // Create index buffer
-    virtual ysError CreateIndexBuffer(ysGPUBuffer **newBuffer, int size, char *data, bool mirrorToRam = false) = 0;
+    virtual ysError CreateIndexBuffer(ysGPUBuffer **newBuffer, int size,
+                                      char *data, bool mirrorToRam = false) = 0;
 
     // Create constant buffer
-    virtual ysError CreateConstantBuffer(ysGPUBuffer **newBuffer, int size, char *data, bool mirrorToRam = false) = 0;
+    virtual ysError CreateConstantBuffer(ysGPUBuffer **newBuffer, int size,
+                                         char *data,
+                                         bool mirrorToRam = false) = 0;
 
     // Enable a vertex buffer
-    virtual ysError UseVertexBuffer(ysGPUBuffer *buffer, int stride, int offset);
+    virtual ysError UseVertexBuffer(ysGPUBuffer *buffer, int stride,
+                                    int offset);
+
+    // Enable an instance buffer
+    virtual ysError UseInstanceBuffer(ysGPUBuffer *buffer, int stride,
+                                      int offset);
 
     // Enable an index buffer
     virtual ysError UseIndexBuffer(ysGPUBuffer *buffer, int offset);
@@ -144,7 +167,8 @@ public:
     ysGPUBuffer *GetActiveBuffer(ysGPUBuffer::GPU_BUFFER_TYPE bufferType);
 
     // Edit the data in a section of a buffer
-    virtual ysError EditBufferDataRange(ysGPUBuffer *buffer, char *data, int size, int offset);
+    virtual ysError EditBufferDataRange(ysGPUBuffer *buffer, char *data,
+                                        int size, int offset);
 
     // Replace all data in a buffer
     virtual ysError EditBufferData(ysGPUBuffer *buffer, char *data);
@@ -156,12 +180,23 @@ public:
     /* Shaders */
 
     // Create a vertex shader from a file
-    virtual ysError CreateVertexShader(ysShader **newShader, const wchar_t *shaderFilename, const wchar_t *compiledFilename, const char *shaderName, bool compile) = 0;
-    ysError CreateVertexShader(ysShader **newShader, const wchar_t *shaderFilename, const char *shaderName, bool compile = true);
+    virtual ysError CreateVertexShader(ysShader **newShader,
+                                       const wchar_t *shaderFilename,
+                                       const wchar_t *compiledFilename,
+                                       const char *shaderName,
+                                       bool compile) = 0;
+    ysError CreateVertexShader(ysShader **newShader,
+                               const wchar_t *shaderFilename,
+                               const char *shaderName, bool compile = true);
 
     // Create a pixel shader from a file
-    virtual ysError CreatePixelShader(ysShader **newShader, const wchar_t *shaderFilename, const wchar_t *compiledFilename, const char *shaderName, bool compile) = 0;
-    ysError CreatePixelShader(ysShader **newShader, const wchar_t *shaderFilename, const char *shaderName, bool compile = true);
+    virtual ysError CreatePixelShader(ysShader **newShader,
+                                      const wchar_t *shaderFilename,
+                                      const wchar_t *compiledFilename,
+                                      const char *shaderName, bool compile) = 0;
+    ysError CreatePixelShader(ysShader **newShader,
+                              const wchar_t *shaderFilename,
+                              const char *shaderName, bool compile = true);
 
     // Destroy a shader
     virtual ysError DestroyShader(ysShader *&shader);
@@ -173,10 +208,12 @@ public:
     virtual ysError CreateShaderProgram(ysShaderProgram **newProgram) = 0;
 
     // Destroy a shader program
-    virtual ysError DestroyShaderProgram(ysShaderProgram *&shader, bool destroyShaders = false);
+    virtual ysError DestroyShaderProgram(ysShaderProgram *&shader,
+                                         bool destroyShaders = false);
 
     // Attach a shader to a shader program
-    virtual ysError AttachShader(ysShaderProgram *targetProgram, ysShader *shader);
+    virtual ysError AttachShader(ysShaderProgram *targetProgram,
+                                 ysShader *shader);
 
     // Link a program
     virtual ysError LinkProgram(ysShaderProgram *program);
@@ -188,7 +225,10 @@ public:
     /* Input Layouts */
 
     // Create an input layout for a shader and format
-    virtual ysError CreateInputLayout(ysInputLayout **newLayout, ysShader *shader, const ysRenderGeometryFormat *format) = 0;
+    virtual ysError CreateInputLayout(
+            ysInputLayout **newLayout, ysShader *shader,
+            const ysRenderGeometryFormat *format,
+            const ysRenderGeometryFormat *instanceFormat = nullptr) = 0;
 
     // Enable an input layout
     virtual ysError UseInputLayout(ysInputLayout *layout);
@@ -200,16 +240,21 @@ public:
     /* Textures */
 
     // Create a texture from a file
-    virtual ysError CreateTexture(ysTexture **texture, const wchar_t *fname) = 0;
+    virtual ysError CreateTexture(ysTexture **texture,
+                                  const wchar_t *fname) = 0;
 
     // Create an rgb texture from an in-memory buffer
-    virtual ysError CreateTexture(ysTexture **texture, int width, int height, const unsigned char *buffer) = 0;
+    virtual ysError CreateTexture(ysTexture **texture, int width, int height,
+                                  const unsigned char *buffer) = 0;
 
     // Create an alpha texture from an in-memory buffer
-    virtual ysError CreateAlphaTexture(ysTexture **texture, int width, int height, const unsigned char *buffer) = 0;
+    virtual ysError CreateAlphaTexture(ysTexture **texture, int width,
+                                       int height,
+                                       const unsigned char *buffer) = 0;
 
     // Update a texture
-    virtual ysError UpdateTexture(ysTexture *texture, const unsigned char *buffer) = 0;
+    virtual ysError UpdateTexture(ysTexture *texture,
+                                  const unsigned char *buffer) = 0;
 
     // Destroy a texture
     virtual ysError DestroyTexture(ysTexture *&texture);
@@ -226,10 +271,24 @@ public:
     /* Debug */
 
     // TEMP
-    virtual void Draw(int numFaces, int indexOffset, int vertexOffset) { (void)numFaces; (void)indexOffset; (void)vertexOffset; }
-    virtual void DrawLines(int numIndices, int indexOffset, int vertexOffset) { (void)numIndices; (void)indexOffset; (void)vertexOffset; }
+    virtual void Draw(int numFaces, int indexOffset, int vertexOffset) {
+        (void) numFaces;
+        (void) indexOffset;
+        (void) vertexOffset;
+    }
 
-    ysRenderTarget *GetActiveRenderTarget(int slot=0) const { return m_activeRenderTarget[slot]; }
+    virtual void DrawInstanced(int numIndices, int indexOffset, int vertexOffset,
+                             int instanceCount, int instanceOffset);
+
+    virtual void DrawLines(int numIndices, int indexOffset, int vertexOffset) {
+        (void) numIndices;
+        (void) indexOffset;
+        (void) vertexOffset;
+    }
+
+    ysRenderTarget *GetActiveRenderTarget(int slot = 0) const {
+        return m_activeRenderTarget[slot];
+    }
 
     void SetDebugFlag(int flag, bool state);
     bool GetDebugFlag(int flag) const;
@@ -239,19 +298,20 @@ protected:
 
 protected:
     // Object Holders
-    ysDynamicArray<ysRenderingContext, 4>    m_renderingContexts;
-    ysDynamicArray<ysRenderTarget, 4>        m_renderTargets;
-    ysDynamicArray<ysGPUBuffer, 16>            m_gpuBuffers;
-    ysDynamicArray<ysShader, 16>            m_shaders;
-    ysDynamicArray<ysShaderProgram, 8>        m_shaderPrograms;
-    ysDynamicArray<ysInputLayout, 16>        m_inputLayouts;
-    ysDynamicArray<ysTexture, 32>            m_textures;
+    ysDynamicArray<ysRenderingContext, 4> m_renderingContexts;
+    ysDynamicArray<ysRenderTarget, 4> m_renderTargets;
+    ysDynamicArray<ysGPUBuffer, 16> m_gpuBuffers;
+    ysDynamicArray<ysShader, 16> m_shaders;
+    ysDynamicArray<ysShaderProgram, 8> m_shaderPrograms;
+    ysDynamicArray<ysInputLayout, 16> m_inputLayouts;
+    ysDynamicArray<ysTexture, 32> m_textures;
 
     // Active Objects
     ysRenderTarget *m_activeRenderTarget[MaxRenderTargets];
     ysRenderingContext *m_activeContext;
 
     ysGPUBuffer *m_activeVertexBuffer;
+    ysGPUBuffer *m_activeInstanceBuffer;
     ysGPUBuffer *m_activeIndexBuffer;
     ysGPUBuffer *m_activeConstantBuffer;
 

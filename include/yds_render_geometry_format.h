@@ -11,10 +11,11 @@ public:
     int GetChannelCount() const;
     int GetFormatSize() const;
 
-    void AddChannel(const char *name, int offset, ysRenderGeometryChannel::ChannelFormat format);
+    void AddChannel(const char *name, int offset,
+                    ysRenderGeometryChannel::ChannelFormat format);
 
     const ysRenderGeometryChannel *GetChannel(int index) const {
-        return m_channels.Get(index); 
+        return m_channels.Get(index);
     }
 
 protected:

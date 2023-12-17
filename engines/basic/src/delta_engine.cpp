@@ -644,7 +644,7 @@ float dbasic::DeltaEngine::GetAverageFramerate() {
 }
 
 float dbasic::DeltaEngine::GetAverageFrameLength() {
-    return m_timingSystem->GetAverageFrameDuration();
+    return float(m_timingSystem->GetAverageFrameDuration());
 }
 
 void dbasic::DeltaEngine::SetPaused(bool paused) {
@@ -715,20 +715,9 @@ ysError dbasic::DeltaEngine::DrawAxis(StageEnableFlags flags, int layer) {
 
 ysError dbasic::DeltaEngine::DrawModel(StageEnableFlags flags, ModelAsset *model, int layer) {
     YDS_ERROR_DECLARE("DrawModel");
-
-    DrawCall *newCall = NewDrawCall(layer, m_shaderSet->GetObjectDataSize());
-    if (newCall != nullptr) {
-        YDS_NESTED_ERROR_CALL(m_shaderSet->CacheObjectData(newCall->ObjectData, m_shaderSet->GetObjectDataSize()));
-        newCall->VertexSize = model->GetVertexSize();
-        newCall->IndexBuffer = model->GetIndexBuffer();
-        newCall->VertexBuffer = model->GetVertexBuffer();
-        newCall->BaseVertex = model->GetBaseVertex();
-        newCall->BaseIndex = model->GetBaseIndex();
-        newCall->PrimitiveCount = model->GetFaceCount();
-        newCall->Lines = false;
-        newCall->Flags = flags;
-    }
-
+    YDS_NESTED_ERROR_CALL(DrawGeneric(flags, model->GetIndexBuffer(),
+                                      model->GetVertexBuffer(), model->GetVertexSize(), model->GetBaseIndex(),
+            model->GetBaseVertex(), model->GetFaceCount(), true, layer));
     return YDS_ERROR_RETURN(ysError::None);
 }
 
@@ -755,18 +744,37 @@ ysError dbasic::DeltaEngine::DrawRenderSkeleton(
 
 ysError dbasic::DeltaEngine::DrawGeneric(
     StageEnableFlags flags, ysGPUBuffer *indexBuffer, ysGPUBuffer *vertexBuffer, 
-    int vertexSize, int baseIndex, int baseVertex, int faceCount, bool depthTest, int layer)
-{
+    int vertexSize, int baseIndex,
+                                         int baseVertex, int faceCount,
+                                         bool depthTest,
+                                         int layer){
+    YDS_ERROR_DECLARE("DrawGeneric");
+
+    YDS_NESTED_ERROR_CALL(DrawGeneric(
+        flags, indexBuffer, vertexBuffer, nullptr, vertexSize, 0, baseIndex,
+        baseVertex, faceCount, 0, 0, depthTest, layer));
+    return YDS_ERROR_RETURN(ysError::None);
+}
+
+ysError dbasic::DeltaEngine::DrawGeneric(
+        StageEnableFlags flags, ysGPUBuffer *indexBuffer,
+        ysGPUBuffer *vertexBuffer, ysGPUBuffer *instanceBuffer, int vertexSize,
+        int instanceDataSize, int baseIndex, int baseVertex, int faceCount, int instanceCount,
+        int baseInstance, bool depthTest, int layer) {
     YDS_ERROR_DECLARE("DrawGeneric");
 
     DrawCall *newCall = NewDrawCall(layer, m_shaderSet->GetObjectDataSize());
     if (newCall != nullptr) {
         YDS_NESTED_ERROR_CALL(m_shaderSet->CacheObjectData(newCall->ObjectData, m_shaderSet->GetObjectDataSize()));
         newCall->VertexSize = vertexSize;
+        newCall->InstanceDataSize = instanceDataSize;
         newCall->IndexBuffer = indexBuffer;
         newCall->VertexBuffer = vertexBuffer;
+        newCall->InstanceBuffer = instanceBuffer;
         newCall->BaseVertex = baseVertex;
         newCall->BaseIndex = baseIndex;
+        newCall->BaseInstance = baseInstance;
+        newCall->InstanceCount = instanceCount;
         newCall->PrimitiveCount = faceCount;
         newCall->Flags = flags;
         newCall->DepthTest = depthTest;
@@ -794,6 +802,8 @@ ysError dbasic::DeltaEngine::DrawGenericLines(
         newCall->Flags = flags;
         newCall->DepthTest = depthTest;
         newCall->Lines = true;
+        newCall->InstanceBuffer = nullptr;
+        newCall->InstanceCount = 0;
     }
 
     return YDS_ERROR_RETURN(ysError::None);
@@ -832,9 +842,15 @@ ysError dbasic::DeltaEngine::ExecuteShaderStage(int stageIndex) {
 
                     m_device->UseIndexBuffer(call->IndexBuffer, 0);
                     m_device->UseVertexBuffer(call->VertexBuffer, call->VertexSize, 0);
+                    m_device->UseInstanceBuffer(call->InstanceBuffer, call->InstanceDataSize, 0);
 
                     if (!call->Lines) {
-                        m_device->Draw(call->PrimitiveCount, call->BaseIndex, call->BaseVertex);
+                        if (call->InstanceBuffer != nullptr) {
+                            m_device->DrawInstanced(call->PrimitiveCount, call->BaseIndex, call->BaseVertex,
+                                call->InstanceCount, call->BaseInstance);
+                        } else {
+                            m_device->Draw(call->PrimitiveCount, call->BaseIndex, call->BaseVertex);                       
+                        }
                     }
                     else {
                         m_device->DrawLines(call->PrimitiveCount * 2, call->BaseIndex, call->BaseVertex);

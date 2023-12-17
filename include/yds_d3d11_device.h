@@ -80,6 +80,8 @@ public:
                                          bool mirrorToRam = false) override;
     virtual ysError UseVertexBuffer(ysGPUBuffer *buffer, int stride,
                                     int offset) override;
+    virtual ysError UseInstanceBuffer(ysGPUBuffer *buffer, int stride,
+                                      int offset) override;
     virtual ysError UseIndexBuffer(ysGPUBuffer *buffer, int offset) override;
     virtual ysError UseConstantBuffer(ysGPUBuffer *buffer, int slot) override;
     virtual ysError EditBufferDataRange(ysGPUBuffer *buffer, char *data,
@@ -112,7 +114,8 @@ public:
     // Input Layouts
     virtual ysError
     CreateInputLayout(ysInputLayout **newLayout, ysShader *shader,
-                      const ysRenderGeometryFormat *format) override;
+                      const ysRenderGeometryFormat *format,
+                      const ysRenderGeometryFormat *instanceFormat) override;
     virtual ysError UseInputLayout(ysInputLayout *layout) override;
     virtual ysError DestroyInputLayout(ysInputLayout *&layout) override;
 
@@ -131,15 +134,20 @@ public:
     virtual ysError UseRenderTargetAsTexture(ysRenderTarget *renderTarget,
                                              int slot) override;
 
+    virtual void DrawInstanced(int numFaces, int indexOffset, int vertexOffset,
+                               int instanceCount, int instanceOffset) override;
     virtual void Draw(int numFaces, int indexOffset, int vertexOffset) override;
     virtual void DrawLines(int numIndices, int indexOffset,
                            int vertexOffset) override;
 
 public:
     // Non-standard interface
-    ID3D11DeviceContext *GetImmediateContext() { return m_deviceContext; }
+    __forceinline ID3D11DeviceContext *GetImmediateContext() {
+        return m_deviceContext;
+    }
+
     IDXGIFactory1 *GetDXGIFactory1() { return m_DXGIFactory1; }
-    ID3D11Device *GetDevice() { return m_device; }
+    __forceinline ID3D11Device *GetDevice() { return m_device; }
 
     static DXGI_FORMAT
     ConvertInputLayoutFormat(ysRenderGeometryChannel::ChannelFormat format);
