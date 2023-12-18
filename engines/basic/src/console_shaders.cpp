@@ -21,9 +21,10 @@ ysError dbasic::ConsoleShaders::Initialize(
 
     YDS_NESTED_ERROR_CALL(shaderSet->NewStage("ConsoleShaders::Main", &m_mainStage));
 
-    m_mainStage->SetInputLayout(inputLayout);
+    m_inputLayout = inputLayout;
+    m_shaderProgram = shaderProgram;
+
     m_mainStage->SetRenderTarget(renderTarget);
-    m_mainStage->SetShaderProgram(shaderProgram);
     m_mainStage->SetType(ShaderStage::Type::FullPass);
     m_mainStage->SetFlagBit(3);
     m_mainStage->SetClearTarget(false);

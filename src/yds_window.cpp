@@ -117,11 +117,11 @@ void ysWindow::RestoreWindow() {
 }
 
 const int ysWindow::GetGameWidth() const {
-    return std::round(m_gameResolutionScaleHorizontal * GetScreenWidth());
+    return int(std::round(m_gameResolutionScaleHorizontal * GetScreenWidth()));
 }
 
 const int ysWindow::GetGameHeight() const {
-    return std::round(m_gameResolutionScaleVertical * GetScreenHeight());
+    return int(std::round(m_gameResolutionScaleVertical * GetScreenHeight()));
 }
 
 bool ysWindow::IsOnScreen(int x, int y) const {

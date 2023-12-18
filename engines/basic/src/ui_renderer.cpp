@@ -33,32 +33,22 @@ ysError dbasic::UiRenderer::UpdateDisplay() {
 
     if (m_vertexOffset == 0) return YDS_ERROR_RETURN(ysError::None);
 
-    m_shaders.SetScreenDimensions(
-        (float)m_engine->GetScreenWidth(),
-        (float)m_engine->GetScreenHeight());
+    m_shaders.SetScreenDimensions((float) m_engine->GetScreenWidth(),
+                                  (float) m_engine->GetScreenHeight());
     m_shaders.CalculateCamera();
 
     m_engine->GetDevice()->EditBufferDataRange(
-        m_mainVertexBuffer,
-        (char *)m_vertexBuffer,
-        sizeof(ConsoleVertex) * m_vertexOffset,
-        0);
+            m_mainVertexBuffer, (char *) m_vertexBuffer,
+            sizeof(ConsoleVertex) * m_vertexOffset, 0);
     m_engine->GetDevice()->EditBufferDataRange(
-        m_mainIndexBuffer,
-        (char *)m_indexBuffer,
-        sizeof(unsigned short) * m_indexOffset,
-        0);
+            m_mainIndexBuffer, (char *) m_indexBuffer,
+            sizeof(unsigned short) * m_indexOffset, 0);
 
     m_shaders.SetTexture(m_font->GetTexture());
-    m_engine->DrawGeneric(
-        m_shaders.GetFlags(),
-        m_mainIndexBuffer,
-        m_mainVertexBuffer,
-        sizeof(ConsoleVertex),
-        0,
-        0,
-        m_indexOffset / 3,
-        false);
+    m_engine->DrawGeneric(m_shaders.GetFlags(), m_mainIndexBuffer,
+                          m_mainVertexBuffer, m_shaders.shaderProgram(),
+                          m_shaders.inputLayout(), sizeof(ConsoleVertex), 0, 0,
+                          m_indexOffset / 3, false);
 
     return YDS_ERROR_RETURN(ysError::None);
 }
@@ -68,7 +58,7 @@ ysError dbasic::UiRenderer::Destroy() {
 
     m_engine->GetDevice()->DestroyGPUBuffer(m_mainIndexBuffer);
     m_engine->GetDevice()->DestroyGPUBuffer(m_mainVertexBuffer);
-    
+
     delete[] m_indexBuffer;
     delete[] m_vertexBuffer;
 
@@ -128,16 +118,12 @@ ysError dbasic::UiRenderer::InitializeGeometry(int bufferSize) {
 
     ysDevice *device = m_engine->GetDevice();
 
-    YDS_NESTED_ERROR_CALL(
-        device->CreateVertexBuffer(
-            &m_mainVertexBuffer, 
-            sizeof(ConsoleVertex) * m_bufferSize, 
-            (char *)m_vertexBuffer));
-    YDS_NESTED_ERROR_CALL(
-        device->CreateIndexBuffer(
-            &m_mainIndexBuffer, 
-            sizeof(unsigned short) * 2 * m_bufferSize, 
-            (char *)m_indexBuffer));
+    YDS_NESTED_ERROR_CALL(device->CreateVertexBuffer(
+            &m_mainVertexBuffer, sizeof(ConsoleVertex) * m_bufferSize,
+            (char *) m_vertexBuffer));
+    YDS_NESTED_ERROR_CALL(device->CreateIndexBuffer(
+            &m_mainIndexBuffer, sizeof(unsigned short) * 2 * m_bufferSize,
+            (char *) m_indexBuffer));
 
     return YDS_ERROR_RETURN(ysError::None);
 }

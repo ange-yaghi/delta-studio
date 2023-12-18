@@ -1114,12 +1114,13 @@ ysOpenGLVirtualContext *ysOpenGLDevice::GetTransferContext() {
 
 int ysOpenGLDevice::GetFormatGLType(ysRenderGeometryChannel::ChannelFormat format) {
     switch (format) {
+    case ysRenderGeometryChannel::ChannelFormat::R32_FLOAT:
     case ysRenderGeometryChannel::ChannelFormat::R32G32B32_FLOAT:
     case ysRenderGeometryChannel::ChannelFormat::R32G32_FLOAT:
     case ysRenderGeometryChannel::ChannelFormat::R32G32B32A32_FLOAT:
         return GL_FLOAT;
+    case ysRenderGeometryChannel::ChannelFormat::R32_UINT:
     case ysRenderGeometryChannel::ChannelFormat::R32G32B32A32_UINT:
-        return GL_UNSIGNED_INT;
     case ysRenderGeometryChannel::ChannelFormat::R32G32B32_UINT:
         return GL_UNSIGNED_INT;
     default:

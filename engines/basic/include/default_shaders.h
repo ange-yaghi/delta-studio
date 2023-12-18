@@ -110,11 +110,17 @@ namespace dbasic {
 
         void SetDiffuseTexture(ysTexture *texture);
 
+        inline ysShaderProgram *shaderProgram() const { return m_shaderProgram; }
+        inline ysInputLayout *inputLayout() const { return m_inputLayout; }
+
     protected:
         ShaderScreenVariables m_shaderScreenVariables;
         ShaderObjectVariables m_shaderObjectVariables;
         LightingControls m_lightingControls;
         int m_lightCount;
+
+        ysShaderProgram *m_shaderProgram = nullptr;
+        ysInputLayout *m_inputLayout = nullptr;
 
         float m_cameraAngle;
         float m_cameraFov;

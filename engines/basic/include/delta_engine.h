@@ -32,6 +32,8 @@ public:
         StageEnableFlags Flags = 0;
         void *ObjectData;
         int ObjectDataSize;
+        ysShaderProgram *Shader = nullptr;
+        ysInputLayout *InputLayout = nullptr;
         ysGPUBuffer *IndexBuffer = nullptr;
         ysGPUBuffer *VertexBuffer = nullptr;
         ysGPUBuffer *InstanceBuffer = nullptr;
@@ -97,11 +99,13 @@ public:
     ysError DrawRenderSkeleton(StageEnableFlags flags, RenderSkeleton *skeleton,
                                float scale, ShaderBase *shaders, int layer);
     ysError DrawGeneric(StageEnableFlags flags, ysGPUBuffer *indexBuffer,
-                        ysGPUBuffer *vertexBuffer, int vertexSize,
+                        ysGPUBuffer *vertexBuffer, ysShaderProgram *shader,
+                        ysInputLayout *inputLayout, int vertexSize,
                         int baseIndex, int baseVertex, int faceCount,
                         bool depthTest = true, int layer = 0);
     ysError DrawGeneric(StageEnableFlags flags, ysGPUBuffer *indexBuffer,
                         ysGPUBuffer *vertexBuffer, ysGPUBuffer *instanceBuffer,
+                        ysShaderProgram *shader, ysInputLayout *inputLayout,
                         int vertexSize, int instanceDataSize, int baseIndex,
                         int baseVertex, int faceCount, int instanceCount,
                         int baseInstance, bool depthTest = true, int layer = 0);

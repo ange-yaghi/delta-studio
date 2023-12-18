@@ -19,6 +19,9 @@ namespace dbasic {
         void SetCameraAngle(float angle) { m_cameraAngle = angle; }
         float GetCameraAngle() const { return m_cameraAngle; }
 
+        inline ysInputLayout *inputLayout() const { return m_inputLayout; }
+        inline ysShaderProgram *shaderProgram() const { return m_shaderProgram; }
+
         void SetScreenDimensions(float width, float height);
 
         void CalculateCamera();
@@ -33,6 +36,9 @@ namespace dbasic {
     protected:
         ConsoleShaderObjectVariables m_shaderObjectVariables;
         ShaderScreenVariables m_shaderScreenVariables;
+
+        ysInputLayout *m_inputLayout = nullptr;
+        ysShaderProgram *m_shaderProgram = nullptr;
 
         float m_cameraAngle;
 

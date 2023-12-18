@@ -45,6 +45,7 @@ namespace dbasic {
         ysQuaternion GetLocalOrientation() const { return m_localOrientation; }
 
         int GetParent() const { return m_parent; }
+        ModelAsset *GetGeometry() const { return m_geometry; }
 
         ysObjectData::ObjectType GetType() const { return m_type; }
 

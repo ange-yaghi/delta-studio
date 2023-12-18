@@ -8,42 +8,45 @@
 
 namespace dbasic {
 
-    class DefaultUiShaders : public ysObject {
-    public:
-        enum class CameraMode {
-            Target,
-            Flat
-        };
+class DefaultUiShaders : public ysObject {
+public:
+    enum class CameraMode { Target, Flat };
 
-    public:
-        DefaultUiShaders();
-        virtual ~DefaultUiShaders();
+public:
+    DefaultUiShaders();
+    virtual ~DefaultUiShaders();
 
-        ysError Initialize(ysDevice *device, ysRenderTarget *renderTarget, ysShaderProgram *shaderProgram, ysInputLayout *inputLayout);
-        ysError Destroy();
+    ysError Initialize(ysDevice *device, ysRenderTarget *renderTarget,
+                       ysShaderProgram *shaderProgram,
+                       ysInputLayout *inputLayout);
+    ysError Destroy();
 
-        ShaderSet *GetShaderSet() { return &m_shaderSet; }
+    ShaderSet *GetShaderSet() { return &m_shaderSet; }
 
-        void SetCameraAngle(float angle) { m_cameraAngle = angle; }
-        float GetCameraAngle() const { return m_cameraAngle; }
+    void SetCameraAngle(float angle) { m_cameraAngle = angle; }
+    float GetCameraAngle() const { return m_cameraAngle; }
 
-        void SetScreenDimensions(float width, float height);
+    void SetScreenDimensions(float width, float height);
 
-        void CalculateCamera();
-        
-    protected:
-        ShaderScreenVariables m_shaderScreenVariables;
-        ShaderObjectVariables m_shaderObjectVariables;
-        LightingControls m_lightingControls;
+    void CalculateCamera();
 
-        float m_cameraAngle;
+protected:
+    ShaderScreenVariables m_shaderScreenVariables;
+    ShaderObjectVariables m_shaderObjectVariables;
+    LightingControls m_lightingControls;
 
-        float m_screenWidth;
-        float m_screenHeight;
+    float m_cameraAngle;
 
-    protected:
-        ShaderSet m_shaderSet;
-    };
+    float m_screenWidth;
+    float m_screenHeight;
+
+protected:
+    ShaderSet m_shaderSet;
+
+private:
+    ysShaderProgram *m_shaderProgram = nullptr;
+    ysInputLayout *m_inputLayout = nullptr;
+};
 
 } /* namespace dbasic */
 

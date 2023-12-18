@@ -63,6 +63,17 @@ dbasic::SceneObjectAsset *dbasic::AssetManager::GetSceneObject(const char *name,
     return nullptr;
 }
 
+dbasic::SceneObjectAsset *dbasic::AssetManager::GetSceneObject(const char *name) {
+    const int objectCount = m_sceneObjects.GetNumObjects();
+    for (int i = 0; i < objectCount; i++) {
+        if (strcmp(m_sceneObjects.Get(i)->GetName(), name) == 0) {
+            return m_sceneObjects.Get(i);
+        }
+    }
+
+    return nullptr;
+}
+
 dbasic::SceneObjectAsset *dbasic::AssetManager::GetRoot(SceneObjectAsset *object) {
     dbasic::SceneObjectAsset *parent = GetSceneObject(object->GetParent());
 

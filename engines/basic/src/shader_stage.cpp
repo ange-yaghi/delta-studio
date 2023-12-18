@@ -2,8 +2,6 @@
 
 dbasic::ShaderStage::ShaderStage() {
 	m_device = nullptr;
-	m_shaderProgram = nullptr;
-	m_inputLayout = nullptr;
 	m_type = Type::FullPass;
 	m_name = "";
 	m_objectDataSize = 0;
@@ -136,9 +134,6 @@ ysError dbasic::ShaderStage::BindScene() {
 	for (int i = 0; i < OutputSlot::Count; ++i) {
 		m_device->SetRenderTarget(m_renderTarget[i], i);
 	}
-
-	m_device->UseShaderProgram(m_shaderProgram);
-	m_device->UseInputLayout(m_inputLayout);
 
 	if (m_clearTarget) {
 		m_device->ClearBuffers(m_clearColor.vec);

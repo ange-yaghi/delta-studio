@@ -1070,7 +1070,7 @@ ysError ysD3D11Device::UseInstanceBuffer(ysGPUBuffer *buffer, int stride,
             GetImmediateContext()->IASetVertexBuffers(
                     1, 1, &d3d11Buffer->m_buffer, &ustride, &uoffset);
         }
-    } else {
+    } else if (m_activeInstanceBuffer != nullptr) {
         GetImmediateContext()->IASetVertexBuffers(1, 0, nullptr, nullptr,
                                                   nullptr);
     }
@@ -1999,6 +1999,10 @@ void ysD3D11Device::DrawLines(int numIndices, int indexOffset,
 DXGI_FORMAT ysD3D11Device::ConvertInputLayoutFormat(
         ysRenderGeometryChannel::ChannelFormat format) {
     switch (format) {
+        case ysRenderGeometryChannel::ChannelFormat::R32_FLOAT:
+            return DXGI_FORMAT_R32_FLOAT;
+        case ysRenderGeometryChannel::ChannelFormat::R32_UINT:
+            return DXGI_FORMAT_R32_UINT;
         case ysRenderGeometryChannel::ChannelFormat::R32G32B32A32_FLOAT:
             return DXGI_FORMAT_R32G32B32A32_FLOAT;
         case ysRenderGeometryChannel::ChannelFormat::R32G32B32_FLOAT:

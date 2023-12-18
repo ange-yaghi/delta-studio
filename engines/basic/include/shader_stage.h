@@ -119,12 +119,6 @@ namespace dbasic {
         void SetRenderTarget(ysRenderTarget *target, int slot=OutputSlot::Color0) { m_renderTarget[slot] = target; }
         ysRenderTarget *GetRenderTarget(int slot=OutputSlot::Color0) const { return m_renderTarget[slot]; }
 
-        void SetShaderProgram(ysShaderProgram *shaderProgram) { m_shaderProgram = shaderProgram; }
-        ysShaderProgram *GetShaderProgram() const { return m_shaderProgram; }
-
-        void SetInputLayout(ysInputLayout *layout) { m_inputLayout = layout; }
-        ysInputLayout *GetInputLayout() const { return m_inputLayout; }
-
         void SetType(Type type) { m_type = type; }
         Type GetType() const { return m_type; }
 
@@ -161,9 +155,6 @@ namespace dbasic {
     protected:
         ysDevice *m_device;
         ysRenderTarget *m_renderTarget[OutputSlot::Count];
-
-        ysShaderProgram *m_shaderProgram;
-        ysInputLayout *m_inputLayout;
 
         ysExpandingArray<ConstantBufferBinding> m_bufferBindings;
         ysExpandingArray<Input> m_inputs;

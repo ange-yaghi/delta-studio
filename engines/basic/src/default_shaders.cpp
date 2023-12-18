@@ -29,9 +29,10 @@ ysError dbasic::DefaultShaders::Initialize(ShaderSet *shaderSet, ysRenderTarget 
 
     YDS_NESTED_ERROR_CALL(shaderSet->NewStage("ShaderStage::Main", &m_mainStage));
 
-    m_mainStage->SetInputLayout(inputLayout);
+    m_inputLayout = inputLayout;
+    m_shaderProgram = shaderProgram;
+
     m_mainStage->SetRenderTarget(renderTarget);
-    m_mainStage->SetShaderProgram(shaderProgram);
     m_mainStage->SetType(ShaderStage::Type::FullPass);
 
     m_mainStage->NewConstantBuffer<ShaderScreenVariables>(
