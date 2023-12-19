@@ -1148,6 +1148,10 @@ ysError ysD3D11Device::EditBufferDataRange(ysGPUBuffer *buffer, char *data,
         return YDS_ERROR_RETURN(ysError::OutOfBounds);
     }
 
+    if (size == 0) {
+        return YDS_ERROR_RETURN(ysError::None);
+    }
+
     ysD3D11GPUBuffer *d3d11Buffer = static_cast<ysD3D11GPUBuffer *>(buffer);
 
     D3D11_BOX box;
