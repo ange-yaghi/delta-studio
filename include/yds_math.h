@@ -307,6 +307,16 @@ namespace ysMath {
     ysVector Mask(const ysVector &v, const ysVectorMask &mask);
     ysVector Or(const ysVector &v1, const ysVector &v2);
 
+    __forceinline ysVector GreaterThan(const ysVector &a, const ysVector &b) {
+        const ysVector cmp_mask = _mm_cmpge_ps(a, b);
+        return _mm_and_ps(cmp_mask, Constants::One);
+    }
+
+    __forceinline ysVector LessThan(const ysVector &a, const ysVector &b) {
+        const ysVector cmp_mask = _mm_cmple_ps(a, b);
+        return _mm_and_ps(cmp_mask, Constants::One);
+    }
+
     // Quaternion
     ysQuaternion QuatInvert(const ysQuaternion &q);
     ysQuaternion QuatMultiply(const ysQuaternion &q1, const ysQuaternion &q2);
