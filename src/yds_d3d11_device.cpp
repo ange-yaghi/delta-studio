@@ -87,12 +87,12 @@ ysError ysD3D11Device::InitializeDevice() {
     if (result == E_INVALIDARG) {
         // This is needed because D3D11CreateDevice will fail if on a
         // 11_0 device since D3D_FEATURE_LEVEL_11_1 won't be recongized
-        result = D3D11CreateDevice(nullptr, D3D_DRIVER_TYPE_HARDWARE, nullptr,
-                                   deviceCreationFlags, &featureLevels[1],
-                                   sizeof(featureLevels) /
-                                           sizeof(D3D_FEATURE_LEVEL),
-                                   D3D11_SDK_VERSION, &m_device,
-                                   &highestFeatureLevel, &m_deviceContext);
+        result = D3D11CreateDevice(
+                nullptr, D3D_DRIVER_TYPE_HARDWARE, nullptr, deviceCreationFlags,
+                &featureLevels[1],
+                (sizeof(featureLevels) / sizeof(D3D_FEATURE_LEVEL)) - 1,
+                D3D11_SDK_VERSION, &m_device, &highestFeatureLevel,
+                &m_deviceContext);
     }
 
     if (FAILED(result)) {
@@ -1148,9 +1148,7 @@ ysError ysD3D11Device::EditBufferDataRange(ysGPUBuffer *buffer, char *data,
         return YDS_ERROR_RETURN(ysError::OutOfBounds);
     }
 
-    if (size == 0) {
-        return YDS_ERROR_RETURN(ysError::None);
-    }
+    if (size == 0) { return YDS_ERROR_RETURN(ysError::None); }
 
     ysD3D11GPUBuffer *d3d11Buffer = static_cast<ysD3D11GPUBuffer *>(buffer);
 
