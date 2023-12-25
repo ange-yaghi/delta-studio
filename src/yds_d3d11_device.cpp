@@ -60,34 +60,49 @@ ysD3D11Device::ysD3D11Device() : ysDevice(DeviceAPI::DirectX11) {
 
 ysD3D11Device::~ysD3D11Device() {}
 
+#define ERROR_CODE(name)                                                       \
+    case name:                                                                 \
+        return #name
+
 const char *errorCodeToString(HRESULT result) {
     switch (result) {
-        case D3D11_ERROR_FILE_NOT_FOUND:
-            return "D3D11_ERROR_FILE_NOT_FOUND";
-        case D3D11_ERROR_TOO_MANY_UNIQUE_STATE_OBJECTS:
-            return "D3D11_ERROR_TOO_MANY_UNIQUE_STATE_OBJECTS";
-        case D3D11_ERROR_TOO_MANY_UNIQUE_VIEW_OBJECTS:
-            return "D3D11_ERROR_TOO_MANY_UNIQUE_VIEW_OBJECTS";
-        case D3D11_ERROR_DEFERRED_CONTEXT_MAP_WITHOUT_INITIAL_DISCARD:
-            return "D3D11_ERROR_DEFERRED_CONTEXT_MAP_WITHOUT_INITIAL_DISCARD";
-        case DXGI_ERROR_INVALID_CALL:
-            return "DXGI_ERROR_INVALID_CALL";
-        case DXGI_ERROR_WAS_STILL_DRAWING:
-            return "DXGI_ERROR_WAS_STILL_DRAWING";
-        case E_FAIL:
-            return "E_FAIL";
-        case E_INVALIDARG:
-            return "E_INVALIDARG";
-        case E_OUTOFMEMORY:
-            return "E_OUTOFMEMORY";
-        case E_NOTIMPL:
-            return "E_NOTIMPL";
-        case S_FALSE:
-            return "S_FALSE";
-        case S_OK:
-            return "S_OK";
+        ERROR_CODE(D3D11_ERROR_FILE_NOT_FOUND);
+        ERROR_CODE(D3D11_ERROR_TOO_MANY_UNIQUE_STATE_OBJECTS);
+        ERROR_CODE(D3D11_ERROR_TOO_MANY_UNIQUE_VIEW_OBJECTS);
+        ERROR_CODE(D3D11_ERROR_DEFERRED_CONTEXT_MAP_WITHOUT_INITIAL_DISCARD);
+
+        ERROR_CODE(DXGI_ERROR_ACCESS_DENIED);
+        ERROR_CODE(DXGI_ERROR_ACCESS_LOST);
+        ERROR_CODE(DXGI_ERROR_ALREADY_EXISTS);
+        ERROR_CODE(DXGI_ERROR_CANNOT_PROTECT_CONTENT);
+        ERROR_CODE(DXGI_ERROR_DEVICE_HUNG);
+        ERROR_CODE(DXGI_ERROR_DEVICE_REMOVED);
+        ERROR_CODE(DXGI_ERROR_DEVICE_RESET);
+        ERROR_CODE(DXGI_ERROR_DRIVER_INTERNAL_ERROR);
+        ERROR_CODE(DXGI_ERROR_FRAME_STATISTICS_DISJOINT);
+        ERROR_CODE(DXGI_ERROR_GRAPHICS_VIDPN_SOURCE_IN_USE);
+        ERROR_CODE(DXGI_ERROR_MORE_DATA);
+        ERROR_CODE(DXGI_ERROR_NAME_ALREADY_EXISTS);
+        ERROR_CODE(DXGI_ERROR_NONEXCLUSIVE);
+        ERROR_CODE(DXGI_ERROR_NOT_CURRENTLY_AVAILABLE);
+        ERROR_CODE(DXGI_ERROR_NOT_FOUND);
+        ERROR_CODE(DXGI_ERROR_REMOTE_CLIENT_DISCONNECTED);
+        ERROR_CODE(DXGI_ERROR_REMOTE_OUTOFMEMORY);
+        ERROR_CODE(DXGI_ERROR_RESTRICT_TO_OUTPUT_STALE);
+        ERROR_CODE(DXGI_ERROR_SDK_COMPONENT_MISSING);
+        ERROR_CODE(DXGI_ERROR_SESSION_DISCONNECTED);
+        ERROR_CODE(DXGI_ERROR_UNSUPPORTED);
+        ERROR_CODE(DXGI_ERROR_WAIT_TIMEOUT);
+        ERROR_CODE(DXGI_ERROR_WAS_STILL_DRAWING);
+
+        ERROR_CODE(E_FAIL);
+        ERROR_CODE(E_INVALIDARG);
+        ERROR_CODE(E_OUTOFMEMORY);
+        ERROR_CODE(E_NOTIMPL);
+        ERROR_CODE(S_FALSE);
+        ERROR_CODE(S_OK);
         default:
-            return "UNKNOWN_ERROR";
+            return nullptr;
     }
 }
 
@@ -128,8 +143,18 @@ ysError ysD3D11Device::InitializeDevice() {
 
     if (FAILED(result)) {
         YDS_ERROR_LOG() << L"Could not connect to graphics device.\n\n";
-        YDS_ERROR_LOG() << L"D3D11CreateDevice failed with error: "
-                        << errorCodeToString(result) << "\n\n";
+        YDS_ERROR_LOG() << L"D3D11CreateDevice failed with error: ";
+
+        const char *errorString = errorCodeToString(result);
+        if (errorString == nullptr) {
+            YDS_ERROR_LOG() << L"UNKNOWN_ERROR {0x" << std::hex << result
+                            << std::dec << "}";
+        } else {
+            YDS_ERROR_LOG() << errorString << L" {0x" << std::hex << result
+                            << std::dec << "}";
+        }
+
+        YDS_ERROR_LOG() << "\n\n";
 
         IDXGIFactory1 *factory;
         HRESULT hr = CreateDXGIFactory1(__uuidof(IDXGIFactory1),
