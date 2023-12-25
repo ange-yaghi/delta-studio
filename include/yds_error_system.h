@@ -5,6 +5,7 @@
 #include "yds_error_codes.h"
 
 #include <mutex>
+#include <sstream>
 
 class ysErrorHandler;
 class ysErrorSystem : public ysObject {
@@ -20,11 +21,13 @@ public:
 
     static const int MAX_STACK_LEVEL = 256;
 
-    ysError RaiseError(ysError error, unsigned int line, ysObject *object, const char *file, const char *msg, bool affectStack = true);
+    ysError RaiseError(ysError error, unsigned int line, ysObject *object,
+                       const char *file, const char *msg,
+                       bool affectStack = true);
 
     template<typename T_ErrorHandler>
     ysError AttachErrorHandler(T_ErrorHandler **handler) {
-        if (handler == nullptr) return ysError::InvalidParameter;
+        if (handler == nullptr) { return ysError::InvalidParameter; }
 
         // Create the new handler
         *handler = m_errorHandlers.NewGeneric<T_ErrorHandler>();
@@ -34,38 +37,47 @@ public:
 
     ysError DetachErrorHandler(ysErrorHandler *handler);
 
+
+    inline std::wstringstream &ErrorLog() { return m_errorLog; }
+    inline std::wstring ErrorLogString() const { return m_errorLog.str(); }
+
 protected:
     ysDynamicArray<ysErrorHandler, 4> m_errorHandlers;
+    std::wstringstream m_errorLog;
 
 private:
     std::mutex m_lock;
 };
 
-#define _YDS_WIDE(_String) L ## _String
+#define _YDS_WIDE(_String) L##_String
 #define YDS_WIDE(_String) _YDS_WIDE(_String)
 
-#define YDS_ERROR_RETURN(error) ysErrorSystem::GetInstance()->RaiseError(error, __LINE__, this, __FILE__, "")
+#define YDS_ERROR_RETURN(error)                                                \
+    ysErrorSystem::GetInstance()->RaiseError(error, __LINE__, this, __FILE__,  \
+                                             "")
 
 #define YDS_ERROR_RETURN_MANUAL()
 
-#define YDS_ERROR_RETURN_STATIC(error) ysErrorSystem::GetInstance()->RaiseError(error, __LINE__, NULL, __FILE__, "")
+#define YDS_ERROR_RETURN_STATIC(error)                                         \
+    ysErrorSystem::GetInstance()->RaiseError(error, __LINE__, NULL, __FILE__,  \
+                                             "")
 
-#define YDS_ERROR_RAISE(error) ysErrorSystem::GetInstance()->RaiseError(error, __LINE__, this, __FILE__, "", false)
+#define YDS_ERROR_RAISE(error)                                                 \
+    ysErrorSystem::GetInstance()->RaiseError(error, __LINE__, this, __FILE__,  \
+                                             "", false)
 
-#define YDS_ERROR_RETURN_MSG(error, msg) ysErrorSystem::GetInstance()->RaiseError(error, __LINE__, this, __FILE__, msg)
+#define YDS_ERROR_RETURN_MSG(error, msg)                                       \
+    ysErrorSystem::GetInstance()->RaiseError(error, __LINE__, this, __FILE__,  \
+                                             msg)
 
-#define YDS_NESTED_ERROR_CALL(call)                     \
-{                                                       \
-                                                        \
-    ysError code = (call);                              \
-    if (code != ysError::None)                          \
-    {                                                   \
-        return code;                                    \
-    }                                                   \
-                                                        \
-}
+#define YDS_ERROR_LOG() ysErrorSystem::GetInstance()->ErrorLog()
 
-#define YDS_ERROR_DECLARE(call) \
-    (call)
+#define YDS_NESTED_ERROR_CALL(call)                                            \
+    {                                                                          \
+        const ysError code = (call);                                           \
+        if (code != ysError::None) { return code; }                            \
+    }
+
+#define YDS_ERROR_DECLARE(call) (call)
 
 #endif /* YDS_ERROR_SYSTEM_H */

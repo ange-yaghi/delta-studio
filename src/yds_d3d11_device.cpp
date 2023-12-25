@@ -60,6 +60,37 @@ ysD3D11Device::ysD3D11Device() : ysDevice(DeviceAPI::DirectX11) {
 
 ysD3D11Device::~ysD3D11Device() {}
 
+const char *errorCodeToString(HRESULT result) {
+    switch (result) {
+        case D3D11_ERROR_FILE_NOT_FOUND:
+            return "D3D11_ERROR_FILE_NOT_FOUND";
+        case D3D11_ERROR_TOO_MANY_UNIQUE_STATE_OBJECTS:
+            return "D3D11_ERROR_TOO_MANY_UNIQUE_STATE_OBJECTS";
+        case D3D11_ERROR_TOO_MANY_UNIQUE_VIEW_OBJECTS:
+            return "D3D11_ERROR_TOO_MANY_UNIQUE_VIEW_OBJECTS";
+        case D3D11_ERROR_DEFERRED_CONTEXT_MAP_WITHOUT_INITIAL_DISCARD:
+            return "D3D11_ERROR_DEFERRED_CONTEXT_MAP_WITHOUT_INITIAL_DISCARD";
+        case DXGI_ERROR_INVALID_CALL:
+            return "DXGI_ERROR_INVALID_CALL";
+        case DXGI_ERROR_WAS_STILL_DRAWING:
+            return "DXGI_ERROR_WAS_STILL_DRAWING";
+        case E_FAIL:
+            return "E_FAIL";
+        case E_INVALIDARG:
+            return "E_INVALIDARG";
+        case E_OUTOFMEMORY:
+            return "E_OUTOFMEMORY";
+        case E_NOTIMPL:
+            return "E_NOTIMPL";
+        case S_FALSE:
+            return "S_FALSE";
+        case S_OK:
+            return "S_OK";
+        default:
+            return "UNKNOWN_ERROR";
+    }
+}
+
 ysError ysD3D11Device::InitializeDevice() {
     YDS_ERROR_DECLARE("InitializeDevice");
 
@@ -96,6 +127,50 @@ ysError ysD3D11Device::InitializeDevice() {
     }
 
     if (FAILED(result)) {
+        YDS_ERROR_LOG() << L"Could not connect to graphics device.\n\n";
+        YDS_ERROR_LOG() << L"D3D11CreateDevice failed with error: "
+                        << errorCodeToString(result) << "\n\n";
+
+        IDXGIFactory1 *factory;
+        HRESULT hr = CreateDXGIFactory1(__uuidof(IDXGIFactory1),
+                                        (void **) (&factory));
+        if (FAILED(hr)) {
+            YDS_ERROR_LOG() << L"CreateDXGIFactory1() failed with error code: "
+                            << errorCodeToString(hr) << "\n\n";
+        } else {
+            UINT i = 0;
+            std::vector<IDXGIAdapter *> adapters;
+            for (IDXGIAdapter *adapter = nullptr;
+                 factory->EnumAdapters(i, &adapter) != DXGI_ERROR_NOT_FOUND;) {
+                adapters.push_back(adapter);
+                ++i;
+            }
+
+            YDS_ERROR_LOG()
+                    << adapters.size()
+                    << L" graphics devices were found on this system:\n";
+            for (size_t i = 0; i < adapters.size(); ++i) {
+                IDXGIAdapter *adapter = adapters[i];
+                YDS_ERROR_LOG() << " (" << i + 1 << ") - ";
+                DXGI_ADAPTER_DESC adapterDescription;
+                hr = adapter->GetDesc(&adapterDescription);
+                if (FAILED(hr)) {
+                    YDS_ERROR_LOG()
+                            << L"<COULD NOT RETRIEVE DEVICE INFORMATION>\n";
+                } else {
+                    YDS_ERROR_LOG() << adapterDescription.Description << L"\n";
+                }
+            }
+
+            YDS_ERROR_LOG()
+                    << L"\nD3D11 by default will use the FIRST device in this "
+                       L"list. If this device is not the device you intend to "
+                       L"use, you may need to "
+                       L"review your system settings and make sure the correct "
+                       L"graphics device is listed first. This issue has been "
+                       L"reported occasionally with emulators like Proton.";
+        }
+
         m_device = nullptr;
         return YDS_ERROR_RETURN(ysError::CouldNotCreateGraphicsDevice);
     }
