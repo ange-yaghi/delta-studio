@@ -194,6 +194,8 @@ ysError ysD3D11Device::InitializeDevice() {
                        L"review your system settings and make sure the correct "
                        L"graphics device is listed first. This issue has been "
                        L"reported occasionally with emulators like Proton.";
+
+            factory->Release();
         }
 
         m_device = nullptr;
