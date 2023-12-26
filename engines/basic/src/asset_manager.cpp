@@ -277,6 +277,16 @@ ysError dbasic::AssetManager::LoadSceneFile(const wchar_t *fname, bool placeInVr
     unsigned short *indicesFile = new unsigned short[16 * 1024 * 1024]; // 1 MB
     char *verticesFile = (char *)malloc(16 * 4 * 1024 * 1024); // 4 MB
 
+    if (indicesFile == nullptr) {
+        if (verticesFile != nullptr) { free(verticesFile); }
+        return YDS_ERROR_RETURN(ysError::OutOfMemory);
+    }
+
+    if (verticesFile == nullptr) {
+        if (indicesFile != nullptr) { delete[] indicesFile; }
+        return YDS_ERROR_RETURN(ysError::OutOfMemory);
+    }
+
     int currentIndexOffset = 0;
     int currentVertexByteOffset = 0;
 
