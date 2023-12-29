@@ -16,8 +16,13 @@ public:
 
     virtual ysError LockEntireBuffer(void **buffer, SampleOffset *samples);
     virtual ysError UnlockBuffer(void *buffer, SampleOffset samples);
-    virtual ysError LockBufferSegment(SampleOffset offset, SampleOffset samples, void **segment1, SampleOffset *size1, void **segment2, SampleOffset *size2);
-    virtual ysError UnlockBufferSegments(void *segment1, SampleOffset segment1Size, void *segment2, SampleOffset segment2Size);
+    virtual ysError LockBufferSegment(SampleOffset offset, SampleOffset samples,
+                                      void **segment1, SampleOffset *size1,
+                                      void **segment2, SampleOffset *size2);
+    virtual ysError UnlockBufferSegments(void *segment1,
+                                         SampleOffset segment1Size,
+                                         void *segment2,
+                                         SampleOffset segment2Size);
 
     virtual ysError SetMode(ysAudioSource::Mode mode = Mode::Play);
 
@@ -33,7 +38,12 @@ public:
 
     virtual ysError Destroy();
 
-protected:
+private:
+    ysError UpdateStatus();
+    ysError RestoreBuffer();
+
+private:
+    bool m_lost;
     IDirectSoundBuffer *m_buffer;
 };
 
