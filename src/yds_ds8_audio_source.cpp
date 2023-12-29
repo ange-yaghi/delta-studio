@@ -283,7 +283,12 @@ ysError ysDS8AudioSource::UpdateStatus() {
     const HRESULT result = m_buffer->GetStatus(&status);
     if (FAILED(result)) { return YDS_ERROR_RETURN(ysError::ApiError); }
 
-    if ((status & DSBSTATUS_PLAYING) > 0) { m_bufferMode = Mode::Play; }
+    if ((status & DSBSTATUS_PLAYING) > 0) {
+        m_bufferMode = Mode::Play;
+    } else {
+        m_bufferMode = Mode::Stop;
+    }
+
     if ((status & DSBSTATUS_LOOPING) > 0) { m_bufferMode = Mode::Loop; }
     if ((status & DSBSTATUS_BUFFERLOST) > 0) { m_lost = true; }
 
