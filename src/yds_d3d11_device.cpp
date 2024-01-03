@@ -16,6 +16,7 @@
 #include <d3d11_1.h>
 
 #include <fstream>
+#include <vector>
 
 #pragma warning(push, 0)
 
@@ -356,9 +357,11 @@ ysError ysD3D11Device::CreateRenderingContext(ysRenderingContext **context,
             result = newContext->m_swapChain1->QueryInterface(
                     __uuidof(IDXGISwapChain),
                     reinterpret_cast<void **>(&newContext->m_swapChain));
-        }
+        } else {
+            YDS_ERROR_LOG() << L"IDXGIFactory2::CreateSwapChainForHwnd() "
+                               L"failed with error code: "
+                            << errorCodeToString(result) << "\n\n";
 
-        if (FAILED(result)) {
             m_renderingContexts.Delete(newContext->GetIndex());
             *context = nullptr;
             return YDS_ERROR_RETURN(ysError::CouldNotCreateSwapChain);
@@ -395,6 +398,11 @@ ysError ysD3D11Device::CreateRenderingContext(ysRenderingContext **context,
         if (FAILED(result)) {
             m_renderingContexts.Delete(newContext->GetIndex());
             *context = nullptr;
+
+            YDS_ERROR_LOG() << L"IDXGIFactory1::CreateSwapChainForHwnd() "
+                               L"failed with error code: "
+                            << errorCodeToString(result) << "\n\n";
+
             return YDS_ERROR_RETURN(ysError::CouldNotCreateSwapChain);
         }
     }
