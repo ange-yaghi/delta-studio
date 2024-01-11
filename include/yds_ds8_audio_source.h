@@ -31,6 +31,7 @@ public:
     virtual ysError SetVolume(float volume);
     virtual ysError SetPan(float pan);
 
+    virtual bool SetCurrentPosition(SampleOffset position) override;
     virtual bool GetCurrentPosition(SampleOffset *position) override;
     virtual bool GetCurrentWritePosition(SampleOffset *position) override;
 

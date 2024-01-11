@@ -195,6 +195,34 @@ ysError ysDS8AudioSource::SetPan(float pan) {
     return YDS_ERROR_RETURN(ysError::None);
 }
 
+bool ysDS8AudioSource::SetCurrentPosition(SampleOffset position) {
+    if (!ysAudioSource::SetCurrentPosition(position)) {
+        return false;
+    }
+
+    if (UpdateStatus() != ysError::None) {
+        return false;
+    }
+
+    if (m_lost) {
+        if (RestoreBuffer() != ysError::None) {
+            return false;
+        }
+    }
+
+    if (m_buffer == nullptr) {
+        return false;
+    }
+
+    const DWORD currentPosition = DWORD(m_audioParameters.GetSizeFromSamples(position));
+    const HRESULT result = m_buffer->SetCurrentPosition(currentPosition);
+    if (FAILED(result)) {
+        return false;
+    }
+
+    return true;
+}
+
 bool ysDS8AudioSource::GetCurrentPosition(SampleOffset *position) {
     if (UpdateStatus() != ysError::None) {
         *position = 0;

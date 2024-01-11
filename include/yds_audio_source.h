@@ -38,6 +38,7 @@ public:
 
     virtual ysError SetMode(Mode mode = Mode::Play);
 
+    virtual bool SetCurrentPosition(SampleOffset position) { return true; }
     virtual bool GetCurrentPosition(SampleOffset *position) { *position = 0; return true; }
     virtual bool GetCurrentWritePosition(SampleOffset *position) { *position = 0; return true; }
 
