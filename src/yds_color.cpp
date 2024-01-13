@@ -37,14 +37,18 @@ ysVector ysColor::linearToSrgb(const ysVector &color) {
             srgbGamma(ysMath::GetZ(color)), ysMath::GetW(color));
 }
 
-ysVector ysColor::srgbiToLinear(unsigned int rgb, float a) {
-    int b = rgb & 0xFF;
-    rgb >>= 8;
-    int g = rgb & 0xFF;
-    rgb >>= 8;
-    int r = rgb & 0xFF;
-    rgb >>= 8;
+ysVector ysColor::srgbaiToLinear(unsigned int rgba) {
+    const int a = rgba & 0xFF;
+    const int b = (rgba >>= 8) & 0xFF;
+    const int g = (rgba >>= 8) & 0xFF;
+    const int r = (rgba >>= 8) & 0xFF;
+    return srgbToLinear(r / 255.0f, g / 255.0f, b / 255.0f, a / 255.0f);
+}
 
+ysVector ysColor::srgbiToLinear(unsigned int rgb, float a) {
+    const int b = rgb & 0xFF;
+    const int g = (rgb >>= 8) & 0xFF;
+    const int r = (rgb >>= 8) & 0xFF;
     return srgbToLinear(r / 255.0f, g / 255.0f, b / 255.0f, a);
 }
 

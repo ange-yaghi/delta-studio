@@ -12,6 +12,7 @@ namespace ysColor {
     ysVector srgbiToLinear(int r, int g, int b, int a = 255);
     ysVector linearToSrgb(const ysVector &color);
 
+    ysVector srgbaiToLinear(unsigned int rgba);
     ysVector srgbiToLinear(unsigned int rgb, float a = 1.0f);
     ysVector srgbiToSrgb(unsigned int rgb, float a = 1.0f);
     unsigned int linearToSrgbi(const ysVector &color);
