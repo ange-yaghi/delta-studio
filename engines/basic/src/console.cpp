@@ -1,7 +1,7 @@
 #include "../include/console.h"
 
-#include "../include/font_map.h"
 #include "../include/delta_engine.h"
+#include "../include/font_map.h"
 
 dbasic::Console::Console() {
     m_engine = nullptr;
@@ -20,14 +20,15 @@ dbasic::Console::Console() {
     m_font = nullptr;
 }
 
-dbasic::Console::~Console() {
-    /* void */
+dbasic::Console::~Console() { /* void */
 }
 
 ysError dbasic::Console::Initialize() {
     YDS_ERROR_DECLARE("Initialize");
 
-    m_engine->LoadFont(&m_font, (m_defaultFontDirectory + L"Silkscreen/slkscr.ttf").c_str());
+    m_engine->LoadFont(
+            &m_font,
+            (m_defaultFontDirectory + L"Silkscreen/slkscr.ttf").c_str());
     m_buffer = new char[BufferSize];
 
     Clear();
@@ -53,11 +54,15 @@ ysError dbasic::Console::ResetScreenPosition() {
 ysError dbasic::Console::Destroy() {
     YDS_ERROR_DECLARE("Destroy");
 
-    delete[] m_buffer;
-    m_buffer = nullptr;
+    if (m_buffer != nullptr) {
+        delete[] m_buffer;
+        m_buffer = nullptr;
+    }
 
-    ysTexture *fontTexture = m_font->GetTexture();
-    m_engine->GetDevice()->DestroyTexture(fontTexture);
+    if (m_font != nullptr) {
+        ysTexture *fontTexture = m_font->GetTexture();
+        m_engine->GetDevice()->DestroyTexture(fontTexture);
+    }
 
     return YDS_ERROR_RETURN(ysError::None);
 }
@@ -87,23 +92,33 @@ ysError dbasic::Console::UpdateGeometry() {
 
             const Font::GlyphData *data = m_font->GetGlyphData(character);
 
-            const float offsetX = (-m_engine->GetScreenWidth() / 2.0f) + (scale_x * i);
-            const float offsetY = (m_engine->GetScreenHeight() / 2.0f) - (scale_y * j) - scale_y;
+            const float offsetX =
+                    (-m_engine->GetScreenWidth() / 2.0f) + (scale_x * i);
+            const float offsetY = (m_engine->GetScreenHeight() / 2.0f) -
+                                  (scale_y * j) - scale_y;
 
-            vertexData[quadIndex * 4 + 0].TexCoord = ysVector2(data->uv0.x, data->uv0.y);
-            vertexData[quadIndex * 4 + 1].TexCoord = ysVector2(data->uv1.x, data->uv0.y);
-            vertexData[quadIndex * 4 + 2].TexCoord = ysVector2(data->uv1.x, data->uv1.y);
-            vertexData[quadIndex * 4 + 3].TexCoord = ysVector2(data->uv0.x, data->uv1.y);
+            vertexData[quadIndex * 4 + 0].TexCoord =
+                    ysVector2(data->uv0.x, data->uv0.y);
+            vertexData[quadIndex * 4 + 1].TexCoord =
+                    ysVector2(data->uv1.x, data->uv0.y);
+            vertexData[quadIndex * 4 + 2].TexCoord =
+                    ysVector2(data->uv1.x, data->uv1.y);
+            vertexData[quadIndex * 4 + 3].TexCoord =
+                    ysVector2(data->uv0.x, data->uv1.y);
 
-            vertexData[quadIndex * 4 + 0].Pos = 
-                ysVector2(data->p0.x * scale + offsetX, -data->p0.y * scale + offsetY);
-            vertexData[quadIndex * 4 + 1].Pos = 
-                ysVector2(data->p1.x * scale + offsetX, -data->p0.y * scale + offsetY);
-            vertexData[quadIndex * 4 + 2].Pos = 
-                ysVector2(data->p1.x * scale + offsetX, -data->p1.y * scale + offsetY);
-            vertexData[quadIndex * 4 + 3].Pos = 
-                ysVector2(data->p0.x * scale + offsetX, -data->p1.y * scale + offsetY);
-            
+            vertexData[quadIndex * 4 + 0].Pos =
+                    ysVector2(data->p0.x * scale + offsetX,
+                              -data->p0.y * scale + offsetY);
+            vertexData[quadIndex * 4 + 1].Pos =
+                    ysVector2(data->p1.x * scale + offsetX,
+                              -data->p0.y * scale + offsetY);
+            vertexData[quadIndex * 4 + 2].Pos =
+                    ysVector2(data->p1.x * scale + offsetX,
+                              -data->p1.y * scale + offsetY);
+            vertexData[quadIndex * 4 + 3].Pos =
+                    ysVector2(data->p0.x * scale + offsetX,
+                              -data->p1.y * scale + offsetY);
+
             ++quadIndex;
         }
     }
@@ -116,9 +131,7 @@ void dbasic::Console::MoveToLocation(const GuiPoint &location) {
     m_actualLocation = location;
 }
 
-void dbasic::Console::MoveToOrigin() {
-    MoveToLocation({ 0, 0 });
-}
+void dbasic::Console::MoveToOrigin() { MoveToLocation({0, 0}); }
 
 void dbasic::Console::MoveDownLine(int n) {
     m_nominalLocation.y += n;
@@ -131,8 +144,8 @@ ysError dbasic::Console::SetCharacter(char character) {
     const int x = m_actualLocation.x;
     const int y = m_actualLocation.y;
 
-    if (x >= BufferWidth || y >= BufferHeight ||
-        x < 0 || y < 0) return YDS_ERROR_RETURN(ysError::None);
+    if (x >= BufferWidth || y >= BufferHeight || x < 0 || y < 0)
+        return YDS_ERROR_RETURN(ysError::None);
 
     const int index = y * BufferWidth + x;
     m_buffer[index] = character;
@@ -158,14 +171,15 @@ void dbasic::Console::DrawGeneralText(const char *text, int maxLength) {
     while (text[i] != '\0' && (maxLength < 0 || i < maxLength)) {
         if (text[i] != '\n') {
             OutputChar(text[i], 1);
-        }
-        else MoveDownLine();
+        } else
+            MoveDownLine();
 
         i++;
     }
 }
 
-void dbasic::Console::DrawBoundText(const char *text, int width, int height, int xOffset, int yOffset) {
+void dbasic::Console::DrawBoundText(const char *text, int width, int height,
+                                    int xOffset, int yOffset) {
     int i = 0;
     int currentLine = 0;
     int currentColumn = 0;
@@ -180,9 +194,9 @@ void dbasic::Console::DrawBoundText(const char *text, int width, int height, int
             }
 
             currentColumn++;
-        }
-        else {
-            if (currentLine >= yOffset && currentLine < yOffset + height) m_actualLocation.y++;
+        } else {
+            if (currentLine >= yOffset && currentLine < yOffset + height)
+                m_actualLocation.y++;
             currentLine++;
             currentColumn = 0;
         }
@@ -205,8 +219,12 @@ void dbasic::Console::DrawWrappedText(const char *text, int width) {
             lineLength = 0;
         }
 
-        else if (text[i] != '\n') OutputChar(text[i]);
-        else { MoveDownLine(); lineLength = 0; }
+        else if (text[i] != '\n')
+            OutputChar(text[i]);
+        else {
+            MoveDownLine();
+            lineLength = 0;
+        }
 
         lineLength++;
         i++;
@@ -217,9 +235,7 @@ int dbasic::Console::GetTotalNotWhitespace() const {
     int n = 0;
     for (int i = 0; i < BufferWidth; ++i) {
         for (int j = 0; j < BufferHeight; ++j) {
-            if (!IsWhiteSpace(m_buffer[i + j * BufferWidth])) {
-                ++n;
-            }
+            if (!IsWhiteSpace(m_buffer[i + j * BufferWidth])) { ++n; }
         }
     }
 
@@ -239,7 +255,7 @@ void dbasic::Console::DrawVerticalLine(int length) {
 
     int i = 0;
     for (; i < length; i++) {
-        OutputChar((char)179, 1);
+        OutputChar((char) 179, 1);
         m_actualLocation.y++;
         m_actualLocation.x = m_nominalLocation.x;
     }

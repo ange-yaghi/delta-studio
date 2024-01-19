@@ -56,11 +56,13 @@ ysError dbasic::UiRenderer::UpdateDisplay() {
 ysError dbasic::UiRenderer::Destroy() {
     YDS_ERROR_DECLARE("Destroy");
 
-    m_engine->GetDevice()->DestroyGPUBuffer(m_mainIndexBuffer);
-    m_engine->GetDevice()->DestroyGPUBuffer(m_mainVertexBuffer);
+    if (m_engine != nullptr) {
+        m_engine->GetDevice()->DestroyGPUBuffer(m_mainIndexBuffer);
+        m_engine->GetDevice()->DestroyGPUBuffer(m_mainVertexBuffer);
 
-    delete[] m_indexBuffer;
-    delete[] m_vertexBuffer;
+        delete[] m_indexBuffer;
+        delete[] m_vertexBuffer;
+    }
 
     return YDS_ERROR_RETURN(ysError::None);
 }

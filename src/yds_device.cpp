@@ -321,7 +321,7 @@ ysError ysDevice::EditBufferData(ysGPUBuffer *buffer, char *data) {
 ysError ysDevice::DestroyGPUBuffer(ysGPUBuffer *&buffer) {
     YDS_ERROR_DECLARE("DestroyGPUBuffer");
 
-    if (!buffer) return YDS_ERROR_RETURN(ysError::InvalidParameter);
+    if (buffer == nullptr) { return YDS_ERROR_RETURN(ysError::None); }
 
     if (buffer->m_mirrorToRAM) {
         delete[] buffer->m_RAMMirror;
@@ -368,6 +368,8 @@ ysError ysDevice::DestroyShader(ysShader *&shader) {
 ysError ysDevice::DestroyShaderProgram(ysShaderProgram *&program,
                                        bool destroyShaders) {
     YDS_ERROR_DECLARE("DestroyShaderProgram");
+
+    if (program == nullptr) { return YDS_ERROR_RETURN(ysError::None); }
 
     if (!CheckCompatibility(program))
         return YDS_ERROR_RETURN(ysError::IncompatiblePlatforms);

@@ -206,22 +206,12 @@ void ysWindow::OnMoveWindow(int x, int y) {
     m_locationx = x;
     m_locationy = y;
 
-    if (GetCurrentWindowStyle() == WindowStyle::Windowed) {
-        m_windowedLocationx = x;
-        m_windowedLocationy = y;
-    }
-
     if (m_eventHandler != nullptr) m_eventHandler->OnMoveWindow(x, y);
 }
 
 void ysWindow::OnResizeWindow(int w, int h) {
     m_width = w;
     m_height = h;
-
-    if (GetCurrentWindowStyle() == WindowStyle::Windowed) {
-        m_windowedWidth = w;
-        m_windowedHeight = h;
-    }
 
     if (m_eventHandler != nullptr) m_eventHandler->OnResizeWindow(w, h);
 }

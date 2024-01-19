@@ -8,8 +8,7 @@ ysWindowsWindow::ysWindowsWindow() : ysWindow(Platform::Windows) {
     m_previousCmdShow = SW_SHOW;
 }
 
-ysWindowsWindow::~ysWindowsWindow() {
-    /* void */
+ysWindowsWindow::~ysWindowsWindow() { /* void */
 }
 
 ATOM ysWindowsWindow::RegisterWindowsClass(const ysVector &color) {
@@ -18,15 +17,16 @@ ATOM ysWindowsWindow::RegisterWindowsClass(const ysVector &color) {
     WNDCLASSEX wc;
     wc.cbSize = sizeof(WNDCLASSEX);
     wc.style = CS_HREDRAW | CS_VREDRAW;
-    wc.lpfnWndProc = (WNDPROC)(ysWindowsWindowSystem::WinProc);
+    wc.lpfnWndProc = (WNDPROC) (ysWindowsWindowSystem::WinProc);
     wc.cbClsExtra = 0;
     wc.cbWndExtra = 0;
     wc.hInstance = m_instance;
     wc.hIcon = LoadIcon(m_instance, L"IDI_ICON1");
-    wc.hCursor = LoadCursor(NULL, IDC_ARROW);  
-    wc.hbrBackground = CreateSolidBrush(RGB((int)(ysMath::GetX(c_srgb) * 255.0f),
-                                            (int)(ysMath::GetY(c_srgb) * 255.0f),
-                                            (int)(ysMath::GetZ(c_srgb) * 255.0f)));
+    wc.hCursor = LoadCursor(NULL, IDC_ARROW);
+    wc.hbrBackground =
+            CreateSolidBrush(RGB((int) (ysMath::GetX(c_srgb) * 255.0f),
+                                 (int) (ysMath::GetY(c_srgb) * 255.0f),
+                                 (int) (ysMath::GetZ(c_srgb) * 255.0f)));
     wc.lpszMenuName = NULL;
     wc.lpszClassName = L"GAME_ENGINE_WINDOW";
     wc.hIconSm = NULL;
@@ -34,46 +34,64 @@ ATOM ysWindowsWindow::RegisterWindowsClass(const ysVector &color) {
     return RegisterClassEx(&wc);
 }
 
+bool rectInsideMonitor(const RECT &rect) {
+    HMONITOR hMonitor = MonitorFromRect(&rect, MONITOR_DEFAULTTONEAREST);
+    MONITORINFO mi;
+    mi.cbSize = sizeof(mi);
+    GetMonitorInfo(hMonitor, &mi);
+
+    const RECT monitorRect = mi.rcMonitor;
+    return rect.left <= monitorRect.right && rect.right >= monitorRect.left &&
+           rect.top <= monitorRect.bottom && rect.bottom >= monitorRect.top;
+}
+
 ysError ysWindowsWindow::InitializeWindow(
         ysWindow *parent, const wchar_t *title, WindowStyle style, int x, int y,
         int width, int height, ysMonitor *monitor, const ysVector &color) {
     YDS_ERROR_DECLARE("InitializeWindow");
 
-    if (!CheckCompatibility(parent)) return YDS_ERROR_RETURN(ysError::IncompatiblePlatforms);
+    if (!CheckCompatibility(parent)) {
+        return YDS_ERROR_RETURN(ysError::IncompatiblePlatforms);
+    }
 
-    YDS_NESTED_ERROR_CALL(ysWindow::InitializeWindow(parent, title, style, x, y, width, height, monitor, color));
+    RECT rect;
+    rect.left = x;
+    rect.right = x + width;
+    rect.top = y;
+    rect.bottom = y + height;
+    const bool validRect = rectInsideMonitor(rect);
+    if (!validRect) { style = WindowStyle::Windowed; }
+
+    YDS_NESTED_ERROR_CALL(ysWindow::InitializeWindow(
+            parent, title, style, x, y, width, height, monitor, color));
 
     ysWindowsWindow *parentWindow = static_cast<ysWindowsWindow *>(parent);
 
     const int win32Style = GetWindowsStyle(style);
-    HWND parentHandle = (parentWindow) 
-        ? parentWindow->m_hwnd 
-        : NULL;
+    HWND parentHandle = (parentWindow) ? parentWindow->m_hwnd : NULL;
 
     RegisterWindowsClass(color);
 
     m_hwnd = CreateWindow(
-        L"GAME_ENGINE_WINDOW",
-        title,
-        win32Style,
-        CW_USEDEFAULT,
-        CW_USEDEFAULT,
-        width,
-        height,
-        parentHandle,
-        NULL,
-        m_instance,
-        NULL);
+            L"GAME_ENGINE_WINDOW", title, win32Style,
+            (x == INT_MAX || !validRect) ? CW_USEDEFAULT : rect.left,
+            (y == INT_MAX || !validRect) ? CW_USEDEFAULT : rect.top,
+            (width == INT_MAX || !validRect) ? CW_USEDEFAULT
+                                             : std::min(width, 8000),
+            (height == INT_MAX || !validRect) ? CW_USEDEFAULT
+                                              : std::min(height, 8000),
+            parentHandle, NULL, m_instance, NULL);
 
     m_locationx = x;
     m_locationy = y;
 
-    SetWindowPos(m_hwnd, NULL, m_locationx, m_locationy, 0, 0, SWP_NOSIZE | SWP_NOZORDER);
-
     return YDS_ERROR_RETURN(ysError::None);
 }
 
-ysError ysWindowsWindow::InitializeWindow(ysWindow *parent, const wchar_t *title, WindowStyle style, ysMonitor *monitor) {
+ysError ysWindowsWindow::InitializeWindow(ysWindow *parent,
+                                          const wchar_t *title,
+                                          WindowStyle style,
+                                          ysMonitor *monitor) {
     YDS_ERROR_DECLARE("InitializeWindow");
 
     YDS_NESTED_ERROR_CALL(InitializeWindow(
@@ -94,41 +112,41 @@ bool ysWindowsWindow::SetWindowStyle(WindowStyle style) {
     if (!ysWindow::SetWindowStyle(style)) { return false; }
 
     if (style == WindowStyle::Windowed) {
-        const int windowedLocationx = m_windowedLocationx;
-        const int windowedLocationy = m_windowedLocationy;
-
-        const int windowedWidth = m_windowedWidth;
-        const int windowedHeight = m_windowedHeight;
-
         SetWindowLongPtr(m_hwnd, GWL_STYLE, GetWindowsStyle(style));
-        SetWindowPos(m_hwnd, NULL, 0, 0, 0, 0,
-            SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_FRAMECHANGED);
-
-        SetLocation(windowedLocationx, windowedLocationy);
-        SetWindowSize(windowedWidth, windowedHeight);
+        SetWindowPos(m_hwnd, NULL, m_windowedLocationx, m_windowedLocationy,
+                     m_windowedWidth, m_windowedHeight,
+                     SWP_FRAMECHANGED | SWP_NOZORDER);
 
         ShowWindow(m_hwnd, m_previousCmdShow);
         SetForegroundWindow(m_hwnd);
-    }
-    else if (style == WindowStyle::Fullscreen) {
+    } else if (style == WindowStyle::Fullscreen) {
+        RECT rect;
+        GetWindowRect(m_hwnd, &rect);
+
+        m_windowedLocationx = rect.left;
+        m_windowedLocationy = rect.top;
+        m_windowedWidth = rect.right - rect.left;
+        m_windowedHeight = rect.bottom - rect.top;
+
         WINDOWPLACEMENT placement = {};
         GetWindowPlacement(m_hwnd, &placement);
         m_previousCmdShow = placement.showCmd;
 
         SetWindowLongPtr(m_hwnd, GWL_STYLE, GetWindowsStyle(style));
-        SetWindowPos(m_hwnd, NULL, 0, 0, 0, 0,
-            SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_FRAMECHANGED);
+        SetWindowPos(m_hwnd, NULL, m_windowedLocationx, m_windowedLocationy,
+                     m_windowedWidth, m_windowedHeight,
+                     SWP_FRAMECHANGED | SWP_NOZORDER);
 
         SetLocation(m_monitor->GetOriginX(), m_monitor->GetOriginY());
-        SetWindowSize(m_monitor->GetLogicalWidth(), m_monitor->GetLogicalHeight());
+        SetWindowSize(m_monitor->GetLogicalWidth(),
+                      m_monitor->GetLogicalHeight());
 
         ShowWindow(m_hwnd, SW_SHOW);
         SetForegroundWindow(m_hwnd);
-    }
-    else if (style == WindowStyle::Popup) {
+    } else if (style == WindowStyle::Popup) {
         SetWindowLongPtr(m_hwnd, GWL_STYLE, GetWindowsStyle(style));
         SetWindowPos(m_hwnd, NULL, 0, 0, 0, 0,
-            SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_FRAMECHANGED);
+                     SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_FRAMECHANGED);
 
         ShowWindow(m_hwnd, SW_SHOW);
         SetForegroundWindow(m_hwnd);
@@ -143,7 +161,7 @@ void ysWindowsWindow::ScreenToLocal(int &x, int &y) const {
         return;
     }
 
-    POINT p = { x, y };
+    POINT p = {x, y};
     BOOL result = ScreenToClient(m_hwnd, &p);
 
     if (result == FALSE) {
@@ -163,12 +181,12 @@ bool ysWindowsWindow::IsVisible() {
     if (result == FALSE) return false;
 
     switch (placement.showCmd) {
-    case SW_HIDE:
-        return false;
-    case SW_MINIMIZE:
-        return false;
-    default:
-        return true;
+        case SW_HIDE:
+            return false;
+        case SW_MINIMIZE:
+            return false;
+        default:
+            return true;
     }
 }
 
@@ -178,9 +196,7 @@ int ysWindowsWindow::GetScreenWidth() const {
     RECT rect;
     BOOL result = GetClientRect(m_hwnd, &rect);
 
-    return (result == TRUE)
-        ? rect.right - rect.left
-        : 0;
+    return (result == TRUE) ? rect.right - rect.left : 0;
 }
 
 int ysWindowsWindow::GetScreenHeight() const {
@@ -189,19 +205,17 @@ int ysWindowsWindow::GetScreenHeight() const {
     RECT rect;
     BOOL result = GetClientRect(m_hwnd, &rect);
 
-    return (result == TRUE)
-        ? rect.bottom - rect.top
-        : 0;
+    return (result == TRUE) ? rect.bottom - rect.top : 0;
 }
 
 int ysWindowsWindow::GetWindowsStyle(WindowStyle style) {
     switch (style) {
-    case WindowStyle::Fullscreen:
-        return WS_POPUP | WS_VISIBLE;
-    case WindowStyle::Windowed:
-        return WS_OVERLAPPEDWINDOW | WS_VISIBLE;
-    case WindowStyle::Popup:
-        return WS_POPUP | WS_VISIBLE;
+        case WindowStyle::Fullscreen:
+            return WS_POPUP | WS_VISIBLE;
+        case WindowStyle::Windowed:
+            return WS_OVERLAPPEDWINDOW | WS_VISIBLE;
+        case WindowStyle::Popup:
+            return WS_POPUP | WS_VISIBLE;
     }
 
     return WS_OVERLAPPED;
@@ -228,18 +242,18 @@ void ysWindowsWindow::SetState(WindowState state) {
     ysWindow::SetState(state);
 
     switch (state) {
-    case WindowState::Visible:
-        ShowWindow(m_hwnd, SW_SHOW);
-        break;
-    case WindowState::Hidden:
-        ShowWindow(m_hwnd, SW_HIDE);
-        break;
-    case WindowState::Maximized:
-        ShowWindow(m_hwnd, SW_SHOWMAXIMIZED);
-        break;
-    case WindowState::Minimized:
-        ShowWindow(m_hwnd, SW_SHOWMINIMIZED);
-        break;
+        case WindowState::Visible:
+            ShowWindow(m_hwnd, SW_SHOW);
+            break;
+        case WindowState::Hidden:
+            ShowWindow(m_hwnd, SW_HIDE);
+            break;
+        case WindowState::Maximized:
+            ShowWindow(m_hwnd, SW_SHOWMAXIMIZED);
+            break;
+        case WindowState::Minimized:
+            ShowWindow(m_hwnd, SW_SHOWMINIMIZED);
+            break;
     }
 
     SetForegroundWindow(m_hwnd);
@@ -264,7 +278,8 @@ void ysWindowsWindow::AL_SetSize(int width, int height) {
         adjustedHeight = rect.bottom - rect.top;
     }
 
-    SetWindowPos(m_hwnd, NULL, 0, 0, adjustedWidth, adjustedHeight, SWP_NOMOVE | SWP_NOZORDER);
+    SetWindowPos(m_hwnd, NULL, 0, 0, adjustedWidth, adjustedHeight,
+                 SWP_NOMOVE | SWP_NOZORDER);
 }
 
 void ysWindowsWindow::AL_SetLocation(int x, int y) {
@@ -287,5 +302,6 @@ void ysWindowsWindow::AL_SetLocation(int x, int y) {
 
     POINT p = {x, y};
     ScreenToClient(m_hwnd, &p);
-    SetWindowPos(m_hwnd, NULL, adjusted_x, adjusted_y, 0, 0, SWP_NOSIZE | SWP_NOZORDER);
+    SetWindowPos(m_hwnd, NULL, adjusted_x, adjusted_y, 0, 0,
+                 SWP_NOSIZE | SWP_NOZORDER);
 }

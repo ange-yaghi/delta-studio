@@ -21,6 +21,9 @@ dbasic::DeltaEngine::DeltaEngine() {
     m_device = nullptr;
 
     m_audioDevice = nullptr;
+    m_timingSystem = nullptr;
+    m_eventHandler = nullptr;
+    m_consoleEnabled = true;
 
     m_windowSystem = nullptr;
     m_gameWindow = nullptr;
@@ -32,9 +35,13 @@ dbasic::DeltaEngine::DeltaEngine() {
 
     m_mainVertexBuffer = nullptr;
     m_mainIndexBuffer = nullptr;
+    m_consoleShaderObjectVariablesBuffer = nullptr;
 
     m_vertexShader = nullptr;
     m_pixelShader = nullptr;
+    m_vertexSkinnedShader = nullptr;
+    m_saqPixelShader = nullptr;
+    m_saqVertexShader = nullptr;
     m_shaderProgram = nullptr;
     m_shaderSet = nullptr;
 

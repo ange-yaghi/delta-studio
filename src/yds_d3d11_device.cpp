@@ -314,6 +314,9 @@ ysError ysD3D11Device::CreateRenderingContext(ysRenderingContext **context,
             m_renderingContexts.NewGeneric<ysD3D11Context>();
     newContext->m_targetWindow = window;
 
+    const int width = std::max(1, window->GetGameWidth());
+    const int height = std::max(1, window->GetGameHeight());
+
     // Get max MSAA quality
     UINT multisamplesPerPixel = 1;
     UINT maxQuality;
@@ -334,8 +337,8 @@ ysError ysD3D11Device::CreateRenderingContext(ysRenderingContext **context,
     if (m_DXGIFactory2 != nullptr) {
         DXGI_SWAP_CHAIN_DESC1 swapChainDesc = {};
         ZeroMemory(&swapChainDesc, sizeof(DXGI_SWAP_CHAIN_DESC1));
-        swapChainDesc.Width = window->GetGameWidth();
-        swapChainDesc.Height = window->GetGameHeight();
+        swapChainDesc.Width = width;
+        swapChainDesc.Height = height;
         swapChainDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
 #if YDS_D3D11_USE_FLIP_MODEL
         swapChainDesc.SampleDesc.Count = 1;
@@ -369,8 +372,8 @@ ysError ysD3D11Device::CreateRenderingContext(ysRenderingContext **context,
     } else {
         DXGI_SWAP_CHAIN_DESC swapChainDesc = {};
         ZeroMemory(&swapChainDesc, sizeof(DXGI_SWAP_CHAIN_DESC));
-        swapChainDesc.BufferDesc.Width = window->GetGameWidth();
-        swapChainDesc.BufferDesc.Height = window->GetGameHeight();
+        swapChainDesc.BufferDesc.Width = width;
+        swapChainDesc.BufferDesc.Height = height;
         swapChainDesc.BufferDesc.RefreshRate.Numerator = 60;
         swapChainDesc.BufferDesc.RefreshRate.Denominator = 1;
         swapChainDesc.BufferDesc.Format = format;
@@ -414,9 +417,9 @@ ysError ysD3D11Device::CreateRenderingContext(ysRenderingContext **context,
     newContext->m_msaaRenderTarget =
             m_renderTargets.NewGeneric<ysD3D11RenderTarget>();
     YDS_NESTED_ERROR_CALL(CreateD3D11OffScreenRenderTarget(
-            newContext->m_msaaRenderTarget, window->GetGameWidth(),
-            window->GetGameHeight(), ysRenderTarget::Format::R8G8B8A8_UNORM,
-            m_multisampleCount, true, true));
+            newContext->m_msaaRenderTarget, width, height,
+            ysRenderTarget::Format::R8G8B8A8_UNORM, m_multisampleCount, true,
+            true));
 #endif
 
     *context = static_cast<ysRenderingContext *>(newContext);
@@ -1297,6 +1300,8 @@ ysError ysD3D11Device::EditBufferData(ysGPUBuffer *buffer, char *data) {
 
 ysError ysD3D11Device::DestroyGPUBuffer(ysGPUBuffer *&buffer) {
     YDS_ERROR_DECLARE("DestroyGPUBuffer");
+
+    if (buffer == nullptr) { return YDS_ERROR_RETURN(ysError::None); }
 
     if (!CheckCompatibility(buffer))
         return YDS_ERROR_RETURN(ysError::IncompatiblePlatforms);

@@ -60,10 +60,10 @@ public:
         const wchar_t *LoggingDirectory = L"";
         bool DepthBuffer = true;
         bool FrameLogging = false;
-        int WindowWidth = 1920;
-        int WindowHeight = 1080;
-        int WindowPositionX = 0;
-        int WindowPositionY = 0;
+        int WindowWidth = INT_MAX;
+        int WindowHeight = INT_MAX;
+        int WindowPositionX = INT_MAX;
+        int WindowPositionY = INT_MAX;
         ysVector WindowColor = {0.0f, 0.0f, 0.0f, 1.0f};
         EventHandler *eventHandler = nullptr;
     };
