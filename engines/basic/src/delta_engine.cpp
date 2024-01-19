@@ -125,7 +125,7 @@ dbasic::DeltaEngine::CreateGameWindow(const GameEngineSettings &settings) {
             nullptr, settings.WindowTitle, settings.WindowStyle,
             settings.WindowPositionX, settings.WindowPositionY,
             settings.WindowWidth, settings.WindowHeight, mainMonitor,
-            settings.WindowColor));
+            settings.WindowState, settings.WindowColor));
 
     m_gameWindow->AttachEventHandler(&m_windowHandler);
 

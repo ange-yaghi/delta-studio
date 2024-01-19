@@ -70,7 +70,7 @@ ysWindow::~ysWindow() {}
 ysError ysWindow::InitializeWindow(ysWindow *parent, const wchar_t *title,
                                    WindowStyle style, int x, int y, int width,
                                    int height, ysMonitor *monitor,
-                                   const ysVector &color) {
+                                   WindowState initialState, const ysVector &color) {
     YDS_ERROR_DECLARE("InitializeWindow");
 
     wcscpy_s(m_title, 256, title);
@@ -87,7 +87,7 @@ ysError ysWindow::InitializeWindow(ysWindow *parent, const wchar_t *title,
     m_windowedLocationx = x;
     m_windowedLocationy = y;
 
-    m_windowState = WindowState::Hidden;// DEFAULT
+    m_windowState = initialState;
     m_windowStyle = style;
 
     m_backgroundColor = color;
@@ -100,10 +100,10 @@ ysError ysWindow::InitializeWindow(ysWindow *parent, const wchar_t *title,
                                    WindowStyle style, ysMonitor *monitor) {
     YDS_ERROR_DECLARE("InitializeWindow");
 
-    YDS_NESTED_ERROR_CALL(
-            InitializeWindow(parent, title, style, monitor->GetOriginX(),
-                             monitor->GetOriginY(), monitor->GetPhysicalWidth(),
-                             monitor->GetPhysicalHeight(), monitor));
+    YDS_NESTED_ERROR_CALL(InitializeWindow(
+            parent, title, style, monitor->GetOriginX(), monitor->GetOriginY(),
+            monitor->GetPhysicalWidth(), monitor->GetPhysicalHeight(), monitor,
+            WindowState::Visible));
 
     return YDS_ERROR_RETURN(ysError::None);
 }
@@ -112,7 +112,7 @@ void ysWindow::RestoreWindow() {
     WindowState prevWindowState = m_windowState;
 
     InitializeWindow(m_parent, m_title, m_windowStyle, m_locationx, m_locationy,
-                     m_width, m_height, m_monitor);
+                     m_width, m_height, m_monitor, prevWindowState);
     SetState(prevWindowState);
 }
 

@@ -47,7 +47,8 @@ bool rectInsideMonitor(const RECT &rect) {
 
 ysError ysWindowsWindow::InitializeWindow(
         ysWindow *parent, const wchar_t *title, WindowStyle style, int x, int y,
-        int width, int height, ysMonitor *monitor, const ysVector &color) {
+        int width, int height, ysMonitor *monitor, WindowState initialState,
+        const ysVector &color) {
     YDS_ERROR_DECLARE("InitializeWindow");
 
     if (!CheckCompatibility(parent)) {
@@ -62,13 +63,15 @@ ysError ysWindowsWindow::InitializeWindow(
     const bool validRect = rectInsideMonitor(rect);
     if (!validRect) { style = WindowStyle::Windowed; }
 
-    YDS_NESTED_ERROR_CALL(ysWindow::InitializeWindow(
-            parent, title, style, x, y, width, height, monitor, color));
+    YDS_NESTED_ERROR_CALL(ysWindow::InitializeWindow(parent, title, style, x, y,
+                                                     width, height, monitor,
+                                                     initialState, color));
 
     ysWindowsWindow *parentWindow = static_cast<ysWindowsWindow *>(parent);
 
-    const int win32Style = GetWindowsStyle(style);
-    HWND parentHandle = (parentWindow) ? parentWindow->m_hwnd : NULL;
+    const int win32Style =
+            GetWindowsStyle(style) | GetWindowsState(initialState);
+    const HWND parentHandle = (parentWindow) ? parentWindow->m_hwnd : NULL;
 
     RegisterWindowsClass(color);
 
@@ -97,7 +100,7 @@ ysError ysWindowsWindow::InitializeWindow(ysWindow *parent,
     YDS_NESTED_ERROR_CALL(InitializeWindow(
             parent, title, style, monitor->GetOriginX(), monitor->GetOriginY(),
             monitor->GetPhysicalWidth(), monitor->GetPhysicalHeight(), monitor,
-            {0.0f, 0.0f, 0.0f, 1.0f}));
+            WindowState::Visible, {0.0f, 0.0f, 0.0f, 1.0f}));
 
     return YDS_ERROR_RETURN(ysError::None);
 }
@@ -177,7 +180,8 @@ bool ysWindowsWindow::IsVisible() {
     if (m_hwnd == NULL) return 0;
 
     WINDOWPLACEMENT placement;
-    BOOL result = GetWindowPlacement(m_hwnd, &placement);
+    placement.length = sizeof(WINDOWPLACEMENT);
+    const BOOL result = GetWindowPlacement(m_hwnd, &placement);
     if (result == FALSE) return false;
 
     switch (placement.showCmd) {
@@ -187,6 +191,27 @@ bool ysWindowsWindow::IsVisible() {
             return false;
         default:
             return true;
+    }
+}
+
+ysWindowsWindow::WindowState ysWindowsWindow::GetState() const {
+    if (m_hwnd == NULL) { return WindowState::Hidden; }
+
+    WINDOWPLACEMENT placement;
+    placement.length = sizeof(WINDOWPLACEMENT);
+    const BOOL result = GetWindowPlacement(m_hwnd, &placement);
+    if (result == FALSE) { return WindowState::Hidden; }
+
+    switch (placement.showCmd) {
+        case SW_HIDE:
+            return WindowState::Hidden;
+        case SW_MINIMIZE:
+        case SW_SHOWMINIMIZED:
+            return WindowState::Minimized;
+        case SW_MAXIMIZE:
+            return WindowState::Maximized;
+        default:
+            return WindowState::Visible;
     }
 }
 
@@ -211,14 +236,31 @@ int ysWindowsWindow::GetScreenHeight() const {
 int ysWindowsWindow::GetWindowsStyle(WindowStyle style) {
     switch (style) {
         case WindowStyle::Fullscreen:
-            return WS_POPUP | WS_VISIBLE;
+            return WS_POPUP;
         case WindowStyle::Windowed:
-            return WS_OVERLAPPEDWINDOW | WS_VISIBLE;
+            return WS_OVERLAPPEDWINDOW;
         case WindowStyle::Popup:
-            return WS_POPUP | WS_VISIBLE;
+            return WS_POPUP;
     }
 
     return WS_OVERLAPPED;
+}
+
+int ysWindowsWindow::GetWindowsState(WindowState state) {
+    switch (state) {
+        case WindowState::Closed:
+            return 0;
+        case WindowState::Hidden:
+            return 0;
+        case WindowState::Maximized:
+            return WS_VISIBLE | WS_MAXIMIZE;
+        case WindowState::Minimized:
+            return WS_VISIBLE | WS_MINIMIZE;
+        case WindowState::Visible:
+            return WS_VISIBLE;
+        default:
+            return WS_VISIBLE;
+    }
 }
 
 // Abstraction Layer

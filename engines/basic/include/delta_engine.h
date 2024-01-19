@@ -52,6 +52,7 @@ public:
         const wchar_t *WindowTitle = L"Delta_GameWindow";
         void *Instance = nullptr;
         ysWindow::WindowStyle WindowStyle = ysWindow::WindowStyle::Windowed;
+        ysWindow::WindowState WindowState = ysWindow::WindowState::Visible;
         ysContextObject::DeviceAPI API = ysContextObject::DeviceAPI::DirectX11;
         const wchar_t *ShaderDirectory = L"../DeltaEngineTullahoma/Shaders/";
         const wchar_t *ShaderCompiledDirectory =

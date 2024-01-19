@@ -1,9 +1,9 @@
 #ifndef YDS_WINDOW_H
 #define YDS_WINDOW_H
 
-#include "yds_window_system_object.h"
-#include "yds_monitor.h"
 #include "yds_color.h"
+#include "yds_monitor.h"
+#include "yds_window_system_object.h"
 
 class ysWindowEventHandler;
 class ysWindowSystem;
@@ -21,12 +21,7 @@ public:
         Unknown
     };
 
-    enum class WindowStyle {
-        Windowed,
-        Fullscreen,
-        Popup,
-        Unknown
-    };
+    enum class WindowStyle { Windowed, Fullscreen, Popup, Unknown };
 
 public:
     ysWindow();
@@ -34,14 +29,19 @@ public:
     virtual ~ysWindow();
 
     /* Interface */
-    virtual ysError InitializeWindow(ysWindow *parent, const wchar_t *title,
-                                     WindowStyle style, int x, int y, int width,
-                                     int height, ysMonitor *monitor,
+    virtual ysError
+    InitializeWindow(ysWindow *parent, const wchar_t *title, WindowStyle style,
+                     int x, int y, int width, int height, ysMonitor *monitor,
+                     WindowState initialState,
                      const ysVector &color = {0.0f, 0.0f, 0.0f, 1.0f});
-    virtual ysError InitializeWindow(ysWindow *parent, const wchar_t *title, WindowStyle style, ysMonitor *monitor);
+    virtual ysError InitializeWindow(ysWindow *parent, const wchar_t *title,
+                                     WindowStyle style, ysMonitor *monitor);
 
     virtual void Close() { SetState(WindowState::Closed); }
-    virtual void SetState(WindowState state = WindowState::Visible) { m_windowState = state; }
+    virtual void SetState(WindowState state = WindowState::Visible) {
+        m_windowState = state;
+    }
+    virtual WindowState GetState() const { return m_windowState; }
     virtual void CaptureMouse() {}
     virtual void ReleaseMouse() {}
 
@@ -63,7 +63,8 @@ public:
     int GetPositionY() const { return m_locationy; }
 
     bool IsOnScreen(int x, int y) const;
-    virtual void ScreenToLocal(int &x, int &y) const { /* void */ }
+    virtual void ScreenToLocal(int &x, int &y) const { /* void */
+    }
 
     bool IsOpen() const;
     virtual bool IsActive();
@@ -85,12 +86,18 @@ public:
     void SetGameResolutionScale(float scale);
 
     void SetGameResolutionScaleHorizontal(float scale);
-    float GetGameResolutionScaleHorizontal() const { return m_gameResolutionScaleHorizontal; }
+    float GetGameResolutionScaleHorizontal() const {
+        return m_gameResolutionScaleHorizontal;
+    }
 
     void SetGameResolutionScaleVertical(float scale);
-    float GetGameResolutionScaleVertical() const { return m_gameResolutionScaleVertical; }
+    float GetGameResolutionScaleVertical() const {
+        return m_gameResolutionScaleVertical;
+    }
 
-    inline void SetBackgroundColor(const ysVector &color) { m_backgroundColor = color; }
+    inline void SetBackgroundColor(const ysVector &color) {
+        m_backgroundColor = color;
+    }
     inline ysVector GetBackgroundColor() const { return m_backgroundColor; }
 
 public:

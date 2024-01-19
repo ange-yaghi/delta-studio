@@ -17,11 +17,14 @@ public:
 
     // Overrides
 
-    virtual ysError
-    InitializeWindow(ysWindow *parent, const wchar_t *title, WindowStyle style,
-                     int x, int y, int width, int height,
-                     ysMonitor *monitor, const ysVector &color) override;
-    virtual ysError InitializeWindow(ysWindow *parent, const wchar_t *title, WindowStyle style, ysMonitor *monitor) override;
+    virtual ysError InitializeWindow(ysWindow *parent, const wchar_t *title,
+                                     WindowStyle style, int x, int y, int width,
+                                     int height, ysMonitor *monitor,
+                                     WindowState initialState,
+                                     const ysVector &color) override;
+    virtual ysError InitializeWindow(ysWindow *parent, const wchar_t *title,
+                                     WindowStyle style,
+                                     ysMonitor *monitor) override;
     virtual void CaptureMouse() override;
     virtual void ReleaseMouse() override;
 
@@ -31,20 +34,20 @@ public:
 
     virtual bool IsVisible();
 
-    virtual int GetScreenWidth() const;
-    virtual int GetScreenHeight() const;
+    virtual WindowState GetState() const override;
+    virtual int GetScreenWidth() const override;
+    virtual int GetScreenHeight() const override;
 
 public:
     // Windows Specific
 
-    // Set the windows instance to use
-    void SetInstance(HINSTANCE instance) { m_instance = instance; }
-    HINSTANCE GetInstance() const { return m_instance; }
+    inline void SetInstance(HINSTANCE instance) { m_instance = instance; }
+    inline HINSTANCE GetInstance() const { return m_instance; }
 
-    // Get Win32 window handle
-    HWND GetWindowHandle() const { return m_hwnd; }
+    inline HWND GetWindowHandle() const { return m_hwnd; }
 
     static int GetWindowsStyle(WindowStyle style);
+    static int GetWindowsState(WindowState state);
 
 protected:
     // Abstraction Layer
