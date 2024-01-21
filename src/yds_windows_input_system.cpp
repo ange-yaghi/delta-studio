@@ -303,21 +303,16 @@ ysWindowsInputDevice *ysWindowsInputSystem::AddDevice(RAWINPUT *rawInput) {
 }
 
 int ysWindowsInputSystem::ProcessInputMessage(HRAWINPUT lparam) {
-    UINT dwSize;
-    LPBYTE lpb;
-
+    UINT dwSize = 0;
     GetRawInputData(lparam, RID_INPUT, NULL, &dwSize, sizeof(RAWINPUTHEADER));
 
-    lpb = new BYTE[dwSize];
-    if (lpb == nullptr) return 0;
-
-    if (GetRawInputData(lparam, RID_INPUT, lpb, &dwSize,
+    if (dwSize > m_rawInputBuffer.size()) { m_rawInputBuffer.resize(dwSize); }
+    if (GetRawInputData(lparam, RID_INPUT, m_rawInputBuffer.data(), &dwSize,
                         sizeof(RAWINPUTHEADER)) != dwSize) {
-        delete[] lpb;
         return 0;
     }
 
-    RAWINPUT *raw = (RAWINPUT *) lpb;
+    RAWINPUT *raw = (RAWINPUT *)m_rawInputBuffer.data();
 
     ysInputDevice *device = nullptr;
 
@@ -420,7 +415,6 @@ int ysWindowsInputSystem::ProcessInputMessage(HRAWINPUT lparam) {
         }
     }
 
-    delete[] lpb;
     return 0;
 }
 

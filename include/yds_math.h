@@ -189,7 +189,11 @@ namespace ysMath {
         return _mm_set_ps(s, s, s, s);
     }
 
-    ysGeneric LoadVector(float x = 0.0f, float y = 0.0f, float z = 0.0f, float w = 0.0f);
+    __forceinline ysGeneric LoadVector(float x = 0.0f, float y = 0.0f, float z = 0.0f,
+        float w = 0.0f) {
+        return _mm_set_ps(w, z, y, x);
+    }
+
     ysGeneric LoadVector(const ysVector4 &v);
     ysGeneric LoadVector(const ysVector3 &v, float w = 0.0f);
     ysGeneric LoadVector(const ysVector2 &v1);

@@ -6,6 +6,8 @@
 #define NOMINMAX
 #include <Windows.h>
 
+#include <vector>
+
 class ysWindowsInputDevice;
 
 class ysWindowsInputSystem : public ysInputSystem {
@@ -26,8 +28,10 @@ protected:
     virtual ysError CheckDeviceStatus(ysInputDevice *device);
     virtual ysError CheckAllDevices();
 
-    virtual ysInputDevice *CreateDevice(ysInputDevice::InputDeviceType type, int id) override;
-    virtual ysInputDevice *CreateVirtualDevice(ysInputDevice::InputDeviceType type) override;
+    virtual ysInputDevice *CreateDevice(ysInputDevice::InputDeviceType type,
+                                        int id) override;
+    virtual ysInputDevice *
+    CreateVirtualDevice(ysInputDevice::InputDeviceType type) override;
     ysWindowsInputDevice *AddDevice(RAWINPUT *rawInput);
 
     ysWindowsInputDevice *DeviceLookup(HANDLE hDevice);
@@ -35,6 +39,9 @@ protected:
 
     // Translate a windows device type to INPUT_DEVICE_TYPE
     static ysInputDevice::InputDeviceType TranslateType(int type);
+
+private:
+    std::vector<BYTE> m_rawInputBuffer;
 };
 
 #endif /* YDS_WINDOWS_INPUT_SYSTEM_H */

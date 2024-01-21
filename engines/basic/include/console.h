@@ -98,7 +98,10 @@ namespace dbasic {
 
         // Utilities
         static int FindEndOfNextWord(const char *text, int location);
-        static bool IsWhiteSpace(char c);
+        static inline bool IsWhiteSpace(char c) {
+            if (c == '\t' || c == '\n' || c == ' ') { return true; }
+            return false;
+        }
 
         // Navigation
         void MoveDownLine(int n = 1);

@@ -299,11 +299,6 @@ int dbasic::Console::FindEndOfNextWord(const char *text, int location) {
     return location - 1;
 }
 
-bool dbasic::Console::IsWhiteSpace(char c) {
-    if (c == '\t' || c == '\n' || c == ' ') return true;
-    return false;
-}
-
 void dbasic::Console::Clear() {
     MoveToLocation(GuiPoint(0, 0));
 

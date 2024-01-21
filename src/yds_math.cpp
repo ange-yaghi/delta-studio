@@ -25,10 +25,6 @@ int ysMath::UniformRandomInt(int range) {
     return rand() % range;
 }
 
-ysGeneric ysMath::LoadVector(float x, float y, float z, float w) {
-    return _mm_set_ps(w, z, y, x);
-}
-
 ysGeneric ysMath::LoadVector(const ysVector4 &v) {
     return _mm_set_ps(v.w, v.z, v.y, v.x);
 }
