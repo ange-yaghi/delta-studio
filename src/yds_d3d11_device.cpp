@@ -970,8 +970,10 @@ ysError ysD3D11Device::CreateVertexBuffer(ysGPUBuffer **newBuffer, int size,
                                           char *data, bool mirrorToRam) {
     YDS_ERROR_DECLARE("CreateVertexBuffer");
 
-    if (newBuffer == nullptr)
+    if (newBuffer == nullptr) {
         return YDS_ERROR_RETURN(ysError::InvalidParameter);
+    }
+
     *newBuffer = nullptr;
 
     D3D11_BUFFER_DESC bd;
@@ -982,23 +984,14 @@ ysError ysD3D11Device::CreateVertexBuffer(ysGPUBuffer **newBuffer, int size,
     bd.CPUAccessFlags = 0;
     bd.MiscFlags = 0;
 
-    D3D11_SUBRESOURCE_DATA InitData, *pInitData;
+    D3D11_SUBRESOURCE_DATA InitData, *pInitData = nullptr;
     ZeroMemory(&InitData, sizeof(InitData));
     InitData.pSysMem = data;
 
-    if (data) {
-        pInitData = &InitData;
-    } else {
-        pInitData = nullptr;
-    }
+    if (data != nullptr) { pInitData = &InitData; }
 
     ID3D11Buffer *buffer;
-    HRESULT result;
-    if (data == nullptr) {
-        result = m_device->CreateBuffer(&bd, nullptr, &buffer);
-    } else {
-        result = result = m_device->CreateBuffer(&bd, pInitData, &buffer);
-    }
+    HRESULT result = m_device->CreateBuffer(&bd, pInitData, &buffer);
 
     if (FAILED(result)) {
         return YDS_ERROR_RETURN(ysError::CouldNotCreateGpuBuffer);
@@ -1031,8 +1024,10 @@ ysError ysD3D11Device::CreateIndexBuffer(ysGPUBuffer **newBuffer, int size,
                                          char *data, bool mirrorToRam) {
     YDS_ERROR_DECLARE("CreateIndexBuffer");
 
-    if (newBuffer == nullptr)
+    if (newBuffer == nullptr) {
         return YDS_ERROR_RETURN(ysError::InvalidParameter);
+    }
+
     *newBuffer = nullptr;
 
     D3D11_BUFFER_DESC bd;
@@ -1043,15 +1038,11 @@ ysError ysD3D11Device::CreateIndexBuffer(ysGPUBuffer **newBuffer, int size,
     bd.CPUAccessFlags = 0;
     bd.MiscFlags = 0;
 
-    D3D11_SUBRESOURCE_DATA InitData, *pInitData;
+    D3D11_SUBRESOURCE_DATA InitData, *pInitData = nullptr;
     ZeroMemory(&InitData, sizeof(InitData));
     InitData.pSysMem = data;
 
-    if (data != nullptr) {
-        pInitData = &InitData;
-    } else {
-        pInitData = nullptr;
-    }
+    if (data != nullptr) { pInitData = &InitData; }
 
     ID3D11Buffer *buffer;
     HRESULT result = m_device->CreateBuffer(&bd, pInitData, &buffer);
@@ -1086,8 +1077,10 @@ ysError ysD3D11Device::CreateConstantBuffer(ysGPUBuffer **newBuffer, int size,
                                             char *data, bool mirrorToRam) {
     YDS_ERROR_DECLARE("CreateConstantBuffer");
 
-    if (newBuffer == nullptr)
+    if (newBuffer == nullptr) {
         return YDS_ERROR_RETURN(ysError::InvalidParameter);
+    }
+
     *newBuffer = nullptr;
 
     D3D11_BUFFER_DESC bd;
@@ -1098,13 +1091,11 @@ ysError ysD3D11Device::CreateConstantBuffer(ysGPUBuffer **newBuffer, int size,
     bd.CPUAccessFlags = 0;
     bd.MiscFlags = 0;
 
-    D3D11_SUBRESOURCE_DATA InitData, *pInitData;
+    D3D11_SUBRESOURCE_DATA InitData, *pInitData = nullptr;
     ZeroMemory(&InitData, sizeof(InitData));
     InitData.pSysMem = data;
 
-    if (data != nullptr) pInitData = &InitData;
-    else
-        pInitData = nullptr;
+    if (data != nullptr) { pInitData = &InitData; }
 
     HRESULT result;
     ID3D11Buffer *buffer;

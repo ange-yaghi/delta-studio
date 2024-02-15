@@ -457,8 +457,8 @@ ysError dbasic::AssetManager::LoadSceneFile(const wchar_t *fname, bool placeInVr
     ysGPUBuffer *vertexBuffer = nullptr;
 
     if (placeInVram) {
-        m_engine->GetDevice()->CreateIndexBuffer(&indexBuffer, currentIndexOffset * sizeof(unsigned short), (char *)indicesFile, false);
-        m_engine->GetDevice()->CreateVertexBuffer(&vertexBuffer, currentVertexByteOffset, (char *)verticesFile, false);
+        YDS_NESTED_ERROR_CALL(m_engine->GetDevice()->CreateIndexBuffer(&indexBuffer, currentIndexOffset * sizeof(unsigned short), (char *)indicesFile, false));
+        YDS_NESTED_ERROR_CALL(m_engine->GetDevice()->CreateVertexBuffer(&vertexBuffer, currentVertexByteOffset, (char *)verticesFile, false));
     }
 
     for (int i = initialModelIndex; i < m_modelAssets.GetNumObjects(); ++i) {
