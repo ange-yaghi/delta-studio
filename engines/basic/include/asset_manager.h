@@ -33,7 +33,7 @@ namespace dbasic {
         ysError CompileSceneFile(const wchar_t *fname, float scale = 1.0f, bool force = false);
         ysError CompileInterchangeFile(const wchar_t *fname, float scale = 1.0f, bool force = false);
         ysError CompileInterchangeFile(const wchar_t *fname, const wchar_t *target, float scale = 1.0f, bool force = false);
-        ysError LoadSceneFile(const wchar_t *fname, bool placeInVram = true);
+        ysError LoadSceneFile(const wchar_t *fname, bool placeInVram = true, bool placeInRam = false);
 
         ysError LoadAnimationFile(const wchar_t *fname);
         ysAnimationAction *GetAction(const char *name);
