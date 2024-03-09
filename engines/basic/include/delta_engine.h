@@ -124,6 +124,10 @@ public:
 
     void SubmitSkeleton(Skeleton *skeleton);
 
+    inline void SetVerticalSyncEnabled(bool enabled) {
+        m_device->SetVerticalSyncEnable(enabled);
+    }
+
     bool IsOpen() const { return m_gameWindow->IsOpen(); }
 
     void SetWindowSize(int width, int height);

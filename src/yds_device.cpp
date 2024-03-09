@@ -21,13 +21,15 @@ ysDevice::ysDevice() : ysContextObject("API_DEVICE", DeviceAPI::Unknown) {
 
     m_maxTextureSlots = 0;
     m_debugFlags = 0x00000000;
+
+    m_verticalSyncEnabled = true;
 }
 
 ysDevice::ysDevice(DeviceAPI API) : ysContextObject("API_DEVICE", API) {
     for (int i = 0; i < MaxRenderTargets; ++i) {
         m_activeRenderTarget[i] = nullptr;
     }
-
+    
     m_activeContext = nullptr;
     m_activeVertexBuffer = nullptr;
     m_activeInstanceBuffer = nullptr;
@@ -39,6 +41,8 @@ ysDevice::ysDevice(DeviceAPI API) : ysContextObject("API_DEVICE", API) {
 
     m_maxTextureSlots = 0;
     m_debugFlags = 0x00000000;
+
+    m_verticalSyncEnabled = true;
 }
 
 ysDevice::~ysDevice() { /* void */

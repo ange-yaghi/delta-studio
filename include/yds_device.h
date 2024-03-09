@@ -36,6 +36,10 @@ public:
 public:
     static ysError CreateDevice(ysDevice **device, DeviceAPI API);
 
+    inline void SetVerticalSyncEnable(bool enable) {
+        m_verticalSyncEnabled = enable;
+    }
+
     /* Main Device Interface */
 
     // Initialize graphics device
@@ -277,8 +281,9 @@ public:
         (void) vertexOffset;
     }
 
-    virtual void DrawInstanced(int numIndices, int indexOffset, int vertexOffset,
-                             int instanceCount, int instanceOffset);
+    virtual void DrawInstanced(int numIndices, int indexOffset,
+                               int vertexOffset, int instanceCount,
+                               int instanceOffset);
 
     virtual void DrawLines(int numIndices, int indexOffset, int vertexOffset) {
         (void) numIndices;
@@ -320,6 +325,8 @@ protected:
     ysInputLayout *m_activeInputLayout;
 
     ysTextureSlot *m_activeTextures;
+
+    bool m_verticalSyncEnabled;
 
     // Debug
     unsigned int m_debugFlags;

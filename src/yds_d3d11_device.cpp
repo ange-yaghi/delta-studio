@@ -63,9 +63,9 @@ ysD3D11Device::~ysD3D11Device() {}
 
 #define ERROR_CODE(name)                                                       \
     case name:                                                                 \
-        return #name
+        return L#name
 
-const char *errorCodeToString(HRESULT result) {
+std::wstring errorCodeToString(HRESULT result) {
     switch (result) {
         ERROR_CODE(D3D11_ERROR_FILE_NOT_FOUND);
         ERROR_CODE(D3D11_ERROR_TOO_MANY_UNIQUE_STATE_OBJECTS);
@@ -82,6 +82,7 @@ const char *errorCodeToString(HRESULT result) {
         ERROR_CODE(DXGI_ERROR_DRIVER_INTERNAL_ERROR);
         ERROR_CODE(DXGI_ERROR_FRAME_STATISTICS_DISJOINT);
         ERROR_CODE(DXGI_ERROR_GRAPHICS_VIDPN_SOURCE_IN_USE);
+        ERROR_CODE(DXGI_ERROR_INVALID_CALL);
         ERROR_CODE(DXGI_ERROR_MORE_DATA);
         ERROR_CODE(DXGI_ERROR_NAME_ALREADY_EXISTS);
         ERROR_CODE(DXGI_ERROR_NONEXCLUSIVE);
@@ -102,8 +103,11 @@ const char *errorCodeToString(HRESULT result) {
         ERROR_CODE(E_NOTIMPL);
         ERROR_CODE(S_FALSE);
         ERROR_CODE(S_OK);
-        default:
-            return nullptr;
+        default: {
+            std::wstringstream ss;
+            ss << L"0x" << std::hex << result;
+            return ss.str();
+        }
     }
 }
 
@@ -146,23 +150,16 @@ ysError ysD3D11Device::InitializeDevice() {
         YDS_ERROR_LOG() << L"Could not connect to graphics device.\n\n";
         YDS_ERROR_LOG() << L"D3D11CreateDevice failed with error: ";
 
-        const char *errorString = errorCodeToString(result);
-        if (errorString == nullptr) {
-            YDS_ERROR_LOG() << L"UNKNOWN_ERROR {0x" << std::hex << result
-                            << std::dec << "}";
-        } else {
-            YDS_ERROR_LOG() << errorString << L" {0x" << std::hex << result
-                            << std::dec << "}";
-        }
-
-        YDS_ERROR_LOG() << "\n\n";
+        const std::wstring errorString = errorCodeToString(result);
+        YDS_ERROR_LOG() << errorString << L" {0x" << std::hex << result
+                        << std::dec << L"}\n\n";
 
         IDXGIFactory1 *factory;
         HRESULT hr = CreateDXGIFactory1(__uuidof(IDXGIFactory1),
                                         (void **) (&factory));
         if (FAILED(hr)) {
             YDS_ERROR_LOG() << L"CreateDXGIFactory1() failed with error code: "
-                            << errorCodeToString(hr) << "\n\n";
+                            << errorCodeToString(hr) << L"\n\n";
         } else {
             UINT i = 0;
             std::vector<IDXGIAdapter *> adapters;
@@ -177,7 +174,7 @@ ysError ysD3D11Device::InitializeDevice() {
                     << L" graphics devices were found on this system:\n";
             for (size_t i = 0; i < adapters.size(); ++i) {
                 IDXGIAdapter *adapter = adapters[i];
-                YDS_ERROR_LOG() << " (" << i + 1 << ") - ";
+                YDS_ERROR_LOG() << L" (" << i + 1 << L") - ";
                 DXGI_ADAPTER_DESC adapterDescription;
                 hr = adapter->GetDesc(&adapterDescription);
                 if (FAILED(hr)) {
@@ -363,7 +360,7 @@ ysError ysD3D11Device::CreateRenderingContext(ysRenderingContext **context,
         } else {
             YDS_ERROR_LOG() << L"IDXGIFactory2::CreateSwapChainForHwnd() "
                                L"failed with error code: "
-                            << errorCodeToString(result) << "\n\n";
+                            << errorCodeToString(result) << L"\n\n";
 
             m_renderingContexts.Delete(newContext->GetIndex());
             *context = nullptr;
@@ -390,10 +387,9 @@ ysError ysD3D11Device::CreateRenderingContext(ysRenderingContext **context,
         swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
 #endif
         swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
-        swapChainDesc.BufferCount = 2;
+        swapChainDesc.BufferCount = 1;
         swapChainDesc.OutputWindow = windowsWindow->GetWindowHandle();
-        swapChainDesc.Windowed = window->GetCurrentWindowStyle() !=
-                                 ysWindow::WindowStyle::Fullscreen;
+        swapChainDesc.Windowed = TRUE;
         swapChainDesc.Flags = 0;
 
         HRESULT result = m_DXGIFactory1->CreateSwapChain(
@@ -404,7 +400,7 @@ ysError ysD3D11Device::CreateRenderingContext(ysRenderingContext **context,
 
             YDS_ERROR_LOG() << L"IDXGIFactory1::CreateSwapChainForHwnd() "
                                L"failed with error code: "
-                            << errorCodeToString(result) << "\n\n";
+                            << errorCodeToString(result) << L"\n\n";
 
             return YDS_ERROR_RETURN(ysError::CouldNotCreateSwapChain);
         }
@@ -959,7 +955,11 @@ ysError ysD3D11Device::Present() {
             0, DXGI_FORMAT_R8G8B8A8_UNORM);
 #endif
 
-    context->m_swapChain->Present(0, 0);
+    if (m_verticalSyncEnabled) {
+        context->m_swapChain->Present(1, 0);
+    } else {
+        context->m_swapChain->Present(0, 0);
+    }
 
     return YDS_ERROR_RETURN(ysError::None);
 }
