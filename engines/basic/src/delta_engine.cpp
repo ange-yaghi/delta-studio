@@ -250,6 +250,8 @@ ysError dbasic::DeltaEngine::EndFrame() {
     m_breakdownTimer.EndMeasurement(FrameBreakdownFull);
     m_breakdownTimer.EndFrame();
 
+    if (m_mainKeyboard != nullptr) { m_mainKeyboard->OnFrameEnd(); }
+
     return YDS_ERROR_RETURN(ysError::None);
 }
 
@@ -665,6 +667,23 @@ bool dbasic::DeltaEngine::ProcessKeyUp(ysKey::Code key) {
     if (m_mainKeyboard != nullptr && m_gameWindow->IsActive()) {
         return m_mainKeyboard->ProcessKeyTransition(key,
                                                     ysKey::State::UpTransition);
+    }
+
+    return false;
+}
+
+bool dbasic::DeltaEngine::KeyDownEvent(ysKey::Code key) {
+    if (m_mainKeyboard != nullptr) {
+        return m_mainKeyboard->PeekKeyTransition(key);
+    }
+
+    return false;
+}
+
+bool dbasic::DeltaEngine::KeyUpEvent(ysKey::Code key) {
+    if (m_mainKeyboard != nullptr) {
+        return m_mainKeyboard->PeekKeyTransition(key,
+                                                 ysKey::State::UpTransition);
     }
 
     return false;

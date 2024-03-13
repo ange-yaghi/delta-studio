@@ -137,6 +137,8 @@ public:
     bool IsKeyDown(ysKey::Code key);
     bool ProcessKeyDown(ysKey::Code key);
     bool ProcessKeyUp(ysKey::Code key);
+    bool KeyDownEvent(ysKey::Code key);
+    bool KeyUpEvent(ysKey::Code key);
 
     bool ProcessMouseButtonDown(ysMouse::Button button);
     bool ProcessMouseButtonUp(ysMouse::Button button);

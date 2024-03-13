@@ -226,6 +226,7 @@ public:
     inline ysKey::Code GetKeyMap(int sysCode) { return m_keyMap[sysCode]; }
 
     virtual bool ProcessKeyTransition(ysKey::Code key, ysKey::State state = ysKey::State::DownTransition);
+    virtual bool PeekKeyTransition(ysKey::Code key, ysKey::State state = ysKey::State::DownTransition);
 
     const ysKey *GetKey(ysKey::Code key) { return &m_keys[(int)key];  }
 
@@ -234,6 +235,8 @@ public:
 
     const char *GetInputBuffer() const { return m_inputBuffer; }
     void ClearInputBuffer();
+
+    void OnFrameEnd();
 
 protected:
     const ysKey::Code *m_keyMap;

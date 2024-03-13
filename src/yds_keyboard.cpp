@@ -392,9 +392,25 @@ bool ysKeyboard::ProcessKeyTransition(ysKey::Code key, ysKey::State state) {
     else return false;
 }
 
+bool ysKeyboard::PeekKeyTransition(ysKey::Code key, ysKey::State state) {
+    if (m_keys[(int)key].m_state == state) {
+        return true;
+    } else { return false; }
+}
+
 void ysKeyboard::ClearInputBuffer() {
     m_inputBuffer[0] = '\0';
     m_inputBufferOffset = 0;
+}
+
+void ysKeyboard::OnFrameEnd() {
+    for (int i = 0; i < 256; ++i) {
+        if (m_keys[i].m_state == ysKey::State::DownTransition) {
+            m_keys[i].m_state = ysKey::State::Down;
+        } else if (m_keys[i].m_state == ysKey::State::UpTransition) {
+            m_keys[i].m_state = ysKey::State::Up;
+        }
+    }
 }
 
 void ysKeyboard::SetKeyState(ysKey::Code key, ysKey::State state, ysKey::Variation conf) {
