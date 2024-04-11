@@ -12,7 +12,8 @@ public:
     enum class Cursor {
         Hand,
         Pan,
-        Arrow
+        Arrow,
+        Blocked
     };
 
 protected:

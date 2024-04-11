@@ -147,11 +147,12 @@ LRESULT WINAPI ysWindowsWindowSystem::WinProc(HWND hWnd, UINT msg,
                 PostQuitMessage(0);
                 return 0;
             case WM_ERASEBKGND: {
-                const ysVector color = ysColor::linearToSrgb(target->GetBackgroundColor());
-                HBRUSH brush = CreateSolidBrush(RGB(
-                    (int)(ysMath::GetX(color) * 255.0f),
-                    (int)(ysMath::GetY(color) * 255.0f),
-                    (int)(ysMath::GetZ(color) * 255.0f)));
+                const ysVector color =
+                        ysColor::linearToSrgb(target->GetBackgroundColor());
+                HBRUSH brush = CreateSolidBrush(
+                        RGB((int) (ysMath::GetX(color) * 255.0f),
+                            (int) (ysMath::GetY(color) * 255.0f),
+                            (int) (ysMath::GetZ(color) * 255.0f)));
 
                 RECT rc;
                 GetClientRect(hWnd, &rc);
@@ -312,7 +313,7 @@ void ysWindowsWindowSystem::SetCursorVisible(bool visible) {
     }
 
     // This step may not be necessary but doesn't hurt anything
-    if (visible) ::SetCursor(m_oldCursor);
+    if (visible) { ::SetCursor(m_oldCursor); }
 }
 
 void ysWindowsWindowSystem::SetCursor(Cursor cursor) {
@@ -328,6 +329,9 @@ void ysWindowsWindowSystem::SetCursor(Cursor cursor) {
             break;
         case Cursor::Arrow:
             winapiCursor = IDC_ARROW;
+            break;
+        case Cursor::Blocked:
+            winapiCursor = IDC_NO;
             break;
     }
 
