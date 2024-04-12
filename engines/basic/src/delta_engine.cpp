@@ -755,7 +755,9 @@ void dbasic::DeltaEngine::SetPaused(bool paused) {
     if (paused) {
         if (m_eventHandler != nullptr) { m_eventHandler->OnPause(); }
     } else {
-        m_eventHandler->OnUnpause();
+        if (m_eventHandler != nullptr) {
+            m_eventHandler->OnUnpause();
+        }
         m_timingSystem->RestartFrame();
     }
 }
