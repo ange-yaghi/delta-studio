@@ -34,8 +34,7 @@ public:
 
     const ysAudioParameters *GetAudioParameters() const { return &m_audioParameters; }
 
-    Mode GetBufferMode() const { return m_bufferMode; }
-
+    virtual Mode GetBufferMode() { return m_bufferMode; }
     virtual ysError SetMode(Mode mode = Mode::Play);
 
     virtual bool SetCurrentPosition(SampleOffset position) { return true; }

@@ -120,12 +120,15 @@ ysError ysDS8AudioSource::SetMode(Mode mode) {
         case Mode::PlayOnce:
         case Mode::Play:
             result = m_buffer->Play(0, 0, 0);
+            m_bufferMode = Mode::Play;
             break;
         case Mode::Loop:
             result = m_buffer->Play(0, 0, DSBPLAY_LOOPING);
+            m_bufferMode = Mode::Loop;
             break;
         case Mode::Stop:
             result = m_buffer->Stop();
+            m_bufferMode = Mode::Stop;
             break;
         default:
             return YDS_ERROR_RETURN(ysError::None);
@@ -137,6 +140,12 @@ ysError ysDS8AudioSource::SetMode(Mode mode) {
     }
 
     return YDS_ERROR_RETURN(ysError::None);
+}
+
+ysAudioSource::Mode ysDS8AudioSource::GetBufferMode() {
+    UpdateStatus();
+    if (m_lost) { RestoreBuffer(); }
+    return m_bufferMode;
 }
 
 ysError ysDS8AudioSource::SetDataBuffer(ysAudioBuffer *buffer) {
@@ -196,29 +205,20 @@ ysError ysDS8AudioSource::SetPan(float pan) {
 }
 
 bool ysDS8AudioSource::SetCurrentPosition(SampleOffset position) {
-    if (!ysAudioSource::SetCurrentPosition(position)) {
-        return false;
-    }
+    if (!ysAudioSource::SetCurrentPosition(position)) { return false; }
 
-    if (UpdateStatus() != ysError::None) {
-        return false;
-    }
+    if (UpdateStatus() != ysError::None) { return false; }
 
     if (m_lost) {
-        if (RestoreBuffer() != ysError::None) {
-            return false;
-        }
+        if (RestoreBuffer() != ysError::None) { return false; }
     }
 
-    if (m_buffer == nullptr) {
-        return false;
-    }
+    if (m_buffer == nullptr) { return false; }
 
-    const DWORD currentPosition = DWORD(m_audioParameters.GetSizeFromSamples(position));
+    const DWORD currentPosition =
+            DWORD(m_audioParameters.GetSizeFromSamples(position));
     const HRESULT result = m_buffer->SetCurrentPosition(currentPosition);
-    if (FAILED(result)) {
-        return false;
-    }
+    if (FAILED(result)) { return false; }
 
     return true;
 }

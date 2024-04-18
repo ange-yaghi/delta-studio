@@ -25,6 +25,7 @@ public:
                                          SampleOffset segment2Size);
 
     virtual ysError SetMode(ysAudioSource::Mode mode = Mode::Play);
+    virtual Mode GetBufferMode();
 
     virtual ysError SetDataBuffer(ysAudioBuffer *buffer);
 
