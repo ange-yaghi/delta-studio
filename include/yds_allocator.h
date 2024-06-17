@@ -1,13 +1,21 @@
 #ifndef YDS_ALLOCATOR_H
 #define YDS_ALLOCATOR_H
 
-#include <malloc.h>
+#if defined(__APPLE__) && defined(__MACH__) // Apple OSX & iOS (Darwin)
+    #include <stdlib.h>
+#elif defined(_WIN64)
+    #include <malloc.h>
+#endif
 
 class ysAllocator {
 public:
     template <int Alignment>
     static void *BlockAllocate(int size) {
-        return ::_aligned_malloc(size, Alignment);
+        #if defined(__APPLE__) && defined(__MACH__)
+            return ::aligned_alloc(size, Alignment);
+        #elif
+            return ::_aligned_malloc(size, Alignment);
+        #endif
     }
 
     template <>
@@ -17,7 +25,11 @@ public:
 
     static void BlockFree(void *block, int alignment) {
         if (alignment != 1) {
-            ::_aligned_free(block);
+            #if defined(__APPLE__) && defined(__MACH__)
+                free(block);
+            #elif
+                ::_aligned_free(block);
+            #endif
         }
         else {
             ::free(block);
