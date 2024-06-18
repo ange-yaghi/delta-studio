@@ -1,3 +1,5 @@
+#if defined(_WIN64)
+
 #ifndef YDS_D3D10_DEVICE_H
 #define YDS_D3D10_DEVICE_H
 
@@ -151,3 +153,5 @@ protected:
 };
 
 #endif /* YDS_D3D10_DEVICE_H */
+
+#endif /* Windows */
