@@ -43,6 +43,11 @@ set(
 include_directories(dependencies/libraries/vulkan/include)
 
 # =========================================================
+# SSE 2 Neon
+
+include_directories(dependencies/libraries/sse2neon/include)
+
+# =========================================================
 # STB
 
 include_directories(dependencies/libraries/stb)

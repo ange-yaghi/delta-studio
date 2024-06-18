@@ -1,7 +1,13 @@
 #ifndef YDS_MATH_H
 #define YDS_MATH_H
 
-#include <xmmintrin.h>
+#if defined(__APPLE__) && defined(__MACH__) // Apple OSX & iOS (Darwin)
+//    #include <arm_neon.h>
+    #include "sse2neon.h"
+#elif defined(_WIN64)
+    #include <xmmintrin.h>
+#endif
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
