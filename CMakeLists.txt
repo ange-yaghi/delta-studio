@@ -53,6 +53,11 @@ include_directories(dependencies/libraries/sse2neon/include)
 include_directories(dependencies/libraries/WindowsHModular/include)
 
 # =========================================================
+# safestringlib
+
+include_directories(dependencies/libraries/safestringlib)
+
+# =========================================================
 # STB
 
 include_directories(dependencies/libraries/stb)

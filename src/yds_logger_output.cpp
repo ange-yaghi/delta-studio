@@ -3,6 +3,10 @@
 
 #include <time.h>
 
+#if !defined(_WIN64)
+    #include "include/safe_str_lib.h"
+#endif
+
 ysLoggerOutput::ysLoggerOutput() : ysObject("ysLoggerOutput") {
     m_level = -1;
     m_parentLogger = NULL;
