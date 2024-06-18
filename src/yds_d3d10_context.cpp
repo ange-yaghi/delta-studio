@@ -1,3 +1,5 @@
+#if defined(_WIN64)
+
 #include "../include/yds_d3d10_context.h"
 
 #include "../include/yds_d3d10_render_target.h"
@@ -10,3 +12,5 @@ ysD3D10Context::ysD3D10Context() : ysRenderingContext(ysDevice::DeviceAPI::Direc
 ysD3D10Context::~ysD3D10Context() {
     /* void */
 }
+
+#endif /* Windows */

@@ -1,3 +1,5 @@
+#if defined(_WIN64)
+
 #include "../include/yds_d3d11_render_target.h"
 
 #include "../include/yds_d3d11_utilities.h"
@@ -38,3 +40,5 @@ void ysD3D11RenderTarget::SetDebugName(const std::string &debugName) {
     D3D11SetDebugName(m_depthTestEnabledState, debugName + "_DEPTH_TEST_ENABLED_STATE");
     D3D11SetDebugName(m_depthTestDisabledState, debugName + "_DEPTH_TEST_DISABLED_STATE");
 }
+
+#endif /* Windows */

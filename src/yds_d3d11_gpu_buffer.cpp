@@ -1,3 +1,5 @@
+#if defined(_WIN64)
+
 #include "../include/yds_d3d11_gpu_buffer.h"
 
 ysD3D11GPUBuffer::ysD3D11GPUBuffer() : ysGPUBuffer(DeviceAPI::DirectX11) {
@@ -15,3 +17,5 @@ void ysD3D11GPUBuffer::SetDebugName(const std::string &debugName) {
         m_buffer->SetPrivateData(WKPDID_D3DDebugObjectName, debugName.size(), debugName.c_str());
     }
 }
+
+#endif /* Windows */

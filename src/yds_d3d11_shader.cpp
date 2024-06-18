@@ -1,3 +1,5 @@
+#if defined(_WIN64)
+
 #include "../include/yds_d3d11_shader.h"
 
 #include "../include/yds_d3d11_utilities.h"
@@ -26,3 +28,5 @@ void ysD3D11Shader::SetDebugName(const std::string &debugName) {
         break;
     }
 }
+
+#endif /* Windows */
