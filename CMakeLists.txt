@@ -48,6 +48,11 @@ include_directories(dependencies/libraries/vulkan/include)
 include_directories(dependencies/libraries/sse2neon/include)
 
 # =========================================================
+# WindowsHModular
+
+include_directories(dependencies/libraries/WindowsHModular/include)
+
+# =========================================================
 # STB
 
 include_directories(dependencies/libraries/stb)
