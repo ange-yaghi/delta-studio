@@ -267,49 +267,91 @@ namespace ysMath {
 
     inline ysVector4 GetVector4(const ysVector &v) {
         ysVector4 r;
+    
+    #if defined(__APPLE__) && defined(__MACH__)
+        // Access individual elements using NEON intrinsics
+        r.x = vgetq_lane_f32(v, 0);
+        r.y = vgetq_lane_f32(v, 1);
+        r.z = vgetq_lane_f32(v, 2);
+        r.w = vgetq_lane_f32(v, 3);
+    #elif defined(_WIN64)
         r.x = v.m128_f32[0];
         r.y = v.m128_f32[1];
         r.z = v.m128_f32[2];
         r.w = v.m128_f32[3];
+    #endif
 
         return r;
     }
 
     inline ysVector3 GetVector3(const ysVector &v) {
         ysVector3 r;
+        
+    #if defined(__APPLE__) && defined(__MACH__)
+        r.x = vgetq_lane_f32(v, 0);
+        r.y = vgetq_lane_f32(v, 1);
+        r.z = vgetq_lane_f32(v, 2);
+    #elif defined(_WIN64)
         r.x = v.m128_f32[0];
         r.y = v.m128_f32[1];
         r.z = v.m128_f32[2];
+    #endif
 
         return r;
     }
 
     inline ysVector2 GetVector2(const ysVector &v) {
         ysVector2 r;
+        
+    #if defined(__APPLE__) && defined(__MACH__)
+        r.x = vgetq_lane_f32(v, 0);
+        r.y = vgetq_lane_f32(v, 1);
+    #elif defined(_WIN64)
         r.x = v.m128_f32[0];
         r.y = v.m128_f32[1];
+    #endif
 
         return r;
     }
 
     forceInline float GetScalar(const ysVector &v) {
+    #if defined(__APPLE__) && defined(__MACH__)
+        return vgetq_lane_f32(v, 0);
+    #elif defined(_WIN64)
         return v.m128_f32[0];
+    #endif
     }
 
     forceInline float GetX(const ysVector &v) {
+    #if defined(__APPLE__) && defined(__MACH__)
+        return vgetq_lane_f32(v, 0);
+    #elif defined(_WIN64)
         return v.m128_f32[0];
+    #endif
     }
 
     forceInline float GetY(const ysVector &v) {
+    #if defined(__APPLE__) && defined(__MACH__)
+        return vgetq_lane_f32(v, 1);
+    #elif defined(_WIN64)
         return v.m128_f32[1];
+    #endif
     }
 
     forceInline float GetZ(const ysVector &v) {
+    #if defined(__APPLE__) && defined(__MACH__)
+    return vgetq_lane_f32(v, 2);
+    #elif defined(_WIN64)
         return v.m128_f32[2];
+    #endif
     }
 
     forceInline float GetW(const ysVector &v) {
+    #if defined(__APPLE__) && defined(__MACH__)
+        return vgetq_lane_f32(v, 3);
+    #elif defined(_WIN64)
         return v.m128_f32[3];
+    #endif
     }
 
     float GetQuatX(const ysQuaternion &v);
