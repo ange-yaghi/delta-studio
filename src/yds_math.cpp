@@ -66,19 +66,35 @@ ysQuaternion ysMath::LoadQuaternion(float angle, const ysVector &axis) {
 }
 
 float ysMath::GetQuatX(const ysQuaternion &v) {
+#if defined(__APPLE__) && defined(__MACH__)
+    return vgetq_lane_f32(v, 1);
+#elif defined(_WIN64)
     return v.m128_f32[1];
+#endif
 }
 
 float ysMath::GetQuatY(const ysQuaternion &v) {
+#if defined(__APPLE__) && defined(__MACH__)
+    return vgetq_lane_f32(v, 2);
+#elif defined(_WIN64)
     return v.m128_f32[2];
+#endif
 }
 
 float ysMath::GetQuatZ(const ysQuaternion &v) {
+#if defined(__APPLE__) && defined(__MACH__)
+    return vgetq_lane_f32(v, 3);
+#elif defined(_WIN64)
     return v.m128_f32[3];
+#endif
 }
 
 float ysMath::GetQuatW(const ysQuaternion &v) {
+#if defined(__APPLE__) && defined(__MACH__)
+    return vgetq_lane_f32(v, 0);
+#elif defined(_WIN64)
     return v.m128_f32[0];
+#endif
 }
 
 ysVector ysMath::Dot3(const ysVector &v1, const ysVector &v2) {

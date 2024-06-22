@@ -31,7 +31,12 @@ public:
     uint64_t GetFrameDuration_us();
 
     uint64_t GetTime();
+    
+#if defined(_WIN64)
     unsigned __int64 GetClock();
+#else
+    uint64_t GetClock();
+#endif
 
     void SetPrecisionMode(Precision mode);
     Precision GetPrecisionMode() const { return m_precisionMode; }

@@ -6,8 +6,13 @@
 #include "../include/yds_windows_window_system.h"
 
 #define NOMINMAX
-#include <Windows.h>
-#include <windowsx.h>
+
+#if defined(__APPLE__) && defined(__MACH__) // Apple OSX & iOS (Darwin)
+    #include "win32/window.h"
+#elif defined(_WIN64)
+    #include <Windows.h>
+    #include <windowsx.h>
+#endif
 
 ysWindowsInputSystem::ysWindowsInputSystem()
     : ysInputSystem(Platform::Windows) {

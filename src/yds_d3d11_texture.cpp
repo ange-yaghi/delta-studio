@@ -1,3 +1,5 @@
+#if defined(_WIN64)
+
 #include "../include/yds_d3d11_texture.h"
 
 #include "../include/yds_d3d11_utilities.h"
@@ -18,3 +20,5 @@ void ysD3D11Texture::SetDebugName(const std::string &debugName) {
     D3D11SetDebugName(m_resourceView, debugName + "_RESOURCE_VIEW");
     D3D11SetDebugName(m_renderTargetView, debugName + "_RENDER_TARGET_VIEW");
 }
+
+#endif /* Windows */

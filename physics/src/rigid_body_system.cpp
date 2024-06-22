@@ -1,7 +1,13 @@
 #include "../include/rigid_body_system.h"
 
 #include <process.h>
-#include <Windows.h>
+
+#if defined(__APPLE__) && defined(__MACH__) // Apple OSX & iOS (Darwin)
+    #include "win32/window.h"
+#elif defined(_WIN64)
+    #include <Windows.h>
+#endif
+
 #include <ctime>
 #include <assert.h>
 
