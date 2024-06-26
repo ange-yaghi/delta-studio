@@ -3,6 +3,13 @@
 #include "../include/yds_ds8_audio_buffer.h"
 #include "../include/yds_ds8_audio_source.h"
 
+#if defined(__APPLE__) && defined(__MACH__) // Apple OSX & iOS (Darwin)
+
+// TODO: -
+
+
+#elif defined(_WIN64)
+
 ysDS8Device::ysDS8Device() : ysAudioDevice(API::DirectSound8) {
     memset(&m_guid, 0, sizeof(GUID));
     m_device = nullptr;
@@ -106,3 +113,5 @@ void ysDS8Device::UpdateAudioSources() {
         }
     }
 }
+
+#endif /* Windows */

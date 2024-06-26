@@ -4,7 +4,20 @@
 #include "yds_window.h"
 #include "yds_rendering_context.h"
 
-#include <OpenGL.h>
+#if defined(__APPLE__) && defined(__MACH__) // Apple OSX & iOS (Darwin)
+    #include <OpenGL/OpenGL.h>
+#elif defined(_WIN64)
+    #include <OpenGL.h>
+#endif
+
+#if defined(__APPLE__) && defined(__MACH__) // Apple OSX & iOS (Darwin)
+
+//#include "win32/windows_modular.h"
+
+// TODO: -
+
+
+#elif defined(_WIN64)
 
 class ysOpenGLVirtualContext : public ysRenderingContext {
     friend class ysOpenGLDevice;
@@ -131,5 +144,7 @@ public:
 protected:
     bool m_isRealContext;
 };
+
+#endif /* Windows */
 
 #endif /* YDS_OPENGL_CONTEXT_H */

@@ -6,7 +6,20 @@
 #define NOMINMAX
 
 #if defined(__APPLE__) && defined(__MACH__) // Apple OSX & iOS (Darwin)
-    #include "win32/windows.h"
+    #include "win32/windows_modular.h"
+    #include "win32/atomic.h"
+
+// ATOM
+    typedef unsigned short      WORD;
+
+    typedef WORD                ATOM;
+
+// HWND  -  HINSTANCE
+    typedef void *              LPVOID;
+    typedef LPVOID              HANDLE;
+    
+    typedef HANDLE              HWND;
+    typedef HANDLE              HINSTANCE;
 #elif defined(_WIN64)
     #include <Windows.h>
 #endif

@@ -7,23 +7,23 @@
 
 #if defined(__APPLE__) && defined(__MACH__) // Apple OSX & iOS (Darwin)
 
-#include <Cocoa/Cocoa.h>
-
-class ysMacMonitor : public ysMonitor {
-public:
-    ysMacMonitor();
-    ~ysMacMonitor();
-
-    void Initialize(NSScreen *screen) { m_screen = screen; }
-
-    NSScreen *Screen() const { return m_screen; }
-
-private:
-    NSScreen *m_screen;
-};
+//#include <Cocoa/Cocoa.h>
+//
+//class ysMacMonitor : public ysMonitor {
+//public:
+//    ysMacMonitor();
+//    ~ysMacMonitor();
+//
+//    void Initialize(NSScreen *screen) { m_screen = screen; }
+//
+//    NSScreen *Screen() const { return m_screen; }
+//
+//private:
+//    NSScreen *m_screen;
+//};
 
 /// Giving the same windows-name for a macOS target
-#define ysWindowsMonitor       ysMacMonitor
+//#define ysWindowsMonitor       ysMacMonitor
 
 #elif defined(_WIN64)
 

@@ -8,6 +8,7 @@ class ysDS8Device;
 #if defined(__APPLE__) && defined(__MACH__) // Apple OSX & iOS (Darwin)
     
 #include <AudioToolbox/AudioToolbox.h>
+#include <CoreAudio/CoreAudio.h>
 
 class ysDS8AudioSource : public ysAudioSource {
     friend ysDS8Device;
@@ -48,7 +49,8 @@ private:
 
 private:
     bool m_lost;
-    AudioBufferList *m_buffer;
+//    AudioBufferList *m_buffer;
+    AudioQueueBuffer *m_buffer;
 };
 
 #elif defined(_WIN64)

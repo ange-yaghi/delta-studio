@@ -1,5 +1,12 @@
 #include "../include/yds_d3d11_device.h"
 
+#if defined(__APPLE__) && defined(__MACH__) // Apple OSX & iOS (Darwin)
+
+// TODO: -
+
+
+#elif defined(_WIN64)
+
 #define NOMINMAX
 #include "../include/yds_d3d11_context.h"
 #include "../include/yds_d3d11_gpu_buffer.h"
@@ -13,6 +20,7 @@
 #include "../include/yds_windows_window.h"
 
 #include "../include/yds_stb_image.h"
+// TODO: Replace d3d
 #include <d3d11_1.h>
 
 #include <fstream>
@@ -39,6 +47,10 @@ typedef HRESULT(WINAPI *DXGIGetDebugInterface_proc)(const IID &riid,
 
 #include <codecvt>
 #include <locale>
+
+#if !defined(_WIN64)
+    #include "include/safe_lib.h"
+#endif
 
 ysD3D11Device::ysD3D11Device() : ysDevice(DeviceAPI::DirectX11) {
     m_device = nullptr;
@@ -2431,3 +2443,5 @@ ysError ysD3D11Device::DestroyD3D11RenderTarget(ysRenderTarget *target) {
 
     return YDS_ERROR_RETURN(ysError::None);
 }
+
+#endif /* Windows */

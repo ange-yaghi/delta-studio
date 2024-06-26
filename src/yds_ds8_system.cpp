@@ -11,6 +11,13 @@ ysDS8System::~ysDS8System() {
     /* void */
 }
 
+#if defined(__APPLE__) && defined(__MACH__) // Apple OSX & iOS (Darwin)
+
+// TODO: -
+
+
+#elif defined(_WIN64)
+
 ysError ysDS8System::EnumerateDevices() {
     YDS_ERROR_DECLARE("EnumerateDevices");
 
@@ -135,3 +142,5 @@ BOOL CALLBACK ysDS8System::DirectSoundEnumProc(LPGUID lpGUID, LPCTSTR lpszDesc, 
 
     return TRUE;
 }
+
+#endif /* Windows */

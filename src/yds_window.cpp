@@ -5,6 +5,15 @@
 
 #include <cmath>
 
+#if defined(__APPLE__) && defined(__MACH__) // Apple OSX & iOS (Darwin)
+
+#include "include/safe_lib.h"
+
+// TODO: -
+
+
+#elif defined(_WIN64)
+
 ysWindow::ysWindow() : ysWindowSystemObject("WINDOW", Platform::Unknown) {
     m_title[0] = '\0';
 
@@ -257,3 +266,5 @@ void ysWindow::AL_SetLocation(int x, int y) {
         m_windowedLocationy = y;
     }
 }
+
+#endif /* Windows */

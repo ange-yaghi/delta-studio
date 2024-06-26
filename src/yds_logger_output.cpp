@@ -38,7 +38,12 @@ void ysLoggerOutput::LogMessage(const char *message, const char *fname, int line
 
     time_t now = time(0);
     struct tm tstruct;
+    
+#if defined(__APPLE__) && defined(__MACH__)
+    localtime_r(&now, &tstruct);
+#elif defined(_WIN64)
     localtime_s(&tstruct, &now);
+#endif
 
     if ((m_formatParameters & LOG_DATE) > 0) {
         strftime(buffer, 256, "%Y-%m-%d", &tstruct);
@@ -59,7 +64,10 @@ void ysLoggerOutput::LogMessage(const char *message, const char *fname, int line
     }
 
     if ((m_formatParameters & LOG_LINE) > 0) {
-        sprintf_s(buffer, 256, "%d", line);
+        // TODO: Print on mac
+//    #if defined(_WIN64)
+//        sprintf_s(buffer, 256, "%d", line);
+//    #end
         WriteToBuffer(buffer, 6);
     }
 

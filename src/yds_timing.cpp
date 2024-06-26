@@ -3,30 +3,29 @@
 #define NOMINMAX
 
 #if defined(__APPLE__) && defined(__MACH__) // Apple OSX & iOS (Darwin)
-    #include "win32/window.h"
+
+#include "win32/windows_modular.h"
+#include <mach/mach_time.h>
+#include <CoreServices/CoreServices.h>
+#include "win32/intrin.h"
+
+//static bool qpcFlag;
+//static LARGE_INTEGER qpcFrequency;
+//
+//ysTimingSystem *ysTimingSystem::g_instance = nullptr;
+
+// TODO: Implement ... -
+
 #elif defined(_WIN64)
-    #include <Windows.h>
-#endif
 
+#include <Windows.h>
 #include <mmsystem.h>
-
 #include <intrin.h>
 
 static bool qpcFlag;
 static LARGE_INTEGER qpcFrequency;
 
 ysTimingSystem *ysTimingSystem::g_instance = nullptr;
-
-uint64_t SystemTime() {
-    if (qpcFlag) {
-        LARGE_INTEGER currentTime;
-        QueryPerformanceCounter(&currentTime);
-        return uint64_t(currentTime.QuadPart);
-    } else {
-        // Convert output to microseconds
-        return uint64_t(timeGetTime()) * 1000;
-    }
-}
 
 ysTimingSystem::ysTimingSystem() {
     m_frameDurations = nullptr;
@@ -131,3 +130,5 @@ double ysTimingSystem::GetFrameDuration() {
 }
 
 uint64_t ysTimingSystem::GetFrameDuration_us() { return m_lastFrameDuration; }
+
+#endif /* Windows */

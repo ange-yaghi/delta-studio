@@ -1,5 +1,12 @@
 #include "../include/yds_opengl_gpu_buffer.h"
 
+#if defined(__APPLE__) && defined(__MACH__) // Apple OSX & iOS (Darwin)
+
+#include <OpenGL/OpenGL.h>
+
+
+#elif defined(_WIN64)
+
 #include <OpenGL.h>
 
 ysOpenGLGPUBuffer::ysOpenGLGPUBuffer() : ysGPUBuffer(DeviceAPI::OpenGL4_0) {
@@ -27,3 +34,7 @@ int ysOpenGLGPUBuffer::GetTarget() {
 
     return target;
 }
+
+#endif
+
+

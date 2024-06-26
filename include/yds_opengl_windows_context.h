@@ -3,7 +3,13 @@
 
 #include "yds_opengl_context.h"
 
-#include "OpenGL.h"
+#if defined(__APPLE__) && defined(__MACH__) // Apple OSX & iOS (Darwin)
+    #include <OpenGL/OpenGL.h>
+#elif defined(_WIN64)
+    #include "OpenGL.h"
+#endif
+
+#if defined(_WIN64)
 
 class ysOpenGLDevice;
 
@@ -32,5 +38,7 @@ protected:
     void LoadAllExtensions();
     void LoadContextCreationExtension();
 };
+
+#endif /* Windows */
 
 #endif /* YDS_OPENGL_WINDOWS_CONTEXT_H */

@@ -2,6 +2,11 @@
 
 #include <math.h>
 
+#if !defined(_WIN64)
+    #include "include/safe_lib.h"
+    #include <cfloat>
+#endif
+
 ysGeometryExportFile::ysGeometryExportFile() : ysObject("ysGeometryExportFile") {
     /* void */
 }

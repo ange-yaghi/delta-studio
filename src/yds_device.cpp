@@ -59,6 +59,7 @@ ysError ysDevice::CreateDevice(ysDevice **newDevice, DeviceAPI API) {
         return YDS_ERROR_RETURN_STATIC(ysError::InvalidParameter);
 
     switch (API) {
+    #if defined(_WIN64)
         case DeviceAPI::DirectX10:
             *newDevice = new ysD3D10Device;
             break;
@@ -68,6 +69,7 @@ ysError ysDevice::CreateDevice(ysDevice **newDevice, DeviceAPI API) {
         case DeviceAPI::OpenGL4_0:
             *newDevice = new ysOpenGLDevice;
             break;
+    #endif /* Windows */
         case DeviceAPI::Vulkan:
             *newDevice = new ysVulkanDevice;
             break;

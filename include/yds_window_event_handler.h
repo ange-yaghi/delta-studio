@@ -3,6 +3,8 @@
 
 #include "yds_base.h"
 
+#if defined(_WIN64)
+
 // Window Event Handler
 class ysWindowEventHandler : public ysObject {
     friend class ysWindow;
@@ -26,5 +28,7 @@ protected:
 private:
     ysWindow *m_window;
 };
+
+#endif /* Windows */
 
 #endif /* YDS_WINDOW_EVENT_HANDLER_H */

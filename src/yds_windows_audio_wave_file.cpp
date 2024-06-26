@@ -2,6 +2,16 @@
 
 #include <string>
 
+#if defined(__APPLE__) && defined(__MACH__) // Apple OSX & iOS (Darwin)
+
+#include "include/safe_lib.h"
+//#include "win32/windows_modular.h"
+
+// TODO: -
+
+
+#elif defined(_WIN64)
+
 ysWindowsAudioWaveFile::ysWindowsAudioWaveFile() : ysAudioFile(Platform::Windows, AudioFormat::Wave) {
     m_fileHandle = NULL;
     m_dataSegmentOffset = 0;
@@ -121,3 +131,5 @@ ysAudioFile::Error ysWindowsAudioWaveFile::GenericRead(SampleOffset offset, Samp
 
     return Error::None;
 }
+
+#endif /* Windows */

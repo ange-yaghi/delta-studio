@@ -6,7 +6,7 @@
 #define NOMINMAX
 
 #if defined(__APPLE__) && defined(__MACH__) // Apple OSX & iOS (Darwin)
-    #include "win32/window.h"
+    #include "win32/windows_modular.h"
 #elif defined(_WIN64)
     #include <Windows.h>
 #endif

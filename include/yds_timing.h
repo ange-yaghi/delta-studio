@@ -3,6 +3,8 @@
 
 #include <stdint.h>
 
+#if defined(_WIN64)
+
 uint64_t SystemTime();
 
 class ysTimingSystem {
@@ -71,5 +73,7 @@ protected:
     int m_durationSampleWriteIndex;
     int m_durationSamples;
 };
+
+#endif /* Windows */
 
 #endif /* YS_TIMING_H */

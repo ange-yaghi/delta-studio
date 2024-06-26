@@ -4,6 +4,8 @@
 #include "../include/yds_windows_window.h"
 #include "../include/yds_windows_window_system.h"
 
+#if defined(_WIN64)
+
 ysOpenGLWindowsContext::ysOpenGLWindowsContext() : ysOpenGLVirtualContext(ysWindowSystem::Platform::Windows) {
     m_contextHandle = nullptr;
     m_device = nullptr;
@@ -320,3 +322,5 @@ void ysOpenGLWindowsContext::LoadAllExtensions() {
 
     wglMakeContextCurrent = (PFNWGLMAKECONTEXTCURRENTARBPROC)wglGetProcAddress("wglMakeContextCurrentARB");
 }
+
+#endif /* Windows */

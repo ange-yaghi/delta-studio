@@ -66,7 +66,11 @@ void dphysics::GridPartitionSystem::Reset() {
 }
 
 dphysics::GridCell *dphysics::GridPartitionSystem::GetCell(int x, int y) {
-    unsigned __int64 hash = SzudzikHash(x, y);
+    #if defined(__APPLE__) && defined(__MACH__)
+        uint64_t hash = SzudzikHash(x, y);
+    #elif defined(_WIN64)
+        unsigned __int64 hash = SzudzikHash(x, y);
+    #endif
     
     auto f = m_gridCells.find(hash);
     if (f == m_gridCells.end()) {
@@ -85,15 +89,25 @@ dphysics::GridCell *dphysics::GridPartitionSystem::GetCell(int x, int y) {
     else return f->second;
 }
 
+#if defined(__APPLE__) && defined(__MACH__)
+uint64_t dphysics::GridPartitionSystem::SzudzikHash(int x, int y) {
+#elif defined(_WIN64)
 unsigned __int64 dphysics::GridPartitionSystem::SzudzikHash(int x, int y) {
+#endif
     void *data0 = reinterpret_cast<void *>(&x);
     void *data1 = reinterpret_cast<void *>(&y);
 
     unsigned int *u0 = reinterpret_cast<unsigned int *>(data0);
     unsigned int *u1 = reinterpret_cast<unsigned int *>(data1);
 
-    unsigned __int64 a = (unsigned __int64)(*u0);
-    unsigned __int64 b = (unsigned __int64)(*u1);
+    
+    #if defined(__APPLE__) && defined(__MACH__)
+        uint64_t a = (uint64_t)(*u0);
+        uint64_t b = (uint64_t)(*u1);
+    #elif defined(_WIN64)
+        unsigned __int64 a = (unsigned __int64)(*u0);
+        unsigned __int64 b = (unsigned __int64)(*u1);
+    #endif
 
     return (a >= b)
         ? a * a + a + b

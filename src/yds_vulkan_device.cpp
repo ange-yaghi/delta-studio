@@ -8,6 +8,10 @@
 
 #include <vector>
 
+#if !defined(_WIN64)
+    #include "include/safe_lib.h"
+#endif
+
 ysVulkanDevice::ysVulkanDevice() {
     m_device = nullptr;
     m_instance = nullptr;

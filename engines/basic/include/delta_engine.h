@@ -159,8 +159,12 @@ public:
     float GetFrameLength();
     float GetAverageFramerate();
     float GetAverageFrameLength();
-    ysTimingSystem *GetTimingSystem() const { return m_timingSystem; }
-
+    
+    // !!!: Urgent
+    #if defined(_WIN64)
+        ysTimingSystem *GetTimingSystem() const { return m_timingSystem; }
+    #endif /* Windows */
+    
     ysDevice *GetDevice() { return m_device; }
 
     int GetScreenWidth() const;
@@ -207,7 +211,10 @@ protected:
     ysWindowSystem *m_windowSystem;
     ysInputSystem *m_inputSystem;
 
-    WindowHandler m_windowHandler;
+    #if defined(_WIN64)
+        WindowHandler m_windowHandler;
+    #endif /* Windows */
+    
     ysWindow *m_gameWindow;
 
     ysRenderingContext *m_renderingContext;
@@ -255,7 +262,11 @@ protected:
     bool m_initialized;
 
     // Timing
-    ysTimingSystem *m_timingSystem;
+    // !!!: Urgent
+    #if defined(_WIN64)
+        ysTimingSystem *m_timingSystem;
+    #endif /* Windows */
+    
     ysBreakdownTimer m_breakdownTimer;
 
     DrawCall *NewDrawCall(int layer, int objectDataSize);

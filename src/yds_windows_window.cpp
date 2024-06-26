@@ -2,6 +2,15 @@
 
 #include "../include/yds_windows_window_system.h"
 
+#if defined(__APPLE__) && defined(__MACH__) // Apple OSX & iOS (Darwin)
+
+//#include "win32/windows_modular.h"
+
+// TODO: -
+
+
+#elif defined(_WIN64)
+
 ysWindowsWindow::ysWindowsWindow() : ysWindow(Platform::Windows) {
     m_instance = 0;
     m_hwnd = 0;
@@ -347,3 +356,5 @@ void ysWindowsWindow::AL_SetLocation(int x, int y) {
     SetWindowPos(m_hwnd, NULL, adjusted_x, adjusted_y, 0, 0,
                  SWP_NOSIZE | SWP_NOZORDER);
 }
+
+#endif /* Windows */
