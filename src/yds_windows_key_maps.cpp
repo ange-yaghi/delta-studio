@@ -19,7 +19,7 @@ const ysKey::Code *ysKeyMaps::GetWindowsKeyMap() {
         m_windowsKeyMap[VK_SHIFT] = ysKey::Code::Shift;
         m_windowsKeyMap[VK_CONTROL] = ysKey::Code::Control;
 
-        m_windowsKeyMap[VK_MENU] = ysKey::Code::Menu;
+        m_windowsKeyMap[VK_MENU] = ysKey::Code::Alt;
         m_windowsKeyMap[VK_PAUSE] = ysKey::Code::Pause;
         m_windowsKeyMap[VK_CAPITAL] = ysKey::Code::CapsLock;
 

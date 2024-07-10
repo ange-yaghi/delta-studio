@@ -18,7 +18,7 @@ public:
         Shift,
         Control,
 
-        Menu,
+        Alt,
         Pause,
         CapsLock,
 
