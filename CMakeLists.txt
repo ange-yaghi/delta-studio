@@ -43,6 +43,21 @@ set(
 include_directories(dependencies/libraries/vulkan/include)
 
 # =========================================================
+# SSE 2 Neon
+
+include_directories(dependencies/libraries/sse2neon/include)
+
+# =========================================================
+# WindowsHModular
+
+include_directories(dependencies/libraries/WindowsHModular/include)
+
+# =========================================================
+# safestringlib
+
+include_directories(dependencies/libraries/safestringlib)
+
+# =========================================================
 # STB
 
 include_directories(dependencies/libraries/stb)

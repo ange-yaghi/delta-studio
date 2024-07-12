@@ -6,6 +6,13 @@
 #include <stdlib.h>
 #include <new>
 
+// compiler-specific keyword which suggests that a function should be inlined
+#if defined(__APPLE__) && defined(__MACH__)
+    #define forceInline __attribute__((always_inline))
+#elif defined(_WIN64)
+    #define forceInline __forceinline
+#endif
+
 template<typename TYPE, int START_SIZE = 0, int ALIGNMENT = 1>
 class ysExpandingArray {
 public:
@@ -122,7 +129,7 @@ public:
 
     TYPE *GetBuffer() { return m_array; }
 
-    __forceinline TYPE &operator[](int index) {
+    forceInline TYPE &operator[](int index) {
         return m_array[index];
     }
 

@@ -1,3 +1,5 @@
+#if defined(_WIN64)
+
 #include "../include/yds_d3d10_render_target.h"
 
 ysD3D10RenderTarget::ysD3D10RenderTarget() : ysRenderTarget(DeviceAPI::DirectX10) {
@@ -10,3 +12,5 @@ ysD3D10RenderTarget::ysD3D10RenderTarget() : ysRenderTarget(DeviceAPI::DirectX10
 ysD3D10RenderTarget::~ysD3D10RenderTarget() {
     /* void */
 }
+
+#endif /* Windows */

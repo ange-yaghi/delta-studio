@@ -6,6 +6,10 @@
 #include <assert.h>
 #include <math.h>
 
+#if !defined(_WIN64)
+    #include "win32/windows.h"
+#endif
+
 ysDS8AudioSource::ysDS8AudioSource() : ysAudioSource(API::DirectSound8) {
     m_buffer = nullptr;
     m_lost = false;

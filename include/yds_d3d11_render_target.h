@@ -1,3 +1,5 @@
+#if defined(_WIN64)
+
 #ifndef YDS_D3D11_RENDER_TARGET_H
 #define YDS_D3D11_RENDER_TARGET_H
 
@@ -27,3 +29,5 @@ protected:
 };
 
 #endif /* YDS_D3D11_RENDER_TARGET_H */
+
+#endif /* Windows */

@@ -1,0 +1,4 @@
+## MacOS/Linux only
+[submodule "dependencies/libraries/WindowsHModular_"]
+	path = dependencies/libraries/WindowsHModular
+	url = git@github.com:Treata11/WindowsHModular.git

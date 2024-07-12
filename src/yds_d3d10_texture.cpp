@@ -1,3 +1,5 @@
+#if defined(_WIN64)
+
 #include "../include/yds_d3d10_texture.h"
 
 ysD3D10Texture::ysD3D10Texture() : ysTexture(DeviceAPI::DirectX10) {
@@ -8,3 +10,5 @@ ysD3D10Texture::ysD3D10Texture() : ysTexture(DeviceAPI::DirectX10) {
 ysD3D10Texture::~ysD3D10Texture() {
     /* void */
 }
+
+#endif /* Windows */

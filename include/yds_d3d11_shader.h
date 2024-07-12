@@ -1,3 +1,5 @@
+#if defined(_WIN64)
+
 #ifndef YDS_D3D11_SHADER_H
 #define YDS_D3D11_SHADER_H
 
@@ -26,3 +28,5 @@ protected:
 };
 
 #endif /* YDS_D3D11_SHADER_H */
+
+#endif /* Windows */

@@ -1,3 +1,5 @@
+#if defined(_WIN64)
+
 #ifndef YDS_D3D10_SHADER_PROGRAM_H
 #define YDS_D3D10_SHADER_PROGRAM_H
 
@@ -16,3 +18,5 @@ protected:
 };
 
 #endif /* YDS_D3D10_SHADER_PROGRAM_H */
+
+#endif /* Windows */

@@ -2,6 +2,10 @@
 
 #include <stdarg.h>
 
+#if !defined(_WIN64)
+    #include "include/safe_str_lib.h"
+#endif
+
 ysLogger *ysLogger::g_instance = NULL;
 
 ysLogger::ysLogger() {

@@ -280,7 +280,12 @@ void ysGeometryPreprocessing::SeparateByUVGroups(ysObjectData *object, int mapCh
 ysVector *ysGeometryPreprocessing::CalculateHardNormals(ysObjectData *object) {
     if (object->m_hardNormalCache) return object->m_hardNormalCache;
 
+#if defined(__APPLE__) && defined(__MACH__)
+    object->m_hardNormalCache = (ysVector *)aligned_alloc(sizeof(__m128) * object->m_objectStatistics.NumFaces, 16);
+#elif defined(_WIN64)
     object->m_hardNormalCache = (ysVector *)_aligned_malloc(sizeof(__m128) * object->m_objectStatistics.NumFaces, 16);
+#endif
+    
     ysVector *tempNormals = object->m_hardNormalCache;
 
     ysVector vert1, vert2, vert3;
@@ -309,7 +314,12 @@ ysVector *ysGeometryPreprocessing::CalculateHardNormals(ysObjectData *object) {
 void ysGeometryPreprocessing::CalculateNormals(ysObjectData *object) {
     object->m_normals.Allocate(object->m_objectStatistics.NumVertices);
     ysVector *tempNormals = CalculateHardNormals(object);
+    
+#if defined(__APPLE__) && defined(__MACH__)
+    ysVector *accum = (ysVector *)aligned_alloc(sizeof(__m128) * object->m_objectStatistics.NumVertices, 16);
+#elif defined(_WIN64)
     ysVector *accum = (ysVector *)_aligned_malloc(sizeof(__m128) * object->m_objectStatistics.NumVertices, 16);
+#endif
 
     // Clear accum
     for (int i = 0; i < object->m_objectStatistics.NumVertices; i++) {
@@ -329,11 +339,20 @@ void ysGeometryPreprocessing::CalculateNormals(ysObjectData *object) {
         object->m_normals[i] = ysMath::GetVector3(normalSum);
     }
 
+#if defined(__APPLE__) && defined(__MACH__)
+    free(accum);
+#elif defined(_WIN64)
     _aligned_free(accum);
+#endif
 }
 
 ysVector *ysGeometryPreprocessing::CalculateHardTangents(ysObjectData *object, int mapChannel) {
+#if defined(__APPLE__) && defined(__MACH__)
+    ysVector *tempTangents = (ysVector *)aligned_alloc(sizeof(__m128) * object->m_objectStatistics.NumFaces, 16);
+#elif defined(_WIN64)
     ysVector *tempTangents = (ysVector *)_aligned_malloc(sizeof(__m128) * object->m_objectStatistics.NumFaces, 16);
+#endif
+    
     ysVector *hardNormals = CalculateHardNormals(object);
 
     ysVector vert1, vert2, vert3;
@@ -432,7 +451,12 @@ void ysGeometryPreprocessing::CalculateTangents(ysObjectData *object, int mapCha
 
     // Find smoothed tangents
     object->m_tangents.Allocate(object->m_vertices.GetNumObjects());
+    
+#if defined(__APPLE__) && defined(__MACH__)
+    ysVector *accum = (ysVector *)aligned_alloc(sizeof(__m128) * object->m_objectStatistics.NumVertices, 16);
+#elif defined(_WIN64)
     ysVector *accum = (ysVector *)_aligned_malloc(sizeof(__m128) * object->m_objectStatistics.NumVertices, 16);
+#endif
 
     // Clear accum
     for (int i = 0; i < object->m_objectStatistics.NumVertices; i++) {
@@ -458,8 +482,13 @@ void ysGeometryPreprocessing::CalculateTangents(ysObjectData *object, int mapCha
         object->m_tangents[i].w = ysMath::GetW(accum[i]);
     }
 
+#if defined(__APPLE__) && defined(__MACH__)
+    free(accum);
+    free(tempTangents);
+#elif defined(_WIN64)
     _aligned_free(accum);
     _aligned_free(tempTangents);
+#endif
 }
 
 void ysGeometryPreprocessing::SortBoneWeights(ysObjectData *object, bool normalize, int maxBoneCount) {
