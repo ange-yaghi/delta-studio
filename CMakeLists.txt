@@ -43,7 +43,7 @@ if (WIN32)
     set(
     VULKAN_LIBS
     ${CMAKE_CURRENT_SOURCE_DIR}/dependencies/libraries/vulkan/lib/${TARGET_ARCHITECTURE})
-include_directories(dependencies/libraries/vulkan/include)
+    include_directories(dependencies/libraries/vulkan/include)
 
 
 # Apple
@@ -69,11 +69,25 @@ elseif (APPLE)
     # Metal-Cpp
     include_directories(${CMAKE_CURRENT_SOURCE_DIR}/metal-cpp)
 
+    # Foundation
     set(
         SOURCE_FILES
-        ${CMAKE_CURRENT_SOURCE_DIR}/metal-cpp/main.cpp metal-cpp-test/metal_adder.cpp)
+        ${CMAKE_CURRENT_SOURCE_DIR}/metal-cpp/Foundation)
+
+    # Metal
+    set(
+        SOURCE_FILES
+        ${CMAKE_CURRENT_SOURCE_DIR}/metal-cpp/Metal)
         
-    # add_executable(program ${SOURCE_FILES})
+    # MetalFX
+    set(
+        SOURCE_FILES
+        ${CMAKE_CURRENT_SOURCE_DIR}/metal-cpp/MetalFX)
+    
+    # QuartzCore
+    set(
+        SOURCE_FILES
+        ${CMAKE_CURRENT_SOURCE_DIR}/metal-cpp/QuartzCore)
     
     
 # Windows & Linux (Not Apple)
@@ -581,16 +595,6 @@ if (WIN32)
         OpenGL32
     )
     
-# Windows & Linux (Not Apple)
-elseif (WIN32 OR UNIX)
-    target_link_libraries(delta-core PUBLIC
-        # Vulkan
-        ${VULKAN_LIBS}/vulkan-1.lib
-
-    # FIXME: OpenGL on linux
-        # OpenGL32
-    )
-    
 # Apple-Exclusive libraries
 elseif (APPLE)
 
@@ -602,8 +606,16 @@ elseif (APPLE)
     find_library(METAL Metal)
     find_library(FOUNDATION Foundation)
     find_library(QUARTZCORE QuartzCore)
+    
+# Windows & Linux (Not Apple)
+elseif (WIN32 OR UNIX)
+    target_link_libraries(delta-core PUBLIC
+        # Vulkan
+        ${VULKAN_LIBS}/vulkan-1.lib
 
-    target_link_libraries(program stdc++ "-framework Metal" "-framework Foundation" "-framework QuartzCore" objc)
+    # FIXME: OpenGL on linux
+        # OpenGL32
+    )
 
 elseif (UNIX)
 

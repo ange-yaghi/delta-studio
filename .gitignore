@@ -15,6 +15,7 @@
 
 # Build results
 build/
+XCode Build/
 [Dd]ebug/
 !dependencies/**/[Dd]ebug/
 [Dd]ebugPublic/
