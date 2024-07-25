@@ -1,0 +1,8 @@
+# CTags
+tags
+tags.temp
+
+# Object files
+*.exe
+*.obj
+
