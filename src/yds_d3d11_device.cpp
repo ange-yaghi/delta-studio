@@ -123,6 +123,7 @@ std::wstring errorCodeToString(HRESULT result) {
     }
 }
 
+// A device is created using D3D11CreateDevice.
 ysError ysD3D11Device::InitializeDevice() {
     YDS_ERROR_DECLARE("InitializeDevice");
 
@@ -1815,7 +1816,7 @@ ysError ysD3D11Device::DestroyInputLayout(ysInputLayout *&layout) {
     return YDS_ERROR_RETURN(ysError::None);
 }
 
-// Textures
+// MARK: - Textures
 ysError ysD3D11Device::CreateTexture(ysTexture **newTexture,
                                      const wchar_t *fname) {
     YDS_ERROR_DECLARE("CreateTexture");
@@ -2115,7 +2116,7 @@ void ysD3D11Device::DrawLines(int numIndices, int indexOffset,
     GetImmediateContext()->DrawIndexed(numIndices, indexOffset, vertexOffset);
 }
 
-// Non-standard interface
+// MARK: - Non-standard interface
 DXGI_FORMAT ysD3D11Device::ConvertInputLayoutFormat(
         ysRenderGeometryChannel::ChannelFormat format) {
     switch (format) {
