@@ -19,9 +19,12 @@
 
 #if defined(__APPLE__) && defined(__MACH__) // Apple OSX & iOS (Darwin)
     #include "include/safe_lib.h"
-#elif defined(_WIN64)
 
-#include "OpenGL.h"
+    #include <OpenGL/OpenGL.h>
+    #include <OpenGL/gl3.h>
+#elif defined(_WIN64)
+    #include "OpenGL.h"
+#endif /* Windows */
 
 ysOpenGLDevice::ysOpenGLDevice() : ysDevice(DeviceAPI::OpenGL4_0) {
     m_deviceCreated = false;
@@ -1256,5 +1259,3 @@ ysError ysOpenGLDevice::DestroyOpenGLRenderTarget(ysRenderTarget *target) {
 
     return YDS_ERROR_RETURN(ysError::None);
 }
-
-#endif

@@ -3,11 +3,11 @@
 #if defined(__APPLE__) && defined(__MACH__) // Apple OSX & iOS (Darwin)
 
 #include <OpenGL/OpenGL.h>
-
+#include <OpenGL/gl3.h>
 
 #elif defined(_WIN64)
-
-#include <OpenGL.h>
+    #include <OpenGL.h>
+#endif
 
 ysOpenGLGPUBuffer::ysOpenGLGPUBuffer() : ysGPUBuffer(DeviceAPI::OpenGL4_0) {
     m_bufferHandle = 0;
@@ -34,7 +34,5 @@ int ysOpenGLGPUBuffer::GetTarget() {
 
     return target;
 }
-
-#endif
 
 

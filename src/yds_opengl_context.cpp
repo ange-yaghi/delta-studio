@@ -1,7 +1,5 @@
 #include "../include/yds_opengl_context.h"
 
-#if defined(_WIN64)
-
 ysOpenGLVirtualContext::ysOpenGLVirtualContext() : ysRenderingContext(DeviceAPI::OpenGL4_0, ysWindowSystemObject::Platform::Unknown) {
     m_isRealContext = false;
 }
@@ -13,5 +11,3 @@ ysOpenGLVirtualContext::ysOpenGLVirtualContext(ysWindowSystemObject::Platform pl
 ysOpenGLVirtualContext::~ysOpenGLVirtualContext() {
     /* void */
 }
-
-#endif /* Windows */

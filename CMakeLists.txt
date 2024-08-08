@@ -188,7 +188,7 @@ if (WIN32)
         src/yds_object_animation_data.cpp
         src/yds_object_data.cpp
         
-        # OpenGL
+        # OpenGL (Shared)
         src/yds_opengl_context.cpp
         src/yds_opengl_device.cpp
         src/yds_opengl_gpu_buffer.cpp
@@ -329,7 +329,7 @@ if (WIN32)
         include/yds_object_animation_data.h
         include/yds_object_data.h
         
-        # OpenGL
+        # OpenGL (Shared)
         include/yds_opengl_context.h
         include/yds_opengl_device.h
         include/yds_opengl_gpu_buffer.h
@@ -440,6 +440,17 @@ elseif (APPLE)
         src/yds_mouse_aggregator.cpp
         src/yds_object_animation_data.cpp
         src/yds_object_data.cpp
+        
+        # OpenGL (Shared)
+        src/yds_opengl_context.cpp
+        src/yds_opengl_device.cpp
+        src/yds_opengl_gpu_buffer.cpp
+        src/yds_opengl_input_layout.cpp
+        src/yds_opengl_render_target.cpp
+        src/yds_opengl_shader.cpp
+        src/yds_opengl_shader_program.cpp
+        src/yds_opengl_texture.cpp
+        src/yds_opengl_windows_context.cpp
 
         src/yds_rendering_context.cpp
         src/yds_render_geometry_channel.cpp
@@ -532,6 +543,17 @@ elseif (APPLE)
         include/yds_mouse_aggregator.h
         include/yds_object_animation_data.h
         include/yds_object_data.h
+        
+        # OpenGL (Shared)
+        include/yds_opengl_context.h
+        include/yds_opengl_device.h
+        include/yds_opengl_gpu_buffer.h
+        include/yds_opengl_input_layout.h
+        include/yds_opengl_render_target.h
+        include/yds_opengl_shader.h
+        include/yds_opengl_shader_program.h
+        include/yds_opengl_texture.h
+        include/yds_opengl_windows_context.h
         
         include/yds_queue.h
         include/yds_registry.h
