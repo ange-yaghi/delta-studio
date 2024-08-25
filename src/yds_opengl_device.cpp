@@ -20,8 +20,15 @@
 #if defined(__APPLE__) && defined(__MACH__) // Apple OSX & iOS (Darwin)
     #include "include/safe_lib.h"
 
-    #include <OpenGL/OpenGL.h>
+    #define GL_SILENCE_DEPRECATION
+
+    // Without this gl.h gets included instead of gl3.h
+    #define GLFW_INCLUDE_NONE
+    #include <GLFW/glfw3.h>
+
+    // For includes related to OpenGL, make sure their are included after glfw3.h
     #include <OpenGL/gl3.h>
+
 #elif defined(_WIN64)
     #include "OpenGL.h"
 #endif /* Windows */

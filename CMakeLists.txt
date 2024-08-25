@@ -62,6 +62,16 @@ elseif (APPLE)
     # safestringlib
 
     include_directories(dependencies/libraries/safestringlib)
+
+## TODO: Add to all platforms
+    # Cross-Platform
+    # =========================================================
+    # GLFW
+    set(
+    	GLFW_LIBS
+    	${CMAKE_CURRENT_SOURCE_DIR}/dependencies/libraries/GLFW/APPL/lib/)
+    include_directories(dependencies/libraries/GLFW/APPL/include)
+   
     
     # ----- Apple Only ------
     
@@ -94,7 +104,8 @@ elseif (APPLE)
 elseif (WIN32 OR UNIX)
 
     # TODO: OpenGL & Vulkan could be included here
-    
+
+
 endif()
 
 
@@ -628,7 +639,16 @@ elseif (APPLE)
     find_library(METAL Metal)
     find_library(FOUNDATION Foundation)
     find_library(QUARTZCORE QuartzCore)
+
+
+    # =========================================================
+    # GLFW
     
+    target_link_libraries(delta-core PUBLIC
+        ${GLFW_LIBS}/libglfw3.a
+        ${GLFW_LIBS}/libglfw.3.4.dylib
+    )
+
 # Windows & Linux (Not Apple)
 elseif (WIN32 OR UNIX)
     target_link_libraries(delta-core PUBLIC

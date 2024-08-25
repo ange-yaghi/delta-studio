@@ -1,6 +1,8 @@
 #ifndef YDS_ERROR_CODES_H
 #define YDS_ERROR_CODES_H
 
+// TODO: Create cases specific to Apple frameworks
+
 enum class ysError {
     None,
 

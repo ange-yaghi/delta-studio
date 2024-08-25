@@ -5,7 +5,7 @@
 #include "yds_opengl_context.h"
 #include "yds_window.h"
 
-#if defined(_WIN64)
+//#if defined(_WIN64)
 
 // External libraries forward declarations
 struct SDL_Surface;
@@ -149,6 +149,6 @@ protected:
     ysError DestroyOpenGLRenderTarget(ysRenderTarget *target);
 };
 
-#endif /* Windows */
+//#endif /* Windows */
 
 #endif /* YDS_OPENGL_DEVICE_H */

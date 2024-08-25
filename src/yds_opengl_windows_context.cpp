@@ -4,6 +4,21 @@
 #include "../include/yds_windows_window.h"
 #include "../include/yds_windows_window_system.h"
 
+#if defined(__APPLE__) && defined(__MACH__) // Apple OSX & iOS (Darwin)
+    
+    #include <stdio.h>
+
+    #define GL_SILENCE_DEPRECATION
+
+    // Without this gl.h gets included instead of gl3.h
+    #define GLFW_INCLUDE_NONE
+    #include <GLFW/glfw3.h>
+
+    // For includes related to OpenGL, make sure their are included after glfw3.h
+    #include <OpenGL/gl3.h>
+
+#endif
+
 //#if defined(_WIN64)
 
 ysOpenGLWindowsContext::ysOpenGLWindowsContext() : ysOpenGLVirtualContext(ysWindowSystem::Platform::Windows) {
