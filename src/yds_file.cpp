@@ -1,7 +1,7 @@
 #include "../include/yds_file.h"
 
 #if !defined(_WIN64)
-    #include "include/safe_lib.h"
+    #include "safe_lib.h"
 #endif
 
 ysFile::ysFile() : ysObject("FILE") {

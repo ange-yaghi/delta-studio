@@ -8,7 +8,7 @@
 
 // safestringlib is available in windows by default & there's no need to include
 #if !defined(_WIN64)
-    #include "include/safe_lib.h"
+    #include "safe_lib.h"
 #endif
 
 class ysAudioSource;

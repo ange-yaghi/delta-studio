@@ -72,7 +72,6 @@ extern errno_t wmemmove_s(wchar_t *dest, rsize_t dmax,
 
 
 /* set bytes */
-// FIXME: Uncomment & fix the issue
 //extern errno_t memset_s(void *dest, rsize_t dmax, uint8_t value);
 
 /* set uint16_t */

@@ -1,7 +1,7 @@
 #include "../include/yds_render_geometry_format.h"
 
 #if !defined(_WIN64)
-    #include "include/safe_str_lib.h"
+    #include "safe_str_lib.h"
 #endif
 
 ysRenderGeometryFormat::ysRenderGeometryFormat() : ysObject("RENDER_GEOMETRY_FORMAT") {

@@ -1,7 +1,7 @@
 #include "../include/yds_input_device.h"
 
 #if !defined(_WIN64)
-    #include "include/safe_str_lib.h"
+    #include "safe_str_lib.h"
 #endif
 
 ysInputDevice::ysInputDevice() : ysWindowSystemObject("INPUT DEVICE", Platform::Unknown) {

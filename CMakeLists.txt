@@ -7,6 +7,7 @@ set_property(GLOBAL PROPERTY PREDEFINED_TARGETS_FOLDER "cmake")
 project(delta-studio)
 
 set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_C_STANDARD 11)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake/")
 
 if (CMAKE_SIZEOF_VOID_P EQUAL 8)
@@ -48,56 +49,81 @@ if (WIN32)
 
 # Apple
 elseif (APPLE)
-    # ====================================================
+    # ========================================================= Arm-Only
     # SSE 2 Neon (Arm64)
 
     include_directories(dependencies/libraries/sse2neon/include)
 
-    # ====================================================
+    # ========================================================= Unix-Only
     # WindowsHModular
 
     include_directories(dependencies/libraries/WindowsHModular/include)
     
-    # =========================================================
+    # ========================================================= Unix-Only
     # safestringlib
 
-    include_directories(dependencies/libraries/safestringlib)
+    set(SafeString_LIBS
+        ${CMAKE_CURRENT_SOURCE_DIR}/dependencies/libraries/safestringlib/lib/)
+    include_directories(dependencies/libraries/safestringlib/include)
+    
+    # ========================================================= Cross-Platform
+    # OpenGL
+    
+    find_package(OpenGL REQUIRED)
+    include_directories( ${OPENGL_INCLUDE_DIRS} )
 
 ## TODO: Add to all platforms
-    # Cross-Platform
-    # =========================================================
+    # ========================================================= Cross-Platform
     # GLFW
-    set(
-    	GLFW_LIBS
+    
+    set(GLFW_LIBS
     	${CMAKE_CURRENT_SOURCE_DIR}/dependencies/libraries/GLFW/APPL/lib/)
     include_directories(dependencies/libraries/GLFW/APPL/include)
    
+## TODO: Add to all platforms
+    # ========================================================= Cross-Platform
+    # glad
+    
+    set(GLAD_DIR
+        "${CMAKE_CURRENT_SOURCE_DIR}/dependencies/libraries/glad")
+    # Add glad source file
+    add_library(glad STATIC
+        ${GLAD_DIR}/src/glad.c  # Add the glad source file
+    )
+
+    #include_directories(glad PUBLIC
+    #    ${GLAD_DIR}/include/glad
+    #)
+    target_include_directories(glad PUBLIC
+        ${GLAD_DIR}/include    # The include folder for glad
+    )
+
     
     # ----- Apple Only ------
     
     # ====================================================
     # Metal-Cpp
-    include_directories(${CMAKE_CURRENT_SOURCE_DIR}/metal-cpp)
+    # include_directories(${CMAKE_CURRENT_SOURCE_DIR}/metal-cpp)
 
     # Foundation
-    set(
-        SOURCE_FILES
-        ${CMAKE_CURRENT_SOURCE_DIR}/metal-cpp/Foundation)
+    #set(
+    #    SOURCE_FILES
+    #    ${CMAKE_CURRENT_SOURCE_DIR}/metal-cpp/Foundation)
 
     # Metal
-    set(
-        SOURCE_FILES
-        ${CMAKE_CURRENT_SOURCE_DIR}/metal-cpp/Metal)
+    #set(
+    #    SOURCE_FILES
+    #    ${CMAKE_CURRENT_SOURCE_DIR}/metal-cpp/Metal)
         
     # MetalFX
-    set(
-        SOURCE_FILES
-        ${CMAKE_CURRENT_SOURCE_DIR}/metal-cpp/MetalFX)
+    #set(
+    #    SOURCE_FILES
+    #    ${CMAKE_CURRENT_SOURCE_DIR}/metal-cpp/MetalFX)
     
     # QuartzCore
-    set(
-        SOURCE_FILES
-        ${CMAKE_CURRENT_SOURCE_DIR}/metal-cpp/QuartzCore)
+    #set(
+    #    SOURCE_FILES
+    #    ${CMAKE_CURRENT_SOURCE_DIR}/metal-cpp/QuartzCore)
     
     
 # Windows & Linux (Not Apple)
@@ -113,6 +139,11 @@ endif()
 # STB
 
 include_directories(dependencies/libraries/stb)
+
+
+
+# ---------------------------------------------------------------------------- #
+
 
 
 if (WIN32)
@@ -636,21 +667,36 @@ elseif (APPLE)
     # target_link_libraries(program ${FOUNDATION})
     # target_link_libraries(program ${QUARTZCORE})
 
-    find_library(METAL Metal)
-    find_library(FOUNDATION Foundation)
-    find_library(QUARTZCORE QuartzCore)
+    # find_library(METAL Metal)
+    # find_library(FOUNDATION Foundation)
+    # find_library(QUARTZCORE QuartzCore)
 
 
     # =========================================================
-    # GLFW
+
     
     target_link_libraries(delta-core PUBLIC
+    # GLFW
         ${GLFW_LIBS}/libglfw3.a
         ${GLFW_LIBS}/libglfw.3.4.dylib
+        ${GLFW_LIBS}/libglfw.dylib
+        
+    # OpenGL
+        ${OPENGL_LIBRARIES}
+        
+    # glad
+        glad
+        
+    # SafeStringLib
+        # $(SafeString_LIBS)/libsafestring.dylib
+        ${CMAKE_CURRENT_SOURCE_DIR}/dependencies/libraries/safestringlib/lib/libsafestring_shared.1.2.0.dylib
+        ${CMAKE_CURRENT_SOURCE_DIR}/dependencies/libraries/safestringlib/lib/libsafestring_shared.dylib
     )
+
 
 # Windows & Linux (Not Apple)
 elseif (WIN32 OR UNIX)
+
     target_link_libraries(delta-core PUBLIC
         # Vulkan
         ${VULKAN_LIBS}/vulkan-1.lib

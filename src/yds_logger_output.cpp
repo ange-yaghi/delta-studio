@@ -4,7 +4,7 @@
 #include <time.h>
 
 #if !defined(_WIN64)
-    #include "include/safe_str_lib.h"
+    #include "safe_str_lib.h"
 #endif
 
 ysLoggerOutput::ysLoggerOutput() : ysObject("ysLoggerOutput") {

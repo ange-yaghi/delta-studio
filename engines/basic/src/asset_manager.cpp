@@ -7,7 +7,7 @@
 #include <sys/stat.h>
 
 #if !defined(_WIN64)
-    #include "include/safe_lib.h"
+    #include "safe_lib.h"
 // Comment out!
     #include <stdio.h>
     #include <sys/stat.h>
