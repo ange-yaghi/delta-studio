@@ -259,6 +259,7 @@ protected:
     ysBreakdownTimer m_breakdownTimer;
 
     DrawCall *NewDrawCall(int layer, int objectDataSize);
+    void *AllocateObjectData(int objectDataSize);
 
 protected:
     // Settings
@@ -281,6 +282,11 @@ protected:
 protected:
     // Drawing queues
     ysExpandingArray<DrawCall, 256> *m_drawQueue;
+
+    char *m_objectDataBuffer;
+    size_t m_objectDataBufferOffset;
+    size_t m_objectDataBufferSize;
+
     ysError ExecuteDrawQueue();
     ysError ExecuteShaderStage(int stageIndex);
 

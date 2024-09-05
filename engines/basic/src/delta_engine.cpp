@@ -72,6 +72,10 @@ dbasic::DeltaEngine::DeltaEngine() {
 
     m_cursorHidden = false;
     m_cursorPositionLocked = false;
+
+    m_objectDataBufferOffset = 0;
+    m_objectDataBuffer = nullptr;
+    m_objectDataBufferSize = 0;
 }
 
 dbasic::DeltaEngine::~DeltaEngine() {
@@ -101,6 +105,7 @@ dbasic::DeltaEngine::~DeltaEngine() {
     assert(m_consoleShaderObjectVariablesBuffer == nullptr);
 
     delete[] m_drawQueue;
+    if (m_objectDataBuffer != nullptr) { delete[] m_objectDataBuffer; }
 }
 
 ysError
@@ -340,11 +345,26 @@ dbasic::DeltaEngine::DrawCall *
 dbasic::DeltaEngine::NewDrawCall(int layer, int objectDataSize) {
     DrawCall *newCall = &m_drawQueue[layer].New();
     if (newCall != nullptr) {
-        newCall->ObjectData = malloc(objectDataSize);
+        newCall->ObjectData = AllocateObjectData(objectDataSize);
         newCall->ObjectDataSize = objectDataSize;
     }
 
     return newCall;
+}
+
+void *dbasic::DeltaEngine::AllocateObjectData(int objectDataSize) {
+    if ((m_objectDataBufferOffset + objectDataSize) > m_objectDataBufferSize) {
+        const size_t newSize = m_objectDataBufferSize + objectDataSize + 2048;
+        char *newBuffer = new char[newSize];
+        memcpy(newBuffer, m_objectDataBuffer, m_objectDataBufferSize);
+        m_objectDataBuffer = newBuffer;
+        m_objectDataBufferSize = newSize;
+    }
+
+    const size_t offset = m_objectDataBufferOffset;
+    m_objectDataBufferOffset += objectDataSize;
+
+    return static_cast<void *>(m_objectDataBuffer + offset);
 }
 
 ysError dbasic::DeltaEngine::InitializeGeometry() {
@@ -1013,10 +1033,6 @@ ysError dbasic::DeltaEngine::ExecuteShaderStage(int stageIndex) {
 }
 
 void dbasic::DeltaEngine::ClearDrawQueue() {
-    for (int i = 0; i < MaxLayers; ++i) {
-        const int n = m_drawQueue[i].GetNumObjects();
-        for (int j = 0; j < n; ++j) { free(m_drawQueue[i][j].ObjectData); }
-    }
-
     for (int i = 0; i < MaxLayers; ++i) { m_drawQueue[i].Clear(); }
+    m_objectDataBufferOffset = 0;
 }
