@@ -215,6 +215,9 @@ LRESULT WINAPI ysWindowsWindowSystem::WinProc(HWND hWnd, UINT msg,
                     system->SetCursor(system->GetCursor());
                     return TRUE;
                 }
+            case WM_SYSCOMMAND:
+                if (wParam == SC_KEYMENU && (lParam >> 16) <= 0) { return 0; }
+                return DefWindowProc(hWnd, msg, wParam, lParam);
         }
 
         if (inputSystem != nullptr) {
