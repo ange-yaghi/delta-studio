@@ -1,5 +1,7 @@
 #include "../include/yds_timing.h"
 
+#include "../include/yds_math.h"
+
 #define NOMINMAX
 #include <Windows.h>
 #include <mmsystem.h>
@@ -23,11 +25,9 @@ uint64_t SystemTime() {
 }
 
 ysTimingSystem::ysTimingSystem() {
-    m_frameDurations = nullptr;
-    m_durationSamples = 0;
-
     SetPrecisionMode(Precision::Microsecond);
     Initialize();
+    m_averageTimer = 0.0;
 }
 
 ysTimingSystem::~ysTimingSystem() { /* void */
@@ -65,33 +65,24 @@ void ysTimingSystem::Update() {
     m_lastFrameClockTicks = (thisClock - m_lastFrameClockstamp);
     m_lastFrameClockstamp = thisClock;
 
+    const double frameDuration = GetFrameDuration();
     if (m_frameNumber > 1) {
-        /*
-        m_averageFrameDuration *= 0.95;
-        m_averageFrameDuration += 0.05 * (double)m_lastFrameDuration / m_div;
-
-        m_fps = (float)(1 / m_averageFrameDuration);*/
-        m_frameDurations[m_durationSampleWriteIndex] =
-                double(m_lastFrameDuration) / m_div;
-        if (++m_durationSampleWriteIndex >= DurationSamples) {
-            m_durationSampleWriteIndex = 0;
+        constexpr double dt = 1 / 10000.0;
+        const double f_c = (m_frameNumber > 1000) ? 0.1 : 100.0;
+        const double RC = 1.0 / (ysMath::Constants::TWO_PI * f_c);
+        const double alpha = dt / (RC + dt);
+        m_averageTimer += frameDuration;
+        if (m_averageTimer > 1.0) { m_averageTimer = 1.0; }
+        while (m_averageTimer > 0) {
+            m_averageTimer -= dt;
+            m_averageFrameDuration = alpha * frameDuration +
+                                     (1 - alpha) * m_averageFrameDuration;
         }
-
-        if (m_durationSamples < DurationSamples) { ++m_durationSamples; }
-
-        m_averageFrameDuration = 0;
-        for (int i = 0; i < m_durationSamples; ++i) {
-            m_averageFrameDuration += m_frameDurations[i];
-        }
-
-        if (m_durationSamples > 0) {
-            m_averageFrameDuration /= m_durationSamples;
-        }
-
-        if (m_averageFrameDuration != 0) {
-            m_fps = 1 / float(m_averageFrameDuration);
-        }
+    } else {
+        m_averageFrameDuration = frameDuration;
     }
+
+    m_fps = float(1 / m_averageFrameDuration);
 }
 
 void ysTimingSystem::RestartFrame() {
@@ -112,12 +103,7 @@ void ysTimingSystem::Initialize() {
 
     m_isPaused = false;
 
-    m_averageFrameDuration = 0;
     m_fps = 1024.0;
-
-    m_frameDurations = new double[DurationSamples];
-    m_durationSamples = 0;
-    m_durationSampleWriteIndex = 0;
 }
 
 double ysTimingSystem::GetFrameDuration() {
