@@ -37,6 +37,13 @@ ysWindowSystem::~ysWindowSystem() {
     /* void */
 }
 
+#if defined(__APPLE__) && defined(__MACH__) // Apple OSX & iOS (Darwin)
+
+// TODO: -
+
+
+#elif defined(_WIN64)
+
 ysError ysWindowSystem::CreateWindowSystem(ysWindowSystem **newSystem, Platform platform) {
     YDS_ERROR_DECLARE("CreateWindowSystem");
 
@@ -56,6 +63,8 @@ ysError ysWindowSystem::CreateWindowSystem(ysWindowSystem **newSystem, Platform 
 
     return YDS_ERROR_RETURN_STATIC(ysError::None);
 }
+
+#endif /* Windows */
 
 ysError ysWindowSystem::DestroyWindowSystem(ysWindowSystem *&system) {
     YDS_ERROR_DECLARE("DestroyWindowSystem");

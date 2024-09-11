@@ -4,9 +4,19 @@
 #include "yds_input_system.h"
 
 #define NOMINMAX
-#include <Windows.h>
 
 #include <vector>
+
+#if defined(__APPLE__) && defined(__MACH__) // Apple OSX & iOS (Darwin)
+
+//#include "win32/windows_modular.h"
+
+// TODO: -
+
+
+#elif defined(_WIN64)
+
+#include <Windows.h>
 
 class ysWindowsInputDevice;
 
@@ -43,5 +53,7 @@ protected:
 private:
     std::vector<BYTE> m_rawInputBuffer;
 };
+
+#endif /* Windows */
 
 #endif /* YDS_WINDOWS_INPUT_SYSTEM_H */

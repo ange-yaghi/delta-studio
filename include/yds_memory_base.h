@@ -3,7 +3,12 @@
 
 #include "yds_base.h"
 
-#include <malloc.h>
+#if defined(__APPLE__) && defined(__MACH__) // Apple OSX & iOS (Darwin)
+    #include <stdlib.h>
+#elif defined(_WIN64)
+    #include <malloc.h>
+#endif
+
 #include <new>
 #include <stddef.h>
 #include <assert.h>

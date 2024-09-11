@@ -11,6 +11,8 @@
 
 #include "../include/yds_windows_window.h"
 
+#if defined(_WIN64)
+
 #include <d3d10.h>
 
 #include "../include/yds_stb_image.h"
@@ -23,6 +25,10 @@
 #include <codecvt>
 #include <fstream>
 #include <locale>
+
+#if !defined(_WIN64)
+    #include "include/safe_lib.h"
+#endif
 
 ysD3D10Device::ysD3D10Device() : ysDevice(DeviceAPI::DirectX10) {
     m_device = nullptr;
@@ -1680,3 +1686,5 @@ ysError ysD3D10Device::DestroyD3D10RenderTarget(ysRenderTarget *target) {
 
     return YDS_ERROR_RETURN(ysError::None);
 }
+
+#endif /* Windows */

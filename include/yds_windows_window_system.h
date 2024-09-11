@@ -4,6 +4,16 @@
 #include "yds_window_system.h"
 
 #define NOMINMAX
+
+#if defined(__APPLE__) && defined(__MACH__) // Apple OSX & iOS (Darwin)
+
+//#include "win32/windows_modular.h"
+
+// TODO: -
+
+
+#elif defined(_WIN64)
+
 #include <Windows.h>
 
 class ysWindowsWindowSystem : public ysWindowSystem {
@@ -41,5 +51,7 @@ protected:
     RECT m_oldCursorClip;
     HCURSOR m_oldCursor;
 };
+
+#endif /* Windows */
 
 #endif /* YDS_WINDOWS_WINDOW_SYSTEM_H */

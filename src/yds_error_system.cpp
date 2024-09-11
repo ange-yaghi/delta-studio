@@ -1,6 +1,12 @@
 // TEMP
 #define NOMINMAX
-#include <Windows.h>
+
+#if defined(__APPLE__) && defined(__MACH__) // Apple OSX & iOS (Darwin)
+    #include "win32/windows_modular.h"
+#elif defined(_WIN64)
+    #include <Windows.h>
+#endif
+
 
 #include "../include/yds_error_system.h"
 

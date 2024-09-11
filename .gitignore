@@ -15,6 +15,7 @@
 
 # Build results
 build/
+XCode Build/
 [Dd]ebug/
 !dependencies/**/[Dd]ebug/
 [Dd]ebugPublic/
@@ -223,6 +224,9 @@ _pkginfo.txt
 *.[Cc]ache
 # but keep track of directories ending in .cache
 !*.[Cc]ache/
+
+# MacOS directory Metadata
+*.DS_Store
 
 # Others
 ClientBin/

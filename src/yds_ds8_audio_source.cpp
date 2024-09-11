@@ -6,12 +6,22 @@
 #include <assert.h>
 #include <math.h>
 
+//#if !defined(_WIN64)
+//    #include "win32/windows_modular.h"
+//#endif
+
 ysDS8AudioSource::ysDS8AudioSource() : ysAudioSource(API::DirectSound8) {
     m_buffer = nullptr;
     m_lost = false;
 }
 
 ysDS8AudioSource::~ysDS8AudioSource() {}
+
+#if defined(__APPLE__) && defined(__MACH__) // Apple OSX & iOS (Darwin)
+
+// TODO: -
+
+#elif defined(_WIN64)
 
 ysError ysDS8AudioSource::LockEntireBuffer(void **buffer,
                                            SampleOffset *samples) {
@@ -35,6 +45,14 @@ ysError ysDS8AudioSource::LockEntireBuffer(void **buffer,
     return YDS_ERROR_RETURN(ysError::None);
 }
 
+#endif
+
+#if defined(__APPLE__) && defined(__MACH__)
+
+// TODO: -
+
+#elif defined(_WIN64)
+
 ysError ysDS8AudioSource::UnlockBuffer(void *buffer, SampleOffset samples) {
     YDS_ERROR_DECLARE("UnlockBuffer");
 
@@ -51,6 +69,14 @@ ysError ysDS8AudioSource::UnlockBuffer(void *buffer, SampleOffset samples) {
 
     return YDS_ERROR_RETURN(ysError::None);
 }
+
+#endif
+
+#if defined(__APPLE__) && defined(__MACH__)
+
+// TODO: -
+
+#elif defined(_WIN64)
 
 ysError
 ysDS8AudioSource::LockBufferSegment(SampleOffset offset, SampleOffset samples,
@@ -85,6 +111,14 @@ ysDS8AudioSource::LockBufferSegment(SampleOffset offset, SampleOffset samples,
     return YDS_ERROR_RETURN(ysError::None);
 }
 
+#endif
+
+#if defined(__APPLE__) && defined(__MACH__)
+
+// TODO: -
+
+#elif defined(_WIN64)
+
 ysError ysDS8AudioSource::UnlockBufferSegments(void *segment1,
                                                SampleOffset segment1Size,
                                                void *segment2,
@@ -104,6 +138,14 @@ ysError ysDS8AudioSource::UnlockBufferSegments(void *segment1,
 
     return YDS_ERROR_RETURN(ysError::None);
 }
+
+#endif
+
+#if defined(__APPLE__) && defined(__MACH__)
+
+// TODO: -
+
+#elif defined(_WIN64)
 
 ysError ysDS8AudioSource::SetMode(Mode mode) {
     YDS_ERROR_DECLARE("SetMode");
@@ -142,6 +184,8 @@ ysError ysDS8AudioSource::SetMode(Mode mode) {
     return YDS_ERROR_RETURN(ysError::None);
 }
 
+#endif
+
 ysAudioSource::Mode ysDS8AudioSource::GetBufferMode() {
     UpdateStatus();
     if (m_lost) { RestoreBuffer(); }
@@ -165,6 +209,12 @@ ysError ysDS8AudioSource::SetDataBuffer(ysAudioBuffer *buffer) {
     return YDS_ERROR_RETURN(ysError::None);
 }
 
+#if defined(__APPLE__) && defined(__MACH__)
+
+// TODO: -
+
+#elif defined(_WIN64)
+
 ysError ysDS8AudioSource::SetVolume(float volume) {
     YDS_ERROR_DECLARE("SetVolume");
 
@@ -180,6 +230,14 @@ ysError ysDS8AudioSource::SetVolume(float volume) {
 
     return YDS_ERROR_RETURN(ysError::None);
 }
+
+#endif
+
+#if defined(__APPLE__) && defined(__MACH__)
+
+// TODO: -
+
+#elif defined(_WIN64)
 
 ysError ysDS8AudioSource::SetPan(float pan) {
     YDS_ERROR_DECLARE("SetPan");
@@ -204,6 +262,14 @@ ysError ysDS8AudioSource::SetPan(float pan) {
     return YDS_ERROR_RETURN(ysError::None);
 }
 
+#endif
+
+#if defined(__APPLE__) && defined(__MACH__)
+
+// TODO: -
+
+#elif defined(_WIN64)
+
 bool ysDS8AudioSource::SetCurrentPosition(SampleOffset position) {
     if (!ysAudioSource::SetCurrentPosition(position)) { return false; }
     if (m_lost) {
@@ -222,6 +288,15 @@ bool ysDS8AudioSource::SetCurrentPosition(SampleOffset position) {
 
     return true;
 }
+
+#endif
+
+#if defined(__APPLE__) && defined(__MACH__)
+
+// TODO: -
+
+#elif defined(_WIN64)
+
 
 bool ysDS8AudioSource::GetCurrentPosition(SampleOffset *position) {
     if (m_lost) {
@@ -251,6 +326,14 @@ bool ysDS8AudioSource::GetCurrentPosition(SampleOffset *position) {
     return true;
 }
 
+#endif
+
+#if defined(__APPLE__) && defined(__MACH__)
+
+// TODO: -
+
+#elif defined(_WIN64)
+
 bool ysDS8AudioSource::GetCurrentWritePosition(SampleOffset *position) {
     if (m_lost) {
         if (RestoreBuffer() != ysError::None) {
@@ -278,6 +361,14 @@ bool ysDS8AudioSource::GetCurrentWritePosition(SampleOffset *position) {
             m_audioParameters.GetSamplesFromSize((unsigned int) currentWrite);
     return true;
 }
+
+#endif
+
+#if defined(__APPLE__) && defined(__MACH__)
+
+// TODO: -
+
+#elif defined(_WIN64)
 
 void ysDS8AudioSource::Seek(SampleOffset offset) {
     m_buffer->SetCurrentPosition(m_audioParameters.GetSizeFromSamples(offset));
@@ -315,6 +406,14 @@ ysError ysDS8AudioSource::UpdateStatus() {
     return YDS_ERROR_RETURN(ysError::None);
 }
 
+#endif
+
+#if defined(__APPLE__) && defined(__MACH__)
+
+// TODO: -
+
+#elif defined(_WIN64)
+
 ysError ysDS8AudioSource::RestoreBuffer() {
     YDS_ERROR_DECLARE("RestoreBuffer");
 
@@ -325,3 +424,5 @@ ysError ysDS8AudioSource::RestoreBuffer() {
 
     return YDS_ERROR_RETURN(ysError::None);
 }
+
+#endif

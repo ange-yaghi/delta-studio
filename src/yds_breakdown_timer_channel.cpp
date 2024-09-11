@@ -63,6 +63,8 @@ void ysBreakdownTimerChannel::StartMeasurement(uint64_t timestamp) {
     m_midMeasurement = true;
 }
 
+#if defined(_WIN64)
+
 void ysBreakdownTimerChannel::EndMeasurement(uint64_t timestamp) {
     assert(m_midMeasurement);
 
@@ -71,3 +73,5 @@ void ysBreakdownTimerChannel::EndMeasurement(uint64_t timestamp) {
 
     m_midMeasurement = false;
 }
+
+#endif /* Windows */

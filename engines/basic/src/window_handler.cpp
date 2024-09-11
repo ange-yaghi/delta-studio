@@ -2,6 +2,8 @@
 
 #include "../include/delta_engine.h"
 
+#if defined(_WIN64)
+
 dbasic::WindowHandler::WindowHandler() {
     m_device = nullptr;
     m_context = nullptr;
@@ -27,3 +29,5 @@ void dbasic::WindowHandler::Initialize(ysDevice *device,
 void dbasic::WindowHandler::OnStartMoveResize() { m_engine->SetPaused(true); }
 
 void dbasic::WindowHandler::OnEndMoveResize() { m_engine->SetPaused(false); }
+
+#endif /* Windows */

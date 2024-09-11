@@ -1,3 +1,5 @@
+#if defined(_WIN64)
+
 #ifndef YDS_D3D10_INPUT_LAYOUT_H
 #define YDS_D3D10_INPUT_LAYOUT_H
 
@@ -22,3 +24,6 @@ protected:
 };
 
 #endif
+
+#endif /* Windows */
+

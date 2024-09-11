@@ -1,5 +1,11 @@
 #include "../include/yds_audio_system.h"
 
+#if defined(__APPLE__) && defined(__MACH__)
+    
+// TODO: - 
+
+#elif defined(_WIN64)
+
 #include "../include/yds_audio_device.h"
 #include "../include/yds_ds8_system.h"
 
@@ -111,3 +117,5 @@ ysError ysAudioSystem::DisconnectDevice(ysAudioDevice *device) {
 
     return YDS_ERROR_RETURN(ysError::None);
 }
+
+#endif

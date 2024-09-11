@@ -6,8 +6,15 @@
 #include "../include/yds_windows_window_system.h"
 
 #define NOMINMAX
-#include <Windows.h>
-#include <windowsx.h>
+
+#if defined(_WIN64)
+
+#if defined(__APPLE__) && defined(__MACH__) // Apple OSX & iOS (Darwin)
+    #include "win32/windows_modular.h"
+#elif defined(_WIN64)
+    #include <Windows.h>
+    #include <windowsx.h>
+#endif
 
 ysWindowsInputSystem::ysWindowsInputSystem()
     : ysInputSystem(Platform::Windows) {
@@ -479,3 +486,5 @@ int ysWindowsInputSystem::OnOsMouseMove(LPARAM lParam, WPARAM wParam) {
 
     return 0;
 }
+
+#endif /* Windows */

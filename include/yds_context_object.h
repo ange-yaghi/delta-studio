@@ -9,8 +9,10 @@ class ysContextObject : public ysObject {
 public:
     enum class DeviceAPI {
         Unknown,
+    #if !defined(_WIN64)
         DirectX10,
         DirectX11,
+    #endif
         OpenGL4_0,
         Vulkan
     };

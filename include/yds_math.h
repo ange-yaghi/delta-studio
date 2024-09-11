@@ -1,7 +1,13 @@
 #ifndef YDS_MATH_H
 #define YDS_MATH_H
 
-#include <xmmintrin.h>
+#if defined(__APPLE__) && defined(__MACH__) // Apple OSX & iOS (Darwin)
+//    #include <arm_neon.h>
+    #include "sse2neon.h"
+#elif defined(_WIN64)
+    #include <xmmintrin.h>
+#endif
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -22,6 +28,13 @@
 
 #define _mm_madd_ps(a, b, c) \
     _mm_add_ps(_mm_mul_ps((a), (b)), (c));
+
+// compiler-specific keyword which suggests that a function should be inlined
+#if defined(__APPLE__) && defined(__MACH__)
+    #define forceInline __attribute__((always_inline))
+#elif defined(_WIN64)
+    #define forceInline __forceinline
+#endif
 
 // Main Arithmetic Data Types
 typedef __m128 ysVector;
@@ -118,7 +131,9 @@ struct ysMatrix33 {
     };
 };
 
-#define YS_MATH_CONST extern const __declspec(selectany)
+#if defined(_WIN64)
+    #define YS_MATH_CONST extern const __declspec(selectany)
+#endif
 
 namespace ysMath {
 
@@ -129,6 +144,54 @@ namespace ysMath {
         // ----------------------------------------------------
 
         // Masks
+    #if defined(__APPLE__) && defined(__MACH__)
+    
+        ysVectorMask MaskOffW = { (int)0xFFFFFFFF,(int)0xFFFFFFFF,(int)0xFFFFFFFF, (int)0x00000000 };
+        ysVectorMask MaskOffZ = { (int)0xFFFFFFFF, (int)0xFFFFFFFF, (int)0x00000000, (int)0xFFFFFFFF };
+        ysVectorMask MaskOffY = { (int)0xFFFFFFFF, (int)0x00000000, (int)0xFFFFFFFF, (int)0xFFFFFFFF };
+        ysVectorMask MaskOffX = { (int)0x00000000, (int)0xFFFFFFFF, (int)0xFFFFFFFF, (int)0xFFFFFFFF };
+
+        ysVectorMask MaskKeepW = { (int)0x00000000, (int)0x00000000, (int)0x00000000, (int)0xFFFFFFFF };
+        ysVectorMask MaskKeepZ = { (int)0x00000000, (int)0x00000000, (int)0xFFFFFFFF, (int)0x00000000 };
+        ysVectorMask MaskKeepY = { (int)0x00000000, (int)0xFFFFFFFF, (int)0x00000000, (int)0x00000000 };
+        ysVectorMask MaskKeepX = { (int)0xFFFFFFFF, (int)0x00000000, (int)0x00000000, (int)0x00000000 };
+
+    // Axes
+        ysVector XAxis = { 1.0f, 0.0f, 0.0f, 0.0f };
+        ysVector YAxis = { 0.0f, 1.0f, 0.0f, 0.0f };
+        ysVector ZAxis = { 0.0f, 0.0f, 1.0f, 0.0f };
+
+    // Constants
+        ysVector IdentityRow1 = { 1.0f, 0.0f, 0.0f, 0.0f };
+        ysVector IdentityRow2 = { 0.0f, 1.0f, 0.0f, 0.0f };
+        ysVector IdentityRow3 = { 0.0f, 0.0f, 1.0f, 0.0f };
+        ysVector IdentityRow4 = { 0.0f, 0.0f, 0.0f, 1.0f };
+
+        ysVector Negate = { -1.0f, -1.0f, -1.0f, -1.0f };
+        ysVector Negate3 = { -1.0f, -1.0f, -1.0f, 1.0f };
+        ysVector QuatInvert = { 1.0f, -1.0f, -1.0f, -1.0f };
+        ysVector One = { 1.0f, 1.0f, 1.0f, 1.0f };
+        ysVector Zero = { 0.0f, 0.0f, 0.0f, 0.0f };
+        ysVector Zero3 = { 0.0f, 0.0f, 0.0f, 1.0f };
+        ysVector Half = { 0.5f, 0.5f, 0.5f, 0.5f };
+        ysVector Double = { 2.0f, 2.0f, 2.0f, 2.0f };
+
+        ysMatrix Identity = {
+        IdentityRow1,
+        IdentityRow2,
+        IdentityRow3,
+        IdentityRow4 };
+
+    // Numeral Constants
+        float PI = 3.141592654f;
+        float TWO_PI = 6.2831853071795864769252866f;
+        float SQRT_2 = 1.41421356237f;
+
+    // Quaternions
+        ysQuaternion QuatIdentity = { 1.0f, 0.0f, 0.0f, 0.0f };
+    
+    #elif defined(_WIN64)
+    
         YS_MATH_CONST ysVectorMask MaskOffW = { (int)0xFFFFFFFF,(int)0xFFFFFFFF,(int)0xFFFFFFFF, (int)0x00000000 };
         YS_MATH_CONST ysVectorMask MaskOffZ = { (int)0xFFFFFFFF, (int)0xFFFFFFFF, (int)0x00000000, (int)0xFFFFFFFF };
         YS_MATH_CONST ysVectorMask MaskOffY = { (int)0xFFFFFFFF, (int)0x00000000, (int)0xFFFFFFFF, (int)0xFFFFFFFF };
@@ -172,6 +235,7 @@ namespace ysMath {
 
         // Quaternions
         YS_MATH_CONST ysQuaternion QuatIdentity = { 1.0f, 0.0f, 0.0f, 0.0f };
+    #endif
 
     } /* namespace Constants */
 
@@ -185,11 +249,11 @@ namespace ysMath {
     int UniformRandomInt(int range);
 
     // Vector/General Quaternion
-    __forceinline ysGeneric LoadScalar(float s) {
+    forceInline ysGeneric LoadScalar(float s) {
         return _mm_set_ps(s, s, s, s);
     }
 
-    __forceinline ysGeneric LoadVector(float x = 0.0f, float y = 0.0f, float z = 0.0f,
+    forceInline ysGeneric LoadVector(float x = 0.0f, float y = 0.0f, float z = 0.0f,
         float w = 0.0f) {
         return _mm_set_ps(w, z, y, x);
     }
@@ -203,49 +267,91 @@ namespace ysMath {
 
     inline ysVector4 GetVector4(const ysVector &v) {
         ysVector4 r;
+    
+    #if defined(__APPLE__) && defined(__MACH__)
+        // Access individual elements using NEON intrinsics
+        r.x = vgetq_lane_f32(v, 0);
+        r.y = vgetq_lane_f32(v, 1);
+        r.z = vgetq_lane_f32(v, 2);
+        r.w = vgetq_lane_f32(v, 3);
+    #elif defined(_WIN64)
         r.x = v.m128_f32[0];
         r.y = v.m128_f32[1];
         r.z = v.m128_f32[2];
         r.w = v.m128_f32[3];
+    #endif
 
         return r;
     }
 
     inline ysVector3 GetVector3(const ysVector &v) {
         ysVector3 r;
+        
+    #if defined(__APPLE__) && defined(__MACH__)
+        r.x = vgetq_lane_f32(v, 0);
+        r.y = vgetq_lane_f32(v, 1);
+        r.z = vgetq_lane_f32(v, 2);
+    #elif defined(_WIN64)
         r.x = v.m128_f32[0];
         r.y = v.m128_f32[1];
         r.z = v.m128_f32[2];
+    #endif
 
         return r;
     }
 
     inline ysVector2 GetVector2(const ysVector &v) {
         ysVector2 r;
+        
+    #if defined(__APPLE__) && defined(__MACH__)
+        r.x = vgetq_lane_f32(v, 0);
+        r.y = vgetq_lane_f32(v, 1);
+    #elif defined(_WIN64)
         r.x = v.m128_f32[0];
         r.y = v.m128_f32[1];
+    #endif
 
         return r;
     }
 
-    __forceinline float GetScalar(const ysVector &v) {
+    forceInline float GetScalar(const ysVector &v) {
+    #if defined(__APPLE__) && defined(__MACH__)
+        return vgetq_lane_f32(v, 0);
+    #elif defined(_WIN64)
         return v.m128_f32[0];
+    #endif
     }
 
-    __forceinline float GetX(const ysVector &v) {
+    forceInline float GetX(const ysVector &v) {
+    #if defined(__APPLE__) && defined(__MACH__)
+        return vgetq_lane_f32(v, 0);
+    #elif defined(_WIN64)
         return v.m128_f32[0];
+    #endif
     }
 
-    __forceinline float GetY(const ysVector &v) {
+    forceInline float GetY(const ysVector &v) {
+    #if defined(__APPLE__) && defined(__MACH__)
+        return vgetq_lane_f32(v, 1);
+    #elif defined(_WIN64)
         return v.m128_f32[1];
+    #endif
     }
 
-    __forceinline float GetZ(const ysVector &v) {
+    forceInline float GetZ(const ysVector &v) {
+    #if defined(__APPLE__) && defined(__MACH__)
+    return vgetq_lane_f32(v, 2);
+    #elif defined(_WIN64)
         return v.m128_f32[2];
+    #endif
     }
 
-    __forceinline float GetW(const ysVector &v) {
+    forceInline float GetW(const ysVector &v) {
+    #if defined(__APPLE__) && defined(__MACH__)
+        return vgetq_lane_f32(v, 3);
+    #elif defined(_WIN64)
         return v.m128_f32[3];
+    #endif
     }
 
     float GetQuatX(const ysQuaternion &v);
@@ -253,27 +359,27 @@ namespace ysMath {
     float GetQuatZ(const ysQuaternion &v);
     float GetQuatW(const ysQuaternion &v);
 
-    __forceinline ysGeneric Add(const ysGeneric &v1, const ysGeneric &v2) {
+    forceInline ysGeneric Add(const ysGeneric &v1, const ysGeneric &v2) {
         return _mm_add_ps(v1, v2);
     }
 
-    __forceinline ysGeneric Sub(const ysGeneric &v1, const ysGeneric &v2) {
+    forceInline ysGeneric Sub(const ysGeneric &v1, const ysGeneric &v2) {
         return _mm_sub_ps(v1, v2);
     }
 
-    __forceinline ysGeneric Mul(const ysGeneric &v1, const ysGeneric &v2) {
+    forceInline ysGeneric Mul(const ysGeneric &v1, const ysGeneric &v2) {
         return _mm_mul_ps(v1, v2);
     }
 
-    __forceinline ysGeneric Div(const ysGeneric &v1, const ysGeneric &v2) {
+    forceInline ysGeneric Div(const ysGeneric &v1, const ysGeneric &v2) {
         return _mm_div_ps(v1, v2);
     }
 
-    __forceinline ysGeneric Sqrt(const ysGeneric &v) {
+    forceInline ysGeneric Sqrt(const ysGeneric &v) {
         return _mm_sqrt_ps(v);
     }
 
-    __forceinline ysVector Dot(const ysVector &v1, const ysVector &v2) {
+    forceInline ysVector Dot(const ysVector &v1, const ysVector &v2) {
         ysVector t0 = _mm_mul_ps(v1, v2);
         ysVector t1 = _mm_shuffle_ps(t0, t0, _MM_SHUFFLE(1, 0, 3, 2));
         ysVector t2 = _mm_add_ps(t0, t1);
@@ -285,23 +391,23 @@ namespace ysMath {
     ysVector Dot3(const ysVector &v1, const ysVector &v2);
     ysVector Cross(const ysVector &v1, const ysVector &v2);
 
-    __forceinline ysVector MagnitudeSquared3(const ysVector &v) {
+    forceInline ysVector MagnitudeSquared3(const ysVector &v) {
         ysVector selfDot = ysMath::Dot3(v, v);
 
         return selfDot;
     }
 
-    __forceinline ysVector Magnitude(const ysVector &v) {
+    forceInline ysVector Magnitude(const ysVector &v) {
         ysVector selfDot = ysMath::Dot(v, v);
 
         return _mm_sqrt_ps(selfDot);
     }
 
-    __forceinline ysVector Normalize(const ysVector &v) {
+    forceInline ysVector Normalize(const ysVector &v) {
         return ysMath::Div(v, ysMath::Magnitude(v));
     }
 
-    __forceinline ysVector Negate(const ysVector &v) {
+    forceInline ysVector Negate(const ysVector &v) {
         return ysMath::Mul(v, ysMath::Constants::Negate);
     }
 
@@ -311,12 +417,12 @@ namespace ysMath {
     ysVector Mask(const ysVector &v, const ysVectorMask &mask);
     ysVector Or(const ysVector &v1, const ysVector &v2);
 
-    __forceinline ysVector GreaterThan(const ysVector &a, const ysVector &b) {
+    forceInline ysVector GreaterThan(const ysVector &a, const ysVector &b) {
         const ysVector cmp_mask = _mm_cmpge_ps(a, b);
         return _mm_and_ps(cmp_mask, Constants::One);
     }
 
-    __forceinline ysVector LessThan(const ysVector &a, const ysVector &b) {
+    forceInline ysVector LessThan(const ysVector &a, const ysVector &b) {
         const ysVector cmp_mask = _mm_cmple_ps(a, b);
         return _mm_and_ps(cmp_mask, Constants::One);
     }

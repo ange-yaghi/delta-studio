@@ -1,9 +1,19 @@
 #include "../include/yds_key_maps.h"
 
 #define NOMINMAX
-#include <Windows.h>
 
 ysKey::Code *ysKeyMaps::m_windowsKeyMap;
+
+#if defined(__APPLE__) && defined(__MACH__) // Apple OSX & iOS (Darwin)
+
+//#include "win32/windows_modular.h"
+
+// TODO: -
+
+
+#elif defined(_WIN64)
+
+#include <Windows.h>
 
 const ysKey::Code *ysKeyMaps::GetWindowsKeyMap() {
     if (m_windowsKeyMap == NULL) {
@@ -126,3 +136,5 @@ const ysKey::Code *ysKeyMaps::GetWindowsKeyMap() {
 
     return m_windowsKeyMap;
 }
+
+#endif

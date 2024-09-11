@@ -2,6 +2,10 @@
 
 #include <stdarg.h>
 
+#if !defined(_WIN64)
+    #include "safe_str_lib.h"
+#endif
+
 ysLogger *ysLogger::g_instance = NULL;
 
 ysLogger::ysLogger() {
@@ -58,10 +62,12 @@ void ysLogger::End() {
     }
 }
 
+#if defined(_WIN64)
 ysLoggerMessageLevel::ysLoggerMessageLevel() {
     ysLoggerMessageLevel::ysLoggerMessageLevel("", -1);
     m_valid = false;
 }
+#endif /* Windows */
 
 ysLoggerMessageLevel::ysLoggerMessageLevel(const char *name, int level) {
     strcpy_s(m_name, 256, name);

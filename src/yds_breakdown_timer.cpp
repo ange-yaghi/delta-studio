@@ -32,6 +32,8 @@ void ysBreakdownTimer::Clear() {
 void ysBreakdownTimer::StartFrame() { m_executionOrder.clear(); }
 void ysBreakdownTimer::EndFrame() { ++m_frameCount; }
 
+#if defined(_WIN64) // YSTimingSystem 
+
 void ysBreakdownTimer::StartMeasurement(const std::string &timerChannelName) {
     ysBreakdownTimerChannel *channel = FindChannel(timerChannelName);
     assert(channel != nullptr);
@@ -54,6 +56,8 @@ void ysBreakdownTimer::EndMeasurement(const std::string &timerChannelName) {
 
     channel->EndMeasurement(timestamp);
 }
+
+#endif /* Windows */
 
 void ysBreakdownTimer::SkipMeasurement(const std::string &timerChannelName) {
     StartMeasurement(timerChannelName);

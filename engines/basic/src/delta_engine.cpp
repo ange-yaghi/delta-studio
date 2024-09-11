@@ -21,7 +21,9 @@ dbasic::DeltaEngine::DeltaEngine() {
     m_device = nullptr;
 
     m_audioDevice = nullptr;
+#if defined(_WIN64)
     m_timingSystem = nullptr;
+#endif /* Windows */
     m_eventHandler = nullptr;
     m_consoleEnabled = true;
 
@@ -132,7 +134,9 @@ dbasic::DeltaEngine::CreateGameWindow(const GameEngineSettings &settings) {
             settings.WindowWidth, settings.WindowHeight, mainMonitor,
             settings.WindowState, settings.WindowColor));
 
+#if defined(_WIN64)
     m_gameWindow->AttachEventHandler(&m_windowHandler);
+#endif /* Windows */
 
     YDS_NESTED_ERROR_CALL(ysInputSystem::CreateInputSystem(
             &m_inputSystem, ysWindowSystemObject::Platform::Windows));
@@ -158,7 +162,9 @@ dbasic::DeltaEngine::CreateGameWindow(const GameEngineSettings &settings) {
     YDS_NESTED_ERROR_CALL(m_device->CreateRenderingContext(&m_renderingContext,
                                                            m_gameWindow));
 
+#if defined(_WIN64)
     m_windowHandler.Initialize(m_device, m_renderingContext, this);
+#endif /* Windows */
 
     // Main render target
     YDS_NESTED_ERROR_CALL(m_device->CreateOnScreenRenderTarget(
@@ -183,16 +189,20 @@ dbasic::DeltaEngine::CreateGameWindow(const GameEngineSettings &settings) {
                                             settings.ShaderCompiledDirectory,
                                             settings.CompileShaders));
 
+#if defined(_WIN64)
     // Timing System
     m_timingSystem = ysTimingSystem::Get();
     m_timingSystem->Initialize();
+#endif /* Windows */
 
     InitializeBreakdownTimer(settings.LoggingDirectory);
 
     m_initialized = true;
 
+#if defined(_WIN64)
     m_windowHandler.OnResizeWindow(m_gameWindow->GetWidth(),
                                    m_gameWindow->GetHeight());
+#endif /* Windows */
 
     return YDS_ERROR_RETURN(ysError::None);
 }
@@ -208,7 +218,10 @@ ysError dbasic::DeltaEngine::StartFrame() {
 
     m_audioDevice->UpdateAudioSources();
     m_windowSystem->ProcessMessages();
+    
+#if defined(_WIN64)
     m_timingSystem->Update();
+#endif /* Windows */
 
     // TEMP
     if (IsKeyDown(ysKey::Code::B)) {
@@ -586,7 +599,11 @@ ysError dbasic::DeltaEngine::LoadAnimation(Animation **animation,
     ysTexture **list = new ysTexture *[end - start + 1];
     wchar_t buffer[256];
     for (int i = start; i <= end; ++i) {
+    #if defined(__APPLE__) && defined(__MACH__)
+        swprintf(buffer, 256, L"%s/%.4i.png", path, i);
+    #elif defined(_WIN64)
         swprintf_s(buffer, 256, L"%s/%.4i.png", path, i);
+    #endif
 
         YDS_NESTED_ERROR_CALL(
                 m_device->CreateTexture(&list[i - start], buffer));
@@ -602,6 +619,7 @@ ysError dbasic::DeltaEngine::LoadAnimation(Animation **animation,
     return YDS_ERROR_RETURN(ysError::None);
 }
 
+// !!!: File opening
 ysError dbasic::DeltaEngine::LoadFont(Font **font, const wchar_t *path,
                                       int size, int fontSize) {
     YDS_ERROR_DECLARE("LoadFont");
@@ -610,7 +628,24 @@ ysError dbasic::DeltaEngine::LoadFont(Font **font, const wchar_t *path,
     unsigned char *bitmapData = new unsigned char[size * size];
 
     FILE *f = nullptr;
+    
+#if defined(__APPLE__) && defined(__MACH__)
+    // Convert wide character path to multibyte character path
+    char mbPath[PATH_MAX];
+    if (wcstombs(mbPath, path, sizeof(mbPath)) == -1) {
+        // Handle error converting wide character string to multibyte string
+        return YDS_ERROR_RETURN(ysError::MultipleErrorSystems);
+    }
+
+    // Open the file using standard C function fopen
+    f = fopen(mbPath, "rb");
+    if (f == nullptr) {
+        // Handle error opening the file
+        return YDS_ERROR_RETURN(ysError::InvalidFileType);
+    }
+#elif defined(_WIN64)
     _wfopen_s(&f, path, L"rb");
+#endif
 
     if (f == nullptr) { return YDS_ERROR_RETURN(ysError::CouldNotOpenFile); }
 
@@ -636,6 +671,11 @@ ysError dbasic::DeltaEngine::LoadFont(Font **font, const wchar_t *path,
     newFont->Initialize(32, 96, cdata, (float) fontSize, texture);
 
     delete[] cdata;
+    
+#if defined(__APPLE__) && defined(__MACH__)
+    // Close the file
+    fclose(f);
+#endif
 
     return YDS_ERROR_RETURN(ysError::None);
 }
@@ -759,6 +799,7 @@ void dbasic::DeltaEngine::GetOsMousePos(int *x, int *y) {
     }
 }
 
+#if defined(_WIN64)
 float dbasic::DeltaEngine::GetFrameLength() {
     return (float) (m_timingSystem->GetFrameDuration());
 }
@@ -779,6 +820,7 @@ void dbasic::DeltaEngine::SetPaused(bool paused) {
         m_timingSystem->RestartFrame();
     }
 }
+#endif /* Windows */
 
 int dbasic::DeltaEngine::GetScreenWidth() const {
     return m_gameWindow->GetGameWidth();

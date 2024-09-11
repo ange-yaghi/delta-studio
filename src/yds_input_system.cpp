@@ -17,6 +17,13 @@ ysInputSystem::~ysInputSystem() {
     /* void */
 }
 
+#if defined(__APPLE__) && defined(__MACH__)
+
+// TODO: -
+
+
+#elif defined(_WIN64)
+
 ysError ysInputSystem::CreateInputSystem(ysInputSystem **newInputSystem, Platform platform) {
     YDS_ERROR_DECLARE("CreateInputSystem");
 
@@ -33,6 +40,8 @@ ysError ysInputSystem::CreateInputSystem(ysInputSystem **newInputSystem, Platfor
 
     return YDS_ERROR_RETURN_STATIC(ysError::None);
 }
+
+#endif /* Windows */
 
 ysError ysInputSystem::DestroyInputSystem(ysInputSystem *&inputSystem) {
     YDS_ERROR_DECLARE("DestroyInputSystem");

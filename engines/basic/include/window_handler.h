@@ -3,6 +3,8 @@
 
 #include "delta_core.h"
 
+#if defined(_WIN64)
+
 namespace dbasic {
 
 class DeltaEngine;
@@ -26,5 +28,7 @@ protected:
 };
 
 }// namespace dbasic
+
+#endif /* Windows */
 
 #endif /* DELTA_BASIC_DELTA_WINDOW_HANDLER_H */

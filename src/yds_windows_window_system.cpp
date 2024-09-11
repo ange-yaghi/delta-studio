@@ -4,6 +4,8 @@
 #include "../include/yds_windows_monitor.h"
 #include "../include/yds_windows_window.h"
 
+#if defined(_WIN64)
+
 #include <shellscalingapi.h>
 
 ysWindowsWindowSystem::ysWindowsWindowSystem()
@@ -351,3 +353,5 @@ ysMonitor *ysWindowsWindowSystem::FindMonitorFromHandle(HMONITOR handle) {
 
     return nullptr;
 }
+
+#endif /* Windows */

@@ -6,6 +6,11 @@
 
 #include "yds_window.h"
 
+// safestringlib is available in windows by default & there's no need to include
+#if !defined(_WIN64)
+    #include "safe_lib.h"
+#endif
+
 class ysAudioSource;
 class ysAudioBuffer;
 

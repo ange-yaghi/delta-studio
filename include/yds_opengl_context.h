@@ -4,7 +4,13 @@
 #include "yds_window.h"
 #include "yds_rendering_context.h"
 
-#include <OpenGL.h>
+#if defined(__APPLE__) && defined(__MACH__) // Apple OSX & iOS (Darwin)
+    #include <OpenGL/OpenGL.h>
+    #include <OpenGL/gl3.h>
+    //#include "win32/windows_modular.h"
+#elif defined(_WIN64)
+    #include <OpenGL.h>
+#endif
 
 class ysOpenGLVirtualContext : public ysRenderingContext {
     friend class ysOpenGLDevice;
@@ -122,9 +128,12 @@ public:
     PFNGLBLITFRAMEBUFFERPROC glBlitFramebuffer = nullptr;
     PFNGLBLENDEQUATIONPROC glBlendEquation = nullptr;
 
+#if defined(_WIN64)
+    // TODO: Find alt on macOS
     PFNWGLMAKECONTEXTCURRENTARBPROC wglMakeContextCurrent = nullptr;
     PFNWGLCREATECONTEXTATTRIBSARBPROC wglCreateContextAttribsARB = nullptr;
     PFNWGLCHOOSEPIXELFORMATARBPROC wglChoosePixelFormatARB = nullptr;
+#endif
 
     bool IsRealContext() { return m_isRealContext; }
 
