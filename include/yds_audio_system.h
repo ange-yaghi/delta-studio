@@ -5,7 +5,6 @@
 #include "yds_window.h"
 
 class ysAudioDevice;
-
 class ysAudioSystem : public ysAudioSystemObject {
 protected:
     ysAudioSystem();
@@ -22,9 +21,11 @@ public:
     virtual ysError ConnectDeviceConsole(ysAudioDevice *device);
     virtual ysError DisconnectDevice(ysAudioDevice *device);
 
+    ysError UpdateDeviceStates();
+
     ysAudioDevice *GetPrimaryDevice();
-    ysAudioDevice *GetAuxDevice(int device);
-    int GetDeviceCount() const { return m_devices.GetNumObjects(); }
+    ysAudioDevice *GetDevice(int device);
+    inline int GetDeviceCount() const { return m_devices.GetNumObjects(); }
 
 protected:
     ysDynamicArray<ysAudioDevice, 4> m_devices;

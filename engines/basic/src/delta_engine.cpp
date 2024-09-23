@@ -149,10 +149,10 @@ dbasic::DeltaEngine::CreateGameWindow(const GameEngineSettings &settings) {
     // Create the audio device
     YDS_NESTED_ERROR_CALL(ysAudioSystem::CreateAudioSystem(
             &m_audioSystem, ysAudioSystem::API::DirectSound8));
-    YDS_NESTED_ERROR_CALL(m_audioSystem->EnumerateDevices());
-
-    YDS_NESTED_ERROR_CALL(
-            m_audioSystem->ConnectDevice(m_gameWindow, &m_audioDevice));
+    m_audioDevice = nullptr;
+    if (m_audioSystem->EnumerateDevices() != ysError::None) {
+        m_audioSystem->ConnectDevice(m_gameWindow, &m_audioDevice);
+    }
 
     // Create the rendering context
     YDS_NESTED_ERROR_CALL(m_device->CreateRenderingContext(&m_renderingContext,
@@ -206,7 +206,7 @@ ysError dbasic::DeltaEngine::StartFrame() {
     m_breakdownTimer.StartFrame();
     m_breakdownTimer.StartMeasurement(FrameBreakdownFull);
 
-    m_audioDevice->UpdateAudioSources();
+    if (m_audioDevice != nullptr) { m_audioDevice->UpdateAudioSources(); }
     m_windowSystem->ProcessMessages();
     m_timingSystem->Update();
 
@@ -296,7 +296,9 @@ ysError dbasic::DeltaEngine::Destroy() {
 
     YDS_NESTED_ERROR_CALL(m_device->DestroyDevice());
 
-    m_audioSystem->DisconnectDevice(m_audioDevice);
+    if (m_audioDevice != nullptr) {
+        m_audioSystem->DisconnectDevice(m_audioDevice);
+    }
     ysAudioSystem::DestroyAudioSystem(&m_audioSystem);
 
     m_audioDevice = nullptr;
@@ -640,8 +642,45 @@ ysError dbasic::DeltaEngine::LoadFont(Font **font, const wchar_t *path,
     return YDS_ERROR_RETURN(ysError::None);
 }
 
+ysError dbasic::DeltaEngine::UpdateAudioDeviceStates() {
+    YDS_ERROR_DECLARE("UpdateAudioDeviceStates");
+    YDS_NESTED_ERROR_CALL(m_audioSystem->UpdateDeviceStates());
+    return YDS_ERROR_RETURN(ysError::None);
+}
+
+ysError dbasic::DeltaEngine::UpdatePrimaryDevice() {
+    YDS_ERROR_DECLARE("UpdatePrimaryDevice");
+    ysAudioDevice *old = m_audioDevice;
+    if (m_audioDevice != nullptr &&
+        m_audioSystem->GetPrimaryDevice() != m_audioDevice) {
+        m_audioDevice = nullptr;
+    }
+
+    if (m_audioDevice == nullptr) {
+        m_audioSystem->ConnectDevice(m_gameWindow, &m_audioDevice);
+    }
+
+    return YDS_ERROR_RETURN(ysError::None);
+}
+
+ysError dbasic::DeltaEngine::FreeUnusedAudioDevices() {
+    YDS_ERROR_DECLARE("UpdatePrimaryDevice");
+    for (int i = 0; i < m_audioSystem->GetDeviceCount(); ++i) {
+        ysAudioDevice *device = m_audioSystem->GetDevice(i);
+        if (device != nullptr && device != m_audioDevice &&
+            device->IsConnected()) {
+            YDS_NESTED_ERROR_CALL(m_audioSystem->DisconnectDevice(device));
+        }
+    }
+    return YDS_ERROR_RETURN(ysError::None);
+}
+
 ysError dbasic::DeltaEngine::PlayAudio(AudioAsset *audio) {
     YDS_ERROR_DECLARE("PlayAudio");
+
+    if (m_audioDevice == nullptr) {
+        return YDS_ERROR_RETURN(ysError::NoAudioDevice);
+    }
 
     ysAudioSource *newSource = nullptr;
     YDS_NESTED_ERROR_CALL(

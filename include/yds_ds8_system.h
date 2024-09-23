@@ -19,6 +19,7 @@ public:
     virtual ysError DisconnectDevice(ysAudioDevice *device) override;
 
 protected:
+    ysDS8Device *DeviceById(GUID deviceGuid);
     ysDS8Device *AddDS8Device();
 
     static BOOL CALLBACK DirectSoundEnumProc(LPGUID lpGUID, LPCTSTR lpszDesc, LPCTSTR lpszDrvName, LPVOID lpContext);

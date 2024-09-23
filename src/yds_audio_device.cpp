@@ -3,21 +3,23 @@
 #include "../include/yds_audio_buffer.h"
 #include "../include/yds_audio_source.h"
 
-ysAudioDevice::ysAudioDevice() : ysAudioSystemObject("AUDIO_DEVICE", API::Undefined) {
+ysAudioDevice::ysAudioDevice()
+    : ysAudioSystemObject("AUDIO_DEVICE", API::Undefined) {
     m_deviceName[0] = '\0';
     m_connected = false;
+    m_available = false;
     m_windowAssociation = 0;
 }
 
-ysAudioDevice::ysAudioDevice(API api) : ysAudioSystemObject("ysAudioDevice", api) {
+ysAudioDevice::ysAudioDevice(API api)
+    : ysAudioSystemObject("ysAudioDevice", api) {
     m_deviceName[0] = '\0';
     m_connected = false;
+    m_available = false;
     m_windowAssociation = 0;
 }
 
-ysAudioDevice::~ysAudioDevice() {
-    /* void */
-}
+ysAudioDevice::~ysAudioDevice() { /* void */ }
 
 ysError ysAudioDevice::DestroyAudioBuffer(ysAudioBuffer *&buffer) {
     YDS_ERROR_DECLARE("DestroyAudioBuffer");
@@ -50,7 +52,7 @@ ysError ysAudioDevice::DestroyAudioBuffers() {
 
     int count = m_audioBuffers.GetNumObjects();
 
-    for(int i = count - 1; i >= 0; i--) {
+    for (int i = count - 1; i >= 0; i--) {
         ysAudioBuffer *buffer = m_audioBuffers.Get(i);
         YDS_NESTED_ERROR_CALL(DestroyAudioBuffer(buffer));
     }

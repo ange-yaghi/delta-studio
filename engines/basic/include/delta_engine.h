@@ -120,6 +120,9 @@ public:
     ysError LoadFont(Font **font, const wchar_t *path, int size = 4096,
                      int fontSize = 64);
 
+    ysError UpdateAudioDeviceStates();
+    ysError UpdatePrimaryDevice();
+    ysError FreeUnusedAudioDevices();
     ysError PlayAudio(AudioAsset *audio);
 
     void SubmitSkeleton(Skeleton *skeleton);

@@ -10,7 +10,8 @@ dbasic::AssetManager::AssetManager() : ysObject("AssetManager") {
     m_engine = nullptr;
 }
 
-dbasic::AssetManager::~AssetManager() { /* void */ }
+dbasic::AssetManager::~AssetManager() { /* void */
+}
 
 ysError dbasic::AssetManager::Destroy() {
     YDS_ERROR_DECLARE("Destroy");
@@ -637,14 +638,15 @@ ysError dbasic::AssetManager::LoadAudioFile(const wchar_t *fname,
     waveFile.OpenFile(fname);
 
     ysAudioBuffer *newBuffer = nullptr;
-    YDS_NESTED_ERROR_CALL(m_engine->GetAudioDevice()->CreateBuffer(
-            waveFile.GetAudioParameters(), waveFile.GetSampleCount(),
-            &newBuffer));
+    if (m_engine->GetAudioDevice() != nullptr) {
+        YDS_NESTED_ERROR_CALL(m_engine->GetAudioDevice()->CreateBuffer(
+                waveFile.GetAudioParameters(), waveFile.GetSampleCount(),
+                &newBuffer));
+        waveFile.AttachExternalBuffer(newBuffer);
+        waveFile.FillBuffer(0);
 
-    waveFile.AttachExternalBuffer(newBuffer);
-    waveFile.FillBuffer(0);
-
-    waveFile.CloseFile();
+        waveFile.CloseFile();
+    }
 
     AudioAsset *newAsset = m_audioAssets.New();
     newAsset->SetBuffer(newBuffer);
