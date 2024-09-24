@@ -43,6 +43,14 @@ public:
     virtual ysError DestroyAudioSource(ysAudioSource *&source);
     ysError DestroyAudioBuffers();
 
+    inline bool InUse() const {
+        return m_audioBuffers.GetNumObjects() != 0 ||
+               m_audioSources.GetNumObjects() != 0;
+    }
+
+private:
+    void Update();
+
 protected:
     wchar_t m_deviceName[MaxDeviceNameLength];
     ysWindow *m_windowAssociation;

@@ -668,7 +668,7 @@ ysError dbasic::DeltaEngine::FreeUnusedAudioDevices() {
     for (int i = 0; i < m_audioSystem->GetDeviceCount(); ++i) {
         ysAudioDevice *device = m_audioSystem->GetDevice(i);
         if (device != nullptr && device != m_audioDevice &&
-            device->IsConnected()) {
+            device->IsConnected() && !device->InUse()) {
             YDS_NESTED_ERROR_CALL(m_audioSystem->DisconnectDevice(device));
         }
     }

@@ -125,5 +125,10 @@ ysError ysAudioSystem::DisconnectDevice(ysAudioDevice *device) {
 ysError ysAudioSystem::UpdateDeviceStates() {
     YDS_ERROR_DECLARE("UpdateDeviceStates");
     YDS_NESTED_ERROR_CALL(EnumerateDevices());
+
+    for (int i = 0; i < m_devices.GetNumObjects(); ++i) {
+        m_devices.Get(i)->Update();
+    }
+
     return YDS_ERROR_RETURN(ysError::None);
 }

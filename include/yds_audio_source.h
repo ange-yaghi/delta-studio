@@ -46,9 +46,13 @@ public:
     virtual ysError SetVolume(float volume);
     virtual ysError SetPan(float pan);
 
-    virtual ysError Destroy();
+    void Release();
+
+private:
+    inline bool Destroyed() const { return m_destroyed; }
 
 protected:
+    virtual ysError Destroy();
     void ResetLock();
 
     ysAudioParameters m_audioParameters;
@@ -65,6 +69,9 @@ protected:
     float m_pan;
     float m_volume;
     float m_panVolume;
+
+    std::atomic_bool m_destroyed = false;
+    std::atomic_bool m_released = false;
 
 private:
     bool m_locked;
