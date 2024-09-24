@@ -8,8 +8,10 @@
 #include <atomic>
 
 class ysAudioDevice;
+class ysAudioSystem;
 class ysAudioBuffer : public ysAudioSystemObject {
     friend ysAudioDevice;
+    friend ysAudioSystem;
 
 public:
     ysAudioBuffer(ysAudioSystemObject::API api);

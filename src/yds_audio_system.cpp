@@ -1,5 +1,6 @@
 #include "../include/yds_audio_system.h"
 
+#include "../include/yds_audio_buffer.h"
 #include "../include/yds_audio_device.h"
 #include "../include/yds_ds8_system.h"
 
@@ -15,8 +16,7 @@ ysAudioSystem::ysAudioSystem(API api)
     m_primaryDevice = nullptr;
 }
 
-ysAudioSystem::~ysAudioSystem() { /* void */
-}
+ysAudioSystem::~ysAudioSystem() {}
 
 ysError ysAudioSystem::CreateAudioSystem(ysAudioSystem **newAudioSystem,
                                          API api) {
@@ -118,6 +118,30 @@ ysError ysAudioSystem::DisconnectDevice(ysAudioDevice *device) {
         device->m_connected = false;
         device->m_windowAssociation = nullptr;
     }
+
+    return YDS_ERROR_RETURN(ysError::None);
+}
+
+ysError ysAudioSystem::DestroyAudioBuffers() {
+    YDS_ERROR_DECLARE("DestroyAudioBuffers");
+
+    const int count = m_audioBuffers.GetNumObjects();
+    for (int i = count - 1; i >= 0; i--) {
+        ysAudioBuffer *buffer = m_audioBuffers.Get(i);
+        YDS_NESTED_ERROR_CALL(DestroyAudioBuffer(buffer));
+    }
+
+    return YDS_ERROR_RETURN(ysError::None);
+}
+
+ysError ysAudioSystem::DestroyAudioBuffer(ysAudioBuffer *&buffer) {
+    YDS_ERROR_DECLARE("DestroyAudioBuffer");
+
+    if (buffer == nullptr) {
+        return YDS_ERROR_RETURN(ysError::InvalidParameter);
+    }
+
+    buffer->m_destroyed = true;
 
     return YDS_ERROR_RETURN(ysError::None);
 }

@@ -10,16 +10,6 @@ ysDS8Device::ysDS8Device() : ysAudioDevice(API::DirectSound8) {
 
 ysDS8Device::~ysDS8Device() {}
 
-ysError ysDS8Device::CreateBuffer(const ysAudioParameters *parameters,
-                                  SampleOffset size, ysAudioBuffer **buffer) {
-    YDS_ERROR_DECLARE("CreateBuffer");
-
-    *buffer = m_audioBuffers.NewGeneric<ysDS8AudioBuffer>();
-    YDS_NESTED_ERROR_CALL((*buffer)->Initialize(size, *parameters));
-
-    return YDS_ERROR_RETURN(ysError::None);
-}
-
 ysError ysDS8Device::CreateSource(const ysAudioParameters *parameters,
                                   SampleOffset size, ysAudioSource **source) {
     YDS_ERROR_DECLARE("CreateSource");
@@ -48,15 +38,15 @@ ysError ysDS8Device::CreateSource(ysAudioBuffer *sourceBuffer,
 void ysDS8Device::UpdateAudioSources() {
     const int sourceCount = m_audioSources.GetNumObjects();
     for (int i = sourceCount - 1; i >= 0; --i) {
-        ysDS8AudioSource *ds8Buffer =
+        ysDS8AudioSource *ds8Source =
                 static_cast<ysDS8AudioSource *>(m_audioSources.Get(i));
 
-        if (ds8Buffer->GetBufferMode() == ysAudioSource::Mode::PlayOnce) {
+        if (ds8Source->GetBufferMode() == ysAudioSource::Mode::PlayOnce) {
             DWORD status;
-            if (ds8Buffer->m_buffer->GetStatus(&status) == TRUE) {
+            if (ds8Source->m_buffer->GetStatus(&status) == TRUE) {
                 if ((status & DSBSTATUS_PLAYING) == 0) {
-                    ds8Buffer->Destroy();
-                    m_audioBuffers.Delete(ds8Buffer->GetIndex());
+                    ysAudioSource *source = ds8Source;
+                    DestroyAudioSource(source);
                 }
             }
         }

@@ -1,13 +1,11 @@
 #include "../include/yds_ds8_system.h"
 
+#include "../include/yds_ds8_audio_buffer.h"
 #include "../include/yds_ds8_device.h"
 #include "../include/yds_windows_window.h"
 
-ysDS8System::ysDS8System() : ysAudioSystem(API::DirectSound8) { /* void */
-}
-
-ysDS8System::~ysDS8System() { /* void */
-}
+ysDS8System::ysDS8System() : ysAudioSystem(API::DirectSound8) {}
+ysDS8System::~ysDS8System() {}
 
 ysError ysDS8System::EnumerateDevices() {
     YDS_ERROR_DECLARE("EnumerateDevices");
@@ -116,6 +114,16 @@ ysError ysDS8System::DisconnectDevice(ysAudioDevice *device) {
     ysDS8Device *ds8Device = static_cast<ysDS8Device *>(device);
     ds8Device->m_device->Release();
     ds8Device->m_device = nullptr;
+
+    return YDS_ERROR_RETURN(ysError::None);
+}
+
+ysError ysDS8System::CreateBuffer(const ysAudioParameters *parameters,
+                                  SampleOffset size, ysAudioBuffer **buffer) {
+    YDS_ERROR_DECLARE("CreateBuffer");
+
+    *buffer = m_audioBuffers.NewGeneric<ysDS8AudioBuffer>();
+    YDS_NESTED_ERROR_CALL((*buffer)->Initialize(size, *parameters));
 
     return YDS_ERROR_RETURN(ysError::None);
 }

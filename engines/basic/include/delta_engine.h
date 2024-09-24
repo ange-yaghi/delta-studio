@@ -173,6 +173,7 @@ public:
     UiRenderer *GetUiRenderer() { return &m_uiRenderer; }
 
     ysAudioDevice *GetAudioDevice() const { return m_audioDevice; }
+    ysAudioSystem *GetAudioSystem() const { return m_audioSystem; }
     ysBreakdownTimer &GetBreakdownTimer() { return m_breakdownTimer; }
 
     ysWindowSystem *GetWindowSystem() const { return m_windowSystem; }

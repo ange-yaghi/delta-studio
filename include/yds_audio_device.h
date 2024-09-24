@@ -30,8 +30,6 @@ public:
     inline void SetAvailable(bool available) { m_available = true; }
     inline const wchar_t *GetDeviceName() const { return m_deviceName; }
 
-    virtual ysError CreateBuffer(const ysAudioParameters *parameters,
-                                 SampleOffset size, ysAudioBuffer **buffer) = 0;
     virtual ysError CreateSource(const ysAudioParameters *parameters,
                                  SampleOffset size, ysAudioSource **source) = 0;
     virtual ysError CreateSource(ysAudioBuffer *sourceBuffer,
@@ -39,14 +37,9 @@ public:
 
     virtual void UpdateAudioSources() = 0;
 
-    virtual ysError DestroyAudioBuffer(ysAudioBuffer *&buffer);
     virtual ysError DestroyAudioSource(ysAudioSource *&source);
-    ysError DestroyAudioBuffers();
 
-    inline bool InUse() const {
-        return m_audioBuffers.GetNumObjects() != 0 ||
-               m_audioSources.GetNumObjects() != 0;
-    }
+    inline bool InUse() const { return m_audioSources.GetNumObjects() != 0; }
 
 private:
     void Update();
@@ -55,7 +48,6 @@ protected:
     wchar_t m_deviceName[MaxDeviceNameLength];
     ysWindow *m_windowAssociation;
 
-    ysDynamicArray<ysAudioBuffer, 4> m_audioBuffers;
     ysDynamicArray<ysAudioSource, 4> m_audioSources;
 
     bool m_connected;
