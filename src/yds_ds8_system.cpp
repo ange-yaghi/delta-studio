@@ -79,6 +79,8 @@ ysError ysDS8System::ConnectDevice(ysAudioDevice *device,
         return YDS_ERROR_RETURN(ysError::CouldNotSetDeviceCooperativeLevel);
     }
 
+    ds8Device->Prime();
+
     return YDS_ERROR_RETURN(ysError::None);
 }
 
@@ -100,6 +102,8 @@ ysError ysDS8System::ConnectDeviceConsole(ysAudioDevice *device) {
     if (FAILED(result)) {
         return YDS_ERROR_RETURN(ysError::CouldNotSetDeviceCooperativeLevel);
     }
+
+    ds8Device->Prime();
 
     return YDS_ERROR_RETURN(ysError::None);
 }

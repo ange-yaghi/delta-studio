@@ -14,12 +14,22 @@ public:
     ysDS8Device();
     virtual ~ysDS8Device();
 
-    virtual ysError CreateBuffer(const ysAudioParameters *parameters, SampleOffset size, ysAudioBuffer **buffer) override;
+    virtual ysError CreateBuffer(const ysAudioParameters *parameters,
+                                 SampleOffset size,
+                                 ysAudioBuffer **buffer) override;
 
-    virtual ysError CreateSource(const ysAudioParameters *parameters, SampleOffset size, ysAudioSource **source) override;
-    virtual ysError CreateSource(ysAudioBuffer *sourceBuffer, ysAudioSource **source) override;
+    virtual ysError CreateSource(const ysAudioParameters *parameters,
+                                 SampleOffset size,
+                                 ysAudioSource **source) override;
+    virtual ysError CreateSource(ysAudioBuffer *sourceBuffer,
+                                 ysAudioSource **source) override;
 
     virtual void UpdateAudioSources();
+    ysError Prime();
+
+private:
+    ysError CreateBuffer(const ysAudioParameters *parameters, SampleOffset size,
+                         IDirectSoundBuffer8 **target);
 
 private:
     GUID m_guid;
