@@ -150,7 +150,7 @@ dbasic::DeltaEngine::CreateGameWindow(const GameEngineSettings &settings) {
     YDS_NESTED_ERROR_CALL(ysAudioSystem::CreateAudioSystem(
             &m_audioSystem, ysAudioSystem::API::DirectSound8));
     m_audioDevice = nullptr;
-    if (m_audioSystem->EnumerateDevices() != ysError::None) {
+    if (m_audioSystem->EnumerateDevices() == ysError::None) {
         m_audioSystem->ConnectDevice(m_gameWindow, &m_audioDevice);
     }
 
