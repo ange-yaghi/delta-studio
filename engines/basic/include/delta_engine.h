@@ -30,7 +30,7 @@ public:
 
     struct DrawCall {
         StageEnableFlags Flags = 0;
-        void *ObjectData;
+        size_t ObjectDataOffset;
         int ObjectDataSize;
         ysShaderProgram *Shader = nullptr;
         ysInputLayout *InputLayout = nullptr;
@@ -263,7 +263,7 @@ protected:
     ysBreakdownTimer m_breakdownTimer;
 
     DrawCall *NewDrawCall(int layer, int objectDataSize);
-    void *AllocateObjectData(int objectDataSize);
+    size_t AllocateObjectData(int objectDataSize);
 
 protected:
     // Settings

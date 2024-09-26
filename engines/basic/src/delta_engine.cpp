@@ -347,18 +347,19 @@ dbasic::DeltaEngine::DrawCall *
 dbasic::DeltaEngine::NewDrawCall(int layer, int objectDataSize) {
     DrawCall *newCall = &m_drawQueue[layer].New();
     if (newCall != nullptr) {
-        newCall->ObjectData = AllocateObjectData(objectDataSize);
+        newCall->ObjectDataOffset = AllocateObjectData(objectDataSize);
         newCall->ObjectDataSize = objectDataSize;
     }
 
     return newCall;
 }
 
-void *dbasic::DeltaEngine::AllocateObjectData(int objectDataSize) {
+size_t dbasic::DeltaEngine::AllocateObjectData(int objectDataSize) {
     if ((m_objectDataBufferOffset + objectDataSize) > m_objectDataBufferSize) {
         const size_t newSize = m_objectDataBufferSize + objectDataSize + 2048;
         char *newBuffer = new char[newSize];
         memcpy(newBuffer, m_objectDataBuffer, m_objectDataBufferSize);
+        if (m_objectDataBuffer != nullptr) { delete[] m_objectDataBuffer; }
         m_objectDataBuffer = newBuffer;
         m_objectDataBufferSize = newSize;
     }
@@ -366,7 +367,7 @@ void *dbasic::DeltaEngine::AllocateObjectData(int objectDataSize) {
     const size_t offset = m_objectDataBufferOffset;
     m_objectDataBufferOffset += objectDataSize;
 
-    return static_cast<void *>(m_objectDataBuffer + offset);
+    return offset;
 }
 
 ysError dbasic::DeltaEngine::InitializeGeometry() {
@@ -833,7 +834,8 @@ ysError dbasic::DeltaEngine::DrawSaq(StageEnableFlags flags) {
     DrawCall *newCall = NewDrawCall(0, m_shaderSet->GetObjectDataSize());
     if (newCall != nullptr) {
         YDS_NESTED_ERROR_CALL(m_shaderSet->CacheObjectData(
-                newCall->ObjectData, m_shaderSet->GetObjectDataSize()));
+                m_objectDataBuffer + newCall->ObjectDataOffset,
+                m_shaderSet->GetObjectDataSize()));
         newCall->Flags = flags;
         newCall->DepthTest = false;
     }
@@ -848,7 +850,8 @@ ysError dbasic::DeltaEngine::DrawImage(StageEnableFlags flags, ysTexture *image,
     DrawCall *newCall = NewDrawCall(layer, m_shaderSet->GetObjectDataSize());
     if (newCall != nullptr) {
         YDS_NESTED_ERROR_CALL(m_shaderSet->CacheObjectData(
-                newCall->ObjectData, m_shaderSet->GetObjectDataSize()));
+                m_objectDataBuffer + newCall->ObjectDataOffset,
+                m_shaderSet->GetObjectDataSize()));
         newCall->Flags = flags;
         newCall->DepthTest = false;
     }
@@ -862,7 +865,8 @@ ysError dbasic::DeltaEngine::DrawBox(StageEnableFlags flags, int layer) {
     DrawCall *newCall = NewDrawCall(layer, m_shaderSet->GetObjectDataSize());
     if (newCall != nullptr) {
         YDS_NESTED_ERROR_CALL(m_shaderSet->CacheObjectData(
-                newCall->ObjectData, m_shaderSet->GetObjectDataSize()));
+                m_objectDataBuffer + newCall->ObjectDataOffset,
+                m_shaderSet->GetObjectDataSize()));
         newCall->Flags = flags;
         newCall->DepthTest = false;
     }
@@ -934,7 +938,8 @@ ysError dbasic::DeltaEngine::DrawGeneric(
     DrawCall *newCall = NewDrawCall(layer, m_shaderSet->GetObjectDataSize());
     if (newCall != nullptr) {
         YDS_NESTED_ERROR_CALL(m_shaderSet->CacheObjectData(
-                newCall->ObjectData, m_shaderSet->GetObjectDataSize()));
+                m_objectDataBuffer + newCall->ObjectDataOffset,
+                m_shaderSet->GetObjectDataSize()));
         newCall->Shader = shader;
         newCall->InputLayout = inputLayout;
         newCall->VertexSize = vertexSize;
@@ -966,7 +971,8 @@ ysError dbasic::DeltaEngine::DrawGenericLines(StageEnableFlags flags,
     DrawCall *newCall = NewDrawCall(layer, m_shaderSet->GetObjectDataSize());
     if (newCall != nullptr) {
         YDS_NESTED_ERROR_CALL(m_shaderSet->CacheObjectData(
-                newCall->ObjectData, m_shaderSet->GetObjectDataSize()));
+                m_objectDataBuffer + newCall->ObjectDataOffset,
+                m_shaderSet->GetObjectDataSize()));
         newCall->Shader = m_shaderProgram;
         newCall->InputLayout = m_inputLayout;
         newCall->VertexSize = vertexSize;
@@ -1009,8 +1015,9 @@ ysError dbasic::DeltaEngine::ExecuteShaderStage(int stageIndex) {
                 if (call == nullptr) continue;
                 if (!stage->CheckFlags(call->Flags)) continue;
 
-                m_shaderSet->ReadObjectData(call->ObjectData, stageIndex,
-                                            call->ObjectDataSize);
+                m_shaderSet->ReadObjectData(m_objectDataBuffer +
+                                                    call->ObjectDataOffset,
+                                            stageIndex, call->ObjectDataSize);
                 stage->BindObject();
 
                 if (call->IndexBuffer != nullptr) {

@@ -5,6 +5,7 @@ ysAudioSource::ysAudioSource()
     ResetLock();
 
     m_bufferSize = 0;
+    m_dataBuffer = nullptr;
 
     m_bufferMode = Mode::Undefined;
 
@@ -18,6 +19,7 @@ ysAudioSource::ysAudioSource(API api)
     ResetLock();
 
     m_bufferSize = 0;
+    m_dataBuffer = nullptr;
 
     m_bufferMode = Mode::Undefined;
 

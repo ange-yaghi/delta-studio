@@ -20,7 +20,7 @@ public:
     virtual ysError CreateSource(ysAudioBuffer *sourceBuffer,
                                  ysAudioSource **source) override;
 
-    virtual void UpdateAudioSources();
+    virtual void UpdateAudioSources() override;
     ysError Prime();
 
 private:
