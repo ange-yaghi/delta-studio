@@ -233,8 +233,8 @@ void dbasic::Console::DrawWrappedText(const char *text, int width) {
 
 int dbasic::Console::GetTotalNotWhitespace() const {
     int n = 0;
-    for (int i = 0; i < BufferWidth; ++i) {
-        for (int j = 0; j < BufferHeight; ++j) {
+    for (int j = 0; j < BufferHeight; ++j) {
+        for (int i = 0; i < BufferWidth; ++i) {
             if (!IsWhiteSpace(m_buffer[i + j * BufferWidth])) { ++n; }
         }
     }
