@@ -284,6 +284,7 @@ namespace ysMath {
 
     ysVector Dot3(const ysVector &v1, const ysVector &v2);
     ysVector Cross(const ysVector &v1, const ysVector &v2);
+    ysVector Cross2D(const ysVector &v);
 
     __forceinline ysVector MagnitudeSquared3(const ysVector &v) {
         ysVector selfDot = ysMath::Dot3(v, v);
