@@ -1,5 +1,6 @@
 #include "../include/yds_windows_window.h"
 
+#include "../include/yds_window_event_handler.h"
 #include "../include/yds_windows_window_system.h"
 
 ysWindowsWindow::ysWindowsWindow() : ysWindow(Platform::Windows) {
@@ -268,6 +269,8 @@ int ysWindowsWindow::GetWindowsState(WindowState state) {
 void ysWindowsWindow::Close() {
     ysWindow::Close();
 
+    CloseWindow(m_hwnd);
+    m_eventHandler->OnCloseWindow();
     DestroyWindow(m_hwnd);
     m_hwnd = NULL;
 }
