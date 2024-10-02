@@ -6,9 +6,10 @@ dbasic::WindowHandler::WindowHandler() {
     m_device = nullptr;
     m_context = nullptr;
     m_engine = nullptr;
+    m_attachment = nullptr;
 }
 
-dbasic::WindowHandler::~WindowHandler() { /* void */ }
+dbasic::WindowHandler::~WindowHandler() {}
 
 void dbasic::WindowHandler::OnResizeWindow(int width, int height) {
     m_engine->SetWindowSize(width, height);
@@ -25,5 +26,9 @@ void dbasic::WindowHandler::Initialize(ysDevice *device,
 }
 
 void dbasic::WindowHandler::OnStartMoveResize() { m_engine->SetPaused(true); }
-
 void dbasic::WindowHandler::OnEndMoveResize() { m_engine->SetPaused(false); }
+
+void dbasic::WindowHandler::OnCloseWindow() {
+    if (m_attachment == nullptr) { return; }
+    m_attachment->OnClose();
+}

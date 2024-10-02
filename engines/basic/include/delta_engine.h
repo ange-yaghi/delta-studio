@@ -132,6 +132,7 @@ public:
     }
 
     bool IsOpen() const { return m_gameWindow->IsOpen(); }
+    WindowHandler &WindowHandler() { return m_windowHandler; }
 
     void SetWindowSize(int width, int height);
     void SetConsoleColor(const ysVector &v);
@@ -211,7 +212,7 @@ protected:
     ysWindowSystem *m_windowSystem;
     ysInputSystem *m_inputSystem;
 
-    WindowHandler m_windowHandler;
+    dbasic::WindowHandler m_windowHandler;
     ysWindow *m_gameWindow;
 
     ysRenderingContext *m_renderingContext;
