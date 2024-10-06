@@ -306,6 +306,11 @@ namespace ysMath {
         return ysMath::Mul(v, ysMath::Constants::Negate);
     }
 
+    __forceinline bool Equal(const ysVector &a, const ysVector &b) {
+        const ysVector cmp = _mm_cmpeq_ps(a, b);
+        return !(GetX(cmp) == 0 || GetY(cmp) == 0 || GetZ(cmp) == 0 || GetW(cmp) == 0);
+    }
+
     ysVector Negate3(const ysVector &v);
     ysVector Abs(const ysVector &a);
 
