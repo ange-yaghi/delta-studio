@@ -38,6 +38,7 @@ ysError dbasic::Console::Initialize() {
 
 ysError dbasic::Console::ResetScreenPosition() {
     YDS_ERROR_DECLARE("Reset");
+    if (m_buffer == nullptr) { return YDS_ERROR_RETURN(ysError::None); }
 
     for (int i = 0; i < BufferWidth; i++) {
         for (int j = 0; j < BufferHeight; j++) {
