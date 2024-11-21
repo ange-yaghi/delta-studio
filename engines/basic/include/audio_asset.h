@@ -10,7 +10,7 @@ namespace dbasic {
     class AudioAsset : public ysObject {
     public:
         AudioAsset();
-        ~AudioAsset();
+        virtual ~AudioAsset();
 
         void SetBuffer(ysAudioBuffer *buffer) { m_buffer = buffer; }
         ysAudioBuffer *GetBuffer() const { return m_buffer; }
@@ -18,7 +18,11 @@ namespace dbasic {
         void SetName(const char *name) { m_name = name; }
         std::string GetName() const { return m_name; }
 
+        void SetVolume(float volume) { m_volume = volume; }
+        inline float Volume() const { return m_volume; }
+
     protected:
+        float m_volume;
         ysAudioBuffer *m_buffer;
         std::string m_name;
     };

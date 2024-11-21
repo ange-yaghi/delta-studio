@@ -43,7 +43,7 @@ namespace dbasic {
         TextureAsset *GetTexture(const char *name);
         int GetTextureCount() const { return m_textures.GetNumObjects(); }
 
-        ysError LoadAudioFile(const wchar_t *fname, const char *name);
+        ysError LoadAudioFile(const wchar_t *fname, const char *name, float volume = 1.0f);
         AudioAsset *GetAudioAsset(const char *name);
         int GetAudioAssetCount() const { return m_audioAssets.GetNumObjects(); }
 
