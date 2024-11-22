@@ -13,6 +13,8 @@ public:
         Hand,
         Pan,
         Arrow,
+        UpArrow,
+        Location,
         Blocked
     };
 

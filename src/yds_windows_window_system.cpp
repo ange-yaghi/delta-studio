@@ -336,6 +336,12 @@ void ysWindowsWindowSystem::SetCursor(Cursor cursor) {
         case Cursor::Blocked:
             winapiCursor = IDC_NO;
             break;
+        case Cursor::UpArrow:
+            winapiCursor = IDC_UPARROW;
+            break;
+        case Cursor::Location:
+            winapiCursor = IDC_PIN;
+            break;
     }
 
     ::SetCursor(LoadCursor(NULL, winapiCursor));
