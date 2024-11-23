@@ -194,7 +194,10 @@ namespace ysMath {
         return _mm_set_ps(w, z, y, x);
     }
 
-    ysGeneric LoadVector(const ysVector4 &v);
+    inline ysGeneric LoadVector(const ysVector4 &v) {
+        return _mm_set_ps(v.w, v.z, v.y, v.x);
+    }
+
     ysGeneric LoadVector(const ysVector3 &v, float w = 0.0f);
     ysGeneric LoadVector(const ysVector2 &v1);
     ysGeneric LoadVector(const ysVector2 &v1, const ysVector2 &v2);
@@ -355,6 +358,14 @@ namespace ysMath {
 
     ysVector ExtendVector(const ysVector &v);
     ysVector MatMult(const ysMatrix &m, const ysVector &v);
+    inline ysVector MatMultTransposed(const ysMatrix &m_T, const ysVector &v) {
+        ysVector r;
+        r = _mm_mul_ps(_mm_replicate_x_ps(v), m_T.rows[0]);
+        r = _mm_madd_ps(_mm_replicate_y_ps(v), m_T.rows[1], r);
+        r = _mm_madd_ps(_mm_replicate_z_ps(v), m_T.rows[2], r);
+        r = _mm_madd_ps(_mm_replicate_w_ps(v), m_T.rows[3], r);
+        return r;       
+    }
     ysMatrix MatMult(const ysMatrix &m1, const ysMatrix &m2);
     ysMatrix MatAdd(const ysMatrix &m1, const ysMatrix &m2);
     ysMatrix MatConvert3x3(const ysMatrix &m);
