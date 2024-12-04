@@ -342,6 +342,9 @@ void ysWindowsWindowSystem::SetCursor(Cursor cursor) {
         case Cursor::Location:
             winapiCursor = IDC_PIN;
             break;
+        case Cursor::Help:
+            winapiCursor = IDC_HELP;
+            break;
     }
 
     ::SetCursor(LoadCursor(NULL, winapiCursor));

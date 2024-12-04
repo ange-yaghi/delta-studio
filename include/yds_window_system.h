@@ -15,6 +15,7 @@ public:
         Arrow,
         UpArrow,
         Location,
+        Help,
         Blocked
     };
 
