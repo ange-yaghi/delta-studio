@@ -99,7 +99,6 @@ ysError ysWindowsWindowSystem::SurveyMonitors() {
 
 void ysWindowsWindowSystem::ProcessMessages() {
     MSG msg;
-
     while (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE)) {
         TranslateMessage(&msg);
         DispatchMessage(&msg);

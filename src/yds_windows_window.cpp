@@ -3,14 +3,17 @@
 #include "../include/yds_window_event_handler.h"
 #include "../include/yds_windows_window_system.h"
 
+#include <dwmapi.h>
+
+#pragma comment(lib, "Dwmapi.lib")
+
 ysWindowsWindow::ysWindowsWindow() : ysWindow(Platform::Windows) {
     m_instance = 0;
     m_hwnd = 0;
     m_previousCmdShow = SW_SHOW;
 }
 
-ysWindowsWindow::~ysWindowsWindow() { /* void */
-}
+ysWindowsWindow::~ysWindowsWindow() {}
 
 ATOM ysWindowsWindow::RegisterWindowsClass(const ysVector &color) {
     const ysVector c_srgb = ysColor::linearToSrgb(color);
@@ -70,8 +73,7 @@ ysError ysWindowsWindow::InitializeWindow(
 
     ysWindowsWindow *parentWindow = static_cast<ysWindowsWindow *>(parent);
 
-    const int win32Style =
-            GetWindowsStyle(style) | GetWindowsState(initialState);
+    const int win32Style = GetWindowsStyle(style, initialState);
     const HWND parentHandle = (parentWindow) ? parentWindow->m_hwnd : NULL;
 
     RegisterWindowsClass(color);
@@ -85,6 +87,15 @@ ysError ysWindowsWindow::InitializeWindow(
             (height == INT_MAX || !validRect) ? CW_USEDEFAULT
                                               : std::min(height, 8000),
             parentHandle, NULL, m_instance, NULL);
+
+    BOOL value = TRUE;
+    ::DwmSetWindowAttribute(m_hwnd, DWMWA_USE_IMMERSIVE_DARK_MODE, &value,
+                            sizeof(value));
+
+    ShowWindow(m_hwnd, SW_SHOWDEFAULT);
+    UpdateWindow(m_hwnd);
+
+    ShowWindow(m_hwnd, GetWindowsState(initialState));
 
     m_locationx = x;
     m_locationy = y;
@@ -234,6 +245,26 @@ int ysWindowsWindow::GetScreenHeight() const {
     return (result == TRUE) ? rect.bottom - rect.top : 0;
 }
 
+int ysWindowsWindow::GetWindowsStyle(WindowStyle style, WindowState state) {
+    int win32State = 0;
+    switch (state) {
+        case WindowState::Visible:
+            win32State = WS_VISIBLE;
+            break;
+        case WindowState::Maximized:
+            win32State = WS_VISIBLE | WS_MAXIMIZE;
+            break;
+        case WindowState::Minimized:
+            win32State = WS_VISIBLE | WS_MINIMIZE;
+            break;
+        default:
+            win32State = WS_VISIBLE;
+            break;
+    }
+
+    return win32State | GetWindowsStyle(style);
+}
+
 int ysWindowsWindow::GetWindowsStyle(WindowStyle style) {
     switch (style) {
         case WindowStyle::Fullscreen:
@@ -254,13 +285,13 @@ int ysWindowsWindow::GetWindowsState(WindowState state) {
         case WindowState::Hidden:
             return 0;
         case WindowState::Maximized:
-            return WS_VISIBLE | WS_MAXIMIZE;
+            return SW_MAXIMIZE;
         case WindowState::Minimized:
-            return WS_VISIBLE | WS_MINIMIZE;
+            return SW_MINIMIZE;
         case WindowState::Visible:
-            return WS_VISIBLE;
+            return SW_NORMAL;
         default:
-            return WS_VISIBLE;
+            return SW_NORMAL;
     }
 }
 
