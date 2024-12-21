@@ -249,16 +249,16 @@ int ysWindowsWindow::GetWindowsStyle(WindowStyle style, WindowState state) {
     int win32State = 0;
     switch (state) {
         case WindowState::Visible:
-            win32State = WS_VISIBLE;
+            win32State = 0;
             break;
         case WindowState::Maximized:
-            win32State = WS_VISIBLE | WS_MAXIMIZE;
+            win32State = 0 | WS_MAXIMIZE;
             break;
         case WindowState::Minimized:
-            win32State = WS_VISIBLE | WS_MINIMIZE;
+            win32State = 0 | WS_MINIMIZE;
             break;
         default:
-            win32State = WS_VISIBLE;
+            win32State = 0;
             break;
     }
 
