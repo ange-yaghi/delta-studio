@@ -10,16 +10,17 @@ dbasic::ConsoleShaders::ConsoleShaders() {
     m_mainStage = nullptr;
 }
 
-dbasic::ConsoleShaders::~ConsoleShaders() {
-    /* void */
+dbasic::ConsoleShaders::~ConsoleShaders() { /* void */
 }
 
-ysError dbasic::ConsoleShaders::Initialize(
-    ShaderSet *shaderSet, ysRenderTarget *renderTarget, ysShaderProgram *shaderProgram, ysInputLayout *inputLayout) 
-{
+ysError dbasic::ConsoleShaders::Initialize(ShaderSet *shaderSet,
+                                           ysRenderTarget *renderTarget,
+                                           ysShaderProgram *shaderProgram,
+                                           ysInputLayout *inputLayout) {
     YDS_ERROR_DECLARE("Initialize");
 
-    YDS_NESTED_ERROR_CALL(shaderSet->NewStage("ConsoleShaders::Main", &m_mainStage));
+    YDS_NESTED_ERROR_CALL(
+            shaderSet->NewStage("ConsoleShaders::Main", &m_mainStage));
 
     m_inputLayout = inputLayout;
     m_shaderProgram = shaderProgram;
@@ -29,12 +30,17 @@ ysError dbasic::ConsoleShaders::Initialize(
     m_mainStage->SetFlagBit(3);
     m_mainStage->SetClearTarget(false);
 
-    m_mainStage->NewConstantBuffer<ShaderScreenVariables>(
-        "DefaultUiShaders::ScreenData", 0, ShaderStage::ConstantBufferBinding::BufferType::SceneData, &m_shaderScreenVariables);
-    m_mainStage->NewConstantBuffer<ConsoleShaderObjectVariables>(
-        "DefaultUiShaders::ObjectData", 1, ShaderStage::ConstantBufferBinding::BufferType::ObjectData, &m_shaderObjectVariables);
+    YDS_NESTED_ERROR_CALL(m_mainStage->NewConstantBuffer<ShaderScreenVariables>(
+            "DefaultUiShaders::ScreenData", 0,
+            ShaderStage::ConstantBufferBinding::BufferType::SceneData,
+            &m_shaderScreenVariables));
+    YDS_NESTED_ERROR_CALL(
+            m_mainStage->NewConstantBuffer<ConsoleShaderObjectVariables>(
+                    "DefaultUiShaders::ObjectData", 1,
+                    ShaderStage::ConstantBufferBinding::BufferType::ObjectData,
+                    &m_shaderObjectVariables));
 
-    m_mainStage->AddTextureInput(0, &m_textureHandle);
+    YDS_NESTED_ERROR_CALL(m_mainStage->AddTextureInput(0, &m_textureHandle));
 
     return YDS_ERROR_RETURN(ysError::None);
 }
@@ -53,12 +59,9 @@ void dbasic::ConsoleShaders::SetScreenDimensions(float width, float height) {
 }
 
 void dbasic::ConsoleShaders::CalculateCamera() {
-    m_shaderScreenVariables.Projection = ysMath::Transpose(
-        ysMath::OrthographicProjection(
-            m_screenWidth,
-            m_screenHeight,
-            0.001f,
-            500.0f));
+    m_shaderScreenVariables.Projection =
+            ysMath::Transpose(ysMath::OrthographicProjection(
+                    m_screenWidth, m_screenHeight, 0.001f, 500.0f));
 
     const float sinRot = sin(m_cameraAngle * ysMath::Constants::PI / 180.0f);
     const float cosRot = cos(m_cameraAngle * ysMath::Constants::PI / 180.0f);
@@ -67,7 +70,8 @@ void dbasic::ConsoleShaders::CalculateCamera() {
     const ysVector cameraTarget = ysMath::LoadVector(0.0f, 0.0f, 0.0f, 1.0f);
     const ysVector up = ysMath::LoadVector(-sinRot, cosRot);
 
-    m_shaderScreenVariables.CameraView = ysMath::Transpose(ysMath::CameraTarget(cameraEye, cameraTarget, up));
+    m_shaderScreenVariables.CameraView = ysMath::Transpose(
+            ysMath::CameraTarget(cameraEye, cameraTarget, up));
     m_shaderScreenVariables.Eye = ysMath::LoadVector(cameraEye);
 }
 
