@@ -223,10 +223,12 @@ LRESULT WINAPI ysWindowsWindowSystem::WinProc(HWND hWnd, UINT msg,
             /* if (inputSystem->IsGlobalInputEnabled() || target->IsActive()) */
             {
                 switch (msg) {
+                    case WM_SYSKEYDOWN:
+                        inputSystem->OnOsKey(lParam, wParam);
+                        return DefWindowProc(hWnd, msg, wParam, lParam);
+                    case WM_SYSKEYUP:
                     case WM_KEYDOWN:
                     case WM_KEYUP:
-                    case WM_SYSKEYDOWN:
-                    case WM_SYSKEYUP:
                         return inputSystem->OnOsKey(lParam, wParam);
                     case WM_RBUTTONDOWN:
                         return inputSystem->OnOsMouseButtonDown(
