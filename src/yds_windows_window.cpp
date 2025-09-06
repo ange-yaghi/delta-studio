@@ -3,6 +3,10 @@
 #include "../include/yds_window_event_handler.h"
 #include "../include/yds_windows_window_system.h"
 
+#ifndef DWMWA_USE_IMMERSIVE_DARK_MODE
+#define DWMWA_USE_IMMERSIVE_DARK_MODE 20
+#endif
+
 #include <dwmapi.h>
 
 #pragma comment(lib, "Dwmapi.lib")
