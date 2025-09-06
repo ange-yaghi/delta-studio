@@ -1,4 +1,8 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.20)
+
+include(FetchContent)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+set(FETCHCONTENT_QUIET OFF)
 
 # Enable group projects in folders
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
@@ -7,12 +11,15 @@ set_property(GLOBAL PROPERTY PREDEFINED_TARGETS_FOLDER "cmake")
 project(delta-studio)
 
 set(CMAKE_CXX_STANDARD 20)
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake/")
 
 if (CMAKE_SIZEOF_VOID_P EQUAL 8)
-    set(TARGET_ARCHITECTURE x64)
+    message(STATUS "Using 64-bit library versions")
+    set(ARCH x64)
+elseif (CMAKE_SIZEOF_VOID_P EQUAL 4)
+    message(STATUS "Using 32-bit library versions")
+    set(ARCH x86)
 else()
-    set(TARGET_ARCHITECTURE x86)
+    message(FATAL_ERROR "Unknown pointer size: ${CMAKE_SIZEOF_VOID_P}")
 endif()
 
 # =========================================================
@@ -20,32 +27,54 @@ endif()
 
 set(
     D3DX_LIBS
-    ${CMAKE_CURRENT_SOURCE_DIR}/dependencies/libraries/D3DX/lib/${TARGET_ARCHITECTURE})
+    ${CMAKE_CURRENT_SOURCE_DIR}/dependencies/libraries/D3DX/lib/${ARCH})
 
 # =========================================================
-# DirectSound
-
-set(
-    DIRECT_SOUND_LIBS
-    ${CMAKE_CURRENT_SOURCE_DIR}/dependencies/libraries/DirectSound/lib/${TARGET_ARCHITECTURE})
 
 # =========================================================
 # OpenGL
 
-include_directories(dependencies/libraries/OpenGL/include)
+find_package(OpenGL REQUIRED)
+
+FetchContent_Declare(
+    khronos_opengl_headers
+    GIT_REPOSITORY https://github.com/KhronosGroup/OpenGL-Registry.git
+    GIT_TAG main
+    GIT_PROGRESS TRUE
+)
+
+FetchContent_MakeAvailable(khronos_opengl_headers)
+
+FetchContent_Declare(
+    khronos_egl_headers
+    GIT_REPOSITORY https://github.com/KhronosGroup/EGL-Registry.git
+    GIT_TAG main
+    GIT_PROGRESS TRUE
+)
+
+FetchContent_MakeAvailable(khronos_egl_headers)
 
 # =========================================================
 # Vulkan
 
 set(
     VULKAN_LIBS
-    ${CMAKE_CURRENT_SOURCE_DIR}/dependencies/libraries/vulkan/lib/${TARGET_ARCHITECTURE})
+    ${CMAKE_CURRENT_SOURCE_DIR}/dependencies/libraries/vulkan/lib/${ARCH})
 include_directories(dependencies/libraries/vulkan/include)
 
 # =========================================================
 # STB
 
-include_directories(dependencies/libraries/stb)
+FetchContent_Declare(
+    stb
+    GIT_REPOSITORY https://github.com/nothings/stb.git
+    GIT_TAG master
+    GIT_PROGRESS TRUE
+)
+
+FetchContent_MakeAvailable(stb)
+
+# include_directories(dependencies/libraries/stb)
 
 add_library(delta-core STATIC
     # Source files
@@ -295,27 +324,34 @@ add_library(delta-core STATIC
 
 target_compile_definitions(delta-core PUBLIC _UNICODE UNICODE)
 
+target_include_directories(delta-core
+    PUBLIC
+    include ${stb_SOURCE_DIR}
+    ${khronos_opengl_headers_SOURCE_DIR}/api
+    ${khronos_egl_headers_SOURCE_DIR}/api
+)
+
 target_link_libraries(delta-core PUBLIC
-    d3d9.lib
-    d3d10.lib
-    d3d11.lib
+    d3d9
+    d3d10
+    d3d11
 
     # D3DX
     ${D3DX_LIBS}/d3dxof.lib
-    ${D3DX_LIBS}/d3dcompiler.lib
+    d3dcompiler
 
     # DXGI
-    dxguid.lib
-    dxgi.lib
+    dxguid
+    dxgi
 
     # DirectSound
-    ${DIRECT_SOUND_LIBS}/dsound.lib
+    dsound
 
     # Vulkan
     ${VULKAN_LIBS}/vulkan-1.lib
 
     winmm
-    OpenGL32
+    OpenGL::GL
 )
 
 add_subdirectory(physics)

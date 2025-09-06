@@ -3,7 +3,10 @@
 
 #include "yds_opengl_context.h"
 
-#include "OpenGL.h"
+#include <Windows.h>
+#include <gl/gl.h>
+#include <gl/glext.h>
+#include <gl/wglext.h>
 
 class ysOpenGLDevice;
 

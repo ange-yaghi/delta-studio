@@ -4,7 +4,10 @@
 #include "yds_window.h"
 #include "yds_rendering_context.h"
 
-#include <OpenGL.h>
+#include <Windows.h>
+#include <gl/gl.h>
+#include <gl/glext.h>
+#include <gl/wglext.h>
 
 class ysOpenGLVirtualContext : public ysRenderingContext {
     friend class ysOpenGLDevice;

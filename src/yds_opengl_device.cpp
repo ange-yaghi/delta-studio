@@ -9,7 +9,10 @@
 
 #include "../include/yds_opengl_windows_context.h"
 
-#include "OpenGL.h"
+#include <Windows.h>
+#include <gl/gl.h>
+#include <gl/glext.h>
+#include <gl/wglext.h>
 
 #include "../include/yds_stb_image.h"
 #include "../include/yds_file.h"

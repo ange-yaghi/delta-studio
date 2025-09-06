@@ -1,6 +1,8 @@
 #include "../include/yds_opengl_gpu_buffer.h"
 
-#include <OpenGL.h>
+#include <Windows.h>
+#include <gl/gl.h>
+#include <gl/glext.h>
 
 ysOpenGLGPUBuffer::ysOpenGLGPUBuffer() : ysGPUBuffer(DeviceAPI::OpenGL4_0) {
     m_bufferHandle = 0;
