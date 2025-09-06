@@ -114,6 +114,12 @@ dbasic::DeltaEngine::CreateGameWindow(const GameEngineSettings &settings) {
 
     m_eventHandler = settings.eventHandler;
 
+    // Timing System
+    m_timingSystem = ysTimingSystem::Get();
+    m_timingSystem->Initialize();
+
+    InitializeBreakdownTimer(settings.LoggingDirectory);
+
     // Create the window system
     YDS_NESTED_ERROR_CALL(ysWindowSystem::CreateWindowSystem(
             &m_windowSystem, ysWindowSystemObject::Platform::Windows));
@@ -182,12 +188,6 @@ dbasic::DeltaEngine::CreateGameWindow(const GameEngineSettings &settings) {
     YDS_NESTED_ERROR_CALL(InitializeShaders(settings.ShaderDirectory,
                                             settings.ShaderCompiledDirectory,
                                             settings.CompileShaders));
-
-    // Timing System
-    m_timingSystem = ysTimingSystem::Get();
-    m_timingSystem->Initialize();
-
-    InitializeBreakdownTimer(settings.LoggingDirectory);
 
     m_initialized = true;
 
