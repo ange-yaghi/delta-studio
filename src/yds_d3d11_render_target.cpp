@@ -27,10 +27,6 @@ ysD3D11RenderTarget::~ysD3D11RenderTarget() {
 }
 
 void ysD3D11RenderTarget::SetDebugName(const std::string &debugName) {
-    ysRenderTarget::SetDebugName(debugName);
-
-    if (m_depthBuffer != nullptr) m_depthBuffer->SetDebugName(debugName + "_DEPTH_BUFFER");
-
     D3D11SetDebugName(m_resourceView, debugName + "_RESOURCE_VIEW");
     D3D11SetDebugName(m_renderTargetView, debugName + "_RENDER_TARGET_VIEW");
     D3D11SetDebugName(m_depthStencilView, debugName + "_DEPTH_STENCIL_VIEW");

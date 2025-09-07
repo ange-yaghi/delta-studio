@@ -2,7 +2,7 @@
 #define YDS_INTERCHANGE_FILE_0_0_H
 
 #include "yds_base.h"
-
+#include "yds_error_codes.h"
 #include "yds_interchange_object.h"
 #include "yds_math.h"
 
@@ -60,7 +60,7 @@ public:
 
 public:
     ysInterchangeFile0_0();
-    ~ysInterchangeFile0_0();
+    ~ysInterchangeFile0_0() = default;
 
     ysError Open(const char *fname);
     ysError Close();
@@ -76,16 +76,12 @@ public:
     ysError ReadObject(ysInterchangeObject *object);
 
 protected:
-    std::fstream m_file;
-
     unsigned int m_minorVersion;
     unsigned int m_majorVersion;
-
     unsigned int m_toolId;
-
     unsigned int m_objectCount;
-
     bool m_compilationStatus;
+    std::fstream m_file;
 };
 
 #endif /* YDS_INTERCHANGE_FILE_0_0_H */

@@ -9,8 +9,6 @@ ysD3D11GPUBuffer::~ysD3D11GPUBuffer() {
 }
 
 void ysD3D11GPUBuffer::SetDebugName(const std::string &debugName) {
-    ysGPUBuffer::SetDebugName(debugName);
-
     if (m_buffer != nullptr) {
         m_buffer->SetPrivateData(WKPDID_D3DDebugObjectName, debugName.size(), debugName.c_str());
     }

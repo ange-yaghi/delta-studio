@@ -2,6 +2,7 @@
 #define YDS_ERROR_SYSTEM_H
 
 #include "yds_base.h"
+#include "yds_dynamic_array.h"
 #include "yds_error_codes.h"
 
 #include <mutex>

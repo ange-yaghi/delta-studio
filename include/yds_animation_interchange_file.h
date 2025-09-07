@@ -26,7 +26,7 @@ public:
 
 public:
     ysAnimationInterchangeFile();
-    virtual ~ysAnimationInterchangeFile();
+    virtual ~ysAnimationInterchangeFile() = default;
 
     ysError Open(const wchar_t *fname);
     ysError Close();
@@ -43,14 +43,11 @@ public:
 
 protected:
     ysAnimationInterchangeFileReader *m_reader;
-    std::fstream m_file;
-
     unsigned int m_minorVersion;
     unsigned int m_majorVersion;
-
     unsigned int m_toolId;
-
     bool m_compilationStatus;
+    std::fstream m_file;
 };
 
 #endif /* YDS_ANIMATION_INTERCHANGE_FILE_0_0_H */

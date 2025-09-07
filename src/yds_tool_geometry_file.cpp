@@ -1,16 +1,14 @@
-#include "../include/yds_tool_geometry_file.h"
+#include "yds_tool_geometry_file.h"
 
-ysToolGeometryFile::ysToolGeometryFile() : ysObject("ysToolGeometryFile") {
-    m_header = nullptr;
-    m_fileVersion = -1;
+#include "yds_error_system.h"
 
-    m_lastEditor = EditorId::Undefined;
-    m_compilationStatus = CompilationStatus::Undefined;
-}
-
-ysToolGeometryFile::~ysToolGeometryFile() {
-    /* void */
-}
+ysToolGeometryFile::ysToolGeometryFile()
+    : ysObject("ysToolGeometryFile")
+    , m_header(nullptr)
+    , m_fileVersion(-1)
+    , m_lastEditor(EditorId::Undefined)
+    , m_compilationStatus(CompilationStatus::Undefined)
+{ }
 
 ysError ysToolGeometryFile::Open(const wchar_t *fname) {
     YDS_ERROR_DECLARE("Open");

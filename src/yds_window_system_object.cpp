@@ -1,17 +1,23 @@
-#include "../include/yds_window_system_object.h"
+#include "yds_window_system_object.h"
 
-ysWindowSystemObject::ysWindowSystemObject() : ysObject("WINDOW_SYSTEM_OBJECT") {
-    YDS_ERROR_DECLARE("ysWindowSystemObject");
+#include "yds_error_system.h"
 
-    m_platform = Platform::Unknown;
+ysWindowSystemObject::ysWindowSystemObject()
+    : ysObject("WINDOW_SYSTEM_OBJECT")
+    , m_platform(Platform::Unknown)
+{ }
 
-    YDS_ERROR_RETURN(ysError::NoPlatform);
+ysWindowSystemObject::ysWindowSystemObject(const char *typeID, Platform platform)
+    : ysObject(typeID)
+    , m_platform(platform)
+{ }
+
+ysWindowSystemObject::Platform ysWindowSystemObject::GetPlatform() const
+{
+    return m_platform; 
 }
 
-ysWindowSystemObject::ysWindowSystemObject(const char *typeID, Platform platform) : ysObject(typeID) {
-    m_platform = platform;
-}
-
-ysWindowSystemObject::~ysWindowSystemObject() {
-    /* void */
+bool ysWindowSystemObject::CheckCompatibility(ysWindowSystemObject *object) const
+{
+    return (object) ? object->m_platform == m_platform : true; 
 }

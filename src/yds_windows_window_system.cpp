@@ -1,20 +1,18 @@
-#include "../include/yds_windows_window_system.h"
+#include "yds_windows_window_system.h"
 
-#include "../include/yds_windows_input_system.h"
-#include "../include/yds_windows_monitor.h"
-#include "../include/yds_windows_window.h"
+#include "yds_error_system.h"
+#include "yds_windows_input_system.h"
+#include "yds_windows_monitor.h"
+#include "yds_windows_window.h"
 
 #include <shellscalingapi.h>
 
 ysWindowsWindowSystem::ysWindowsWindowSystem()
-    : ysWindowSystem(Platform::Windows) {
-    m_instance = NULL;
-    m_oldCursor = NULL;
-    m_oldCursorClip = RECT();
-}
-
-ysWindowsWindowSystem::~ysWindowsWindowSystem() { /* void */
-}
+    : ysWindowSystem(Platform::Windows)
+    , m_instance(nullptr)
+    , m_oldCursor(nullptr)
+    , m_oldCursorClip(RECT())
+{ }
 
 ysError ysWindowsWindowSystem::NewWindow(ysWindow **newWindow) {
     YDS_ERROR_DECLARE("NewWindow");

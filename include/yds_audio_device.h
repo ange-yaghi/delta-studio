@@ -3,7 +3,7 @@
 
 #include "yds_audio_parameters.h"
 #include "yds_audio_system_object.h"
-
+#include "yds_dynamic_array.h"
 #include "yds_window.h"
 
 class ysAudioSource;
@@ -20,7 +20,7 @@ public:
 public:
     ysAudioDevice();
     ysAudioDevice(API api);
-    ~ysAudioDevice();
+    ~ysAudioDevice() = default;
 
     inline bool IsConnected() const { return m_connected; }
     inline void SetDeviceName(const wchar_t *newName) {
@@ -47,11 +47,9 @@ private:
 protected:
     wchar_t m_deviceName[MaxDeviceNameLength];
     ysWindow *m_windowAssociation;
-
-    ysDynamicArray<ysAudioSource, 4> m_audioSources;
-
     bool m_connected;
     bool m_available;
+    ysDynamicArray<ysAudioSource, 4> m_audioSources;
 };
 
 #endif /* YDS_AUDIO_DEVICE_H */

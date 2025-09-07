@@ -13,7 +13,7 @@ class ysWindowsWindow : public ysWindow {
 
 public:
     ysWindowsWindow();
-    virtual ~ysWindowsWindow();
+    virtual ~ysWindowsWindow() = default;
 
     // Overrides
 

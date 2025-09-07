@@ -1,11 +1,13 @@
-#include "../include/yds_ds8_system.h"
+#include "yds_ds8_system.h"
 
-#include "../include/yds_ds8_audio_buffer.h"
-#include "../include/yds_ds8_device.h"
-#include "../include/yds_windows_window.h"
+#include "yds_ds8_audio_buffer.h"
+#include "yds_ds8_device.h"
+#include "yds_error_system.h"
+#include "yds_windows_window.h"
 
-ysDS8System::ysDS8System() : ysAudioSystem(API::DirectSound8) {}
-ysDS8System::~ysDS8System() {}
+ysDS8System::ysDS8System()
+    : ysAudioSystem(API::DirectSound8)
+{ }
 
 ysError ysDS8System::EnumerateDevices() {
     YDS_ERROR_DECLARE("EnumerateDevices");

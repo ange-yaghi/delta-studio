@@ -13,8 +13,6 @@ ysD3D11Texture::~ysD3D11Texture() {
 }
 
 void ysD3D11Texture::SetDebugName(const std::string &debugName) {
-    ysTexture::SetDebugName(debugName);
-
     D3D11SetDebugName(m_resourceView, debugName + "_RESOURCE_VIEW");
     D3D11SetDebugName(m_renderTargetView, debugName + "_RENDER_TARGET_VIEW");
 }

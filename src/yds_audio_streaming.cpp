@@ -1,21 +1,18 @@
-#include "../include/yds_audio_streaming.h"
+#include "yds_audio_streaming.h"
 
-#include "../include/yds_audio_source.h"
-#include "../include/yds_audio_file.h"
+#include "yds_audio_source.h"
+#include "yds_audio_file.h"
+#include "yds_error_system.h"
 
-ysStreamingAudio::ysStreamingAudio() : ysObject("ysStreamingAudio") {
-    m_file = nullptr;
-    m_source = nullptr;
-    m_fileOffset = 0;
-
-    m_subdivisions = 0;
-    m_currentWriteSubdivision = 0;
-    m_currentReadSubdivision = 0;
-}
-
-ysStreamingAudio::~ysStreamingAudio() {
-    /* void */
-}
+ysStreamingAudio::ysStreamingAudio()
+    : ysObject("ysStreamingAudio")
+    , m_subdivisions(0)
+    , m_currentWriteSubdivision(0)
+    , m_currentReadSubdivision(0)
+    , m_file(nullptr)
+    , m_source(nullptr)
+    , m_fileOffset(0)
+{ }
 
 ysError ysStreamingAudio::AttachAudioFile(ysAudioFile *file) {
     YDS_ERROR_DECLARE("AttachAudioFile");

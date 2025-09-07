@@ -12,7 +12,7 @@ class ysDS8AudioSource : public ysAudioSource {
 
 public:
     ysDS8AudioSource();
-    virtual ~ysDS8AudioSource();
+    virtual ~ysDS8AudioSource() = default;
 
     virtual ysError LockEntireBuffer(void **buffer, SampleOffset *samples);
     virtual ysError UnlockBuffer(void *buffer, SampleOffset samples);

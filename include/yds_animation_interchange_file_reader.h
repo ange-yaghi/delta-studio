@@ -1,9 +1,9 @@
 #ifndef YDS_ANIMATION_INTERCHANGE_FILE_READER_H
 #define YDS_ANIMATION_INTERCHANGE_FILE_READER_H
 
-#include "yds_base.h"
-
 #include "yds_animation_curve.h"
+#include "yds_base.h"
+#include "yds_error_codes.h"
 #include "yds_math.h"
 
 #include <fstream>

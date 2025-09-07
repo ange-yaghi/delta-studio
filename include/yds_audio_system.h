@@ -1,9 +1,10 @@
 #ifndef YDS_AUDIO_SYSTEM_H
 #define YDS_AUDIO_SYSTEM_H
 
-#include "yds_audio_system_object.h"
-#include "yds_window.h"
 #include "yds_audio_parameters.h"
+#include "yds_audio_system_object.h"
+#include "yds_dynamic_array.h"
+#include "yds_window.h"
 
 class ysAudioDevice;
 class ysAudioBuffer;
@@ -11,7 +12,7 @@ class ysAudioSystem : public ysAudioSystemObject {
 protected:
     ysAudioSystem();
     ysAudioSystem(API api);
-    virtual ~ysAudioSystem();
+    virtual ~ysAudioSystem() = default;
 
 public:
     static ysError CreateAudioSystem(ysAudioSystem **newAudioSystem, API api);
@@ -37,9 +38,9 @@ public:
     inline int GetDeviceCount() const { return m_devices.GetNumObjects(); }
 
 protected:
+    ysAudioDevice *m_primaryDevice;
     ysDynamicArray<ysAudioBuffer, 4> m_audioBuffers;
     ysDynamicArray<ysAudioDevice, 4> m_devices;
-    ysAudioDevice *m_primaryDevice;
 };
 
 #endif /* YDS_AUDIO_SYSTEM_H */

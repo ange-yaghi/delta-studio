@@ -17,19 +17,13 @@ public:
 
 public:
     ysContextObject();
-    ysContextObject(const char *typeID, DeviceAPI API);
+    ysContextObject(const char *typeID, DeviceAPI api);
     virtual ~ysContextObject();
-
-    DeviceAPI GetAPI() const { return m_api; }
-
+    DeviceAPI GetAPI() const;
     bool CheckCompatibility(const ysContextObject *object) const;
-
-    virtual void SetDebugName(const std::string &debugName) { m_debugName = debugName; }
-    std::string GetDebugName() const { return m_debugName; }
 
 private:
     DeviceAPI m_api;
-    std::string m_debugName;
 };
 
 #endif /* YDS_CONTEXT_OBJECT_H */

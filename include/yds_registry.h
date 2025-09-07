@@ -3,6 +3,7 @@
 
 #include "yds_base.h"
 #include "yds_dynamic_array.h"
+#include "yds_error_system.h"
 
 template<typename TYPE, int START_SIZE = 0>
 class ysRegistry : public ysObject {

@@ -3,62 +3,24 @@
 
 #include "yds_error_codes.h"
 #include "yds_allocator.h"
+#include "yds_dynamic_array_element.h"
 
 #include <memory>
-
-class ysDynamicArrayElement {
-public:
-    ysDynamicArrayElement() {
-        m_index = -1;
-        m_alignment = 0;
-    }
-
-    ~ysDynamicArrayElement() {
-        /* void */
-    }
-
-    inline int GetIndex() const {
-        return m_index;
-    }
-
-    inline void SetIndex(int index) {
-        m_index = index;
-    }
-
-    inline int GetAlignment() const {
-        return m_alignment;
-    }
-
-    inline void SetAlignment(int alignment) {
-        m_alignment = alignment;
-    }
-
-protected:
-    int m_index;
-    int m_alignment;
-};
 
 template<typename TYPE, int START_SIZE = 0>
 class ysDynamicArray {
 public:
-    ysDynamicArray() {
-        m_maxSize = START_SIZE;
-        m_nObjects = 0;
-        m_array = nullptr;
-
-        Preallocate(m_maxSize);
+    ysDynamicArray()
+        : m_array(nullptr)
+        , m_maxSize(START_SIZE)
+        , m_nObjects(0)
+    {
+        m_array = new TYPE* [m_maxSize];
     }
 
     ~ysDynamicArray() {
         Clear();
         delete[] m_array;
-    }
-
-    void Preallocate(int nObjects) {
-        if (!nObjects) return;
-        if (m_array) return;
-
-        m_array = new TYPE * [nObjects];
     }
 
     TYPE *New() {
@@ -72,48 +34,6 @@ public:
         sElement->SetIndex(m_nObjects);
 
         return m_array[m_nObjects++];
-    }
-
-    void Add(TYPE *type) {
-        if (m_nObjects >= m_maxSize) Extend();
-
-        m_array[m_nObjects] = type;
-
-        // Cast to a standard array element
-        ysDynamicArrayElement *sElement = static_cast<ysDynamicArrayElement *>(m_array[m_nObjects]);
-        sElement->SetIndex(m_nObjects);
-
-        m_nObjects++;
-    }
-
-    void Add(TYPE *type, int offset) {
-        if (m_nObjects >= m_maxSize) Extend();
-
-        // Make room
-        for (int i = m_nObjects; i > offset; i--) {
-            m_array[i] = m_array[i - 1];
-        }
-
-        m_array[offset] = type;
-
-        // Cast to a standard array element
-        ysDynamicArrayElement *sElement = static_cast<ysDynamicArrayElement *>(m_array[offset]);
-        sElement->SetIndex(offset);
-
-        m_nObjects++;
-    }
-
-    void Move(TYPE *type, int offset) {
-        // Make room
-        for (int i = m_nObjects - 1; i > offset; i--) {
-            m_array[i] = m_array[i - 1];
-        }
-
-        m_array[offset] = type;
-
-        // Cast to a standard array element
-        ysDynamicArrayElement *sElement = static_cast<ysDynamicArrayElement *>(m_array[offset]);
-        sElement->SetIndex(offset);
     }
 
     template<typename T_Create, int Alignment = 1>

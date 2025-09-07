@@ -9,7 +9,11 @@
 template<typename TYPE, int START_SIZE = 0, int ALIGNMENT = 1>
 class ysExpandingArray {
 public:
-    ysExpandingArray() {
+    ysExpandingArray()
+        : m_maxSize(START_SIZE)
+        , m_nObjects(0)
+        , m_array(nullptr)
+    {
         m_maxSize = START_SIZE;
         m_nObjects = 0;
         m_array = nullptr;
@@ -17,9 +21,7 @@ public:
         Preallocate(m_maxSize);
     }
 
-    ysExpandingArray(const ysExpandingArray &ref) {
-        /* void */
-    }
+    ysExpandingArray(const ysExpandingArray &ref) = delete;
 
     ysExpandingArray &operator=(const ysExpandingArray &ref) {
         Preallocate(ref.m_maxSize);
@@ -43,29 +45,11 @@ public:
     }
 
     void Destroy() {
-        DestroyArray(m_array);
+        ysAllocator::TypeFree(m_array, m_nObjects, true, ALIGNMENT);
 
         m_maxSize = 0;
         m_nObjects = 0;
         m_array = nullptr;
-    }
-
-    TYPE *CreateArray(int nObjects, bool construct = true) {
-        return ysAllocator::TypeAllocate<TYPE, ALIGNMENT>(nObjects, construct);
-    }
-
-    void DestroyArray(TYPE *arr) {
-        /*if (ALIGNMENT == 1) {
-            delete[] arr;
-        }
-        else {
-            for (int i = 0; i < m_maxSize; i++) {
-                arr[i].~TYPE();
-            }
-
-            _aligned_free(arr);
-        }*/
-        ysAllocator::TypeFree(arr, m_nObjects, true, ALIGNMENT);
     }
 
     void Allocate(int nObjects) {
@@ -81,8 +65,8 @@ public:
             }
         }
 
-        m_array = CreateArray(nObjects, true);
-        m_maxSize = nObjects;
+        m_array    = ysAllocator::TypeAllocate<TYPE, ALIGNMENT>(nObjects, true);
+        m_maxSize  = nObjects;
         m_nObjects = nObjects;
     }
 
@@ -99,7 +83,7 @@ public:
             }
         }
 
-        m_array = CreateArray(nObjects, false);
+        m_array = ysAllocator::TypeAllocate<TYPE, ALIGNMENT>(nObjects, false);
         m_maxSize = nObjects;
         m_nObjects = 0;
     }
@@ -168,12 +152,12 @@ public:
 
 private:
     void Extend() {
-        TYPE *newArray = CreateArray(m_maxSize * 2 + 1);
+        TYPE *newArray = ysAllocator::TypeAllocate<TYPE, ALIGNMENT>(m_maxSize * 2 + 1, true);;
         for (int i = 0; i < m_nObjects; i++) {
             newArray[i] = m_array[i];
         }
 
-        DestroyArray(m_array);
+        ysAllocator::TypeFree(m_array, m_nObjects, true, ALIGNMENT);
 
         m_array = newArray;
         m_maxSize *= 2;

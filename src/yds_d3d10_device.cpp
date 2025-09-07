@@ -1,19 +1,18 @@
 #define NOMINMAX
-#include "../include/yds_d3d10_device.h"
+#include "yds_d3d10_device.h"
 
-#include "../include/yds_d3d10_context.h"
-#include "../include/yds_d3d10_gpu_buffer.h"
-#include "../include/yds_d3d10_input_layout.h"
-#include "../include/yds_d3d10_render_target.h"
-#include "../include/yds_d3d10_shader.h"
-#include "../include/yds_d3d10_shader_program.h"
-#include "../include/yds_d3d10_texture.h"
-
-#include "../include/yds_windows_window.h"
+#include "yds_d3d10_context.h"
+#include "yds_d3d10_gpu_buffer.h"
+#include "yds_d3d10_input_layout.h"
+#include "yds_d3d10_render_target.h"
+#include "yds_d3d10_shader.h"
+#include "yds_d3d10_shader_program.h"
+#include "yds_d3d10_texture.h"
+#include "yds_error_system.h"
+#include "yds_stb_image.h"
+#include "yds_windows_window.h"
 
 #include <d3d10.h>
-
-#include "../include/yds_stb_image.h"
 
 #if YDS_SUPPORTS_SHADER_COMPILATION
 #pragma warning(push, 0)

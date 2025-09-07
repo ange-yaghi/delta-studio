@@ -26,7 +26,7 @@ protected:
 
     ysWindowSystem();
     ysWindowSystem(Platform platform);
-    virtual ~ysWindowSystem();
+    virtual ~ysWindowSystem() = default;
 
 public:
     static ysError CreateWindowSystem(ysWindowSystem **newSystem, Platform platform);
@@ -77,13 +77,13 @@ public:
 protected:
     Cursor m_cursor;
 
-    ysDynamicArray<ysMonitor, 4> m_monitorArray;
-    ysDynamicArray<ysWindow, 4> m_windowArray;
-
     ysInputSystem *m_inputSystem;
 
     bool m_cursorVisible;
     bool m_cursorConfined;
+
+    ysDynamicArray<ysMonitor, 4> m_monitorArray;
+    ysDynamicArray<ysWindow, 4> m_windowArray;
 };
 
 #endif /* YDS_WINDOW_SYSTEM_H */

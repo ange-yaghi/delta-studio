@@ -1,30 +1,25 @@
-#include "../include/yds_windows_input_system.h"
+#include "yds_windows_input_system.h"
 
-#include "../include/yds_key_maps.h"
-#include "../include/yds_windows_input_device.h"
-#include "../include/yds_windows_window.h"
-#include "../include/yds_windows_window_system.h"
+#include "yds_error_system.h"
+#include "yds_key_maps.h"
+#include "yds_windows_input_device.h"
+#include "yds_windows_window.h"
+#include "yds_windows_window_system.h"
 
 #define NOMINMAX
 #include <Windows.h>
 #include <windowsx.h>
 
 ysWindowsInputSystem::ysWindowsInputSystem()
-    : ysInputSystem(Platform::Windows) {
-    /* void */
-}
+    : ysInputSystem(Platform::Windows)
+{ }
 
-ysWindowsInputSystem::~ysWindowsInputSystem() { /* void */
-}
-
-ysInputDevice::InputDeviceType ysWindowsInputSystem::TranslateType(int type) {
+ysInputDevice::InputDeviceType ysWindowsInputSystem::TranslateType(int type)
+{   
     switch (type) {
-        case RIM_TYPEHID:
-            return ysInputDevice::InputDeviceType::CUSTOM;
-        case RIM_TYPEKEYBOARD:
-            return ysInputDevice::InputDeviceType::KEYBOARD;
-        case RIM_TYPEMOUSE:
-            return ysInputDevice::InputDeviceType::MOUSE;
+    case RIM_TYPEHID:      return ysInputDevice::InputDeviceType::CUSTOM;
+    case RIM_TYPEKEYBOARD: return ysInputDevice::InputDeviceType::KEYBOARD;
+    case RIM_TYPEMOUSE:    return ysInputDevice::InputDeviceType::MOUSE;
     }
 
     return ysInputDevice::InputDeviceType::UNKNOWN;

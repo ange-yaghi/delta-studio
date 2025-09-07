@@ -7,8 +7,6 @@ ysD3D11InputLayout::ysD3D11InputLayout() : ysInputLayout(DeviceAPI::DirectX11) {
 ysD3D11InputLayout::~ysD3D11InputLayout() {}
 
 void ysD3D11InputLayout::SetDebugName(const std::string &debugName) {
-    ysInputLayout::SetDebugName(debugName);
-
     if (m_layout != nullptr) {
         m_layout->SetPrivateData(WKPDID_D3DDebugObjectName,
                                  UINT(debugName.size()), debugName.c_str());

@@ -1,17 +1,17 @@
-#include "../include/yds_ds8_audio_source.h"
+#include "yds_ds8_audio_source.h"
 
-#include "../include/yds_ds8_audio_buffer.h"
+#include "yds_ds8_audio_buffer.h"
+#include "yds_error_system.h"
 
 #define _USE_MATH_DEFINES
 #include <assert.h>
 #include <math.h>
 
-ysDS8AudioSource::ysDS8AudioSource() : ysAudioSource(API::DirectSound8) {
-    m_buffer = nullptr;
-    m_lost = false;
-}
-
-ysDS8AudioSource::~ysDS8AudioSource() {}
+ysDS8AudioSource::ysDS8AudioSource()
+    : ysAudioSource(API::DirectSound8)
+    , m_lost(false)
+    , m_buffer(nullptr)
+{ }
 
 ysError ysDS8AudioSource::LockEntireBuffer(void **buffer,
                                            SampleOffset *samples) {

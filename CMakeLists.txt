@@ -243,7 +243,7 @@ add_library(delta-core STATIC
     include/yds_ds8_system.h
     include/yds_dynamic_allocator.h
     include/yds_dynamic_array.h
-    include/yds_dynamic_array_deprecated.h
+    include/yds_dynamic_array_element.h
     include/yds_error_codes.h
     include/yds_error_handler.h
     include/yds_error_system.h

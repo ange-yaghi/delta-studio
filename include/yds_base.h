@@ -1,27 +1,18 @@
 #ifndef YDS_BASE_H
 #define YDS_BASE_H
 
-#include "yds_dynamic_array.h"
+#include "yds_dynamic_array_element.h"
 
 class ysObject : public ysDynamicArrayElement {
 public:
     ysObject();
     ysObject(const char *typeID);
-    ~ysObject();
+    ~ysObject() = default;
 
-//#ifdef _DEBUG
-//    void RaiseError(bool condition, const char *format, ...);
-//#else
-//#define RaiseError(condition, format, ...) ((void)0)
-//#endif
+    const char* GetTypeID() const;
 
-    const char *GetTypeID() const { return m_typeID; }
-
-protected:
+private:
     const char *m_typeID;
 };
-
-// TEMP
-#include "yds_error_system.h"
 
 #endif /* YDS_BASE_H */

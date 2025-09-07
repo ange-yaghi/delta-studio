@@ -1,71 +1,56 @@
-#include "../include/yds_window.h"
+#include "yds_window.h"
 
-#include "../include/yds_window_event_handler.h"
-#include "../include/yds_window_system.h"
+#include "yds_error_system.h"
+#include "yds_window_event_handler.h"
+#include "yds_window_system.h"
 
 #include <cmath>
 
-ysWindow::ysWindow() : ysWindowSystemObject("WINDOW", Platform::Unknown) {
-    m_title[0] = '\0';
-
-    m_monitor = nullptr;
-
-    m_width = 0;
-    m_height = 0;
-
-    m_locationx = 0;
-    m_locationy = 0;
-
-    m_windowedWidth = 0;
-    m_windowedHeight = 0;
-
-    m_windowedLocationx = 0;
-    m_windowedLocationy = 0;
-
-    m_windowStyle = WindowStyle::Unknown;
-    m_windowState = WindowState::Hidden;
-    m_parent = nullptr;
-
-    m_active = false;
-    m_resizing = false;
-
-    m_eventHandler = nullptr;
-
-    m_gameResolutionScaleHorizontal = m_gameResolutionScaleVertical = 1.0f;
-}
+ysWindow::ysWindow()
+    : ysWindowSystemObject("WINDOW", Platform::Unknown)
+    , m_width(0)
+    , m_height(0)
+    , m_locationx(0)
+    , m_locationy(0)
+    , m_windowedWidth(0)
+    , m_windowedHeight(0)
+    , m_windowedLocationx(0)
+    , m_windowedLocationy(0)
+    , m_title({0})
+    , m_windowState(WindowState::Hidden)
+    , m_windowStyle(WindowStyle::Unknown)
+    , m_parent(nullptr)
+    , m_monitor(nullptr)
+    , m_active(false)
+    , m_resizing(false)
+    , m_gameResolutionScaleHorizontal(1.0f)
+    , m_gameResolutionScaleVertical(1.0f)
+    , m_backgroundColor(ysMath::LoadVector(0.0f, 0.0f, 0.0f, 1.0f))
+    , m_eventHandler(nullptr)
+{ }
 
 ysWindow::ysWindow(Platform platform)
-    : ysWindowSystemObject("WINDOW", platform) {
-    m_title[0] = '\0';
-
-    m_monitor = nullptr;
-
-    m_width = 0;
-    m_height = 0;
-
-    m_locationx = 0;
-    m_locationy = 0;
-
-    m_windowedWidth = 0;
-    m_windowedHeight = 0;
-
-    m_windowedLocationx = 0;
-    m_windowedLocationy = 0;
-
-    m_windowStyle = WindowStyle::Unknown;
-    m_windowState = WindowState::Hidden;
-    m_parent = nullptr;
-
-    m_active = true;
-    m_resizing = false;
-
-    m_eventHandler = nullptr;
-    m_backgroundColor = ysMath::LoadVector(0.0f, 0.0f, 0.0f, 1.0f);
-
-    m_gameResolutionScaleHorizontal = m_gameResolutionScaleVertical = 1.0f;
-}
-
-ysWindow::~ysWindow() {}
+    : ysWindowSystemObject("WINDOW", platform)
+    , m_width(0)
+    , m_height(0)
+    , m_locationx(0)
+    , m_locationy(0)
+    , m_windowedWidth(0)
+    , m_windowedHeight(0)
+    , m_windowedLocationx(0)
+    , m_windowedLocationy(0)
+    , m_title({0})
+    , m_windowState(WindowState::Hidden)
+    , m_windowStyle(WindowStyle::Unknown)
+    , m_parent(nullptr)
+    , m_monitor(nullptr)
+    , m_active(false)
+    , m_resizing(false)
+    , m_gameResolutionScaleHorizontal(1.0f)
+    , m_gameResolutionScaleVertical(1.0f)
+    , m_backgroundColor(ysMath::LoadVector(0.0f, 0.0f, 0.0f, 1.0f))
+    , m_eventHandler(nullptr)
+{ }
 
 ysError ysWindow::InitializeWindow(ysWindow *parent, const wchar_t *title,
                                    WindowStyle style, int x, int y, int width,

@@ -1,19 +1,16 @@
-#include "../include/yds_animation_interchange_file.h"
+#include "yds_animation_interchange_file.h"
 
-#include "../include/yds_animation_interchange_file_reader_0_0.h"
-#include "../include/yds_animation_interchange_file_reader_0_1.h"
+#include "yds_animation_interchange_file_reader_0_0.h"
+#include "yds_animation_interchange_file_reader_0_1.h"
+#include "yds_error_system.h"
 
-ysAnimationInterchangeFile::ysAnimationInterchangeFile() {
-    m_reader = nullptr;
-    m_majorVersion = 0x0;
-    m_minorVersion = 0x0;
-    m_toolId = -1;
-    m_compilationStatus = false;
-}
-
-ysAnimationInterchangeFile::~ysAnimationInterchangeFile() {
-    /* void */
-}
+ysAnimationInterchangeFile::ysAnimationInterchangeFile()
+    : m_reader(nullptr)
+    , m_minorVersion(0x0)
+    , m_majorVersion(0x0)
+    , m_toolId(-1)
+    , m_compilationStatus(false)
+{ }
 
 ysError ysAnimationInterchangeFile::Open(const wchar_t *fname) {
     YDS_ERROR_DECLARE("Open");

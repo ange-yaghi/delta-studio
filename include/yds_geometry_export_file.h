@@ -2,28 +2,27 @@
 #define YDS_GEOMETRY_EXPORT_FILE_H
 
 #include "yds_base.h"
-
-#include "yds_object_data.h"
+#include "yds_error_codes.h"
 #include "yds_interchange_object.h"
+#include "yds_object_data.h"
 
 #include <fstream>
 
 class ysGeometryExportFile : public ysObject {
 public:
     // Flags
-    static const unsigned int MDF_NONE = 0x00;
-    static const unsigned int MDF_BONES = 0x01;
-    static const unsigned int MDF_NORMALS = 0x02;
-    static const unsigned int MDF_TANGENTS = 0x04;
-    static const unsigned int MDF_TEXTURE_DATA = 0x08;
-    static const unsigned int MDF_ANIMATION_DATA = 0x10;
+    static constexpr unsigned int MDF_NONE           = 0x00;
+    static constexpr unsigned int MDF_BONES          = 0x01;
+    static constexpr unsigned int MDF_NORMALS        = 0x02;
+    static constexpr unsigned int MDF_TANGENTS       = 0x04;
+    static constexpr unsigned int MDF_TEXTURE_DATA   = 0x08;
+    static constexpr unsigned int MDF_ANIMATION_DATA = 0x10;
 
     struct VertexInfo {
         bool IncludeTangents = false;
-        bool IncludeNormals = true;
-        bool IncludeUVs = true;
-
-        int UVChannels = 1;
+        bool IncludeNormals  = true;
+        bool IncludeUVs      = true;
+        int UVChannels       = 1;
     };
 
     struct ObjectOutputHeader {
@@ -58,7 +57,7 @@ public:
 
 public:
     ysGeometryExportFile();
-    ~ysGeometryExportFile();
+    ~ysGeometryExportFile() = default;
 
     ysError Open(const wchar_t *fname);
     void Close();

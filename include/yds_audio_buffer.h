@@ -1,9 +1,9 @@
 #ifndef YDS_AUDIO_BUFFER_H
 #define YDS_AUDIO_BUFFER_H
 
-#include "yds_audio_system_object.h"
-
 #include "yds_audio_parameters.h"
+#include "yds_audio_system_object.h"
+#include "yds_error_codes.h"
 
 #include <atomic>
 
@@ -15,7 +15,7 @@ class ysAudioBuffer : public ysAudioSystemObject {
 
 public:
     ysAudioBuffer(ysAudioSystemObject::API api);
-    virtual ~ysAudioBuffer();
+    virtual ~ysAudioBuffer() = default;
 
     virtual ysError Initialize(SampleOffset samples,
                                const ysAudioParameters &parameters);
@@ -33,15 +33,14 @@ public:
         return &m_audioParameters;
     }
 
-
     inline void Release() { m_released = true; }
     inline bool Released() const { return m_released; }
 
 protected:
-    std::atomic_bool m_destroyed = false, m_released = false;
-
-    ysAudioParameters m_audioParameters;
+    std::atomic_bool m_destroyed = false;
+    std::atomic_bool m_released = false;
     SampleOffset m_samples;
+    ysAudioParameters m_audioParameters;
 };
 
 #endif /* YDS_AUDIO_BUFFER_H */

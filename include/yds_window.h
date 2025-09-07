@@ -2,6 +2,7 @@
 #define YDS_WINDOW_H
 
 #include "yds_color.h"
+#include "yds_error_codes.h"
 #include "yds_monitor.h"
 #include "yds_window_system_object.h"
 
@@ -26,7 +27,7 @@ public:
 public:
     ysWindow();
     ysWindow(Platform platform);
-    virtual ~ysWindow();
+    virtual ~ysWindow() = default;
 
     /* Interface */
     virtual ysError

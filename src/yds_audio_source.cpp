@@ -1,34 +1,30 @@
-#include "../include/yds_audio_source.h"
+#include "yds_audio_source.h"
+
+#include "yds_error_system.h"
 
 ysAudioSource::ysAudioSource()
-    : ysAudioSystemObject("AUDIO_BUFFER", API::Undefined) {
+    : ysAudioSystemObject("AUDIO_BUFFER", API::Undefined)
+    , m_dataBuffer(nullptr)
+    , m_bufferSize(0)
+    , m_bufferMode(Mode::Undefined)
+    , m_pan(0.0)
+    , m_volume(1.0)
+    , m_panVolume(1.0)
+{
     ResetLock();
-
-    m_bufferSize = 0;
-    m_dataBuffer = nullptr;
-
-    m_bufferMode = Mode::Undefined;
-
-    m_volume = 1.0;
-    m_pan = 0.0;
-    m_panVolume = 1.0;
 }
 
 ysAudioSource::ysAudioSource(API api)
-    : ysAudioSystemObject("AUDIO_BUFFER", api) {
+    : ysAudioSystemObject("AUDIO_BUFFER", api)
+    , m_dataBuffer(nullptr)
+    , m_bufferSize(0)
+    , m_bufferMode(Mode::Undefined)
+    , m_pan(0.0)
+    , m_volume(1.0)
+    , m_panVolume(1.0)
+{
     ResetLock();
-
-    m_bufferSize = 0;
-    m_dataBuffer = nullptr;
-
-    m_bufferMode = Mode::Undefined;
-
-    m_volume = 1.0;
-    m_pan = 0.0;
-    m_panVolume = 1.0;
 }
-
-ysAudioSource::~ysAudioSource() { /* void */ }
 
 ysError ysAudioSource::LockEntireBuffer(void **buffer, SampleOffset *samples) {
     YDS_ERROR_DECLARE("LockEntireBuffer");

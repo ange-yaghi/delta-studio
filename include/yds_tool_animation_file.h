@@ -2,6 +2,8 @@
 #define YDS_TOOL_ANIMATION_FILE_H
 
 #include "yds_base.h"
+#include "yds_dynamic_array.h"
+#include "yds_error_codes.h"
 #include "yds_object_animation_data.h"
 #include "yds_time_tag_data.h"
 
@@ -45,7 +47,7 @@ public:
 
 public:
     ysToolAnimationFile();
-    ~ysToolAnimationFile();
+    ~ysToolAnimationFile() = default;
 
     ysError Open(const wchar_t *fname);
     ysError Close();

@@ -2,13 +2,14 @@
 #define YDS_FILE_H
 
 #include "yds_base.h"
+#include "yds_error_codes.h"
 
 #include <iostream>
 #include <fstream>
 
 class ysFile : ysObject {
 public:
-    static const int MAX_FILE_NAME_LENGTH = 256;
+    static constexpr size_t MAX_FILE_NAME_LENGTH = 256;
 
     enum FILE_MODE {
         // Defaults
@@ -22,7 +23,7 @@ public:
 public:
     ysFile();
     ysFile(const wchar_t *fname);
-    ~ysFile();
+    ~ysFile() = default;
 
     ysError OpenFile(const wchar_t *fname, unsigned int filemode = FILE_READ);
     void CloseFile();
@@ -30,12 +31,10 @@ public:
     int GetFileLength();
     void ReadFileToBuffer(char *buffer);
 
-    bool IsOpen() { return m_file.is_open(); }
+    bool IsOpen() const;
 
 protected:
     wchar_t m_name[MAX_FILE_NAME_LENGTH];
-    unsigned int m_filemode;
-
     std::fstream m_file;
 };
 

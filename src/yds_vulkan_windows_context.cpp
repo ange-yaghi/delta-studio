@@ -1,18 +1,13 @@
-#include "../include/yds_vulkan_windows_context.h"
+#include "yds_vulkan_windows_context.h"
 
-#include "../include/yds_windows_window.h"
-#include "../include/yds_vulkan_device.h"
-#include "../include/yds_vulkan.h"
+#include "yds_error_system.h"
+#include "yds_vulkan.h"
+#include "yds_vulkan_device.h"
+#include "yds_windows_window.h"
 
 ysVulkanWindowsContext::ysVulkanWindowsContext()
     : ysVulkanContext(ysWindowSystemObject::Platform::Windows)
-{
-    /* void */
-}
-
-ysVulkanWindowsContext::~ysVulkanWindowsContext() {
-    /* void */
-}
+{ }
 
 ysError ysVulkanWindowsContext::Create(
     ysVulkanDevice *device,

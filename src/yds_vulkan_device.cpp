@@ -1,19 +1,18 @@
 #include "../include/yds_vulkan_device.h"
 
-#include "../include/yds_vulkan.h"
-#include "../include/yds_vulkan_context.h"
-#include "../include/yds_vulkan_render_target.h"
-#include "../include/yds_vulkan_texture.h"
-#include "../include/yds_vulkan_windows_context.h"
+#include "yds_error_system.h"
+#include "yds_vulkan.h"
+#include "yds_vulkan_context.h"
+#include "yds_vulkan_render_target.h"
+#include "yds_vulkan_texture.h"
+#include "yds_vulkan_windows_context.h"
 
 #include <vector>
 
-ysVulkanDevice::ysVulkanDevice() {
-    m_device = nullptr;
-    m_instance = nullptr;
-}
-
-ysVulkanDevice::~ysVulkanDevice() { /* void */ }
+ysVulkanDevice::ysVulkanDevice()
+    : m_instance(nullptr)
+    , m_device(nullptr)
+{ }
 
 ysError ysVulkanDevice::InitializeDevice() {
     YDS_ERROR_DECLARE("InitializeDevice");

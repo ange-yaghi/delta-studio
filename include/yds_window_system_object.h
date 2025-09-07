@@ -13,11 +13,9 @@ public:
 public:
     ysWindowSystemObject();
     ysWindowSystemObject(const char *typeID, Platform platform);
-    virtual ~ysWindowSystemObject();
-
-    Platform GetPlatform() const { return m_platform; }
-
-    bool CheckCompatibility(ysWindowSystemObject *object) const { return (object) ? object->m_platform == m_platform : true; }
+    virtual ~ysWindowSystemObject() = default;
+    Platform GetPlatform() const;
+    bool CheckCompatibility(ysWindowSystemObject *object) const;
 
 private:
     Platform m_platform;

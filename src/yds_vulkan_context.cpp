@@ -1,22 +1,18 @@
-#include "../include/yds_vulkan_context.h"
+#include "yds_vulkan_context.h"
+
+#include "yds_error_system.h"
 
 ysVulkanContext::ysVulkanContext()
     : ysRenderingContext(DeviceAPI::Vulkan, ysWindowSystemObject::Platform::Unknown) 
-{
-    m_surface = nullptr;
-    m_device = nullptr;
-}
+    , m_device(nullptr)
+    , m_surface(nullptr)
+{ }
 
 ysVulkanContext::ysVulkanContext(ysWindowSystemObject::Platform platform)
     : ysRenderingContext(DeviceAPI::Vulkan, ysWindowSystemObject::Platform::Unknown) 
-{
-    m_surface = nullptr;
-    m_device = nullptr;
-}
-
-ysVulkanContext::~ysVulkanContext() {
-    /* void */
-}
+    , m_device(nullptr)
+    , m_surface(nullptr)
+{ }
 
 ysError ysVulkanContext::Create(ysVulkanDevice *device, ysWindow *window) {
     YDS_ERROR_DECLARE("Create");
@@ -24,4 +20,9 @@ ysError ysVulkanContext::Create(ysVulkanDevice *device, ysWindow *window) {
     m_device = device;
 
     return YDS_ERROR_RETURN(ysError::None);
+}
+
+VkSurfaceKHR ysVulkanContext::GetSurface() const
+{
+    return m_surface;
 }

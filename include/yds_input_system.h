@@ -3,6 +3,8 @@
 
 #include "yds_window_system_object.h"
 
+#include "yds_dynamic_array.h"
+#include "yds_error_codes.h"
 #include "yds_input_device.h"
 #include "yds_keyboard_aggregator.h"
 #include "yds_mouse_aggregator.h"
@@ -13,7 +15,7 @@ class ysInputSystem : public ysWindowSystemObject {
 protected:
     ysInputSystem();
     ysInputSystem(Platform platform);
-    virtual ~ysInputSystem();
+    virtual ~ysInputSystem() = default;
 
 public:
     static ysError CreateInputSystem(ysInputSystem **newInputSystem,
@@ -79,19 +81,18 @@ protected:
     ysInputDevice *FindGenericSlot(ysInputDevice::InputDeviceType type);
 
 protected:
+    ysInputDevice *m_osKeyboard;
+    ysInputDevice *m_osMouse;
+    ysWindowSystem *m_windowSystem; // Currently assigned window system
+    bool m_enableGlobalInput;
+
     ysKeyboardAggregator m_keyboardAggregator;
     ysMouseAggregator m_mouseAggregator;
 
-    ysInputDevice *m_osKeyboard;
-    ysInputDevice *m_osMouse;
+    
 
     // Input device array
     ysDynamicArray<ysInputDevice, 4> m_inputDeviceArray;
-
-    // Currently assigned window system
-    ysWindowSystem *m_windowSystem;
-
-    bool m_enableGlobalInput;
 };
 
 #endif /* YDS_INPUT_SYSTEM_H */

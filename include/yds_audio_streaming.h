@@ -11,7 +11,7 @@ class ysAudioSource;
 class ysStreamingAudio : public ysObject {
 public:
     ysStreamingAudio();
-    ~ysStreamingAudio();
+    ~ysStreamingAudio() = default;
 
     ysError InitializeBuffer();
     ysError Update();

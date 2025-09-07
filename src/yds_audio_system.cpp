@@ -1,22 +1,21 @@
-#include "../include/yds_audio_system.h"
+#include "yds_audio_system.h"
 
-#include "../include/yds_audio_buffer.h"
-#include "../include/yds_audio_device.h"
-#include "../include/yds_ds8_system.h"
+#include "yds_audio_buffer.h"
+#include "yds_audio_device.h"
+#include "yds_error_system.h"
+#include "yds_ds8_system.h"
 
 #include <fstream>
 
 ysAudioSystem::ysAudioSystem()
-    : ysAudioSystemObject("AUDIO_SYSTEM", API::Undefined) {
-    m_primaryDevice = nullptr;
-}
+    : ysAudioSystemObject("AUDIO_SYSTEM", API::Undefined)
+    , m_primaryDevice(nullptr)
+{ }
 
 ysAudioSystem::ysAudioSystem(API api)
-    : ysAudioSystemObject("AUDIO_SYSTEM", api) {
-    m_primaryDevice = nullptr;
-}
-
-ysAudioSystem::~ysAudioSystem() {}
+    : ysAudioSystemObject("AUDIO_SYSTEM", api)
+    , m_primaryDevice(nullptr)
+{ }
 
 ysError ysAudioSystem::CreateAudioSystem(ysAudioSystem **newAudioSystem,
                                          API api) {

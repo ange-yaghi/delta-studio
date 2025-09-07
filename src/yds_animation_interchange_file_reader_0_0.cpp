@@ -1,56 +1,16 @@
-#include "../include/yds_animation_interchange_file_reader_0_0.h"
+#include "yds_animation_interchange_file_reader_0_0.h"
 
-#include "../include/yds_animation_action.h"
+#include "yds_animation_action.h"
+#include "yds_error_system.h"
 
-ysAnimationInterchangeFileReader_0_0::ysAnimationInterchangeFileReader_0_0() {
-    m_actionCount = 0;
+ysAnimationInterchangeFileReader_0_0::ysAnimationInterchangeFileReader_0_0()
+    : m_actionCount(0)
+{ }
+
+unsigned int ysAnimationInterchangeFileReader_0_0::GetActionCount() const
+{
+    return m_actionCount;
 }
-
-ysAnimationInterchangeFileReader_0_0::~ysAnimationInterchangeFileReader_0_0() {
-    /* void */
-}
-
-/*
-ysError ysAnimationInterchangeFileReader_0_0::Open(const char *fname) {
-    YDS_ERROR_DECLARE("Open");
-
-    m_file.open(fname, std::ios::binary | std::ios::in | std::ios::out);
-    if (!m_file.is_open()) return YDS_ERROR_RETURN_MSG(ysError::YDS_COULD_NOT_OPEN_FILE, fname);
-
-    IdHeader idHeader;
-    m_file.read((char *)&idHeader, sizeof(IdHeader));
-
-    if (idHeader.MagicNumber != MAGIC_NUMBER) {
-        m_file.close();
-        return YDS_ERROR_RETURN(ysError::YDS_INVALID_FILE_TYPE);
-    }
-
-    if (idHeader.MinorVersion != MINOR_VERSION || idHeader.MajorVersion != MAJOR_VERSION) {
-        m_file.close();
-        return YDS_ERROR_RETURN(ysError::YDS_UNSUPPORTED_FILE_VERSION);
-    }
-
-    m_compilationStatus = idHeader.CompilationStatus == 0x0;
-    m_toolId = idHeader.EditorId;
-
-    FileHeader fileHeader;
-    m_file.read((char *)&fileHeader, sizeof(FileHeader));
-
-    m_actionCount = fileHeader.ActionCount;
-
-    return YDS_ERROR_RETURN(ysError::None);
-}
-
-ysError ysAnimationInterchangeFile0_0::Close() {
-    YDS_ERROR_DECLARE("Close");
-
-    if (m_file.is_open()) m_file.close();
-
-    m_majorVersion = -1;
-    m_minorVersion = -1;
-
-    return YDS_ERROR_RETURN(ysError::None);
-}*/
 
 ysAnimationCurve::CurveType ysAnimationInterchangeFileReader_0_0::InterpretCurveType(unsigned int curveType) {
     switch (curveType) {

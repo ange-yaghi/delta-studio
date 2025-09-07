@@ -15,8 +15,6 @@ ysD3D11Shader::~ysD3D11Shader() {
 }
 
 void ysD3D11Shader::SetDebugName(const std::string &debugName) {
-    ysShader::SetDebugName(debugName);
-
     switch (GetShaderType()) {
     case ysShader::ShaderType::Vertex:
         D3D11SetDebugName(m_vertexShader, debugName);

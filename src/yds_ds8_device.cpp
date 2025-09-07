@@ -1,14 +1,15 @@
-#include "../include/yds_ds8_device.h"
+#include "yds_ds8_device.h"
 
-#include "../include/yds_ds8_audio_buffer.h"
-#include "../include/yds_ds8_audio_source.h"
+#include "yds_ds8_audio_buffer.h"
+#include "yds_ds8_audio_source.h"
+#include "yds_error_system.h"
 
-ysDS8Device::ysDS8Device() : ysAudioDevice(API::DirectSound8) {
+ysDS8Device::ysDS8Device()
+    : ysAudioDevice(API::DirectSound8)
+    , m_device(nullptr)
+{
     memset(&m_guid, 0, sizeof(GUID));
-    m_device = nullptr;
 }
-
-ysDS8Device::~ysDS8Device() {}
 
 ysError ysDS8Device::CreateSource(const ysAudioParameters *parameters,
                                   SampleOffset size, ysAudioSource **source) {

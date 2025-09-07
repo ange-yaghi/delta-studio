@@ -9,7 +9,7 @@
 class ysWindowsWindowSystem : public ysWindowSystem {
 public:
     ysWindowsWindowSystem();
-    ~ysWindowsWindowSystem();
+    ~ysWindowsWindowSystem() = default;
 
     virtual ysError NewWindow(ysWindow **newWindow) override;
 
@@ -37,9 +37,8 @@ public:
 
 protected:
     HINSTANCE m_instance;
-
-    RECT m_oldCursorClip;
     HCURSOR m_oldCursor;
+    RECT m_oldCursorClip;
 };
 
 #endif /* YDS_WINDOWS_WINDOW_SYSTEM_H */

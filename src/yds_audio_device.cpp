@@ -1,25 +1,24 @@
-#include "../include/yds_audio_device.h"
+#include "yds_audio_device.h"
 
-#include "../include/yds_audio_buffer.h"
-#include "../include/yds_audio_source.h"
+#include "yds_audio_buffer.h"
+#include "yds_audio_source.h"
+#include "yds_error_system.h"
 
 ysAudioDevice::ysAudioDevice()
-    : ysAudioSystemObject("AUDIO_DEVICE", API::Undefined) {
-    m_deviceName[0] = '\0';
-    m_connected = false;
-    m_available = false;
-    m_windowAssociation = 0;
-}
+    : ysAudioSystemObject("AUDIO_DEVICE", API::Undefined)
+    , m_deviceName({0})
+    , m_windowAssociation(nullptr)
+    , m_connected(false)
+    , m_available(false)
+{ }
 
 ysAudioDevice::ysAudioDevice(API api)
-    : ysAudioSystemObject("ysAudioDevice", api) {
-    m_deviceName[0] = '\0';
-    m_connected = false;
-    m_available = false;
-    m_windowAssociation = 0;
-}
-
-ysAudioDevice::~ysAudioDevice() {}
+    : ysAudioSystemObject("ysAudioDevice", api)
+    , m_deviceName({0})
+    , m_windowAssociation(nullptr)
+    , m_connected(false)
+    , m_available(false)
+{ }
 
 ysError ysAudioDevice::DestroyAudioSource(ysAudioSource *&source) {
     YDS_ERROR_DECLARE("DestroyAudioSource");

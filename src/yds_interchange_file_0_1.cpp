@@ -1,17 +1,14 @@
-#include "../include/yds_interchange_file_0_1.h"
+#include "yds_interchange_file_0_1.h"
 
-ysInterchangeFile0_1::ysInterchangeFile0_1() {
-    m_majorVersion = 0;
-    m_minorVersion = 0;
+#include "yds_error_system.h"
 
-    m_toolId = -1;
-    m_compilationStatus = false;
-    m_objectCount = 0;
-}
-
-ysInterchangeFile0_1::~ysInterchangeFile0_1() {
-    /* void */
-}
+ysInterchangeFile0_1::ysInterchangeFile0_1()
+    : m_minorVersion(0)
+    , m_majorVersion(0)
+    , m_toolId(-1)
+    , m_objectCount(0)
+    , m_compilationStatus(false)
+{ }
 
 ysError ysInterchangeFile0_1::Open(const wchar_t *fname) {
     YDS_ERROR_DECLARE("Open");

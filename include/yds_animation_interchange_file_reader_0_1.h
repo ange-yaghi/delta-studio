@@ -52,9 +52,9 @@ public:
 
 public:
     ysAnimationInterchangeFileReader_0_1();
-    ~ysAnimationInterchangeFileReader_0_1();
+    ~ysAnimationInterchangeFileReader_0_1() = default;
 
-    virtual unsigned int GetActionCount() const { return m_actionCount; }
+    virtual unsigned int GetActionCount() const;
 
     virtual ysError ReadHeader(std::fstream &f);
     virtual ysError ReadAction(std::fstream &f, ysAnimationAction *action);

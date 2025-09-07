@@ -21,7 +21,7 @@ public:
 public:
     ysAudioSource();
     ysAudioSource(API api);
-    virtual ~ysAudioSource();
+    virtual ~ysAudioSource() = default;
 
     virtual ysError LockEntireBuffer(void **buffer, SampleOffset *samples);
     virtual ysError UnlockBuffer(void *buffer, SampleOffset samples);

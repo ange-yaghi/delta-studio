@@ -1,14 +1,12 @@
-#include "../include/yds_geometry_export_file.h"
+#include "yds_geometry_export_file.h"
+
+#include "yds_error_system.h"
 
 #include <math.h>
 
-ysGeometryExportFile::ysGeometryExportFile() : ysObject("ysGeometryExportFile") {
-    /* void */
-}
-
-ysGeometryExportFile::~ysGeometryExportFile() {
-    /* void */
-}
+ysGeometryExportFile::ysGeometryExportFile()
+    : ysObject("ysGeometryExportFile")
+{ }
 
 ysError ysGeometryExportFile::Open(const wchar_t *fname) {
     YDS_ERROR_DECLARE("Open");

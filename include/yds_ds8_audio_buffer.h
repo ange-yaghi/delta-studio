@@ -6,7 +6,7 @@
 class ysDS8AudioBuffer : public ysAudioBuffer {
 public:
     ysDS8AudioBuffer();
-    virtual ~ysDS8AudioBuffer();
+    virtual ~ysDS8AudioBuffer() = default;
 
     virtual ysError Initialize(SampleOffset samples, const ysAudioParameters &parameters);
     virtual ysError EditBuffer(void *data);

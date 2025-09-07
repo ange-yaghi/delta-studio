@@ -14,16 +14,15 @@ class ysVulkanContext : public ysRenderingContext {
 public:
     ysVulkanContext();
     ysVulkanContext(ysWindowSystemObject::Platform platform);
-    virtual ~ysVulkanContext();
+    virtual ~ysVulkanContext() = default;
 
     virtual ysError Create(ysVulkanDevice *device, ysWindow *window);
     virtual ysError Destroy() = 0;
 
-    VkSurfaceKHR GetSurface() const { return m_surface; }
+    VkSurfaceKHR GetSurface() const;
 
 protected:
     ysVulkanDevice *m_device;
-
     VkSurfaceKHR m_surface;
 };
 

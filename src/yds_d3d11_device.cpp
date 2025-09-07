@@ -1,18 +1,18 @@
-#include "../include/yds_d3d11_device.h"
+#include "yds_d3d11_device.h"
 
 #define NOMINMAX
-#include "../include/yds_d3d11_context.h"
-#include "../include/yds_d3d11_gpu_buffer.h"
-#include "../include/yds_d3d11_input_layout.h"
-#include "../include/yds_d3d11_render_target.h"
-#include "../include/yds_d3d11_shader.h"
-#include "../include/yds_d3d11_shader_program.h"
-#include "../include/yds_d3d11_texture.h"
-#include "../include/yds_d3d11_utilities.h"
+#include "yds_error_system.h"
+#include "yds_d3d11_context.h"
+#include "yds_d3d11_gpu_buffer.h"
+#include "yds_d3d11_input_layout.h"
+#include "yds_d3d11_render_target.h"
+#include "yds_d3d11_shader.h"
+#include "yds_d3d11_shader_program.h"
+#include "yds_d3d11_texture.h"
+#include "yds_d3d11_utilities.h"
+#include "yds_stb_image.h"
+#include "yds_windows_window.h"
 
-#include "../include/yds_windows_window.h"
-
-#include "../include/yds_stb_image.h"
 #include <d3d11_1.h>
 
 #include <fstream>

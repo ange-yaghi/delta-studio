@@ -1,6 +1,7 @@
 #ifndef YDS_RENDER_GEOMETRY_FORMAT_H
 #define YDS_RENDER_GEOMETRY_FORMAT_H
 
+#include "yds_dynamic_array.h"
 #include "yds_render_geometry_channel.h"
 
 class ysRenderGeometryFormat : public ysObject {

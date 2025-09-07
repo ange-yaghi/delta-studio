@@ -1,18 +1,15 @@
-#include "../include/yds_tool_animation_file.h"
+#include "yds_tool_animation_file.h"
 
-#include "../include/yds_time_tag_data.h"
+#include "yds_error_system.h"
+#include "yds_time_tag_data.h"
 
-ysToolAnimationFile::ysToolAnimationFile() : ysObject("ysToolAnimationFile") {
-    m_header = NULL;
-    m_fileVersion = -1;
-
-    m_lastEditor = EditorId::UNDEFINED;
-    m_compilationStatus = CompilationStatus::UNDEFINED;
-}
-
-ysToolAnimationFile::~ysToolAnimationFile() {
-    /* void */
-}
+ysToolAnimationFile::ysToolAnimationFile()
+    : ysObject("ysToolAnimationFile")
+    , m_header(nullptr)
+    , m_fileVersion(-1)
+    , m_lastEditor(EditorId::UNDEFINED)
+    , m_compilationStatus(CompilationStatus::UNDEFINED)
+{ }
 
 ysError ysToolAnimationFile::Open(const wchar_t *fname) {
     YDS_ERROR_DECLARE("Open");

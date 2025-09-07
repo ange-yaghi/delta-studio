@@ -1,7 +1,8 @@
-#include "../include/yds_windows_window.h"
+#include "yds_windows_window.h"
 
-#include "../include/yds_window_event_handler.h"
-#include "../include/yds_windows_window_system.h"
+#include "yds_error_system.h"
+#include "yds_window_event_handler.h"
+#include "yds_windows_window_system.h"
 
 #ifndef DWMWA_USE_IMMERSIVE_DARK_MODE
 #define DWMWA_USE_IMMERSIVE_DARK_MODE 20
@@ -11,13 +12,12 @@
 
 #pragma comment(lib, "Dwmapi.lib")
 
-ysWindowsWindow::ysWindowsWindow() : ysWindow(Platform::Windows) {
-    m_instance = 0;
-    m_hwnd = 0;
-    m_previousCmdShow = SW_SHOW;
-}
-
-ysWindowsWindow::~ysWindowsWindow() {}
+ysWindowsWindow::ysWindowsWindow()
+    : ysWindow(Platform::Windows)
+    , m_instance(nullptr)
+    , m_hwnd(nullptr)
+    , m_previousCmdShow(SW_SHOW)
+{ }
 
 ATOM ysWindowsWindow::RegisterWindowsClass(const ysVector &color) {
     const ysVector c_srgb = ysColor::linearToSrgb(color);

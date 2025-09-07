@@ -11,7 +11,7 @@ class ysDS8Device;
 class ysDS8System : public ysAudioSystem {
 public:
     ysDS8System();
-    virtual ~ysDS8System();
+    virtual ~ysDS8System() = default;
 
     virtual ysError EnumerateDevices() override;
     virtual ysError ConnectDevice(ysAudioDevice *device,

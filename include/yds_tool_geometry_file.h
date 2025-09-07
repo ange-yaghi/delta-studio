@@ -2,7 +2,8 @@
 #define YDS_TOOL_GEOMETRY_FILE_H
 
 #include "yds_base.h"
-
+#include "yds_dynamic_array.h"
+#include "yds_error_codes.h"
 #include "yds_object_data.h"
 
 #include <fstream>
@@ -95,7 +96,7 @@ public:
 
 public:
     ysToolGeometryFile();
-    ~ysToolGeometryFile();
+    ~ysToolGeometryFile() = default;
 
     ysError Open(const wchar_t *fname);
     ysError Close();

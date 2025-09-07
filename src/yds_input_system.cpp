@@ -1,21 +1,24 @@
-#include "../include/yds_input_system.h"
+#include "yds_input_system.h"
 
-#include "../include/yds_window_system.h"
-#include "../include/yds_windows_input_system.h"
+#include "yds_error_system.h"
+#include "yds_window_system.h"
+#include "yds_windows_input_system.h"
 
-ysInputSystem::ysInputSystem() : ysWindowSystemObject("INPUT_SYSTEM", Platform::Unknown) {
-    m_windowSystem = nullptr;
-    m_enableGlobalInput = false;
-}
+ysInputSystem::ysInputSystem()
+    : ysWindowSystemObject("INPUT_SYSTEM", Platform::Unknown)
+    , m_osKeyboard(nullptr)
+    , m_osMouse(nullptr)
+    , m_windowSystem(nullptr)
+    , m_enableGlobalInput(false)
+{ }
 
-ysInputSystem::ysInputSystem(Platform platform) : ysWindowSystemObject("INPUT_SYSTEM", platform) {
-    m_windowSystem = nullptr;
-    m_enableGlobalInput = false;
-}
-
-ysInputSystem::~ysInputSystem() {
-    /* void */
-}
+ysInputSystem::ysInputSystem(Platform platform)
+    : ysWindowSystemObject("INPUT_SYSTEM", platform)
+    , m_osKeyboard(nullptr)
+    , m_osMouse(nullptr)
+    , m_windowSystem(nullptr)
+    , m_enableGlobalInput(false)
+{ }
 
 ysError ysInputSystem::CreateInputSystem(ysInputSystem **newInputSystem, Platform platform) {
     YDS_ERROR_DECLARE("CreateInputSystem");

@@ -1,40 +1,47 @@
-#include "../include/yds_window_system.h"
+#include "yds_window_system.h"
 
-#include "../include/yds_input_system.h"
-#include "../include/yds_windows_window_system.h"
+#include "yds_error_system.h"
+#include "yds_input_system.h"
+#include "yds_windows_window_system.h"
 
 ysWindowSystem *ysWindowSystem::g_instance = nullptr;
 
-ysWindowSystem::ysWindowSystem() : ysWindowSystemObject("WINDOW_SYSTEM", Platform::Unknown) {
+ysWindowSystem::ysWindowSystem()
+    : ysWindowSystemObject("WINDOW_SYSTEM", Platform::Unknown)
+    , m_cursor(Cursor::Arrow)
+    , m_inputSystem(nullptr)
+    , m_cursorVisible(true)
+    , m_cursorConfined(false)
+{
     YDS_ERROR_DECLARE("ysWindowSystem");
 
-    if (g_instance != nullptr) YDS_ERROR_RETURN(ysError::MultipleSystems);
-    g_instance = this;
+    if (g_instance != nullptr)
+    {
+        YDS_ERROR_RETURN(ysError::MultipleSystems);
+    }
 
-    m_inputSystem = nullptr;
-    m_cursorVisible = true;
-    m_cursorConfined = false;
-    m_cursor = Cursor::Arrow;
+    g_instance = this;
 
     YDS_ERROR_RETURN(ysError::None);
 }
 
-ysWindowSystem::ysWindowSystem(Platform platform) : ysWindowSystemObject("WINDOW_SYSTEM", platform) {
+ysWindowSystem::ysWindowSystem(Platform platform)
+    : ysWindowSystemObject("WINDOW_SYSTEM", platform)
+    , m_cursor(Cursor::Arrow)
+    , m_inputSystem(nullptr)
+    , m_cursorVisible(true)
+    , m_cursorConfined(false)
+{
     YDS_ERROR_DECLARE("ysWindowSystem");
 
-    if (g_instance != nullptr) YDS_ERROR_RETURN(ysError::MultipleSystems);
+    if (g_instance != nullptr)
+    {
+        YDS_ERROR_RETURN(ysError::MultipleSystems);
+    }
+
     g_instance = this;
 
-    m_cursorVisible = true;
-    m_cursorConfined = false;
-    m_inputSystem = nullptr;
-    m_cursor = Cursor::Arrow;
-
     YDS_ERROR_RETURN(ysError::None);
-}
-
-ysWindowSystem::~ysWindowSystem() {
-    /* void */
 }
 
 ysError ysWindowSystem::CreateWindowSystem(ysWindowSystem **newSystem, Platform platform) {

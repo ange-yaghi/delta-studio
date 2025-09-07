@@ -13,7 +13,7 @@ class ysWindowsInputDevice;
 class ysWindowsInputSystem : public ysInputSystem {
 public:
     ysWindowsInputSystem();
-    virtual ~ysWindowsInputSystem();
+    virtual ~ysWindowsInputSystem() = default;
 
     int ProcessInputMessage(HRAWINPUT lparam);
     int OnOsKey(LPARAM lParam, WPARAM wParam);

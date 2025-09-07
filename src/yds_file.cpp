@@ -1,17 +1,17 @@
-#include "../include/yds_file.h"
+#include "yds_file.h"
 
-ysFile::ysFile() : ysObject("FILE") {
-    m_name[0] = '\0';
-}
+#include "yds_error_system.h"
 
-ysFile::ysFile(const wchar_t *fname) : ysObject("FILE") {
+ysFile::ysFile()
+    : ysObject("FILE") 
+    , m_name({0})
+{ }
+
+ysFile::ysFile(const wchar_t *fname)
+    : ysObject("FILE")
+    , m_name({0})
+{
     OpenFile(fname);
-}
-
-ysFile::~ysFile() {
-    if (m_file.is_open()) {
-        m_file.close();
-    }
 }
 
 ysError ysFile::OpenFile(const wchar_t *fname, unsigned int filemode) {
@@ -55,4 +55,9 @@ void ysFile::ReadFileToBuffer(char *buffer) {
     int fileLength = GetFileLength();
 
     m_file.read(buffer, fileLength);
+}
+
+bool ysFile::IsOpen() const
+{
+    return m_file.is_open();
 }

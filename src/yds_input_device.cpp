@@ -1,83 +1,82 @@
-#include "../include/yds_input_device.h"
+#include "yds_input_device.h"
 
-ysInputDevice::ysInputDevice() : ysWindowSystemObject("INPUT DEVICE", Platform::Unknown) {
+#include <cstring>
+
+ysInputDevice::ysInputDevice()
+    : ysWindowSystemObject("INPUT DEVICE", Platform::Unknown)
+    , m_type(InputDeviceType::UNKNOWN)
+    , m_name({0})
+    , m_deviceID(-1)
+    , m_dependencyCount(0)
+    , m_genericData(nullptr)
+    , m_connected(false)
+    , m_generic(true)
+    , m_virtual(false)
+{
     SetName("");
-
-    m_type = InputDeviceType::UNKNOWN;
-    m_connected = false;
-    m_generic = true;
-    m_virtual = false;
-    m_dependencyCount = 0;
-
-    m_deviceID = -1;
-
-    // Clear specific pointers
-    m_genericData = nullptr;
 }
 
-ysInputDevice::ysInputDevice(Platform platform, InputDeviceType type) : ysWindowSystemObject("INPUT DEVICE", platform) {
+ysInputDevice::ysInputDevice(Platform platform, InputDeviceType type)
+    : ysWindowSystemObject("INPUT DEVICE", platform) 
+    , m_type(InputDeviceType::UNKNOWN)
+    , m_name({0})
+    , m_deviceID(-1)
+    , m_dependencyCount(0)
+    , m_genericData(nullptr)
+    , m_connected(false)
+    , m_generic(true)
+    , m_virtual(false)
+{
     SetName("");
-
-    m_type = type;
-    m_connected = false;
-    m_generic = true;
-    m_virtual = false;
-    m_dependencyCount = 0;
-
-    m_deviceID = -1;
-
-    // Clear specific pointers
-    m_genericData = nullptr;
 }
 
-ysInputDevice::~ysInputDevice() {
+ysInputDevice::~ysInputDevice()
+{
     Destroy();
 }
 
-void ysInputDevice::Destroy() {
-    if (m_type == InputDeviceType::KEYBOARD) {
-        delete m_keyboard;
-    }
-    else if (m_type == InputDeviceType::MOUSE) {
-        delete m_mouse;
-    }
-    else if (m_type == InputDeviceType::CUSTOM) {
-        // Delete custom
+void ysInputDevice::Destroy()
+{
+    switch (m_type)
+    {
+    case InputDeviceType::KEYBOARD: delete m_keyboard; break;
+    case InputDeviceType::MOUSE:    delete m_mouse;    break;   
+    case InputDeviceType::CUSTOM:   break;
+    default: break;
     }
 
-    // Clear specific pointer
-    m_generic = 0;
+    m_generic = false;
 }
 
-void ysInputDevice::SetName(const char *name) {
-    strcpy_s(m_name, 256, name);
+void ysInputDevice::SetName(const char *name)
+{
+    strcpy_s(m_name, sizeof(m_name), name);
 }
 
-void ysInputDevice::SetType(ysInputDevice::InputDeviceType type) {
-    if (m_type != type) Destroy();
+void ysInputDevice::SetType(ysInputDevice::InputDeviceType type)
+{
+    if (m_type != type) 
+    {
+        Destroy();
+    }
+
     m_type = type;
 
-    if (m_type == InputDeviceType::KEYBOARD) {
-        m_keyboard = new ysKeyboard;
-    }
-    else if (m_type == InputDeviceType::MOUSE) {
-        m_mouse = new ysMouse;
-    }
-    else if (m_type == InputDeviceType::CUSTOM) {
-        // New custom
+    switch (m_type)
+    {
+    case InputDeviceType::KEYBOARD: m_keyboard = new ysKeyboard; break;
+    case InputDeviceType::MOUSE:    m_mouse    = new ysMouse;    break;   
+    case InputDeviceType::CUSTOM:   break;
+    default: break;
     }
 }
 
-ysKeyboard *ysInputDevice::GetAsKeyboard() {
-    if (m_type == InputDeviceType::KEYBOARD) return m_keyboard;
-
-    //RaiseError(false, "Illegal access of keyboard.\n");
-    return nullptr;
+ysKeyboard *ysInputDevice::GetAsKeyboard()
+{
+    return (m_type == InputDeviceType::KEYBOARD) ? m_keyboard : nullptr;
 }
 
-ysMouse *ysInputDevice::GetAsMouse() {
-    if (m_type == InputDeviceType::MOUSE) return m_mouse;
-
-    //RaiseError(false, "Illegal access of mouse.\n");
-    return nullptr;
+ysMouse *ysInputDevice::GetAsMouse()
+{
+    return (m_type == InputDeviceType::MOUSE) ? m_mouse : nullptr;
 }

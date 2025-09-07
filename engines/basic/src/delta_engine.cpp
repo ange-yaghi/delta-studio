@@ -170,8 +170,6 @@ dbasic::DeltaEngine::CreateGameWindow(const GameEngineSettings &settings) {
     YDS_NESTED_ERROR_CALL(m_device->CreateOnScreenRenderTarget(
             &m_mainRenderTarget, m_renderingContext, settings.DepthBuffer));
 
-    m_mainRenderTarget->SetDebugName("MAIN_RENDER_TARGET");
-
     // Initialize Geometry
     YDS_NESTED_ERROR_CALL(InitializeGeometry());
 

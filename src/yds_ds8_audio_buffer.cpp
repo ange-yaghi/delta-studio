@@ -1,12 +1,11 @@
-#include "../include/yds_ds8_audio_buffer.h"
+#include "yds_ds8_audio_buffer.h"
 
-ysDS8AudioBuffer::ysDS8AudioBuffer() : ysAudioBuffer(API::DirectSound8) {
-    m_buffer = nullptr;
-}
+#include "yds_error_system.h"
 
-ysDS8AudioBuffer::~ysDS8AudioBuffer() {
-    /* void */
-}
+ysDS8AudioBuffer::ysDS8AudioBuffer()
+    : ysAudioBuffer(API::DirectSound8)
+    , m_buffer(nullptr)
+{ }
 
 ysError ysDS8AudioBuffer::Initialize(SampleOffset samples, const ysAudioParameters &parameters) {
     YDS_ERROR_DECLARE("Initialize");

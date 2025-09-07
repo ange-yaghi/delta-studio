@@ -1,8 +1,9 @@
 #ifndef YDS_OPENGL_CONTEXT_H
 #define YDS_OPENGL_CONTEXT_H
 
-#include "yds_window.h"
+#include "yds_error_system.h"
 #include "yds_rendering_context.h"
+#include "yds_window.h"
 
 #include <Windows.h>
 #include <gl/gl.h>

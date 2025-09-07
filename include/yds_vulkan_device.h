@@ -11,7 +11,7 @@
 class ysVulkanDevice : public ysDevice {
 public:
     ysVulkanDevice();
-    ~ysVulkanDevice();
+    ~ysVulkanDevice() = default;
 
     // Setup
     virtual ysError InitializeDevice() override;
