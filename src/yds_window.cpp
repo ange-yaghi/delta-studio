@@ -5,6 +5,7 @@
 #include "yds_window_system.h"
 
 #include <cmath>
+#include <cstring>
 
 ysWindow::ysWindow()
     : ysWindowSystemObject("WINDOW", Platform::Unknown)
@@ -136,7 +137,7 @@ void ysWindow::SetWindowSize(int width, int height) {
     AL_SetSize(width, height);
 }
 
-void ysWindow::SetTitle(const wchar_t *title) { wcscpy(m_title, title); }
+void ysWindow::SetTitle(const wchar_t *title) { wcscpy_s(m_title, sizeof(m_title)/sizeof(wchar_t), title); }
 
 void ysWindow::StartResizing() {
     m_resizing = true;

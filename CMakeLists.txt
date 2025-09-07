@@ -172,6 +172,7 @@ add_library(delta-core STATIC
     src/yds_tool_animation_file.cpp
     src/yds_tool_geometry_file.cpp
     src/yds_transform.cpp
+    src/yds_utils.cpp
     src/yds_vulkan_context.cpp
     src/yds_vulkan_device.cpp
     src/yds_vulkan_gpu_buffer.cpp
@@ -299,6 +300,7 @@ add_library(delta-core STATIC
     include/yds_tool_animation_file.h
     include/yds_tool_geometry_file.h
     include/yds_transform.h
+    include/yds_utils.hpp
     include/yds_vulkan.h
     include/yds_vulkan_context.h
     include/yds_vulkan_decl.h

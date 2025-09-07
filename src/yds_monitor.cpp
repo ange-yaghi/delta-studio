@@ -1,4 +1,5 @@
-#include "../include/yds_monitor.h"
+#define _CRT_SECURE_NO_WARNINGS
+#include "yds_monitor.h"
 
 #include <cmath>
 #include <wchar.h>
@@ -58,7 +59,6 @@ void ysMonitor::SetPhysicalSize(int w, int h) {
 }
 
 void ysMonitor::SetDeviceName(const wchar_t *deviceName) {
-    //RaiseError(m_deviceName != NULL, "Monitor device name is not initialized.");
     wcscpy(m_deviceName, deviceName);
 }
 

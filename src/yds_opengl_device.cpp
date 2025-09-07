@@ -1,21 +1,22 @@
-#include "../include/yds_opengl_device.h"
-#include "../include/yds_opengl_context.h"
-#include "../include/yds_opengl_render_target.h"
-#include "../include/yds_opengl_gpu_buffer.h"
-#include "../include/yds_opengl_shader.h"
-#include "../include/yds_opengl_input_layout.h"
-#include "../include/yds_opengl_shader_program.h"
-#include "../include/yds_opengl_texture.h"
+#include "yds_opengl_device.h"
 
-#include "../include/yds_opengl_windows_context.h"
+#include "yds_opengl_context.h"
+#include "yds_opengl_gpu_buffer.h"
+#include "yds_opengl_input_layout.h"
+#include "yds_opengl_render_target.h"
+#include "yds_opengl_shader.h"
+#include "yds_opengl_shader_program.h"
+#include "yds_opengl_texture.h"
+#include "yds_opengl_windows_context.h"
+#include "yds_utils.hpp"
 
 #include <Windows.h>
 #include <gl/gl.h>
 #include <gl/glext.h>
 #include <gl/wglext.h>
 
-#include "../include/yds_stb_image.h"
-#include "../include/yds_file.h"
+#include "yds_stb_image.h"
+#include "yds_file.h"
 
 #include <codecvt>
 #include <locale>
@@ -900,7 +901,7 @@ ysError ysOpenGLDevice::UseInputLayout(ysInputLayout *layout) {
 
     for (int i = 0; i < nChannels; i++) {
         ysOpenGLLayoutChannel *channel = openglLayout->m_channels.Get(i);
-        m_realContext->glVertexAttribPointer(i, channel->m_length, channel->m_type, GL_FALSE, openglLayout->m_size, (void *)channel->m_offset);
+        m_realContext->glVertexAttribPointer(i, channel->m_length, channel->m_type, GL_FALSE, openglLayout->m_size, reinterpret_cast<void*>(static_cast<intptr_t>(channel->m_offset)));
         m_realContext->glEnableVertexAttribArray(i);
     }
 
@@ -924,10 +925,9 @@ ysError ysOpenGLDevice::CreateTexture(ysTexture **texture, const wchar_t *fname)
     if (fname == nullptr) return YDS_ERROR_RETURN(ysError::InvalidParameter);
 
     bool useAlpha = true;
-
-    std::wstring_convert<std::codecvt_utf8<wchar_t>> utf8_conv;
+    
     int width, height, channels;
-    stbi_uc *pixels = stbi_load(utf8_conv.to_bytes(std::wstring(fname)).c_str(), &width, &height, &channels, (useAlpha ? 4 : 3));
+    stbi_uc *pixels = stbi_load(wstring_to_utf8(std::wstring(fname)).c_str(), &width, &height, &channels, (useAlpha ? 4 : 3));
     if (pixels == nullptr) {
         return YDS_ERROR_RETURN(ysError::CouldNotOpenTexture);
     }
@@ -1084,10 +1084,10 @@ void ysOpenGLDevice::ResubmitInputLayout() {
         ysOpenGLLayoutChannel *channel = openglLayout->m_channels.Get(i);
 
         if (channel->m_type == GL_FLOAT) {
-            m_realContext->glVertexAttribPointer(i, channel->m_length, channel->m_type, GL_FALSE, openglLayout->m_size, (void *)channel->m_offset);
+            m_realContext->glVertexAttribPointer(i, channel->m_length, channel->m_type, GL_FALSE, openglLayout->m_size, reinterpret_cast<void*>(static_cast<intptr_t>(channel->m_offset)));
         }
         else {
-            m_realContext->glVertexAttribIPointer(i, channel->m_length, channel->m_type, openglLayout->m_size, (void *)channel->m_offset);
+            m_realContext->glVertexAttribIPointer(i, channel->m_length, channel->m_type, openglLayout->m_size, reinterpret_cast<void*>(static_cast<intptr_t>(channel->m_offset)));
         }
 
         m_realContext->glEnableVertexAttribArray(i);
@@ -1139,7 +1139,7 @@ int ysOpenGLDevice::GetFramebufferName(int slot) {
 // TEMP
 void ysOpenGLDevice::Draw(int numFaces, int indexOffset, int vertexOffset) {
     if (m_activeVertexBuffer != nullptr) {
-        m_realContext->glDrawElementsBaseVertex(GL_TRIANGLES, numFaces * 3, GL_UNSIGNED_SHORT, (void *)(indexOffset * 2), vertexOffset);
+        m_realContext->glDrawElementsBaseVertex(GL_TRIANGLES, numFaces * 3, GL_UNSIGNED_SHORT, reinterpret_cast<void*>(static_cast<intptr_t>(indexOffset * 2)), vertexOffset);
     }
 }
 

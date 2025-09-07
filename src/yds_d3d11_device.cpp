@@ -11,6 +11,7 @@
 #include "yds_d3d11_texture.h"
 #include "yds_d3d11_utilities.h"
 #include "yds_stb_image.h"
+#include "yds_utils.hpp"
 #include "yds_windows_window.h"
 
 #include <d3d11_1.h>
@@ -1824,9 +1825,8 @@ ysError ysD3D11Device::CreateTexture(ysTexture **newTexture,
 
     D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc;
 
-    std::wstring_convert<std::codecvt_utf8<wchar_t>> utf8_conv;
     int width, height, channels;
-    stbi_uc *pixels = stbi_load(utf8_conv.to_bytes(std::wstring(fname)).c_str(),
+    stbi_uc *pixels = stbi_load(wstring_to_utf8(std::wstring(fname)).c_str(),
                                 &width, &height, &channels, 4);
     if (pixels == nullptr) {
         return YDS_ERROR_RETURN(ysError::CouldNotOpenTexture);
